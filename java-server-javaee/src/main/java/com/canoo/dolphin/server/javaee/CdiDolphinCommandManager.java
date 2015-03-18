@@ -9,25 +9,40 @@ import org.opendolphin.core.server.ServerDolphin;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import java.util.HashMap;
 import java.util.Set;
 
 public class CdiDolphinCommandManager implements DolphinCommandManager {
+
+    public CdiDolphinCommandManager() {
+        BeanManager beanManager = BeanManagerProvider.getInstance().getBeanManager();
+
+        ServerDolphinBean dolphinBean = new ServerDolphinBean();
+    }
 
     @Override
     public void initCommandsForSession(ServerDolphin serverDolphin, Set<Class<?>> dolphinManagedClasses) {
         BeanManager beanManager = BeanManagerProvider.getInstance().getBeanManager();
         for (Class<?> cls : dolphinManagedClasses) {
-            Bean<?> bean = createBean(beanManager, cls);
+            Bean<?> bean = getBean(beanManager, cls);
             Object reference = beanManager.getReference(bean, bean.getBeanClass(), beanManager.createCreationalContext(bean));
             DolphinCommandRegistration.registerAllComands(serverDolphin, cls, reference);
         }
     }
 
-    private <T> Bean<T> createBean(BeanManager beanManager, Class<T> cls) {
-        return new BeanBuilder<T>(beanManager)
-                .passivationCapable(true)
-                .beanClass(cls)
-                .scope(SessionScoped.class)
-                .create();
+    private static HashMap<Class<?>, Bean<?>> beanCache;
+
+    public static synchronized Bean<?> getBean(BeanManager beanManager, Class<?> cls) {
+        if (beanCache == null) {
+            beanCache = new HashMap<>();
+        }
+        if (!beanCache.containsKey(cls)) {
+            Bean<?> bean = new BeanBuilder(beanManager)
+                    .beanClass(cls)
+                    .scope(SessionScoped.class)
+                    .create();
+            beanCache.put(cls, bean);
+        }
+        return beanCache.get(cls);
     }
 }

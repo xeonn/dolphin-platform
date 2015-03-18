@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.DolphinManaged;
 import org.opendolphin.server.adapter.InvalidationServlet;
+import org.reflections.Reflections;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -9,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.HandlesTypes;
 import java.util.Set;
 
-@HandlesTypes(DolphinManaged.class)
 public class DolphinPlatformBootstrap implements ServletContainerInitializer {
 
     public static final String DOLPHIN_SERVLET_NAME = "dolphin-platform-servlet";
@@ -31,7 +31,17 @@ public class DolphinPlatformBootstrap implements ServletContainerInitializer {
 
     @Override
     public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet(classes)).addMapping(dolphinServletMapping);
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, DefaultDolphinServlet.class).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, InvalidationServlet.class).addMapping(dolphinInvalidationServletMapping);
+    }
+
+    private static Set<Class<?>> cachedDolphinBeanClasses;
+
+    public static synchronized Set<Class<?>> findAllDolphinBeanClasses() {
+        if(cachedDolphinBeanClasses == null) {
+            Reflections reflections = new Reflections("");
+            cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinManaged.class);
+        }
+        return cachedDolphinBeanClasses;
     }
 }

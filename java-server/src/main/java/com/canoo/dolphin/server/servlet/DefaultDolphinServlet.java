@@ -1,9 +1,12 @@
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.DolphinManaged;
 import com.canoo.dolphin.server.container.DolphinCommandManager;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.server.adapter.DolphinServlet;
+import org.reflections.Reflections;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -14,9 +17,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
 
     private final Set<Class<?>> dolphinManagedClasses;
 
-    public DefaultDolphinServlet(Set<Class<?>> dolphinManagedClasses) {
-        this.dolphinManagedClasses = dolphinManagedClasses;
-
+    public DefaultDolphinServlet() {
         ServiceLoader<DolphinCommandManager> serviceLoader = ServiceLoader.load(DolphinCommandManager.class);
         Iterator<DolphinCommandManager> serviceIterator = serviceLoader.iterator();
         if (serviceIterator.hasNext()) {
@@ -27,6 +28,8 @@ public class DefaultDolphinServlet extends DolphinServlet {
         } else {
             throw new RuntimeException("No " + DolphinCommandManager.class + " found!");
         }
+
+        dolphinManagedClasses = DolphinPlatformBootstrap.findAllDolphinBeanClasses();
     }
 
     @Override

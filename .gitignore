@@ -1,2 +1,4 @@
 .idea
 dolphin-platform.iml
+java-server/target
+java-server-javaee/target
