@@ -11,6 +11,7 @@
         <module>java-core</module>
         <module>java-client</module>
         <module>java-server</module>
+        <module>java-server-javaee</module>
     </modules>
 
 

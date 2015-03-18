@@ -89,9 +89,25 @@ JavaScript:
 - AngularJS-Modul: Brauche wir das? Ich finde den ICOS Ansatz (Dolphin & WebComponents) für die Zukunft sehr interessant. Bei der KaPo werden wir zwar auf Angualr setzten, im großen und ganze könnte der ICOS Weg aber die richtige Richtung sein.
 
 
-
-
 Update 1 - Grundlegender Aufbau des Servers
 ---------------
 Die Dolphin Platform Server Komponente basiert auf der Servlet API 3.1 und instanziiert sich innerhalb eines Web-Containers automatisch. Die DolphinPlatformBootstrap Klasse implementiert das in der Servlet API definierte Interface ServletContainerInitializer. Implementierungen dieses Interfaces werden beim Application-Start automatisch geladen (Durch ServiceLoader Definition in META-INF/services). Hierdurch startet der Dolphin Plattform Boostrap automatisch. Durch den Start werden die beiden benötigten Servlets (Dolphin-Servlet und Dolphin-Invalidation-Servlet) angelegt und registriert. Das DolphinServlet bekommt automatisch eine Liste der Klassen übergeben die von Dolphin gemanaged werden sollen (Definiert durch die DolphinManaged Annotation). Dies werden die DolphinCommands sein. Sobald eine neue Session erstellt wird, ruft das DolphinServlet den DolphinCommandManager auf. Dieser ist Framework-Abhängig (z.B. Spring oder JavaEE) und kümmert sich darum, dass alle Dolphin Commands automatisch erstellt werden und im richtigen Scope liegen. Der DolphinCommandManager ist im Server-Modul nur als Interface definiert und es muss immer genau eine passende Implementierung geben. Diese wird später in den Framework-Spezifischen Modulen (Spring, etc.) hinzugefügt. Intern wird der ServiceLoader zum Laden und Instanziieren genutzt. Daher müssen alle Implementierungen des DolphinCommandManager Interfaces einen Default-Konstruktor haben.
 Durch dieses Vorgehen kann man die Dolphin-Platform Jars einfach zu einer Anwendung hinzufügen und muss nichts mehr konfigurieren. In der eigentlich Anwendung müssen dann nur noch die Command-Klassen definiert und anmontiert werden. Auch eine web.xml wird hier nicht mehr benötigt. Später kann man sich überlegen, ob man ähnlich der persistence.xml eine Datei zur Konfiguration der Dolphin-Platform unterstützen möchte. Hierdurch könnte man in einer Anwendung dann z.B. das Default-Mapping der Servlets überschreiben.
+
+Update 2 - CDI Implementierung für JavaEE
+---------------
+Habe eine Basis-CDI-Implementierung für JavaEE hinzugefügt. Diese ist allerdings momentan noch ungetestet. Die Implementierung nutzt Apache DeltaSpike um programmatisch Referenzen zu CDI Beans zu erstellen. Hierbei werden Beans für alle Klassen die mit der @DolphinManaged Annotation versehen sind erstellt. Alle diese Beans liegen automatisch im SessionScope.
+Theoretisch sollte eine Klasse auf Serverseite nun wie folgt aussehen:
+
+	@DolphinManaged
+	public class MyViewController {
+
+		@Inject
+		private MyService myInjectedService;
+
+		@DolphinCommand(„unique-command-id-for-save“)
+		public void save() {…}
+
+		@DolphinCommand(„unique-command-id-for-load“)
+		public void load() {…}
+	}
