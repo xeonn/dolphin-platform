@@ -1,0 +1,22 @@
+{
+  "name": "opendolphin",
+  "version": "0.11",
+  "main": "opendolphin-0.11.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "build",
+    "speed",
+    "test",
+    "*.md",
+    "AUTHORS.txt",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "keywords": [
+    "opendolphin",
+    "javascript",
+    "library",
+    "remoting"
+  ]
+}

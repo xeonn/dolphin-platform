@@ -1,0 +1,7 @@
+{
+  "name": "dolphin-platform-client",
+  "version": "0.0.1",
+  "dependencies": {
+    "opendolphin": "./lib/opendolphin/opendolphin-0.11.js"
+  }
+}
