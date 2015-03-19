@@ -103,6 +103,9 @@ Theoretisch sollte eine Klasse auf Serverseite nun wie folgt aussehen:
 	public class MyViewController {
 
 		@Inject
+		private ServerDolphin dolphin;
+
+		@Inject
 		private MyService myInjectedService;
 
 		@DolphinCommand(„unique-command-id-for-save“)
