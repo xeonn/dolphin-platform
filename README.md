@@ -236,9 +236,6 @@ Basierend auf den oberen Beschreibungen könnte ein Controller für einen Dialog
 	public class MyViewController {
 
 		@Inject
-		private ServerDolphin dolphin;
-
-		@Inject
 		private DolphinModelManager manager;
 
 		@Inject
@@ -267,7 +264,7 @@ Basierend auf den oberen Beschreibungen könnte ein Controller für einen Dialog
 		public void save(long contextId) {
 			//Wird aufgerufen wenn in der View der 
 			//Save-Button geklickt wird
-			MyModel model = manager.find(MyModel.class, contextId)
+			MyModel model = manager.find(MyModel.class, contextId);
 			MyJpaEntity entity = new MyJpaEntity();
 			entity.setName(model.getName);
 			myInjectedService.saveEntity(entity);
@@ -275,3 +272,54 @@ Basierend auf den oberen Beschreibungen könnte ein Controller für einen Dialog
 	}
 
 Im Beispiel gibt es eine Besonderheit die noch nicht definiert wurde: die save(…) und close(…) Methoden erwarten als Übergabe-Parameter die context-ID. Diese dient ja dazu um einen spezifischen Dialog zu definieren und müsste übergeben werden. Dies wäre dann auch eine Besonderheit der Dolphin-Platform. Die ID ist aber auch am Client vorhanden und kann so automatisch von Client-Modul der Dolphin-Platform an den Server übermittelt werden.
+
+Navigation zwischen Views
+---------------
+Basierend auf den bisherigen Ansätzen ist eine Navigation zwischen Views nicht schwierig zu implementieren. Auf Client-Seite wird die View immer automatisch erzeugt sobald das PM vorhanden ist. Im gezeigten Beispiel wird das PM erzeugt, sobald die Init-Methode aufgerufen wird. Da alle Command-Klassen managed sind, ist es auch kein Problem diese in andere Klassen zu injecten. Daher können wir relativ einfach eine Routing-Klasse definieren:
+
+	@DolphinManaged
+	public class MyAppRouting {
+		
+		@Inject
+		private MyViewController controller1;
+
+		@Inject
+		private MyView2Controller controller2;
+
+		@Inject
+		private ErrorMessageController errorController;
+
+		public void goToView2(MyDataModel modelToShow) {
+			controller2.init(modelToShow);
+		}
+
+		public void showNewView1() {
+			controller1.init();
+		}
+
+		public void showError(String message) {
+			errorMessageController.init(message);
+		}
+	}
+
+Diese Routing Klasse kann nun einfach in den DolphinController Klassen injected und genutzt werden:
+
+	@DolphinManaged
+	public class MyViewController {
+
+		@Inject
+		private MyAppRouting routing;
+
+		@Inject
+		private DolphinModelManager manager;
+
+		@DolphinCommand(„my-view-save“)
+		public void save(long contextId) {
+			MyModel model = manager.find(MyModel.class, contextId);
+			if(model.getName() == null) {
+				routing.showError(„Kein Name angegeben!“);
+			}
+		}
+	}
+
+In diesem Beispiel wird nach drücken des Save-Button im Server eine Abfrage auf das „name“-Attribut gemacht. Ist dies null wird über das Routing ein Error-Dialog dargestellt. Hierbei wird durch den Aufruf der init(…) Methode der ErrorMessageController Klasse ein neues Error-Message-PM erzeugt was dazu führt, dass der Client drauf reagiert und eine Error-View (z.B. einen modalen Dialog) anzeigt.
