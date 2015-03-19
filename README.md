@@ -226,3 +226,52 @@ Grundsätzlich würde ich vorschlagen, dass der Index auch immer automatisch als
 
 Ich bin einfach mal hergegangen und hab die hier beschriebenen Annotations im Projekt erstellt.
 Was haltet ihr von dem Ansatz?
+
+
+Beispiel für einen serverseitigen Controller
+---------------
+Basierend auf den oberen Beschreibungen könnte ein Controller für einen Dialog auf Serverseite nun wie folgt aussehen:
+
+	@DolphinManaged
+	public class MyViewController {
+
+		@Inject
+		private ServerDolphin dolphin;
+
+		@Inject
+		private DolphinModelManager manager;
+
+		@Inject
+		private MyService myInjectedService;
+
+		@DolphinCommand(„my-view-init“)
+		public void init() {
+			//Wird zum Start des Dialogs aufgerufen. 
+			//Hier wird das PM des Dialogs erstellt was 
+			//im Client dazu führt dass die View erstellt 
+			//und an das hier erzeugte Model gebunden wird
+			MyModel model = new MyModel();
+			model.setName(„example“);
+			manager.manage(model);
+		}
+
+		@DolphinCommand(„my-view-close“)
+		public void close(long contextId) {
+			//Wird aufgerufen und löscht das PM. 
+			//Dies führt im Client dazu dass die View entfernt wird
+			MyModel model = manager.find(MyModel.class, contextId)
+			manager.remove(model);
+		}
+
+		@DolphinCommand(„my-view-save“)
+		public void save(long contextId) {
+			//Wird aufgerufen wenn in der View der 
+			//Save-Button geklickt wird
+			MyModel model = manager.find(MyModel.class, contextId)
+			MyJpaEntity entity = new MyJpaEntity();
+			entity.setName(model.getName);
+			myInjectedService.saveEntity(entity);
+		}
+	}
+
+Im Beispiel gibt es eine Besonderheit die noch nicht definiert wurde: die save(…) und close(…) Methoden erwarten als Übergabe-Parameter die context-ID. Diese dient ja dazu um einen spezifischen Dialog zu definieren und müsste übergeben werden. Dies wäre dann auch eine Besonderheit der Dolphin-Platform. Die ID ist aber auch am Client vorhanden und kann so automatisch von Client-Modul der Dolphin-Platform an den Server übermittelt werden.
