@@ -111,3 +111,8 @@ Theoretisch sollte eine Klasse auf Serverseite nun wie folgt aussehen:
 		@DolphinCommand(„unique-command-id-for-load“)
 		public void load() {…}
 	}
+
+Infos zu Scopes
+---------------
+Da der Server-Teil CDI nutzt muss sich hier auch Gedanken über Scopes gemacht werden. Beim ServerDolphin sollte das kein Problem sein. Der liegt per Definition schon im SessionScope da es auch ohne CDI genau einen ServerDolphin pro Session gibt. Bei den Commands sieht das aber schon anders aus. Der Scope der Command-Klassen ist theoretisch nicht definiert. Allerdings würde ich nicht hergehen und den vom Entwickler frei definieren lassen. Ich denke hier sollten wir einen Scope vorgeben. Am Einfachsten wäre wenn man entweder den SessionScope passend zum Dolphin verwenden würde. In dem Fall würde es pro Benutzer-Sessionen eine Instanz einer Command-Klasse geben. Eine andere Möglichkeit wär auch der Singleton-Scope. Hiermit würde es dann genau eine Instanz über alle Sessions geben. Die COmmand-Klassen sollten ja in der Regel stateless sein, da der Dolphin und alle Services injected werden. Daher sollte ein Singleton Scope möglich sein. Was meint ihr?
+

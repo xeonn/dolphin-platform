@@ -2,3 +2,9 @@
 dolphin-platform.iml
 java-server/target
 java-server-javaee/target
+dolphin-platform-client.iml
+dolphin-platform-core.iml
+dolphin-platform-server.iml
+dolphin-platform-server-javaee.iml
+java-client/target
+java-core/target
