@@ -116,3 +116,110 @@ Infos zu Scopes
 ---------------
 Da der Server-Teil CDI nutzt muss sich hier auch Gedanken über Scopes gemacht werden. Beim ServerDolphin sollte das kein Problem sein. Der liegt per Definition schon im SessionScope da es auch ohne CDI genau einen ServerDolphin pro Session gibt. Bei den Commands sieht das aber schon anders aus. Der Scope der Command-Klassen ist theoretisch nicht definiert. Allerdings würde ich nicht hergehen und den vom Entwickler frei definieren lassen. Ich denke hier sollten wir einen Scope vorgeben. Am Einfachsten wäre wenn man entweder den SessionScope passend zum Dolphin verwenden würde. In dem Fall würde es pro Benutzer-Sessionen eine Instanz einer Command-Klasse geben. Eine andere Möglichkeit wär auch der Singleton-Scope. Hiermit würde es dann genau eine Instanz über alle Sessions geben. Die COmmand-Klassen sollten ja in der Regel stateless sein, da der Dolphin und alle Services injected werden. Daher sollte ein Singleton Scope möglich sein. Was meint ihr?
 
+
+Ein paar Ideen zum Dolphin-OR-Mapping
+---------------
+Im Idealfall arbeitet man in der Dolphin-Platform nicht mehr mit PresentationModel und Attribut sondern direkt mit Java Objekten. Hierfür muss es dann allerdings einen OR-Mapper (oder eher OPM-Mapper) für Dolphin geben. Das ganze sollte im Idealfall an JPA angelehnt sein, da Entwickler sich hiermit bereits auskennen. Die Objekt-Repräsentation eines PresentationModel-Typs könnte dann zum Beispiel wie folgt aussehen:
+
+	@Model(„My-PM-Type“)
+	public class MyDataModel {
+		
+		@Attribute(„my-property-name“)
+		private String name;
+
+		@Attribute(value=„my-property-description“, tag=„my-tag“)
+		private String description;
+
+		@Child
+		private MyCustomMetadataModel metadata;
+
+		@Children
+		private List<MyCustomEntryModel> entries;
+
+		//getter & setter
+	}
+
+Wie bereits vorher erwähnt würde ich zu jedem Presentation-Model ein Context-ID definieren. Dieses Attribut ist also immer da. Daher gibt es in der Java-Klasse auch kein ID-Feld. Eine PM besitzt immer einen definierten Typ und eine Context-ID. Die PM-ID wird hierbei immer automatisch vom der Platform auf Serverseite erstellt. Will man die Id trotzdem haben kann man Problemlos folgendes Field in die Objekt-Klasse hinzufügen:
+
+	@ModelId
+	private long id;
+
+Da Objekte durch den Model-Typ und die Context-ID definiert werden kann es somit 0,1 oder n passende Instanzen geben. Das ist meiner Meinung nach aber ok, da man bei der Entwicklung ja weiß, ob man nun eine Liste oder ein Objekt erwartet. Zum finden der Objekte wird es dann so etwas wie einen EntityManager geben der die benötigten Funktionen liefert:
+
+	MyDataModel model = manager.find(MyDataModel.class, contextId);
+
+Durch das Übergeben der Klasse kann der Manager den PM-Typ ermitteln (Reflection) und kann nun alle MPs von dem Typ finden. Über eine weitere Filterung werden nun die MPs rausgefiltert welche nicht die Context-ID haben. Diese ist immer als Attribut im PM vorhanden. Sollte es am Ende mehr als ein Objekt geben schmeißt der Manager eine Runtime-Exception. Will man eine Liste haben kann man analog folgendes tun:
+	List<MyDataModel> models = manager.findAll(MyDataModel.class, contextId);
+Wie man genau an die Context-ID kommt wird später geklärt und soll hier erst einmal nicht interessieren. Wichtig ist nur, dass sie die aktuelle Gui-Komponente in der das Objekt „lebt“ widerspiegelt. Ist man aber innerhalb des Models an der ContextID oder dem Typ interessiert kann man folgende Felder hinzufügen:
+
+	@ModelType
+	private String type;
+
+	@ContextId
+	private long contextId;
+
+Wenn man nun die Child-Beziehung im Beispiel einmal außen vor lässt (dazu komm ich gleich) würde das passende PM wie folgt aussehen:
+
+	PM(id=unique-long, type=„My-PM-Type“)
+		Attribute(property-name=„my-property-name“)
+		Attribute(property-name=„my-property-description“, tag=„my-tag“)
+		Attribute(property-name=„context-id“)
+
+Bei den Kindbeziehungen würde ich hergehen und immer mit zusätzlichen MPs arbeiten die eine Verknüpfung definieren. Alle diese MPs haben den gleichen Typ (z.B. „object-relation“) und definieren eine Vater-Kind-Beziehung. Ein solches PM könnte nun also wie folgt aussehen:
+
+	PM(id=unique-long, type=„object-relation“)
+		Attribute(property-name=„parent-id“)
+		Attribute(property-name=„child-id“)
+
+Wird nun ein Objekt geladen können einfach alle MPs gesucht werden bei dem das PM des zu ladenden Objektes als Parent eingetragen ist (durch Referenz der PM-id im „parent-id“ Attribut). Wir die @Child Annotation verwendet darf es nur 0 oder 1 passenden Eintrag geben. Ansonsten wird eine Runtime-Exception geworfen. Wird @Children verwendet darf es 0-n Einträge geben. Durch dieses Verfahren werden nun rekursiv die Objekte erstellt.
+Will man Objekte erstellen oder löschen kann hier auch einfach der manager genutzt werden:
+
+	//Erstellen eines neuen Models
+	MyDataModel model = new 	MyDataModel();
+	model.setName(…);
+	manager.manage(model);
+
+ 	//Löschen eines Models
+	manager.remove(model);
+
+So kann man sicherlich relativ viel abbilden, allerdings bietet Dolphin einige zusätzliche Funktionen die hier noch nicht abgedeckt sind. Ein Problem ist sicherlich die Automatische Synchronisation. Gehen wir mal von folgender Code-Zeile aus:
+	
+	model.setName(„new Name“);
+
+Hierdurch wird einfach das String field neu gesetzt, was keine Auswirkungen auf das PM hat. Um dies zu Lösen gibt es verschiedene Möglichkeiten:
+
+Die erste Variante ist eine save() Methode im Manager. Hier muss man nun immer wenn man was im Objekt geändert hat die save Methode aufrufen:
+	
+	model.setName(„new Name“);
+	manager.save(model);
+
+Eine weitere Möglichkeit wären CDI Interceptors die aufgerufen werden sobald eine Command-Methode ausgeführt wurde. Diese gehen nun her und überprüfen die Modelle auf Änderungen. Alle Änderungen werden dann automatisch in die PMs übernommen. So muss der Entwickler sich nicht selber um die synchronisation kümmern.
+
+Weitere Open Dolphin Funktion die durch dieses Model nicht unterstützt werden:
+- Property-Change-Support
+- Dirty Values
+- Nutzung von Qualifier
+
+Diese Funktionen kann man mit der beschriebenen Methode nicht so einfach Umsätzen. Will man dies Nutzen würde ich die Nutzung einer Trapper-Klasse vorschlagen. Diese Wrapper-Klasse bietet alle die definierten Funktion und kann in Model-Klassen für Attribute fields genutzt werden. Möchte man das ganze z.B. für das „description“ Field im Beispiel nutzen so würde dessen Definition nun wie folgt aussehen:
+
+	@Attribute(value=„my-property-description“, tag=„my-tag“)
+	private ModelAttribute<String> description;
+
+In diesem Fall wird das Feld beim Erzeugen nicht einfach mit einem String gefüllt sondern mit einer ModelAttribute Instanz die als Wrapper dient. Diese Klasse stellt nun alle benötigten Funktionen zur Verfügung:
+
+	MyDataModel model = manager.find(MyDataModel.class, contextId);
+	model.getDescription().setValue(„new description“);
+	String desc = model.getDescription().getValue();
+	model.getDescription().addPropertyChangeListener(…)
+	model.getDescription().reset();
+
+Hier könnte man nun auch überlegen, ob man anstelle einer neuen Klasse direkt mit der Attribute Klasse aus Open Dolphin arbeitet. Möglicherweise beinhaltet diese aber Methoden die man hier nicht zur Verfügung stellen will. In dem Fall müsste man schauen, ob man das Interface in Dolphin aufteilt.
+Zum Arbeiten mit Listen muss es noch eine Erweiterung geben. Oft will man sicherlich die Reihenfolge der Elemente in einer Liste definieren. Hierfür benötigen die Instanzen dann einen Index. Auch hier würde ich hergehen und eine Annotation definieren:
+
+	@Index
+	private long index;
+
+Grundsätzlich würde ich vorschlagen, dass der Index auch immer automatisch als Attribut angelegt und gemanaged wird (wie die Context-ID). Bei einfachen Objekten steht dann halt immer eine 0 drin.
+
+Ich bin einfach mal hergegangen und hab die hier beschriebenen Annotations im Projekt erstellt.
+Was haltet ihr von dem Ansatz?
