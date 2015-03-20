@@ -365,6 +365,7 @@ Durch dieses Vorgehen kann man jederzeit PMs einer spezifischen View zuordnen. A
 ![Beispiel für Widgets](readme-data/widget.png "Beispiel für Widgets")
 
 Im gezeigten Beispiel ist das Widget eine ComboBox zur Länderauswahl und die MPs des Widgets definieren die Länder die ausgewählt werden können sowie das aktuell ausgewählte Land. Auch in diesem Fall müssen die Models wieder den Context des Widgets kennen zu dem sie gehören. Wäre dies nicht der Fall würden beide Widgets immer das gleiche anzeigen und sobald man in ComboBox A etwas auswählt würde das gleiche auch in ComboBox B angezeigt (was bei einer Übersetzungs-App wenig Sinn macht). In diesem Fall ist das Widget die View welche über eine Context-ID verfügt. In den PMs ist dann die jeweilige Context-ID definiert.
+
 Es gibt natürlich auch andere Wege das ganze zu lösen. Man kann  z.B. auch hergehen und die Context-ID als Bestandteil des Types der MPs definieren. In den gezeigten Beispielen hatten die PMs immer alle den gleichen Typ. Hier könnte man nun aber mit einem Prefix oder Suffix arbeiten in dem die Context-ID definiert wird:
 
 ![Context-Bestimmung über den Type](readme-data/context-in-type.png "Context-Bestimmung über den Type")
