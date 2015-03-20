@@ -329,34 +329,44 @@ Definition und Nutzung des Context
 ---------------
 In den bisherigen Beschreibungen bin ich immer wieder auf den Context bzw. die Context-ID eingegangen ohne genau zu beschreiben was das überhaupt ist.
 In der Dolphin Platform wird ja ein Model (basierend auf Open Dolphin) zwischen Server und Client synchronisiert. Dies bedeutet, dass sowohl die View im Client als auch der Controller  im Server das gleiche Model benutzten:
+
 ![Dolphin Model Sync](readme-data/basic.png "Dolphin Model Sync")
 
 Stellen wir uns nun einmal vor, dass wir eine Desktop Anwendung mit einem zentralen TabPane haben. In diesem TabPane können (ähnlich wie beim Browser, Eclipse, etc.) beliebig neue Tabs hinzugefügt werden. Diese Tabs beinhalten dann einen Dialog / eine View der Anwendung:
+
 ![Tabs](readme-data/tabs.png "Tabs")
 
 Jeder der Tabs ist somit aus Dolphin Sicht eine View und wird auch ein PresentationModel besitzen. Das PM wird ja im Server erzeugt und darauf hin fügt der Client den tab hinzu und erstellt das Binding zum PM. Stellen wir uns nun einmal vor, dass ein Ähnlicher (oder sogar der gleiche) Dialog 2x im geöffnet wird. Somit gibt es 2 Tabs in dem zum Beispiel jeweils eine Liste des gleichen Datentyps angezeigt wird.
+
 ![2 gleiche Ansichten](readme-data/2-views.png "2 gleiche Ansichten")
 
 In diesem Fall werden nun pro Dialog im Server Daten / Presentation Models für die Listenansichten der beiden Dialoge erstellt. Jedes dieser Models muss nun einem Dialog bzw. einer der Listen in den Dialogen zugeordnet werden.
+
 ![Zuordnung der Daten](readme-data/list-data.png "Zuordnung der Daten")
 
 Um definieren zu können wie die Modelle den Views zugeordnet werden schauen wir uns einmal an wie ein Presentation Model definiert ist:
+
 ![Definition eines Presentation Model](readme-data/pm-def.png "Definition eines Presentation Model")
 
 Jedes Presentation Model in Open Dolphin besitzt eine eindeutige ID. Diese ID kann programmatisch vergeben werden oder wird automatisch von Open Dolphin gesetzt. Wichtig ist hierbei, dass die ID innerhalb einer Dolphin-Session eindeutig ist. Zusätzlich gibt es einen Typ. Dieser Typ kann programmatisch gesetzt werden und Open Dolphin bietet viele verschiedene Funktionen um z.B. nach Models eines Typs zu suchen oder auf die Erstellung von neuen Presentation Models eines bestimmten Typs zu reagieren. Die ID hilft uns bei unserem Problem nicht wirklich weiter, da wir im Client ja alle Daten von einem Bestimmten Typ (der Typ für die Daten der Listendarstellung) suchen. Hier ist also der PM Typ das wichtige Kriterium. Stellen wir uns also vor, dass wir verschiedene PMs mit dem passenden Typ besitzen. Alle PMs die diesen typ bestimmten können leicht gefunden werden.
+
 ![Suche eines Presentation Model Typs](readme-data/all-pms.png "Suche eines Presentation Model Typs")
 
 Wie in der Grafik angezeigt, gibt es in einer Dolphin Session natürlich noch deutlich mehr PMs. Allerdings können einfach alle mit einem spezifischem Typ (in diesem Fall „my-list“) gefunden werden. Jetzt kommt es aber zu einem Problem: Es ist nicht definiert ob die einzelnen Modelle nun zu View A oder zu View B gehören. Würde man das vernachlässigen würden einfach alle Datensätze in beiden Dialogs angezeigt. Das ist ja definitiv nicht das was wir wollen.
+
 ![Kein Context vorhanden](readme-data/no-context.png "Kein Context vorhanden")
 
 Im Grunde bedeutet dies, dass die PMs nicht den Context ihrer View kennen. Wären die Modelle einer spezifischen View / dem Context einer View zugeordnet, so könnte man einfach erkennen zu welcher Liste welches PM gehört. Aus diesem Grund ist die Idee der Context-ID entstanden. Hierbei hat jede View einen eigenen Context. Dieser Context spiegelt sich im Model wieder, so dass man jederzeit einfach erkennen kann zu welcher View ein Model gehört. Hierbei ist die Context-ID der View als Attribut im Model definiert:
+
 ![Beispiel des Context](readme-data/with-context.png "Beispiel des Context")
 
 Durch dieses Vorgehen kann man jederzeit PMs einer spezifischen View zuordnen. Als Beispiel würde hier eine klassische Tab-basierte Anwendung gewählt. Das ganze ist aber auch in anderen Szenarien sehr sinnvoll. Bei der Baloise gab es z.B. keine Tabs. Allerdings gab es hier Dolphin basierte Widgets. Diese Widgets ware quasi eine kleine View die in andere Views beliebig integriert werden konnte. Ein Beispiel ist z.B. ein Benutzer-Suchfeld mit Autovervollständigung. Dieses Widget definiert einen eigenen PM Typ und besitzt auch einen eigenen Controller mit definierten Dolphin-Commands im Server. Fängt man an zu tippen wird durch die Commands automatisch eine Abfrage an die Benutzer-Stammdaten durchgeführt und die Ergebnisse als PMs an den Client geschickt um dann in einem Popup zur Autovervollständigung angezeigt zu werden. Nun kann man sich z.B. vorstellen, dass diese Komponenten 2x in einer View vorkommt:
+
 ![Beispiel für Widgets](readme-data/widget.png "Beispiel für Widgets")
 
 Im gezeigten Beispiel ist das Widget eine ComboBox zur Länderauswahl und die MPs des Widgets definieren die Länder die ausgewählt werden können sowie das aktuell ausgewählte Land. Auch in diesem Fall müssen die Models wieder den Context des Widgets kennen zu dem sie gehören. Wäre dies nicht der Fall würden beide Widgets immer das gleiche anzeigen und sobald man in ComboBox A etwas auswählt würde das gleiche auch in ComboBox B angezeigt (was bei einer Übersetzungs-App wenig Sinn macht). In diesem Fall ist das Widget die View welche über eine Context-ID verfügt. In den PMs ist dann die jeweilige Context-ID definiert.
 Es gibt natürlich auch andere Wege das ganze zu lösen. Man kann  z.B. auch hergehen und die Context-ID als Bestandteil des Types der MPs definieren. In den gezeigten Beispielen hatten die PMs immer alle den gleichen Typ. Hier könnte man nun aber mit einem Prefix oder Suffix arbeiten in dem die Context-ID definiert wird:
+
 ![Context-Bestimmung über den Type](readme-data/context-in-type.png "Context-Bestimmung über den Type")
 
 Hierbei muss man dann Hilfsmethoden haben um die String-Konkatenationen durchzuführen und nach einer Typ-Contest-Kombination zu suchen. Das vorgehen hat sowohl einen Vorteil als auch einen Nachteil:
