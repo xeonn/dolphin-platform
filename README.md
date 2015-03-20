@@ -323,3 +323,10 @@ Diese Routing Klasse kann nun einfach in den DolphinController Klassen injected 
 	}
 
 In diesem Beispiel wird nach drücken des Save-Button im Server eine Abfrage auf das „name“-Attribut gemacht. Ist dies null wird über das Routing ein Error-Dialog dargestellt. Hierbei wird durch den Aufruf der init(…) Methode der ErrorMessageController Klasse ein neues Error-Message-PM erzeugt was dazu führt, dass der Client drauf reagiert und eine Error-View (z.B. einen modalen Dialog) anzeigt.
+
+
+Definition und Nutzung des Context
+---------------
+In den bisherigen Beschreibungen bin ich immer wieder auf den Context bzw. die Context-ID eingegangen ohne genau zu beschreiben was das überhaupt ist.
+In der Dolphin Platform wird ja ein Model (basierend auf Open Dolphin) zwischen Server und Client synchronisiert. Dies bedeutet, dass sowohl die View im Client als auch der Controller  im Server das gleiche Model benutzten.
+![Alt Dolphin Model Sync](readme-data/basic.png "Dolphin Model Sync")
