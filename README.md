@@ -431,7 +431,7 @@ Das PM wird im Property "data" übergeben. Die Section wird auf ein &lt;fieldset
 
 ### Das Mapping
 
-Das Ziel meines Mappingmechanismus ist so viel wie möglich der vorhandenen OpenDolphin Funktionalität zu nutzen.
+Das Ziel meines Mappingmechanismus ist so viel wie möglich der vorhandenen OpenDolphin Funktionalität (IDs, Typen, Qualifier) zu nutzen.
 
 Jeder Knoten des Baums wird auf ein OpenDolphin-PresentationModel abgebildet und jede Property eines Knotens auf ein Attribut im Dolphin-PresentationModel. Das Datenmodell, das dem Anwender zur Verfügung gestellt wird, arbeitet mit echten Referenzen, sprich ein Knoten des Baums verweist direkt auf andere Knoten. Intern für die Datenübertragung werden diese Referenzen auf die Dolphin-IDs gemappt. Wenn der Benutzer also z.B. eine Referenz im Datenmodel des Servers setzt, holen wir uns die Dolphin-ID des referenzierten Objekts und setzen sie im entsprechenden Attribut des Dolphin-PresentationModels. Auf der anderen Seite suchen wir das referenzierte Dolphin-PresentationModel und leiten daraus die benötigte Referenz im Datenmodell des Clients ab. Die Suche ist effizient, weil die Dolphin-ID im ClientModelStore indiziert ist.
 
@@ -448,3 +448,23 @@ In meinem derzeitigen Versuch will ich die Daten daher aus den Instanzen rauszie
 Sobald die erste Instanz einer bis dato unbekannten Klasse über OpenDolphin synchronisiert werden soll, wird zunächst die Klasseninformation herausgezogen und an die andere Seite geschickt. Dort wird sie ausgelesen und je nach Umgebung unterschiedlich verfahren. In einer Umgebung mit statischer Typisierung sollten die Klasseninformationen bereits bekannt sein und daher sollten keine weiteren Schritte nötig sein. (Die Überprüfung, ob Client und Server mit der gleichen Version des Kommunikationsprotokolls arbeiten sollte bereits beim Login stattgefunden haben.) In einer Umgebung mit dynamischer Typisierung werden die Klasseninformationen gespeichert und über die ID indiziert zur Verfügung gestellt.
 
 Anschliessend wird die eigentliche Instanz gesendet, wobei der Typ des Dolphin-PresentationModels auf die ID der Klasseninformation gesetzt wird. Auf der anderen Seite werden die Klasseninformationen anhand des Typs ermittelt und zur "Deserialisierung" der Daten verwendet.
+
+### Das Mapping der Struktur
+
+Die Beziehung zwischen einem Knoten und seinen Kindknoten kann auf zweierlei Art erfolgen. Zum Einen kann es benannte Kindknoten geben. Im obigen Beispiel ist dies für die Kinder des Root Node der Fall. Dies ist der triviale Fall, die Kinder werden direkt vom Root Node über die entsprechenden Attribute referenziert.
+
+Spannender ist der Fall von Kindknoten, die in keiner besonderen Beziehung stehen, sondern einfach in einer Liste gespeichert sind. Im ersten Ansatz will ich diese Beziehung mit einer naiven Implementierung umsetzen, kann mir aber gut vorstellen, dass dies nicht ausreichen sein wird.
+
+Da wir es mit einer klassischen 1:n Beziehung zu tun haben, werden die Referenzen nicht im Parent Node gespeichert, sondern im Child Node. Dazu führen wir ein synthetisches Attribut "parent" in allen Dolphin-PresentationModels ein, in dem die Referenz auf den ParentNode  gespeichert wird.
+
+Wenn wir eine Liste von Child Nodes synchronisieren wollen, setzen wir die entsprechenden Parent-Attribute der Child Nodes in der Reihenfolge, in der die Nodes in der Liste stehen. Wenn wir über eine Änderung des Parent Nodes informiert werden, suchen wir den Parent Node und fügen den Child Node an das Ende der Liste an. Welche Liste dies ist, kann auf unterschiedliche Weise ermittelt werden. Wir können fordern, dass es pro Knoten nur eine solche Liste mit einem festen Namen geben darf, wir können den Namen offen lassen und in der Klasseninformation des Parent Nodes speichern oder wir können mehrere Listen pro Knoten zulassen und den Namen der Liste gemeinsam mit der ID des Parent Node im Attribut Parent speichern. Ich bevorzuge letztere Methode, da dies keine Einschränkung für den Anwender bedeuten würde.
+
+Nachteil dieser Methode ist, dass wir die Reihenfolge der Knoten nur über die Reihenfolge mit der Änderung am Parent Node gemacht werden definieren können. Falls wir also einen Knoten in der Mitte einfügen wollen, müssen zunächst alle Knoten dahinter aus der Liste entfernt werden (parent wird auf null gesetzt) und anschliessend werden alle wieder hinzugefügt. Werden vom Benutzer mehrere Knoten hinzugefügt, müssen wir diesen Vorgang jedesmal wiederholen, weil wir nicht wissen ob und wie viele Knoten noch hinzugefügt werden. (Da diese Änderungen in schneller Folge kommen, kann man eventuell gut mit Dolphins Funktionalität zur Reduzierung von Commands optimieren. Ich kenne diese Funktionaltität allerdings nicht.)
+
+Ich erwarte, dass langfristig die naive Implementierung nicht ausreichen wird und wir eine Implementierung benötigen, die auch mit langen Listen gut klarkommt. Allerdings denke ich auch, dass wir uns damit Zeit lassen können, weil Listen in User Interfaces oft nicht lang sind und auch das Einfügen von Elementen in eine bestehende Liste eher selten benötigt wird.
+
+### Shortcomings
+
+Die bisher besprochene Lösung erlaubt nur eine Baumstruktur. Dies ist für die meisten Fälle ausreichend. Es kann sich aber herausstellen, dass in Spezialfällen die Baumstruktur zu rigide ist und ein allgemeiner Graph benötigt wird. Eine potentielle Lösung wäre alle Knoten in diesem Graph nebeneinander im Baum einzufügen und die Beziehungen im Graph über Relationsobjekte abzubilden, ähnlich wie es Hendrik oben bereits geschrieben hat.
+
+Durch die Baumstruktur kann es ebenfalls passieren, dass die gleichen Daten mehrfach übertragen werden müssen. Das ist aber meines Erachtens nicht so dramatisch, wie es sich im ersten Moment anhören mag, weil wir ja nur die Daten übertragen, die angezeigt werden. Also beispielsweise in einem Master-Detail-View auf Personen, übertragen wir nicht eine Liste sämtlicher Personendaten, sondern nur Name und Vorname, sowie die Details einer Person. Mit anderen Worten nur der Name und Vorname der im Detail-View angezeigten Person wird doppelt übertragen. Diese Annahme kann sich aber als falsch erweisen und wir müssten die Baumstruktur durch einen Graphen ersetzen.
