@@ -468,3 +468,15 @@ Ich erwarte, dass langfristig die naive Implementierung nicht ausreichen wird un
 Die bisher besprochene Lösung erlaubt nur eine Baumstruktur. Dies ist für die meisten Fälle ausreichend. Es kann sich aber herausstellen, dass in Spezialfällen die Baumstruktur zu rigide ist und ein allgemeiner Graph benötigt wird. Eine potentielle Lösung wäre alle Knoten in diesem Graph nebeneinander im Baum einzufügen und die Beziehungen im Graph über Relationsobjekte abzubilden, ähnlich wie es Hendrik oben bereits geschrieben hat.
 
 Durch die Baumstruktur kann es ebenfalls passieren, dass die gleichen Daten mehrfach übertragen werden müssen. Das ist aber meines Erachtens nicht so dramatisch, wie es sich im ersten Moment anhören mag, weil wir ja nur die Daten übertragen, die angezeigt werden. Also beispielsweise in einem Master-Detail-View auf Personen, übertragen wir nicht eine Liste sämtlicher Personendaten, sondern nur Name und Vorname, sowie die Details einer Person. Mit anderen Worten nur der Name und Vorname der im Detail-View angezeigten Person wird doppelt übertragen. Diese Annahme kann sich aber als falsch erweisen und wir müssten die Baumstruktur durch einen Graphen ersetzen.
+
+Bemerkungen von Dierk:
+---------------
+Bemerkungen: CommandHandler liegen im Moment im Session scope. Sie dürfen Session-spezifischen Status halten, z.B. ihre queues auf den event bus. Es wird von den OD Anwendern aber für alle Arten von Status genutzt und OD garantiert deshalb den session scope.
+
+Generell ist die Vorstellung dass das UI ein Abbild der Datenbank sei. diskussionswürdig. Sprecht Dieter mal darauf an.. (Tipp: gleich in Deckung gehen). 
+
+Ich verstehe nicht, welchen Vorteil Objektmodelle gegenüber Konstanten haben, wenn die Konstanten dann wieder in den Annotationen auftauchen. Falls man später doch wieder rein generisch darauf zugreift hat man sich das Leben nur unnötig schwer gemacht.
+
+ORMs: die müssen hinter einer Technologie-unabhängigen Service-Schnittstelle verborgen sein.
+
+Wir haben ja die Zieldiskussion vertagt und es ist gut mit diesen konkreten und innovativen Ideen anzufangen. Wir müssen aber schauen, dass wir echte Probleme lösen und keine antizipierten. Wir brauchen m.E. einen Katalog von Anwendungsfällen (aka Qualitätsszenarien): Formular, Navigation, Master-Detail, Wizard, Suche, etc. auf der Server Seite list-create-show-edit-search actions, und unterschiedliche Relationen im Datenmodell 1:n, m:n, m:1 plus filtering, aggregation, composition, projection, grouping, sorting. Beim Katalog sollten wir zuerst die konkreten Fälle von KAPOZH und ICOS abdecken.
