@@ -372,4 +372,79 @@ Es gibt natürlich auch andere Wege das ganze zu lösen. Man kann  z.B. auch her
 
 Hierbei muss man dann Hilfsmethoden haben um die String-Konkatenationen durchzuführen und nach einer Typ-Contest-Kombination zu suchen. Das vorgehen hat sowohl einen Vorteil als auch einen Nachteil:
 - Vorteil: Der Typ eines MPs kann nach der Erstellung nicht mehr geändert werden. Hierdurch ist es nicht möglich ein PM plötzlich einem falschen Context zuzuordnen indem man programmatisch den Inhalt des Context-Attributs ändert
-- Nachteil: Hier wird mit String-Konkatenationen gearbeitet 
+- Nachteil: Hier wird mit String-Konkatenationen gearbeitet
+
+
+Ein Alternativer Entwurf des Dolphin-OR Mapping (Gastbeitrag von Michael) :)
+---------------
+Parallel zu Hendriks Überlegungen habe ich ebenfalls mit einem Dolphin-OR Mapping experimentiert und bin zu einem gänzlich anderen Ansatz gekommen, den ich hier kurz vorstellen und zur Diskussion stellen will.
+
+### PresentationModel
+
+Das PresentationModel ist in meinem Ansatz in einer Baumstruktur organisiert, die den View 1:1 widerspiegelt. Um beispielsweise eine Master-Detail-View anzuzeigen, gibt es ein Root-Element, dass zwei Kinder jeweils für Master- und Detail-View enthält. Master- und Detail-View enthalten wiederum andere Komponenten, für die Subtrees im PresentationModel existieren. Im folgenden ist ein Ausschnitt eines solchen PMs in JSON notiert:
+
+    pm = {
+        master: {
+            elements: [...]
+        },
+        detail: {
+            sections: [
+                {
+                    label: 'Base Data',
+                    elements: [
+                        {
+                            label: 'Last Name',
+                            type: 'String',
+                            ...
+                        }
+                    ]
+                },
+                ...
+            ]
+        }
+    }
+
+Sämtliche Daten stehen bei dieser Vorgehensweise bereits innerhalb ihres Kontext, es ist also nicht nötig eine Context-ID oder ähnliche Mechanismen hinzuzufügen.
+
+### Erzeugung der View
+
+Die eigentliche View wird mit dem Projector-Pattern erzeugt (oder besser gesagt meinem derzeitigen lückenhaften Verständnis des Projector-Patterns). ;)
+
+Der Projector ist hierarchisch aufgebaut. Dem Root-Projector wird der Root-Node des PMs übergeben. Dieser erzeugt beispielsweise eine Splitpane und ruft andere Projektoren mit den Child-Nodes des PMs auf, die den Inhalt des linken und des rechten Panels füllen.
+
+Die Umsetzung ist verblüffend einfach und in den meisten Fällen sogar vollständig deklarativ möglich, vorausgesetzt der Template Mechanismus des UI Toolkits ist mächtig genug (wie es etwa bei Angular und Polymer der Fall ist). Unten ist ein Projector meines Prototypen zu sehen, der eine Section des obigen Models mapped.
+
+    <polymer-element name="icos-section" attributes="data" noscript>
+        <template>
+            <fieldset>
+                <legend>
+                    {{data.label}}
+                </legend>
+                <template repeat="{{element in data.elements}}">
+                    <icos-element data="{{element}}"></icos-element>
+                </template>
+            </fieldset>
+        </template>
+    </polymer-element>
+
+Das PM wird im Property "data" übergeben. Die Section wird auf ein &lt;fieldset&gt; gemapped, dass über ein &lt;label&gt;-element beschriftet ist. Ein &lt;template&gt;-element erlaubt mir in Polymer rudimentäre Logik umzusetzen. In diesem Fall wird über die Elemente iteriert und für jedes Element eine Web Component &lt;icos-element&gt; eingefügt, der die benötigten Daten übergeben werden.
+
+### Das Mapping
+
+Das Ziel meines Mappingmechanismus ist so viel wie möglich der vorhandenen OpenDolphin Funktionalität zu nutzen.
+
+Jeder Knoten des Baums wird auf ein OpenDolphin-PresentationModel abgebildet und jede Property eines Knotens auf ein Attribut im Dolphin-PresentationModel. Das Datenmodell, das dem Anwender zur Verfügung gestellt wird, arbeitet mit echten Referenzen, sprich ein Knoten des Baums verweist direkt auf andere Knoten. Intern für die Datenübertragung werden diese Referenzen auf die Dolphin-IDs gemappt. Wenn der Benutzer also z.B. eine Referenz im Datenmodel des Servers setzt, holen wir uns die Dolphin-ID des referenzierten Objekts und setzen sie im entsprechenden Attribut des Dolphin-PresentationModels. Auf der anderen Seite suchen wir das referenzierte Dolphin-PresentationModel und leiten daraus die benötigte Referenz im Datenmodell des Clients ab. Die Suche ist effizient, weil die Dolphin-ID im ClientModelStore indiziert ist.
+
+Durch die Baumstruktur kann es immer wieder vorkommen, dass die gleichen Daten an verschiedenen Stellen im Baum auftauchen. Um eine schnelle Synchronisation zu gewährleisten, wird die Qualifier-Funktionalität von OpenDolphin genutzt.
+
+Attribute können verschiedene Typen haben. Definitiv werden wir die primitiven Datentypen und Referenzen auf andere Knoten des Baums haben. Zusätzlich brauchen wir vielleicht auch noch einfache Datentypen, wie Date, und Enums - das wird sich später zeigen.
+
+Um den Typen und damit die passenden "Serialisierungs- und Deserialisierungstechnik" auszuwählen, ist der Wert des Attributs nicht mehr ausreichend. Beispielsweise sind Dolpin-IDs Strings und können daher leicht mit Strings als primitiven Datentypen verwechselt werden. Es ist daher notwendig diese Metainformation, sozusagen die Klasseninformation der Dolphin-PresentationModels, zwischen Client und Server auszutauschen.
+
+Im ersten Ansatz habe ich diese Metainformation direkt bei den Attributen mit dem Tag VALUE_TYPE gespeichert. Das funktioniert, ist aber meiner Meinung nicht ideal. Den Typen zu jedem Attribut zu speichern macht in einer hochdymamisch Umgebung Sinn, also wenn sich z.B. alle Dolphin-PresentationModels potentiell unterscheiden und sich ggf. auch ändern können. Aber wir arbeiten mit Klassen, d.h. viele Dolphin-PresentationModels haben die gleiche Struktur und sie ändert sich nicht.
+
+In meinem derzeitigen Versuch will ich die Daten daher aus den Instanzen rausziehen und separat zwischen Client und Server austauschen. Dazu erzeuge ich einen neuen "synthetischen" Dolphin-PresentationModel-Typ, der keine Entsprechung in der View enthält, sondern nur zum Austausch der Klasseninformation dient. Alle Instanzen dieses neuen synthetischen PresentationModel-Typs haben den gleichen OpenDolphin-Typ und können somit leicht identifiziert werden. Die Klasseninformation besteht aus einer ID (derzeit dem vollständigen Java-Klassennamen) und einer Liste von Attributnamen und -typen.
+
+Sobald die erste Instanz einer bis dato unbekannten Klasse über OpenDolphin synchronisiert werden soll, wird zunächst die Klasseninformation herausgezogen und an die andere Seite geschickt. Dort wird sie ausgelesen und je nach Umgebung unterschiedlich verfahren. In einer Umgebung mit statischer Typisierung sollten die Klasseninformationen bereits bekannt sein und daher sollten keine weiteren Schritte nötig sein. (Die Überprüfung, ob Client und Server mit der gleichen Version des Kommunikationsprotokolls arbeiten sollte bereits beim Login stattgefunden haben.) In einer Umgebung mit dynamischer Typisierung werden die Klasseninformationen gespeichert und über die ID indiziert zur Verfügung gestellt.
+
+Anschliessend wird die eigentliche Instanz gesendet, wobei der Typ des Dolphin-PresentationModels auf die ID der Klasseninformation gesetzt wird. Auf der anderen Seite werden die Klasseninformationen anhand des Typs ermittelt und zur "Deserialisierung" der Daten verwendet.
