@@ -9,4 +9,5 @@ public interface Property<T> {
     void addValueListener(ValueChangeListener<? super T> listener);
 
     void removeValueListener(ValueChangeListener<? super T> listener);
+
 }

@@ -13,8 +13,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
-public @interface DolphinModel {
+public @interface DolphinBean {
 
-    String value();
+    String value() default "";
 
 }

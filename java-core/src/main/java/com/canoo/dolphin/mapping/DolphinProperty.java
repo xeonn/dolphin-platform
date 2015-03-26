@@ -17,6 +17,4 @@ public @interface DolphinProperty {
 
     String value() default "";
 
-    String tag() default "";
-
 }

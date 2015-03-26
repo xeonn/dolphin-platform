@@ -1,4 +1,6 @@
-package com.canoo.dolphin.mapping;
+package com.canoo.dolphin.mapping.impl;
+
+import com.canoo.dolphin.mapping.ValueChangeListener;
 
 /**
  * Created by hendrikebbers on 26.03.15.

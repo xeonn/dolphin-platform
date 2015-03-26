@@ -1,6 +1,5 @@
 package com.canoo.dolphin.mapping.impl;
 
-import com.canoo.dolphin.mapping.Observable;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.mapping.ValueChangeListener;
 import org.opendolphin.core.Dolphin;
@@ -23,7 +22,15 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     public void set(T value) {
-        valueObservable.setValue(value);
+        if(value == null) {
+            valueObservable.setValue(null);
+            return;
+        }
+        if(DolphinUtils.isBasicType(value.getClass())) {
+            valueObservable.setValue(value);
+        } else {
+            //TODO
+        }
     }
 
     public T get() {

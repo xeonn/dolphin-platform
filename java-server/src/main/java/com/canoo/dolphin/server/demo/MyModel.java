@@ -3,7 +3,7 @@ package com.canoo.dolphin.server.demo;
 import com.canoo.dolphin.mapping.*;
 
 
-@DolphinModel("My-Type")
+@DolphinBean("My-Type")
 public class MyModel {
 
     @DolphinProperty

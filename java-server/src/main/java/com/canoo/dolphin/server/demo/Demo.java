@@ -10,8 +10,6 @@ public class Demo {
 
     void bla() {
 
-        ModelManager m = null;
-
         MyModel model = null;
 
         model.getName().addValueListener(new ValueChangeListener<String>() {

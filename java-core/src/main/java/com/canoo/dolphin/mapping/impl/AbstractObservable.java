@@ -1,6 +1,5 @@
 package com.canoo.dolphin.mapping.impl;
 
-import com.canoo.dolphin.mapping.Observable;
 import com.canoo.dolphin.mapping.ValueChangeEvent;
 import com.canoo.dolphin.mapping.ValueChangeListener;
 
