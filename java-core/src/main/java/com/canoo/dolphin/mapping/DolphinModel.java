@@ -12,6 +12,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Documented
 @Retention(RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ModelType {
+@Target(ElementType.TYPE)
+public @interface DolphinModel {
+
+    String value();
+
 }

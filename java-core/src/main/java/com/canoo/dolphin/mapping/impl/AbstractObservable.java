@@ -12,23 +12,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class AbstractObservable<T> implements Observable<T> {
 
-    private List<ValueChangeListener<Observable<T>, T>> listeners;
+    private List<ValueChangeListener<? super T>> listeners;
 
     public AbstractObservable() {
         listeners = new CopyOnWriteArrayList<>();
     }
 
-    public void addValueListener(ValueChangeListener<Observable<T>, T> listener) {
+    public void addValueListener(ValueChangeListener<? super T> listener) {
         listeners.add(listener);
     }
 
-    public void removeValueListener(ValueChangeListener<Observable<T>, T> listener) {
+    public void removeValueListener(ValueChangeListener<? super T> listener) {
         listeners.remove(listener);
     }
 
     protected void firePropertyChanged(T oldValue, T newValue) {
-        for(ValueChangeListener<Observable<T>, T> listener : listeners) {
-            listener.valueChanged(new ValueChangeEvent<Observable<T>, T>(this,
+        for(ValueChangeListener<? super T> listener : listeners) {
+            listener.valueChanged(new ValueChangeEvent<T>(this,
                     oldValue, newValue));
         }
     }

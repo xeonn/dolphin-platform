@@ -5,9 +5,9 @@ package com.canoo.dolphin.mapping;
  */
 public interface Observable<T> {
 
-    void addValueListener(ValueChangeListener<Observable<T>, T> listener);
+    void addValueListener(ValueChangeListener<? super T> listener);
 
-    void removeValueListener(ValueChangeListener<Observable<T>, T> listener);
+    void removeValueListener(ValueChangeListener<? super T> listener);
 
     T getValue();
 

@@ -6,8 +6,8 @@ import java.util.EventListener;
 /**
  * Created by hendrikebbers on 23.03.15.
  */
-public interface ValueChangeListener<S, T> extends EventListener {
+public interface ValueChangeListener<T> extends EventListener {
 
-    void valueChanged(ValueChangeEvent<S, T> evt);
+    void valueChanged(ValueChangeEvent<? extends T> evt);
 
 }

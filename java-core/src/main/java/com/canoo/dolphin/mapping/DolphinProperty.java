@@ -13,5 +13,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ModelId {
+public @interface DolphinProperty {
+
+    String value() default "";
+
+    String tag() default "";
+
 }

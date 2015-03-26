@@ -1,22 +1,21 @@
 package com.canoo.dolphin.server.demo;
 
-import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.mapping.Attribute;
-import com.canoo.dolphin.mapping.Model;
+import com.canoo.dolphin.mapping.*;
 
-@Model("My-Type")
+
+@DolphinModel("My-Type")
 public class MyModel {
 
-    @Attribute
+    @DolphinProperty
     private Property<String> DialogHeader;
 
-    @Attribute
     private Property<String> Name;
 
-    @Attribute
-    private Property<String> detail1;
+    public Property<String> getDialogHeader() {
+        return DialogHeader;
+    }
 
-    @Attribute
-    private Property<String> detail2;
-
+    public Property<String> getName() {
+        return Name;
+    }
 }
