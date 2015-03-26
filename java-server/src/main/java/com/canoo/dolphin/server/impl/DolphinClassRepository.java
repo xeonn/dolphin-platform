@@ -2,9 +2,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.mapping.impl.DolphinUtils;
 import com.canoo.dolphin.server.PresentationModelBuilder;
-import com.canoo.dolphin.server.util.DolphinServerUtils;
 import org.opendolphin.core.server.ServerDolphin;
 
 import java.lang.reflect.Field;

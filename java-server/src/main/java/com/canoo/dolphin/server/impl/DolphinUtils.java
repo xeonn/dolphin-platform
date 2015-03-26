@@ -1,4 +1,4 @@
-package com.canoo.dolphin.mapping.impl;
+package com.canoo.dolphin.server.impl;
 
 import java.lang.reflect.Field;
 import java.security.AccessController;
