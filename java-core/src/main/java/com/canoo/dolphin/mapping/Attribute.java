@@ -1,4 +1,4 @@
-package com.canoo.dolphin.server.model;
+package com.canoo.dolphin.mapping;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,6 +13,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Child {
+public @interface Attribute {
+
+    String value() default "";
+
+    String tag() default "";
 
 }

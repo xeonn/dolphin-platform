@@ -1,8 +1,8 @@
 package com.canoo.dolphin.server.demo;
 
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.model.Attribute;
-import com.canoo.dolphin.server.model.Model;
+import com.canoo.dolphin.mapping.Attribute;
+import com.canoo.dolphin.mapping.Model;
 
 @Model("My-Type")
 public class MyModel {
