@@ -15,8 +15,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(ElementType.FIELD)
 public @interface Attribute {
 
-    String value();
+    String value() default "";
 
-    String tag();
+    String tag() default "";
 
 }
