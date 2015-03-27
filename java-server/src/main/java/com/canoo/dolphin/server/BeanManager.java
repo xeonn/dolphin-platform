@@ -7,6 +7,7 @@ import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.PropertyImpl;
 import com.canoo.dolphin.server.impl.DolphinClassRepository;
 import org.opendolphin.core.Attribute;
+import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -14,20 +15,34 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by hendrikebbers on 26.03.15.
- */
 public class BeanManager {
 
-    private ServerDolphin dolphin;
+    private final ServerDolphin dolphin;
 
-    private Map<Object, String> presentationModelIdMapping;
+    private final Map<Object, String> presentationModelToIdMapping = new HashMap<>();
+    private final Map<String, Object> idToPresentationModelMapping = new HashMap<>();
 
-    private DolphinClassRepository classRepository;
+    private final DolphinClassRepository classRepository;
+
+    private final PropertyImpl.DolphinConverter dolphinConverter = new PropertyImpl.DolphinConverter() {
+        @Override
+        public Dolphin getDolphin() {
+            return dolphin;
+        }
+
+        @Override
+        public Object convertToDolphinAttributeValue(Class<?> type, Object object) {
+            return object == null || DolphinUtils.isBasicType(type)? object : presentationModelToIdMapping.get(object);
+        }
+
+        @Override
+        public Object convertToPresentationModelProperty(Class<?> type, Object value) {
+            return value == null || DolphinUtils.isBasicType(type)? value : idToPresentationModelMapping.get(value);
+        }
+    };
 
     public BeanManager(ServerDolphin dolphin) {
         this.dolphin = dolphin;
-        presentationModelIdMapping = new HashMap<>();
         classRepository = new DolphinClassRepository(dolphin);
     }
 
@@ -68,12 +83,14 @@ public class BeanManager {
                         attributeName = propertyAnnotation.value();
                     }
                     Attribute attribute = model.findAttributeByPropertyName(attributeName);
-                    Property property = new PropertyImpl(dolphin, attribute.getId());
+                    @SuppressWarnings("unchecked")
+                    Property property = new PropertyImpl(dolphinConverter, attribute.getId(), field.getType());
                     DolphinUtils.setPrivileged(field, instance, property);
                 }
             }
 
-            presentationModelIdMapping.put(instance, model.getId());
+            presentationModelToIdMapping.put(instance, model.getId());
+            idToPresentationModelMapping.put(model.getId(), instance);
             return instance;
         } catch (Exception e) {
             throw new RuntimeException("Can't create bean", e);
@@ -81,9 +98,7 @@ public class BeanManager {
     }
 
     public <T> void delete(T bean) {
-        String id = presentationModelIdMapping.get(bean);
+        String id = presentationModelToIdMapping.get(bean);
         dolphin.remove(dolphin.findPresentationModelById(id));
     }
-
-
 }
