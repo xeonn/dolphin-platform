@@ -480,3 +480,82 @@ Ich verstehe nicht, welchen Vorteil Objektmodelle gegenüber Konstanten haben, w
 ORMs: die müssen hinter einer Technologie-unabhängigen Service-Schnittstelle verborgen sein.
 
 Wir haben ja die Zieldiskussion vertagt und es ist gut mit diesen konkreten und innovativen Ideen anzufangen. Wir müssen aber schauen, dass wir echte Probleme lösen und keine antizipierten. Wir brauchen m.E. einen Katalog von Anwendungsfällen (aka Qualitätsszenarien): Formular, Navigation, Master-Detail, Wizard, Suche, etc. auf der Server Seite list-create-show-edit-search actions, und unterschiedliche Relationen im Datenmodell 1:n, m:n, m:1 plus filtering, aggregation, composition, projection, grouping, sorting. Beim Katalog sollten wir zuerst die konkreten Fälle von KAPOZH und ICOS abdecken.
+
+Bisheriger Strand
+---------------
+Michael und ich hatten ein wenig Zeit unsere Ideen zu diskutieren und haben erst einmal die Punkte rausgezogen, die in den Beschriebenen Ansätzen gleich sind. Auf der Basis haben wir angefangen APIs für die Dolphin Platform zu definieren. Eins der Ziele ist ja, dass Modelle als JavaKlassen definiert werden können. Um hierbei alle Dolphin Funktionen unterstützen zu können haben wir uns für folgenden Weg entschieden:
+
+Ein Presentation Model Typ kann als Java-Klasse definiert werden. Dies sieht z.B. wie folgt aus:
+
+    @DolphinBean("My-Type")
+    public class MyModel {
+    
+        @DolphinProperty("Dialog-Header")
+        private Property<String> dialogHeader;
+    		
+				@DolphinProperty("Name")
+        private Property<String> name;
+    
+        public Property<String> getDialogHeader() {
+            return dialogHeader;
+        }
+    
+        public Property<String> getName() {
+            return name;
+        }
+    }
+
+Durch die @DolphinBean annotation kann man den Type des Models setzten. Alle Fields der Klasse die nicht mit @Transient anmontiert sind und vom Typ Property<T> sind werden als Attribute im PM definiert. Hier wird über die @DolphinProperty Annotation der PropertyName des Attributs definiert. Wird eine neue Instanz der Klasse erstellt (mehr dazu später) wird auch automatisch ein PM in Open Dolphin angelegt. Dies würde in diesem Fall wie folgt aussehen:
+
+	PM: Type="My-Type", Id=generated
+		Attribute: Name="Dialog-Header"
+		Attribute: Name="Name"
+
+Alle im Beispiel gezeigten Annotations sind nicht zwingend notwendig und können daher auch ohne Probleme weggelassen werden. In diesem Fall sieht das ganze wie folgt aus:
+
+    public class MyModel {
+    
+        private Property<String> dialogHeader;
+    		
+		    private Property<String> name;
+    
+        public Property<String> getDialogHeader() {
+            return dialogHeader;
+        }
+    
+        public Property<String> getName() {
+            return name;
+        }
+    }
+
+In diesem Fall wird intern Reflection genutzt um das PM zu erzeugen. Hierbei werden dann der Klassenname bzw. die Field-Namen im PM genutzt. Das hierdurch erstellte PM sieht dann wie folgt aus:
+
+	PM: Type="com.canoo.MyModel", Id=generated
+		Attribute: Name="dialogHeader"
+		Attribute: Name="name"
+
+Da die Property generisch ist, kann man so auch einfach Verschachtelungen von Klassen definieren:
+
+		public class MyModel {
+    
+        private Property<String> dialogHeader;
+    		
+		    private Property<MyModel2> data;
+    
+    }
+
+Die Platform erkennt hierbei, ob es sich um einen Basis-Datentyp (String, Float, Integer, etc.) handelt der von Open Dolphin direkt unterstützt wird oder ob ein neues PM erzeugt werden muss.
+
+Um mit Modellen zu arbeiten gibt es ähnlich wie bei JPA einen Manager. Mit diesem Manager kann man neue Instanzen erzeugen, Instanzen suchen oder löschen:
+
+		MyModel model = manager.create(MyModel.class);
+		manager.delete(model);
+
+Bei der Erstellung einer neuen Instanz wird automatisch das PM erzeugt und ein Binding zwischen der Klassen-Instanz und dem Model erstellt. Der Manager kann innerhalb der Controller-Klassen einfach injected werden.
+Um nun mit dem Model und dessen Daten zu arbeiten bietet die Property verschiedene Methoden an:
+
+	model.getName().set("Hendrik“);
+	model.getName().addValueListener(e -> …);
+
+Anmerkungen:
+Momentan wissen wir noch nicht genau, ob wir einfach mit dem generischen Property-Ansatz arbeiten können oder ob es für die Primitiven Datentypen fertige Implementierungen geben muss (IntegerProperty, StringProperty) wie es z.B. bei JavaFX der Fall ist.
