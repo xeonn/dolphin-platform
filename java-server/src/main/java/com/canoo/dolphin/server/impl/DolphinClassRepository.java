@@ -3,30 +3,31 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.PresentationModelBuilder;
+import org.opendolphin.core.Attribute;
+import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Created by hendrikebbers on 26.03.15.
- */
 public class DolphinClassRepository {
+
+    public static enum FieldType { UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN }
 
     private ServerDolphin dolphin;
 
-    private Set<Class<?>> registered;
+    private Map<String, PresentationModel> models = new HashMap<>();
 
     private static final String PM_TYPE = DolphinClassRepository.class.getSimpleName();
 
     public DolphinClassRepository(ServerDolphin dolphin) {
         this.dolphin = dolphin;
-        registered = new HashSet<>();
     }
 
     public void register(Class<?> beanClass) {
-        if (registered.contains(beanClass)) {
+        final String id = beanClass.getName();
+        if (models.containsKey(id)) {
             return;
         }
         PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
@@ -38,9 +39,48 @@ public class DolphinClassRepository {
                 if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
                     attributeName = propertyAnnotation.value();
                 }
-                builder.withAttribute(attributeName, field.getType().getSimpleName());
+                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal());
             }
         }
+
+        final PresentationModel presentationModel = builder.create();
+        models.put(id, presentationModel);
+    }
+
+    private Attribute findClassAttribute(Attribute fieldAttribute) {
+        final String beanClass = fieldAttribute.getPresentationModel().getPresentationModelType();
+        final PresentationModel classModel = models.get(beanClass);
+        return classModel.findAttributeByPropertyName(fieldAttribute.getPropertyName());
+    }
+
+    public FieldType getFieldType(Attribute fieldAttribute) {
+        final Attribute classAttribute = findClassAttribute(fieldAttribute);
+        return FieldType.values()[(Integer)classAttribute.getValue()];
+    }
+
+    public FieldType setFieldTypeFromValue(Attribute fieldAttribute, Object value) {
+        if (value == null) {
+            return FieldType.UNKNOWN;
+        }
+        final FieldType fieldType = calculateFieldType(value.getClass());
+        if (fieldType != FieldType.UNKNOWN) {
+            final Attribute classAttribute = findClassAttribute(fieldAttribute);
+            classAttribute.setValue(fieldType.ordinal());
+        }
+        return fieldType;
+    }
+
+    private static FieldType calculateFieldType(Class<?> clazz) {
+        if (clazz == null) {
+            return FieldType.UNKNOWN;
+        }
+        if (DolphinUtils.isBasicType(clazz)) {
+            return FieldType.BASIC_TYPE;
+        }
+        if (clazz.isEnum()) {
+            return FieldType.ENUM;
+        }
+        return FieldType.DOLPHIN_BEAN;
     }
 
 }

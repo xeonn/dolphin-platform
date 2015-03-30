@@ -3,11 +3,10 @@ package com.canoo.dolphin.server;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.server.impl.DolphinClassRepository;
 import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.PropertyImpl;
-import com.canoo.dolphin.server.impl.DolphinClassRepository;
 import org.opendolphin.core.Attribute;
-import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -19,25 +18,40 @@ public class BeanManager {
 
     private final ServerDolphin dolphin;
 
-    private final Map<Object, String> presentationModelToIdMapping = new HashMap<>();
-    private final Map<String, Object> idToPresentationModelMapping = new HashMap<>();
+    private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
+    private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
 
     private final DolphinClassRepository classRepository;
 
-    private final PropertyImpl.DolphinConverter dolphinConverter = new PropertyImpl.DolphinConverter() {
+    private final PropertyImpl.DolphinAccessor dolphinAccessor = new PropertyImpl.DolphinAccessor() {
         @Override
-        public Dolphin getDolphin() {
-            return dolphin;
+        public Object getValue(Attribute attribute) {
+            final Object attributeValue = attribute.getValue();
+            switch (classRepository.getFieldType(attribute)) {
+                case ENUM:
+                    // TODO Implement enums
+                    return null;
+                case DOLPHIN_BEAN:
+                    return dolphinIdToObjectPm.get(attributeValue);
+            }
+            return attributeValue;
         }
 
         @Override
-        public Object convertToDolphinAttributeValue(Class<?> type, Object object) {
-            return object == null || DolphinUtils.isBasicType(type)? object : presentationModelToIdMapping.get(object);
-        }
-
-        @Override
-        public Object convertToPresentationModelProperty(Class<?> type, Object value) {
-            return value == null || DolphinUtils.isBasicType(type)? value : idToPresentationModelMapping.get(value);
+        public void setValue(Attribute attribute, Object value) {
+            final DolphinClassRepository.FieldType fieldType = classRepository.setFieldTypeFromValue(attribute, value);
+            final Object attributeValue;
+            switch (fieldType) {
+                case ENUM:
+                    // TODO Implement enums
+                    return;
+                case DOLPHIN_BEAN:
+                    attributeValue = objectPmToDolphinPm.get(value).getId();
+                    break;
+                default:
+                    attributeValue = value;
+            }
+            attribute.setValue(attributeValue);
         }
     };
 
@@ -54,7 +68,7 @@ public class BeanManager {
 
             PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
 
-            String modelType = beanClass.getSimpleName();
+            String modelType = beanClass.getName();
             DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
             if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
                 modelType = beanAnnotation.value();
@@ -84,13 +98,13 @@ public class BeanManager {
                     }
                     Attribute attribute = model.findAttributeByPropertyName(attributeName);
                     @SuppressWarnings("unchecked")
-                    Property property = new PropertyImpl(dolphinConverter, attribute.getId(), field.getType());
+                    Property property = new PropertyImpl(dolphinAccessor, attribute);
                     DolphinUtils.setPrivileged(field, instance, property);
                 }
             }
 
-            presentationModelToIdMapping.put(instance, model.getId());
-            idToPresentationModelMapping.put(model.getId(), instance);
+            objectPmToDolphinPm.put(instance, model);
+            dolphinIdToObjectPm.put(model.getId(), instance);
             return instance;
         } catch (Exception e) {
             throw new RuntimeException("Can't create bean", e);
@@ -98,7 +112,10 @@ public class BeanManager {
     }
 
     public <T> void delete(T bean) {
-        String id = presentationModelToIdMapping.get(bean);
-        dolphin.remove(dolphin.findPresentationModelById(id));
+        final PresentationModel model = objectPmToDolphinPm.remove(bean);
+        if (model != null) {
+            dolphinIdToObjectPm.remove(model.getId());
+            dolphin.remove(model);
+        }
     }
 }

@@ -43,37 +43,31 @@ public class DolphinUtils {
     }
 
     public static boolean isBasicType(Class<?> cls) {
+        if(cls.isPrimitive()) {
+            return true;
+        }
         if(cls.equals(String.class)) {
             return true;
         }
         if(cls.equals(Boolean.class)) {
             return true;
         }
-        if(cls.equals(Boolean.TYPE)) {
-            return true;
-        }
         if(cls.equals(Integer.class)) {
-            return true;
-        }
-        if(cls.equals(Integer.TYPE)) {
             return true;
         }
         if(cls.equals(Double.class)) {
             return true;
         }
-        if(cls.equals(Double.TYPE)) {
-            return true;
-        }
         if(cls.equals(Float.class)) {
-            return true;
-        }
-        if(cls.equals(Float.TYPE)) {
             return true;
         }
         if(cls.equals(Long.class)) {
             return true;
         }
-        if(cls.equals(Long.TYPE)) {
+        if(cls.equals(Byte.class)) {
+            return true;
+        }
+        if(cls.equals(Short.class)) {
             return true;
         }
         return false;

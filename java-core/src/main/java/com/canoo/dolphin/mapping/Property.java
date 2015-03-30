@@ -6,8 +6,6 @@ public interface Property<T> {
 
     T get();
 
-    Class<T> getType();
-
     void addValueListener(ValueChangeListener<? super T> listener);
 
     void removeValueListener(ValueChangeListener<? super T> listener);
