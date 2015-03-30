@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.PresentationModelBuilder;
@@ -26,7 +27,12 @@ public class DolphinClassRepository {
     }
 
     public void register(Class<?> beanClass) {
-        final String id = beanClass.getName();
+        String id = beanClass.getName();
+        DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
+        if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
+            id = beanAnnotation.value();
+        }
+
         if (models.containsKey(id)) {
             return;
         }
