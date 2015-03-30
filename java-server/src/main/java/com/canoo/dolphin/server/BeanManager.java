@@ -1,10 +1,10 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.impl.DolphinClassRepository;
 import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.PropertyImpl;
+import com.canoo.dolphin.server.query.PropertyQuery;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
@@ -66,7 +66,7 @@ public class BeanManager {
 
     public boolean isManaged(Object bean) {
         PresentationModel model = objectPmToDolphinPm.get(bean);
-        if(model == null) {
+        if (model == null) {
             return false;
         }
         return (dolphin.findPresentationModelById(model.getId()) != null);
@@ -119,15 +119,19 @@ public class BeanManager {
     }
 
     public void deleteAll(Class<?> beanClass) {
-        for(Object bean : findAll(beanClass)) {
+        for (Object bean : findAll(beanClass)) {
             delete(bean);
         }
+    }
+
+    public <T> PropertyQuery<T> createQuery(Class<T> beanClass) {
+        return new PropertyQuery<>(beanClass, this);
     }
 
     public <T> List<T> findAll(Class<T> beanClass) {
         List<T> ret = new ArrayList<>();
         List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass));
-        for(ServerPresentationModel model : presentationModels) {
+        for (ServerPresentationModel model : presentationModels) {
             ret.add((T) dolphinIdToObjectPm.get(model.getId()));
         }
         return ret;

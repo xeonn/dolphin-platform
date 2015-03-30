@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-public class TestPropertyValue extends AbstractDolphinBasedTest {
+public class PropertyValueTest extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel() {

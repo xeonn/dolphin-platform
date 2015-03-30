@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-public class TestDeleteAll extends AbstractDolphinBasedTest {
+public class DeleteAllTest extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithSimpleModel() {

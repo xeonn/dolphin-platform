@@ -1,9 +1,11 @@
 package com.canoo.dolphin.server.query;
 
 import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.server.impl.DolphinUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by hendrikebbers on 30.03.15.
@@ -23,32 +25,36 @@ public class PropertyQuery<T> {
     }
 
     public PropertyQuery<T> withEquals(String name, Object value) {
-        return withPropertyQueryParam(new PropertyQueryParam<Object>(name, new EqualsValueCheck<Object>(value)));
+        return with(name, new EqualsValueCheck<Object>(value));
     }
 
     public PropertyQuery<T> withNotEquals(String name, Object value) {
-        return withPropertyQueryParam(new PropertyQueryParam<Object>(name, new NotEqualsValueCheck<Object>(value)));
+        return with(name, new NotEqualsValueCheck<Object>(value));
     }
 
     public PropertyQuery<T> withNull(String name) {
-        return withPropertyQueryParam(new PropertyQueryParam<Object>(name, new NullValueCheck<Object>()));
+        return with(name, new NullValueCheck<Object>());
     }
 
     public PropertyQuery<T> withNotNull(String name) {
-        return withPropertyQueryParam(new PropertyQueryParam<Object>(name, new NotNullValueCheck<Object>()));
+        return with(name, new NotNullValueCheck<Object>());
     }
 
-    public PropertyQuery<T> withPropertyQueryParam(PropertyQueryParam<?> queryParam) {
-        queryParams.add(queryParam);
+    public PropertyQuery<T> with(String name, ValueCheck check) {
+        queryParams.add(new PropertyQueryParam<Object>(name, check));
         return this;
     }
 
-    public List<T> run() {
-        List<T> result = new ArrayList<>();
+    public List<T> run() throws IllegalAccessException {
+        List<T> result = new CopyOnWriteArrayList<>(manager.findAll(beanClass));
 
-        List<T> all = manager.findAll(beanClass);
-        for(T bean : all) {
-
+        for(T bean : result) {
+            for(PropertyQueryParam queryParam : queryParams) {
+                Object currentValue = DolphinUtils.getProperty(bean, queryParam.getName()).get();
+                if(!queryParam.getCheck().check(currentValue)) {
+                    result.remove(bean);
+                }
+            }
         }
         return result;
     }

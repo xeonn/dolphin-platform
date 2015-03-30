@@ -36,6 +36,24 @@ public class DolphinUtils {
         });
     }
 
+    public static Object getPrivileged(final Field field, final Object bean) {
+        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            @Override
+            public Object run() {
+                boolean wasAccessible = field.isAccessible();
+                try {
+                    field.setAccessible(true);
+                    return field.get(bean); // return nothing...
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    throw new IllegalStateException("Cannot set field: "
+                            + field, ex);
+                } finally {
+                    field.setAccessible(wasAccessible);
+                }
+            }
+        });
+    }
+
     public static List<Field> getInheritedDeclaredFields(Class<?> type) {
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
@@ -80,7 +98,6 @@ public class DolphinUtils {
     public static <T> void forAllProperties(Class<T> beanClass, PropertyIterator propertyIterator) {
         for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType())) {
-
                 String attributeName = getDolphinAttributePropertyNameForField(field);
                 propertyIterator.run(field, attributeName);
             }
@@ -109,4 +126,15 @@ public class DolphinUtils {
         public abstract void run(Field field, String attributeName);
     }
 
+
+    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
+        for (Field field : DolphinUtils.getInheritedDeclaredFields(bean.getClass())) {
+            if (Property.class.isAssignableFrom(field.getType())) {
+                if(name.equals(getDolphinAttributePropertyNameForField(field))) {
+                    return (Property<T>) DolphinUtils.getPrivileged(field, bean);
+                }
+            }
+        }
+        return null;
+    }
 }

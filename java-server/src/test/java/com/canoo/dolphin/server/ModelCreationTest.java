@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-public class TestModelCreation extends AbstractDolphinBasedTest {
+public class ModelCreationTest extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel() {

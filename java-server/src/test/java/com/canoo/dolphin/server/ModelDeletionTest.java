@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-public class TestModelDeletion extends AbstractDolphinBasedTest {
+public class ModelDeletionTest extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel() {

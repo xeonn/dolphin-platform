@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-public class TestPropertyChange extends AbstractDolphinBasedTest {
+public class PropertyChangeTest extends AbstractDolphinBasedTest {
 
     private String newValue;
 
