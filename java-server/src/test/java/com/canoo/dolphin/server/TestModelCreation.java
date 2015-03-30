@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import org.junit.Test;
@@ -79,5 +80,37 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertEquals(Tag.VALUE, textAttribute.getTag());
 
     }
+
+
+    @Test
+    public void testWithAllPrimitiveDatatypes() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
+
+        assertNotNull(model);
+        assertNotNull(model.getTextProperty());
+        assertNull(model.getTextProperty().get());
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName());
+        assertNotNull(dolphinModels);
+        assertEquals(1, dolphinModels.size());
+
+        ServerPresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<Attribute> attributes = dolphinModel.getAttributes();
+        assertNotNull(attributes);
+        assertEquals(8, attributes.size());
+
+        for(Attribute attribute : attributes) {
+            assertEquals(null, attribute.getValue());
+            assertEquals(null, attribute.getBaseValue());
+            assertEquals(null, attribute.getQualifier());
+            assertEquals(Tag.VALUE, attribute.getTag());
+        }
+    }
+
+
 
 }
