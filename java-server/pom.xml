@@ -36,6 +36,18 @@
             <artifactId>reflections</artifactId>
             <version>0.9.9-RC1</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.open-dolphin</groupId>
+            <artifactId>dolphin-combined</artifactId>
+            <version>0.11</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
