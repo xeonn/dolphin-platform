@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -35,7 +36,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         assertNotNull(allDolphinModels);
         assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
 
-        //TODO: Hier wär es noch super, wenn man das über API überprüfen könnte. z.B. manager.isManaged(model);
+        assertFalse(manager.isManaged(model));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         assertNotNull(allDolphinModels);
         assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
 
-        //TODO: Hier wär es noch super, wenn man das über API überprüfen könnte. z.B. manager.isManaged(model);
+        assertFalse(manager.isManaged(model));
     }
 
 }

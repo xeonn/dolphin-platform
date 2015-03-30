@@ -17,7 +17,9 @@ public class BeanManager {
 
     private final ServerDolphin dolphin;
 
+    //TODO: Vielleicht wären hier Map<Object, WeakReference<PresentationModel>> sinnvoll??
     private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
+
     private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
 
     private final DolphinClassRepository classRepository;
@@ -57,6 +59,14 @@ public class BeanManager {
     public BeanManager(ServerDolphin dolphin) {
         this.dolphin = dolphin;
         classRepository = new DolphinClassRepository(dolphin);
+    }
+
+    public boolean isManaged(Object bean) {
+        PresentationModel model = objectPmToDolphinPm.get(bean);
+        if(model == null) {
+            return false;
+        }
+        return (dolphin.findPresentationModelById(model.getId()) != null);
     }
 
     public <T> T create(Class<T> beanClass) {

@@ -29,6 +29,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertNotNull(model);
         assertNotNull(model.getTextProperty());
         assertNull(model.getTextProperty().get());
+        assertTrue(manager.isManaged(model));
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
         assertNotNull(dolphinModels);
@@ -60,6 +61,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertNotNull(model);
         assertNotNull(model.getTextProperty());
         assertNull(model.getTextProperty().get());
+        assertTrue(manager.isManaged(model));
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
         assertNotNull(dolphinModels);
@@ -92,6 +94,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertNotNull(model);
         assertNotNull(model.getTextProperty());
         assertNull(model.getTextProperty().get());
+        assertTrue(manager.isManaged(model));
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName());
         assertNotNull(dolphinModels);
