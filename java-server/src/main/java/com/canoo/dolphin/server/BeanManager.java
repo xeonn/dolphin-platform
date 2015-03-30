@@ -72,15 +72,6 @@ public class BeanManager {
         return (dolphin.findPresentationModelById(model.getId()) != null);
     }
 
-    private String getDolphinTypeForClass(Class<?> beanClass) {
-        String modelType = beanClass.getName();
-        final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
-        if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
-            modelType = beanAnnotation.value();
-        }
-        return modelType;
-    }
-
     public <T> T create(Class<T> beanClass) {
         try {
             classRepository.register(beanClass);
@@ -89,7 +80,7 @@ public class BeanManager {
 
             final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
 
-            String modelType = getDolphinTypeForClass(beanClass);
+            String modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
             builder.withType(modelType);
 
             DolphinUtils.forAllProperties(beanClass, new DolphinUtils.PropertyIterator() {
@@ -135,7 +126,7 @@ public class BeanManager {
 
     public <T> List<T> findAll(Class<T> beanClass) {
         List<T> ret = new ArrayList<>();
-        List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(getDolphinTypeForClass(beanClass));
+        List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass));
         for(ServerPresentationModel model : presentationModels) {
             ret.add((T) dolphinIdToObjectPm.get(model.getId()));
         }
