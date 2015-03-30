@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import org.junit.Test;
 import org.opendolphin.core.server.ServerDolphin;
@@ -22,7 +23,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         ServerDolphin dolphin = createServerDolphin();
         BeanManager manager = new BeanManager(dolphin);
 
-        SimpleTestModel model = manager.create(SimpleTestModel.class);
+        SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
         manager.delete(model);
 
@@ -32,7 +33,27 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
         assertNotNull(allDolphinModels);
-        assertEquals(0, allDolphinModels.size());
+        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+
+        //TODO: Hier wär es noch super, wenn man das über API überprüfen könnte. z.B. manager.isManaged(model);
+    }
+
+    @Test
+    public void testWithSimpleModel() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        SimpleTestModel model = manager.create(SimpleTestModel.class);
+
+        manager.delete(model);
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
+        assertNotNull(dolphinModels);
+        assertEquals(0, dolphinModels.size());
+
+        Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
+        assertNotNull(allDolphinModels);
+        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
 
         //TODO: Hier wär es noch super, wenn man das über API überprüfen könnte. z.B. manager.isManaged(model);
     }
