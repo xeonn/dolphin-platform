@@ -1,7 +1,6 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.impl.DolphinClassRepository;
 import com.canoo.dolphin.server.impl.DolphinUtils;
@@ -64,44 +63,35 @@ public class BeanManager {
         try {
             classRepository.register(beanClass);
 
-            T instance = beanClass.newInstance();
+            final T instance = beanClass.newInstance();
 
-            PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+            final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
 
             String modelType = beanClass.getName();
-            DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
+            final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
             if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
                 modelType = beanAnnotation.value();
             }
             builder.withType(modelType);
 
-            for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
-                if (Property.class.isAssignableFrom(field.getType())) {
-
-                    String attributeName = field.getName();
-                    DolphinProperty propertyAnnotation = field.getAnnotation(DolphinProperty.class);
-                    if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
-                        attributeName = propertyAnnotation.value();
-                    }
+            DolphinUtils.forAllProperties(beanClass, new DolphinUtils.PropertyIterator() {
+                @Override
+                public void run(Field field, String attributeName) {
                     builder.withAttribute(attributeName);
                 }
-            }
+            });
 
-            PresentationModel model = builder.create();
+            final PresentationModel model = builder.create();
 
-            for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
-                if (Property.class.isAssignableFrom(field.getType())) {
-                    String attributeName = field.getName();
-                    DolphinProperty propertyAnnotation = field.getAnnotation(DolphinProperty.class);
-                    if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
-                        attributeName = propertyAnnotation.value();
-                    }
+            DolphinUtils.forAllProperties(beanClass, new DolphinUtils.PropertyIterator() {
+                @Override
+                public void run(Field field, String attributeName) {
                     Attribute attribute = model.findAttributeByPropertyName(attributeName);
                     @SuppressWarnings("unchecked")
                     Property property = new PropertyImpl(dolphinAccessor, attribute);
                     DolphinUtils.setPrivileged(field, instance, property);
                 }
-            }
+            });
 
             objectPmToDolphinPm.put(instance, model);
             dolphinIdToObjectPm.put(model.getId(), instance);

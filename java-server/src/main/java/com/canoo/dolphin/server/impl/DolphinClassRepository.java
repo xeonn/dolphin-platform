@@ -1,8 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.DolphinProperty;
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.PresentationModelBuilder;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -36,18 +34,15 @@ public class DolphinClassRepository {
         if (models.containsKey(id)) {
             return;
         }
-        PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+        final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
         builder.withType(PM_TYPE).withAttribute("CLASS_NAME", beanClass.getSimpleName());
-        for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
-            if (Property.class.isAssignableFrom(field.getType())) {
-                String attributeName = field.getName();
-                DolphinProperty propertyAnnotation = field.getAnnotation(DolphinProperty.class);
-                if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
-                    attributeName = propertyAnnotation.value();
-                }
+
+        DolphinUtils.forAllProperties(beanClass, new DolphinUtils.PropertyIterator() {
+            @Override
+            public void run(Field field, String attributeName) {
                 builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal());
             }
-        }
+        });
 
         final PresentationModel presentationModel = builder.create();
         models.put(id, presentationModel);
