@@ -21,6 +21,8 @@ public class PropertyImpl<T> implements Property<T> {
     public PropertyImpl(DolphinAccessor dolphinAccessor, Attribute attribute) {
         this.dolphinAccessor = dolphinAccessor;
         this.attribute = attribute;
+
+
         attribute.addPropertyChangeListener(Attribute.VALUE, new PropertyChangeListener() {
             @SuppressWarnings("unchecked")
             @Override

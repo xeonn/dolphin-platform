@@ -8,9 +8,12 @@ import com.canoo.dolphin.server.impl.PropertyImpl;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
+import org.opendolphin.core.server.ServerPresentationModel;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BeanManager {
@@ -69,6 +72,15 @@ public class BeanManager {
         return (dolphin.findPresentationModelById(model.getId()) != null);
     }
 
+    private String getDolphinTypeForClass(Class<?> beanClass) {
+        String modelType = beanClass.getName();
+        final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
+        if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
+            modelType = beanAnnotation.value();
+        }
+        return modelType;
+    }
+
     public <T> T create(Class<T> beanClass) {
         try {
             classRepository.register(beanClass);
@@ -77,11 +89,7 @@ public class BeanManager {
 
             final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
 
-            String modelType = beanClass.getName();
-            final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
-            if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
-                modelType = beanAnnotation.value();
-            }
+            String modelType = getDolphinTypeForClass(beanClass);
             builder.withType(modelType);
 
             DolphinUtils.forAllProperties(beanClass, new DolphinUtils.PropertyIterator() {
@@ -117,5 +125,20 @@ public class BeanManager {
             dolphinIdToObjectPm.remove(model.getId());
             dolphin.remove(model);
         }
+    }
+
+    public void deleteAll(Class<?> beanClass) {
+        for(Object bean : findAll(beanClass)) {
+            delete(bean);
+        }
+    }
+
+    public <T> List<T> findAll(Class<T> beanClass) {
+        List<T> ret = new ArrayList<>();
+        List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(getDolphinTypeForClass(beanClass));
+        for(ServerPresentationModel model : presentationModels) {
+            ret.add((T) dolphinIdToObjectPm.get(model.getId()));
+        }
+        return ret;
     }
 }
