@@ -1,5 +1,8 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.mapping.DolphinProperty;
+import com.canoo.dolphin.mapping.Property;
+
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -72,4 +75,24 @@ public class DolphinUtils {
         }
         return false;
     }
+
+    public static <T> void forAllProperties(Class<T> beanClass, PropertyIterator propertyIterator) {
+        for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
+            if (Property.class.isAssignableFrom(field.getType())) {
+
+                String attributeName = field.getName();
+                DolphinProperty propertyAnnotation = field.getAnnotation(DolphinProperty.class);
+                if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
+                    attributeName = propertyAnnotation.value();
+                }
+
+                propertyIterator.run(field, attributeName);
+            }
+        }
+    }
+
+    public interface PropertyIterator {
+        public abstract void run(Field field, String attributeName);
+    }
+
 }
