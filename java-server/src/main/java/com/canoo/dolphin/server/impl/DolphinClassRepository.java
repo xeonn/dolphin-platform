@@ -1,8 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.DolphinProperty;
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.PresentationModelBuilder;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
