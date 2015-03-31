@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.EnumDataTypesModel;
 import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
@@ -10,6 +11,7 @@ import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by hendrikebbers on 30.03.15.
@@ -102,5 +104,30 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertEquals(false, booleanAttribute.getValue());
         assertEquals(false, model.getBooleanProperty().get().booleanValue());
 
+    }
+
+
+    @Test
+    public void testWithEnumDataTypeModel() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
+
+        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName()).get(0);
+
+        Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
+        assertEquals(null, enumAttribute.getValue());
+
+        model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_1);
+        assertEquals(EnumDataTypesModel.DataType.VALUE_1.ordinal(), enumAttribute.getValue());
+        assertEquals(EnumDataTypesModel.DataType.VALUE_1, model.getEnumProperty().get());
+
+        ServerPresentationModel enumModels = dolphin.findPresentationModelById(EnumDataTypesModel.DataType.class.getName());
+        assertNotNull(enumModels);
+
+        enumAttribute.setValue(EnumDataTypesModel.DataType.VALUE_2.ordinal());
+        assertEquals(EnumDataTypesModel.DataType.VALUE_2.ordinal(), enumAttribute.getValue());
+        assertEquals(EnumDataTypesModel.DataType.VALUE_2, model.getEnumProperty().get());
     }
 }

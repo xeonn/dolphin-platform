@@ -27,15 +27,7 @@ public class BeanManager {
     private final PropertyImpl.DolphinAccessor dolphinAccessor = new PropertyImpl.DolphinAccessor() {
         @Override
         public Object getValue(Attribute attribute) {
-            final Object attributeValue = attribute.getValue();
-            switch (classRepository.getFieldType(attribute)) {
-                case ENUM:
-                    // TODO Implement enums
-                    return null;
-                case DOLPHIN_BEAN:
-                    return dolphinIdToObjectPm.get(attributeValue);
-            }
-            return attributeValue;
+            return map(attribute, attribute.getValue());
         }
 
         @Override
@@ -44,8 +36,9 @@ public class BeanManager {
             final Object attributeValue;
             switch (fieldType) {
                 case ENUM:
-                    // TODO Implement enums
-                    return;
+                    classRepository.register(value.getClass());
+                    attributeValue = ((Enum)value).ordinal();
+                    break;
                 case DOLPHIN_BEAN:
                     attributeValue = objectPmToDolphinPm.get(value).getId();
                     break;
@@ -53,6 +46,23 @@ public class BeanManager {
                     attributeValue = value;
             }
             attribute.setValue(attributeValue);
+        }
+
+        @Override
+        public Object map(Attribute attribute, Object value) {
+            switch (classRepository.getFieldType(attribute)) {
+                case ENUM:
+                    final Class<?> clazz = classRepository.getFieldClass(attribute);
+                    try {
+                        return clazz.getEnumConstants()[(Integer) value];
+                    } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
+                        // do nothing
+                    }
+                    return null;
+                case DOLPHIN_BEAN:
+                    return value == null? null : dolphinIdToObjectPm.get(value.toString());
+            }
+            return value;
         }
     };
 

@@ -18,14 +18,14 @@ public class PropertyImpl<T> implements Property<T> {
 
     private final Attribute attribute;
 
-    public PropertyImpl(DolphinAccessor dolphinAccessor, Attribute attribute) {
+    public PropertyImpl(final DolphinAccessor dolphinAccessor, final Attribute attribute) {
         this.dolphinAccessor = dolphinAccessor;
         this.attribute = attribute;
         attribute.addPropertyChangeListener(Attribute.VALUE, new PropertyChangeListener() {
             @SuppressWarnings("unchecked")
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                set((T) evt.getNewValue());
+                firePropertyChanged((T) dolphinAccessor.map(attribute, evt.getOldValue()), (T) dolphinAccessor.map(attribute, evt.getNewValue()));
             }
         });
     }
@@ -59,5 +59,6 @@ public class PropertyImpl<T> implements Property<T> {
     public interface DolphinAccessor {
         Object getValue(Attribute attribute);
         void setValue(Attribute attribute, Object value);
+        Object map(Attribute attribute, Object value);
     }
 }
