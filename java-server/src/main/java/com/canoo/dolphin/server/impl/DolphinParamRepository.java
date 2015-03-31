@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.mapping.util.ParamConstants;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 
@@ -10,20 +11,14 @@ public class DolphinParamRepository {
 
     private ServerDolphin dolphin;
 
-    private static final String PM_TYPE = DolphinParamRepository.class.getName();
-
-    private static final String NAME_ATTRIBUTE = "name";
-
-    private static final String VALUE_ATTRIBUTE = "value";
-
     public DolphinParamRepository(ServerDolphin dolphin) {
         this.dolphin = dolphin;
     }
 
     public Object getParam(String name) {
-        for(ServerPresentationModel model : dolphin.findAllPresentationModelsByType(PM_TYPE)) {
-            if(name.equals(model.getAt(NAME_ATTRIBUTE).getValue())) {
-                return model.getAt(VALUE_ATTRIBUTE).getValue();
+        for(ServerPresentationModel model : dolphin.findAllPresentationModelsByType(ParamConstants.PM_TYPE)) {
+            if(name.equals(model.getAt(ParamConstants.NAME_ATTRIBUTE).getValue())) {
+                return model.getAt(ParamConstants.VALUE_ATTRIBUTE).getValue();
             }
         }
         throw new RuntimeException("param not found");
