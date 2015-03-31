@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DolphinCommand {
+public @interface DolphinAction {
 
-    String value();
+    String value() default "";
 }

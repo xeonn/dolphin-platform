@@ -10,5 +10,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
-public @interface DolphinManaged {
+public @interface DolphinController {
+
+    String value() default "";
+
 }

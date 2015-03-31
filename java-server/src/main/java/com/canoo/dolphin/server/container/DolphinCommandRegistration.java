@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.container;
 
-import com.canoo.dolphin.server.DolphinCommand;
+import com.canoo.dolphin.server.DolphinAction;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -22,8 +22,8 @@ public class DolphinCommandRegistration {
             public void registerIn(ActionRegistry registry) {
 
                 for (final Method method : cls.getMethods()) {
-                    if (method.isAnnotationPresent(DolphinCommand.class)) {
-                        final DolphinCommand commandAnnotation = method.getAnnotation(DolphinCommand.class);
+                    if (method.isAnnotationPresent(DolphinAction.class)) {
+                        final DolphinAction commandAnnotation = method.getAnnotation(DolphinAction.class);
                         registry.register(commandAnnotation.value(), new CommandHandler() {
                             @Override
                             public void handleCommand(Command command, List response) {

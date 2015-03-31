@@ -1,13 +1,12 @@
 package com.canoo.dolphin.server.servlet;
 
-import com.canoo.dolphin.server.DolphinManaged;
+import com.canoo.dolphin.server.DolphinController;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.reflections.Reflections;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
 import java.util.Set;
 
 public class DolphinPlatformBootstrap implements ServletContainerInitializer {
@@ -40,7 +39,7 @@ public class DolphinPlatformBootstrap implements ServletContainerInitializer {
     public static synchronized Set<Class<?>> findAllDolphinBeanClasses() {
         if(cachedDolphinBeanClasses == null) {
             Reflections reflections = new Reflections("");
-            cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinManaged.class);
+            cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
         }
         return cachedDolphinBeanClasses;
     }
