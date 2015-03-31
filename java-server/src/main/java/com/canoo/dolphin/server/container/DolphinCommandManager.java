@@ -7,4 +7,5 @@ import java.util.Set;
 public interface DolphinCommandManager {
 
     void initCommandsForSession(ServerDolphin serverDolphin, Set<Class<?>> dolphinManagedClasses);
+
 }

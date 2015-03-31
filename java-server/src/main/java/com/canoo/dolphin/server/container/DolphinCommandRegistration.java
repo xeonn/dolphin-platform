@@ -3,6 +3,7 @@ package com.canoo.dolphin.server.container;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
+import com.canoo.dolphin.server.impl.DolphinParamRepository;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class DolphinCommandRegistration {
 
+    //TODO: Die ganzen Methoden sollten nicht statisch sein. Aktuell noch Hack
     public static <T> void registerAllCommands(final ServerDolphin dolphin, final Class<T> cls, final T managedObject) {
         dolphin.register(new DolphinServerAction() {
             @Override
@@ -79,7 +81,9 @@ public class DolphinCommandRegistration {
     }
 
     private static Object getParam(String name, ServerDolphin dolphin) {
-        return null;
+        //TODO: Aktuell noch Hack.
+        DolphinParamRepository paramRepository = new DolphinParamRepository(dolphin);
+        return paramRepository.getParam(name);
     }
 
     private static String getNameSeparator() {
