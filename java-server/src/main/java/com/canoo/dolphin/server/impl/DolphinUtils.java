@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
@@ -80,15 +81,28 @@ public class DolphinUtils {
         for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType())) {
 
-                String attributeName = field.getName();
-                DolphinProperty propertyAnnotation = field.getAnnotation(DolphinProperty.class);
-                if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
-                    attributeName = propertyAnnotation.value();
-                }
-
+                String attributeName = getDolphinAttributePropertyNameForField(field);
                 propertyIterator.run(field, attributeName);
             }
         }
+    }
+
+    public static String getDolphinAttributePropertyNameForField(Field propertyField) {
+        String attributeName = propertyField.getName();
+        DolphinProperty propertyAnnotation = propertyField.getAnnotation(DolphinProperty.class);
+        if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
+            attributeName = propertyAnnotation.value();
+        }
+        return attributeName;
+    }
+
+    public static String getDolphinPresentationModelTypeForClass(Class<?> beanClass) {
+        String modelType = beanClass.getName();
+        final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
+        if (beanAnnotation != null && !beanAnnotation.value().isEmpty()) {
+            modelType = beanAnnotation.value();
+        }
+        return modelType;
     }
 
     public interface PropertyIterator {
