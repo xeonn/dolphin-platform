@@ -5,6 +5,7 @@ import com.canoo.dolphin.server.util.EnumDataTypesModel;
 import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.junit.Test;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
@@ -145,6 +146,38 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertEquals(null, enumAttribute.getBaseValue());
         assertEquals(null, enumAttribute.getQualifier());
         assertEquals(Tag.VALUE, enumAttribute.getTag());
+
+    }
+
+    @Test
+    public void testWithSingleReferenceModel() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        SingleReferenceModel model = manager.create(SingleReferenceModel.class);
+
+        assertNotNull(model);
+        assertNotNull(model.getReferenceProperty());
+        assertNull(model.getReferenceProperty().get());
+        assertTrue(manager.isManaged(model));
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
+        assertNotNull(dolphinModels);
+        assertEquals(1, dolphinModels.size());
+
+        ServerPresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<Attribute> attributes = dolphinModel.getAttributes();
+        assertNotNull(attributes);
+        assertEquals(1, attributes.size());
+
+
+        Attribute referenceAttribute = attributes.get(0);
+        assertEquals("referenceProperty", referenceAttribute.getPropertyName());
+        assertEquals(null, referenceAttribute.getValue());
+        assertEquals(null, referenceAttribute.getBaseValue());
+        assertEquals(null, referenceAttribute.getQualifier());
+        assertEquals(Tag.VALUE, referenceAttribute.getTag());
 
     }
 

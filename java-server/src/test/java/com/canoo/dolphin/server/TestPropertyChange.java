@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.EnumDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.junit.Test;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -103,13 +104,13 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithEnumDataTypeModel() {
-        ServerDolphin dolphin = createServerDolphin();
-        BeanManager manager = new BeanManager(dolphin);
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = new BeanManager(dolphin);
 
         final EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
         final ListerResults results = new ListerResults();
-        ValueChangeListener<EnumDataTypesModel.DataType> myListener = new ValueChangeListener<EnumDataTypesModel.DataType>() {
+        final ValueChangeListener<EnumDataTypesModel.DataType> myListener = new ValueChangeListener<EnumDataTypesModel.DataType>() {
             @Override
             public void valueChanged(ValueChangeEvent<? extends EnumDataTypesModel.DataType> evt) {
                 assertEquals(model.getEnumProperty(), evt.getSource());
@@ -140,6 +141,53 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_3);
         assertEquals(EnumDataTypesModel.DataType.VALUE_2, results.newValue);
         assertEquals(EnumDataTypesModel.DataType.VALUE_1, results.oldValue);
+        assertEquals(false, results.listenerCalled);
+    }
+
+
+    @Test
+    public void testWithSingleReferenceModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = new BeanManager(dolphin);
+
+        final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
+        final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);
+        final SimpleTestModel ref3 = manager.create(SimpleTestModel.class);
+
+        final SingleReferenceModel model = manager.create(SingleReferenceModel.class);
+
+        final ListerResults results = new ListerResults();
+        final ValueChangeListener<SimpleTestModel> myListener = new ValueChangeListener<SimpleTestModel>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends SimpleTestModel> evt) {
+                assertEquals(model.getReferenceProperty(), evt.getSource());
+                results.newValue = evt.getNewValue();
+                results.oldValue = evt.getOldValue();
+                results.listenerCalled = true;
+            }
+        };
+
+        model.getReferenceProperty().addValueListener(myListener);
+        assertEquals(null, results.newValue);
+        assertEquals(null, results.oldValue);
+        assertEquals(false, results.listenerCalled);
+
+        model.getReferenceProperty().set(ref1);
+        assertEquals(ref1, results.newValue);
+        assertEquals(null, results.oldValue);
+        assertEquals(true, results.listenerCalled);
+
+        results.listenerCalled = false;
+        model.getReferenceProperty().set(ref2);
+        assertEquals(ref2, results.newValue);
+        assertEquals(ref1, results.oldValue);
+        assertEquals(true, results.listenerCalled);
+
+        results.listenerCalled = false;
+        model.getReferenceProperty().removeValueListener(myListener);
+        model.getReferenceProperty().set(ref3);
+        assertEquals(ref2, results.newValue);
+        assertEquals(ref1, results.oldValue);
         assertEquals(false, results.listenerCalled);
     }
 

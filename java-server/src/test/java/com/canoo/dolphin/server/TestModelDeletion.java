@@ -4,6 +4,7 @@ import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.EnumDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.junit.Test;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -70,6 +71,25 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.delete(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName());
+        assertNotNull(dolphinModels);
+        assertEquals(0, dolphinModels.size());
+
+        Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
+        assertNotNull(allDolphinModels);
+        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+
+        assertFalse(manager.isManaged(model));
+    }
+    @Test
+    public void testWithSingleReferenceModel() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        SingleReferenceModel model = manager.create(SingleReferenceModel.class);
+
+        manager.delete(model);
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
         assertNotNull(dolphinModels);
         assertEquals(0, dolphinModels.size());
 
