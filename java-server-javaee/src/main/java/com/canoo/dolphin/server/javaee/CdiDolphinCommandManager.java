@@ -26,7 +26,7 @@ public class CdiDolphinCommandManager implements DolphinCommandManager {
         for (Class<?> cls : dolphinManagedClasses) {
             Bean<?> bean = getBean(beanManager, cls);
             Object reference = beanManager.getReference(bean, bean.getBeanClass(), beanManager.createCreationalContext(bean));
-            DolphinCommandRegistration.registerAllComands(serverDolphin, cls, reference);
+            DolphinCommandRegistration.registerAllCommands(serverDolphin, cls, reference);
         }
     }
 

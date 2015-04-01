@@ -23,7 +23,7 @@ import java.util.List;
 public class DolphinCommandRegistration {
 
     //TODO: Die ganzen Methoden sollten nicht statisch sein. Aktuell noch Hack
-    public static <T> void registerAllCommands(final ServerDolphin dolphin, final Class<T> cls, final T managedObject) {
+    public static <T> void registerAllCommands(final ServerDolphin dolphin, final Class<? extends T> cls, final T managedObject) {
         dolphin.register(new DolphinServerAction() {
             @Override
             public void registerIn(ActionRegistry registry) {
