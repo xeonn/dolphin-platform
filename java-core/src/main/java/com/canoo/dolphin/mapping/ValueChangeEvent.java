@@ -1,24 +1,20 @@
 package com.canoo.dolphin.mapping;
 
-/**
- * Created by hendrikebbers on 23.03.15.
- */
 public class ValueChangeEvent<T> {
 
-    private Object source;
+    private final Property<T> source;
 
-    private T oldValue;
+    private final T oldValue;
 
-    private T newValue;
+    private final T newValue;
 
-    public ValueChangeEvent(Object source,
-                               T oldValue, T newValue) {
+    public ValueChangeEvent(Property<T> source, T oldValue, T newValue) {
         this.source = source;
         this.newValue = newValue;
         this.oldValue = oldValue;
     }
 
-    public Object getSource() {
+    public Property<T> getSource() {
         return source;
     }
 
