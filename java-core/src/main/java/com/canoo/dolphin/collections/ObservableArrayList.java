@@ -109,7 +109,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
             return false;
         }
         list.addAll(index, c);
-        fireListChanged(new SingleChangeEvent(index, index + c.size(), Collections.<E>emptyList()));
+        fireListChanged(new ListChangeEvent<>(this, index, index + c.size(), Collections.<E>emptyList()));
         return true;
     }
 
@@ -132,7 +132,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
         }
         final ArrayList<E> removed = new ArrayList<>(list);
         list.clear();
-        fireListChanged(new SingleChangeEvent(0, 0, removed));
+        fireListChanged(new ListChangeEvent<>(this, 0, 0, removed));
     }
 
     @Override
@@ -143,20 +143,20 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     @Override
     public E set(int index, E element) {
         final E oldElement = list.set(index, element);
-        fireListChanged(new SingleChangeEvent(index, index + 1, Collections.singletonList(oldElement)));
+        fireListChanged(new ListChangeEvent<>(this, index, index + 1, Collections.singletonList(oldElement)));
         return oldElement;
     }
 
     @Override
     public void add(int index, E element) {
         list.add(index, element);
-        fireListChanged(new SingleChangeEvent(index, index + 1, Collections.<E>emptyList()));
+        fireListChanged(new ListChangeEvent<>(this, index, index + 1, Collections.<E>emptyList()));
     }
 
     @Override
     public E remove(int index) {
         final E oldElement = list.remove(index);
-        fireListChanged(new SingleChangeEvent(index, index, Collections.singletonList(oldElement)));
+        fireListChanged(new ListChangeEvent<>(this, index, index, Collections.singletonList(oldElement)));
         return oldElement;
     }
 
@@ -256,20 +256,5 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     @Override
     public String toString() {
         return list.toString();
-    }
-
-    private class SingleChangeEvent extends ListChangeEvent<E> {
-
-        private final List<Change> changes;
-
-        private SingleChangeEvent(int from, int to, List<E> removed) {
-            super(ObservableArrayList.this);
-            changes = Collections.singletonList(new Change(from, to, removed));
-        }
-
-        @Override
-        public List<Change> getChanges() {
-            return changes;
-        }
     }
 }

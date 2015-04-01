@@ -591,7 +591,7 @@ public class TestObservableArrayListWriteOperations {
     public static class TestListChangeListener implements ListChangeListener<String> {
 
         private int calls;
-        private List<? extends ListChangeEvent<? extends String>.Change> changes = new ArrayList<>();
+        private List<? extends ListChangeEvent.Change<? extends String>> changes = new ArrayList<>();
 
         @Override
         public void listChanged(ListChangeEvent<? extends String> evt) {

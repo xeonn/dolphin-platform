@@ -1,28 +1,37 @@
 package com.canoo.dolphin.collections;
 
+import java.util.Collections;
 import java.util.List;
 
-public abstract class ListChangeEvent<E> {
+public class ListChangeEvent<E> {
 
     private final ObservableList<E> source;
+    private final List<Change<E>> changes;
 
-    ListChangeEvent(ObservableList<E> source) {
+    ListChangeEvent(ObservableList<E> source, int from, int to, List<E> removedElements) {
+        this(source, Collections.singletonList(new Change<E>(from, to, removedElements)));
+    }
+
+    ListChangeEvent(ObservableList<E> source, List<Change<E>> changes) {
         this.source = source;
+        this.changes = changes;
     }
 
     public ObservableList<E> getSource() {
         return source;
     }
 
-    public abstract List<Change> getChanges();
+    public List<Change<E>> getChanges() {
+        return changes;
+    }
 
-    public class Change {
+    public static class Change<S> {
 
         private final int from;
         private final int to;
-        private final List<E> removedElements;
+        private final List<S> removedElements;
 
-        Change(int from, int to, List<E> removedElements) {
+        Change(int from, int to, List<S> removedElements) {
             this.from = from;
             this.to = to;
             this.removedElements = removedElements;
@@ -36,7 +45,7 @@ public abstract class ListChangeEvent<E> {
             return to;
         }
 
-        public List<E> getRemovedElements() {
+        public List<S> getRemovedElements() {
             return removedElements;
         }
 
@@ -50,10 +59,6 @@ public abstract class ListChangeEvent<E> {
 
         public boolean isReplaced() {
             return getTo() > getFrom() && !getRemovedElements().isEmpty();
-        }
-
-        public List<E> getAddedElements() {
-            return getSource().subList(getFrom(), getTo());
         }
     }
 }
