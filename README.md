@@ -580,10 +580,10 @@ Im Server gibt es nun einen einzelnen Controller. Dies ist quasi der Controller 
 
 	@DolphinController(„hello-world“)
 	public class HelloWorldController {
-
+			
  			@Inject
  			private BeanManager manager;
-
+			
   		@DolphinAction(„init“)
   		public void init() {
     			HelloWorldModel model = manager.create(HelloWorldModel.class);
@@ -597,20 +597,20 @@ Durch die definition der beiden Annotation wird angegeben, dass der Controller z
 Die Klasse im Client sieht nun wie folgt aus:
 
 	public class HelloWorldClient extends JFrame {
-
-    public HelloWorldClient() throws HeadlessException {
-    	JTextField textfield = new JTextField();
-			ModelManager manager = …;
-      manager.addModelCreationListener(HelloWorldModel.class, m -> BIND textfield text to model.getTextProperty());
-     	manager.callAction(„hello-world:init“);
-
-    	getContentPane().add(textfield);
-     	setSize(800, 600);
-    }
-
-    public static void main(String… args) {
-        new HelloWorldClient().setVisible(true);
-    }
+			
+    	public HelloWorldClient() throws HeadlessException {
+    			JTextField textfield = new JTextField();
+					ModelManager manager = …;
+      		manager.addModelCreationListener(HelloWorldModel.class, m -> BIND textfield text to model.getTextProperty());
+     			manager.callAction(„hello-world:init“);
+					
+    			getContentPane().add(textfield);
+     			setSize(800, 600);
+    	}
+			
+    	public static void main(String… args) {
+      		new HelloWorldClient().setVisible(true);
+    	}
 	}
 
 Hier wird ein einfaches Swing UI erstellt das nur ein Textfeld beinhaltet. Nun wird ein manager auf Client-Seite erstellt (hier muss noch ein einfacher Weg definiert werden, da injection nicht geht). An den manager registrieren wir einen lister der jedesmal aufgerufen wird wenn es eine neue Instanz des HelloWorldModel gibt. Dann wird die „hello-world:init“ action aufgerufen. Wie oben beschrieben wird hierdurch die init() Methode im Server aufgerufen, was dazu führt, dass eine neue HelloWorldModel erstellt wird. Diese wird automatisch (über das unterlagerte OD-Model) mit dem Client synchronisiert. Daher wird nun der ModelCreationListener im Client aufgerufen und der text des Textfeldes mit der textProperty im Model gebunden. Sobald man nun den Textinhalt (aktuell „Hello World“, da im Server gesetzt) editiert wird die Änderung mit dem Server synchronisiert und auf Serverseite erscheint das „Client changed Text: …“ im Log.
@@ -645,18 +645,18 @@ Im  Server kann man die Actions ja als Methoden innerhalb einer Controller-Klass
 
 	@DolphinController(„hello-world“)
 	public class HelloWorldController {
-
-  	@DolphinAction(„init“)
-  	public void init() {…}
+			
+  		@DolphinAction(„init“)
+  		public void init() {…}
 	}
 
 Will man der init-Methode nun Parameter übergeben, geht man genau wie etwa in JAX-RS vor und annotiert die Übergabeparameter:
 
 	@DolphinController(„hello-world“)
 	public class HelloWorldController {
-
-  	@DolphinAction(„init“)
-  	public void init(@Param String name, @Param(„description“) String desc) {…}
+			
+  		@DolphinAction(„init“)
+  		public void init(@Param String name, @Param(„description“) String desc) {…}
 	}
 
 Die „init“ Action erwartet nun 2 Übergabeparameter:
