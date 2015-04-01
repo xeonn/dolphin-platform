@@ -32,32 +32,32 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
                 assertThat((Property<String>)evt.getSource(), is(model.getTextProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
-                results.listenerCalled = true;
+                results.listenerCalls++;
             }
         };
 
         model.getTextProperty().addValueListener(myListener);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(false));
 
         model.getTextProperty().set("Hallo Property");
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property"));
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getTextProperty().set("Hallo Property2");
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getTextProperty().removeValueListener(myListener);
         model.getTextProperty().set("Hallo Property3");
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
-        assertThat(results.listenerCalled, is(false));
     }
 
     @Test
@@ -75,32 +75,32 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
                 assertThat((Property<String>) evt.getSource(), is(model.getTextProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
-                results.listenerCalled = true;
+                results.listenerCalls++;
             }
         };
 
         model.getTextProperty().addValueListener(myListener);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(false));
 
         model.getTextProperty().set("Hallo Property");
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property"));
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getTextProperty().set("Hallo Property2");
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getTextProperty().removeValueListener(myListener);
         model.getTextProperty().set("Hallo Property3");
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
-        assertThat(results.listenerCalled, is(false));
     }
 
 
@@ -119,32 +119,32 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
                 assertThat((Property<EnumDataTypesModel.DataType>) evt.getSource(), is(model.getEnumProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
-                results.listenerCalled = true;
+                results.listenerCalls++;
             }
         };
 
         model.getEnumProperty().addValueListener(myListener);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(false));
 
         model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_1);
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is(EnumDataTypesModel.DataType.VALUE_1));
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_2);
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is(EnumDataTypesModel.DataType.VALUE_2));
         assertThat(results.oldValue, is(EnumDataTypesModel.DataType.VALUE_1));
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getEnumProperty().removeValueListener(myListener);
         model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_3);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, is(EnumDataTypesModel.DataType.VALUE_2));
         assertThat(results.oldValue, is(EnumDataTypesModel.DataType.VALUE_1));
-        assertThat(results.listenerCalled, is(false));
     }
 
 
@@ -167,37 +167,37 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
                 assertThat((Property<SimpleTestModel>) evt.getSource(), is(model.getReferenceProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
-                results.listenerCalled = true;
+                results.listenerCalls++;
             }
         };
 
         model.getReferenceProperty().addValueListener(myListener);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(false));
 
         model.getReferenceProperty().set(ref1);
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is(ref1));
         assertThat(results.oldValue, nullValue());
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getReferenceProperty().set(ref2);
+        assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is(ref2));
         assertThat(results.oldValue, is(ref1));
-        assertThat(results.listenerCalled, is(true));
 
-        results.listenerCalled = false;
+        results.listenerCalls = 0;
         model.getReferenceProperty().removeValueListener(myListener);
         model.getReferenceProperty().set(ref3);
+        assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, is(ref2));
         assertThat(results.oldValue, is(ref1));
-        assertThat(results.listenerCalled, is(false));
     }
 
     private static class ListerResults<T> {
         public T newValue;
         public T oldValue;
-        public boolean listenerCalled;
+        public int listenerCalls;
     }
 }

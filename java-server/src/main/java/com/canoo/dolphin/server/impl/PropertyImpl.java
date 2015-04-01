@@ -33,9 +33,7 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     public void set(T newValue) {
-        T oldValue = get();
         dolphinAccessor.setValue(attribute, newValue);
-        firePropertyChanged(oldValue, newValue);
     }
 
     @SuppressWarnings("unchecked")
