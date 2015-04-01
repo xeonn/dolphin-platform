@@ -560,8 +560,7 @@ Um nun mit dem Model und dessen Daten zu arbeiten bietet die Property verschiede
 Anmerkungen:
 Momentan wissen wir noch nicht genau, ob wir einfach mit dem generischen Property-Ansatz arbeiten können oder ob es für die Primitiven Datentypen fertige Implementierungen geben muss (IntegerProperty, StringProperty) wie es z.B. bei JavaFX der Fall ist.
 
-Aktueller Stand & „Hello World“ Example
-———————
+## Aktueller Stand & „Hello World“ Example
 
 Mit der Definition des Model sind wir bereits sehr weit. Modelle könne bereits im Server erstellt werden und werden hierbei automatisch mit einem PM gebunden. Zentrale API im Server ist hierbei der BeanManager, welcher ähnlich dem EntityManager in JPA grundlegende Funktionen anbietet.
 Aktuell bin ich dabei einen solchen Manager für die Client-Seite zu definieren. Dieser bietet aufgrund der anderen Vorgehensweise auf dem Client auch andere Methoden als der Manager im Server. Wie das ganze am Ende aussehen wird muss sicher noch diskutiert werden. Als Basis habe ich mal ein „hello-world“ Modul hinzugefügt in dem man sehen kann wie ein einfacher Ablauf funktioniert:
@@ -570,11 +569,11 @@ Client und Server teilen sich hierbei eine Model-Klasse, welche nur einen String
 
 	public class HelloWorldModel {
 
-  	private Property<String> text;
+  		private Property<String> text;
 
-    public Property<String> getTextProperty() {
-        return text;
-    }
+    	public Property<String> getTextProperty() {
+     			return text;
+    	}
 	}
 
 Im Server gibt es nun einen einzelnen Controller. Dies ist quasi der Controller der Hello-World-View. In der finalen Version sollte es reichen ein WAR mit dieser einen Klasse (und den Abhängigkeiten) zu bauen und auf einem Server zu deployen. Hier der Code des Controllers:
@@ -582,16 +581,16 @@ Im Server gibt es nun einen einzelnen Controller. Dies ist quasi der Controller 
 	@DolphinController(„hello-world“)
 	public class HelloWorldController {
 
-  	@Inject
- 		private BeanManager manager;
+ 			@Inject
+ 			private BeanManager manager;
 
-  	@DolphinAction(„init“)
-  	public void init() {
-    	HelloWorldModel model = manager.create(HelloWorldModel.class);
-    	model.getTextProperty().set(„Hello World“);
-     	model.getTextProperty().addValueListener(e -> System.out.println(„Client changed Text: „ + e.getNewValue()));
-   	}
-}
+  		@DolphinAction(„init“)
+  		public void init() {
+    			HelloWorldModel model = manager.create(HelloWorldModel.class);
+    			model.getTextProperty().set(„Hello World“);
+     			model.getTextProperty().addValueListener(e -> System.out.println(„Client changed Text: „ + e.getNewValue()));
+   		}
+	}
 
 Durch die definition der beiden Annotation wird angegeben, dass der Controller zur „hello-world“ gehört und eine „init“ action definiert. Diese wird in Open Dolphin als „hello-world:init“ Command definiert (ich hab bisher einfach mal „:“ als Trennzeichen definiert). Sobald die init action aufgerufen wird erstellt der Controller eine HelloWorldModel Instanz. Hierbei wird die create() Methode des managers genutzt. Dies führt dazu, dass die Instanz an ein PM gebunden ist. Danach wird noch der text gesetzt und ein Listener für den text registriert.
 
@@ -616,12 +615,12 @@ Die Klasse im Client sieht nun wie folgt aus:
 
 Hier wird ein einfaches Swing UI erstellt das nur ein Textfeld beinhaltet. Nun wird ein manager auf Client-Seite erstellt (hier muss noch ein einfacher Weg definiert werden, da injection nicht geht). An den manager registrieren wir einen lister der jedesmal aufgerufen wird wenn es eine neue Instanz des HelloWorldModel gibt. Dann wird die „hello-world:init“ action aufgerufen. Wie oben beschrieben wird hierdurch die init() Methode im Server aufgerufen, was dazu führt, dass eine neue HelloWorldModel erstellt wird. Diese wird automatisch (über das unterlagerte OD-Model) mit dem Client synchronisiert. Daher wird nun der ModelCreationListener im Client aufgerufen und der text des Textfeldes mit der textProperty im Model gebunden. Sobald man nun den Textinhalt (aktuell „Hello World“, da im Server gesetzt) editiert wird die Änderung mit dem Server synchronisiert und auf Serverseite erscheint das „Client changed Text: …“ im Log.
 
-Definition der Manager Funktionalität im Client & Server
-———————
+## Definition der Manager Funktionalität im Client & Server
+
 
 Neben den im „Hello-World“ Beispiel gezeigten Methoden bieten die Manager auf Client und Server-Seite noch ein paar weitere Methoden an:
 
-###Manager im Server:###
+### Manager im Server:
 - **T create(Class<T> beanClass)** erstellt eine neue Model-Instanz. Diese ist direkt mit einem automatisch erstellten PM verbunden.
 - **void delete(T bean)** löscht ein Model. Hierdurch wird das unterlagerte PM gelöscht und das bean / model ist nicht mehr durch den manager gemanaged.
 - **boolean isManaged(Object bean)** überprüft ob das bean gemanagt ist. Dies trifft zu, wenn es für das bean ein passendes PM gibt. Das Bean muss also mit create(..) erstellt worden sein und darf nicht durch delete(…) gelöscht worden sein
@@ -629,7 +628,7 @@ Neben den im „Hello-World“ Beispiel gezeigten Methoden bieten die Manager au
 - **void deleteAll(Class<?> beanClass)** Löscht alle gemanagten Instanzen einer Bean Klasse
 Neben diesem Methoden ist es meiner Meinung nach noch sinnvoll eine Query-API anzubieten um neben einem findAll() auch spezifische Instanzen zu finden. Muss man z.B. mit einem Context arbeiten (was meiner Meinung nach bei großen Anwendungen immer der Fall sein wird) kann man so eine Instanz passend zu einem Context finden. Ich hab bereits ein paar Ideen hierzu im „query-api“ Branch hinterlegt.
 
-###Manager im Client:###
+### Manager im Client:
 - **void callAction(String actionName, ActionParam… params)** ruft eine Action im Server auf. Hierbei können wahlweise Parameter übergeben werden. Mehr zu Parametern siehe weiter unten.
 - **void callAction(String actionName, final Callback callback, ActionParam… params)** ruft eine Action im Server auf. Hierbei können wahlweise Parameter übergeben werden. Mehr zu Parametern siehe weiter unten. Zusätzlich wird ein Callback definiert das ausgeführt wird sobald die Action ausgeführt wurde. Das ganze ist z.B. sinnvoll um einen Warte-Mauszeiger anzuzeigen, etc.
 - **void addModelCreationListener(Class<T> modelClass, ModelCreationListener<T> listener)** registriert einen Listener der immer aufgerufen wird sobald es eine neue Instanz der angebenden Bean-Klasse gibt.
@@ -639,8 +638,7 @@ Neben diesem Methoden ist es meiner Meinung nach noch sinnvoll eine Query-API an
 
 Aktuell glaube ich, dass diese Methoden für die Grundfunktionalitäten ausreichen könnten. Was meint ihr?
 
-Action-Parameter
-———————
+## Action-Parameter
 In Open Dolphin ist es nicht möglich, dass beim Aufrufen eines Commands Parameter mit an den Server übermittelt werden. Dies wird hier durch Presentation Models gelöst. Da man sich hierbei immer wieder spezielle MPs baut um diese Parameter zu wrappen, haben wir uns überlegt, dass die Platform Parameter unterstützen soll. Ich habe mal eine ersten Prototyp für die Unterstetzung von Parametern definiert:
 
 Im  Server kann man die Actions ja als Methoden innerhalb einer Controller-Klasse definieren:
