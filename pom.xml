@@ -12,6 +12,7 @@
         <module>java-client</module>
         <module>java-server</module>
         <module>java-server-javaee</module>
+        <module>hello-world-example</module>
     </modules>
 
 
