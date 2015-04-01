@@ -3,15 +3,12 @@ package com.canoo.dolphin.server;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
-import org.junit.Test;
 import org.opendolphin.core.server.ServerDolphin;
+import org.testng.annotations.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-/**
- * Created by hendrikebbers on 30.03.15.
- */
 public class TestDeleteAll extends AbstractDolphinBasedTest {
 
     @Test
@@ -26,10 +23,11 @@ public class TestDeleteAll extends AbstractDolphinBasedTest {
         SimpleAnnotatedTestModel wrongModel = manager.create(SimpleAnnotatedTestModel.class);
 
         manager.deleteAll(SimpleTestModel.class);
-        assertFalse(manager.isManaged(model1));
-        assertFalse(manager.isManaged(model2));
-        assertFalse(manager.isManaged(model3));
-        assertTrue(manager.isManaged(wrongModel));
+        assertThat(manager.isManaged(model1), is(false));
+        assertThat(manager.isManaged(model1), is(false));
+        assertThat(manager.isManaged(model2), is(false));
+        assertThat(manager.isManaged(model3), is(false));
+        assertThat(manager.isManaged(wrongModel), is(true));
     }
 }
 

@@ -2,23 +2,22 @@ package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.EnumDataTypesModel;
+import com.canoo.dolphin.server.util.ListReferenceModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import com.canoo.dolphin.server.util.SingleReferenceModel;
-import org.junit.Test;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
+import org.testng.annotations.Test;
 
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-/**
- * Created by hendrikebbers on 30.03.15.
- */
 public class TestModelDeletion extends AbstractDolphinBasedTest {
 
     @Test
@@ -31,14 +30,12 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.delete(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
-        assertNotNull(dolphinModels);
-        assertEquals(0, dolphinModels.size());
+        assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
-        assertNotNull(allDolphinModels);
-        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+        assertThat(allDolphinModels, hasSize(1));
 
-        assertFalse(manager.isManaged(model));
+        assertThat(manager.isManaged(model), is(false));
     }
 
     @Test
@@ -51,14 +48,12 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.delete(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
-        assertNotNull(dolphinModels);
-        assertEquals(0, dolphinModels.size());
+        assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
-        assertNotNull(allDolphinModels);
-        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+        assertThat(allDolphinModels, hasSize(1));
 
-        assertFalse(manager.isManaged(model));
+        assertThat(manager.isManaged(model), is(false));
     }
 
     @Test
@@ -71,14 +66,12 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.delete(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName());
-        assertNotNull(dolphinModels);
-        assertEquals(0, dolphinModels.size());
+        assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
-        assertNotNull(allDolphinModels);
-        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+        assertThat(allDolphinModels, hasSize(1));
 
-        assertFalse(manager.isManaged(model));
+        assertThat(manager.isManaged(model), is(false));
     }
     @Test
     public void testWithSingleReferenceModel() {
@@ -90,14 +83,30 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.delete(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
-        assertNotNull(dolphinModels);
-        assertEquals(0, dolphinModels.size());
+        assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
-        assertNotNull(allDolphinModels);
-        assertEquals(1, allDolphinModels.size()); //Dolphin Class Repository wurde bereits angelegt
+        assertThat(allDolphinModels, hasSize(1));
 
-        assertFalse(manager.isManaged(model));
+        assertThat(manager.isManaged(model), is(false));
+    }
+
+    @Test (enabled = false)
+    public void testWithListReferenceModel() {
+        ServerDolphin dolphin = createServerDolphin();
+        BeanManager manager = new BeanManager(dolphin);
+
+        ListReferenceModel model = manager.create(ListReferenceModel.class);
+
+        manager.delete(model);
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName());
+        assertThat(dolphinModels, empty());
+
+        Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
+        assertThat(allDolphinModels, hasSize(1));    //Dolphin Class Repository wurde bereits angelegt
+
+        assertThat(manager.isManaged(model), is(false));
     }
 
 }

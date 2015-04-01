@@ -52,9 +52,9 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     protected void firePropertyChanged(T oldValue, T newValue) {
+        final ValueChangeEvent<T> event = new ValueChangeEvent<>(this, oldValue, newValue);
         for(ValueChangeListener<? super T> listener : listeners) {
-            listener.valueChanged(new ValueChangeEvent<>(this,
-                    oldValue, newValue));
+            listener.valueChanged(event);
         }
     }
 

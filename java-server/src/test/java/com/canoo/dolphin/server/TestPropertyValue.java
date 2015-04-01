@@ -6,19 +6,18 @@ import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import com.canoo.dolphin.server.util.SingleReferenceModel;
-import org.junit.Test;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
-/**
- * Created by hendrikebbers on 30.03.15.
- */
 public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
@@ -31,15 +30,15 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType("simple_test_model").get(0);
 
         Attribute textAttribute = dolphinModel.findAttributeByPropertyName("text_property");
-        assertEquals(null, textAttribute.getValue());
+        assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertEquals("Hallo Platform", textAttribute.getValue());
-        assertEquals("Hallo Platform", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertEquals("Hallo Dolphin", textAttribute.getValue());
-        assertEquals("Hallo Dolphin", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
     }
 
     @Test
@@ -52,15 +51,15 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName()).get(0);
 
         Attribute textAttribute = dolphinModel.findAttributeByPropertyName("text");
-        assertEquals(null, textAttribute.getValue());
+        assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertEquals("Hallo Platform", textAttribute.getValue());
-        assertEquals("Hallo Platform", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertEquals("Hallo Dolphin", textAttribute.getValue());
-        assertEquals("Hallo Dolphin", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
     }
 
     @Test
@@ -73,39 +72,39 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName()).get(0);
 
         Attribute textAttribute = dolphinModel.findAttributeByPropertyName("textProperty");
-        assertEquals(null, textAttribute.getValue());
+        assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertEquals("Hallo Platform", textAttribute.getValue());
-        assertEquals("Hallo Platform", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertEquals("Hallo Dolphin", textAttribute.getValue());
-        assertEquals("Hallo Dolphin", model.getTextProperty().get());
+        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
 
 
         Attribute intAttribute = dolphinModel.findAttributeByPropertyName("integerProperty");
-        assertEquals(null, intAttribute.getValue());
+        assertThat(intAttribute.getValue(), nullValue());
 
         model.getIntegerProperty().set(1);
-        assertEquals(1, intAttribute.getValue());
-        assertEquals(1, model.getIntegerProperty().get().intValue());
+        assertThat(intAttribute.getValue(), is((Object) 1));
+        assertThat(model.getIntegerProperty().get(), is(1));
 
         intAttribute.setValue(2);
-        assertEquals(2, intAttribute.getValue());
-        assertEquals(2, model.getIntegerProperty().get().intValue());
+        assertThat(intAttribute.getValue(), is((Object) 2));
+        assertThat(model.getIntegerProperty().get(), is(2));
 
 
         Attribute booleanAttribute = dolphinModel.findAttributeByPropertyName("booleanProperty");
-        assertEquals(null, booleanAttribute.getValue());
+        assertThat(booleanAttribute.getValue(), nullValue());
 
         model.getBooleanProperty().set(true);
-        assertEquals(true, booleanAttribute.getValue());
-        assertEquals(true, model.getBooleanProperty().get().booleanValue());
+        assertThat(booleanAttribute.getValue(), is((Object) true));
+        assertThat(model.getBooleanProperty().get(), is(true));
 
         model.getBooleanProperty().set(false);
-        assertEquals(false, booleanAttribute.getValue());
-        assertEquals(false, model.getBooleanProperty().get().booleanValue());
+        assertThat(booleanAttribute.getValue(), is((Object) false));
+        assertThat(model.getBooleanProperty().get(), is(false));
 
     }
 
@@ -120,18 +119,18 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName()).get(0);
 
         Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
-        assertEquals(null, enumAttribute.getValue());
+        assertThat(enumAttribute.getValue(), nullValue());
 
         model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_1);
-        assertEquals(EnumDataTypesModel.DataType.VALUE_1.ordinal(), enumAttribute.getValue());
-        assertEquals(EnumDataTypesModel.DataType.VALUE_1, model.getEnumProperty().get());
+        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.VALUE_1.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.VALUE_1));
 
         ServerPresentationModel enumModels = dolphin.findPresentationModelById(EnumDataTypesModel.DataType.class.getName());
-        assertNotNull(enumModels);
+        assertThat(enumModels, notNullValue());
 
         enumAttribute.setValue(EnumDataTypesModel.DataType.VALUE_2.ordinal());
-        assertEquals(EnumDataTypesModel.DataType.VALUE_2.ordinal(), enumAttribute.getValue());
-        assertEquals(EnumDataTypesModel.DataType.VALUE_2, model.getEnumProperty().get());
+        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.VALUE_2.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.VALUE_2));
     }
 
 
@@ -153,14 +152,14 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName()).get(0);
 
         final Attribute referenceAttribute = dolphinModel.findAttributeByPropertyName("referenceProperty");
-        assertEquals(null, referenceAttribute.getValue());
+        assertThat(referenceAttribute.getValue(), nullValue());
 
         model.getReferenceProperty().set(ref1);
-        assertEquals(ref1PM.getId(), referenceAttribute.getValue());
-        assertEquals(ref1, model.getReferenceProperty().get());
+        assertThat(referenceAttribute.getValue(), is((Object) ref1PM.getId()));
+        assertThat(model.getReferenceProperty().get(), is(ref1));
 
         referenceAttribute.setValue(ref2PM.getId());
-        assertEquals(ref2PM.getId(), referenceAttribute.getValue());
-        assertEquals(ref2, model.getReferenceProperty().get());
+        assertThat(referenceAttribute.getValue(), is((Object) ref2PM.getId()));
+        assertThat(model.getReferenceProperty().get(), is(ref2));
     }
 }
