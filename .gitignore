@@ -8,3 +8,5 @@ dolphin-platform-server.iml
 dolphin-platform-server-javaee.iml
 java-client/target
 java-core/target
+hello-world-example/target
+hello-world-example.iml

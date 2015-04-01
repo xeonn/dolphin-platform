@@ -1,12 +1,9 @@
 package com.canoo.dolphin.server.servlet;
 
-import com.canoo.dolphin.server.DolphinManaged;
 import com.canoo.dolphin.server.container.DolphinCommandManager;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.server.adapter.DolphinServlet;
-import org.reflections.Reflections;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
