@@ -10,18 +10,19 @@ import java.awt.*;
 public class HelloWorldClient extends JFrame {
 
     public HelloWorldClient() throws HeadlessException {
-        final JLabel label = new JLabel("TADA");
+        final JTextField textfield = new JTextField();
 
+        //TODO: Es muss einfach sein einen Manager im Client zu erstellen.
         ModelManager manager = null;
         manager.addModelCreationListener(HelloWorldModel.class, new ModelCreationListener<HelloWorldModel>() {
             @Override
             public void modelCreated(HelloWorldModel model) {
-                //TODO: Bind label text to model.getTextProperty()
+                //TODO: Bind textfield text to model.getTextProperty()
             }
         });
         manager.callAction("hello-world:init");
 
-        getContentPane().add(label);
+        getContentPane().add(textfield);
         setSize(800, 600);
     }
 
