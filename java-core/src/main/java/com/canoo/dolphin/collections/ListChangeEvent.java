@@ -9,10 +9,16 @@ public class ListChangeEvent<E> {
     private final List<Change<E>> changes;
 
     ListChangeEvent(ObservableList<E> source, int from, int to, List<E> removedElements) {
-        this(source, Collections.singletonList(new Change<E>(from, to, removedElements)));
+        this(source, Collections.singletonList(new Change<>(from, to, removedElements)));
     }
 
     ListChangeEvent(ObservableList<E> source, List<Change<E>> changes) {
+        if (source == null || changes == null) {
+            throw new NullPointerException("Parameters 'source' and 'changes' cannot be null");
+        }
+        if (changes.isEmpty()) {
+            throw new IllegalArgumentException("ChangeList cannot be empty");
+        }
         this.source = source;
         this.changes = changes;
     }
@@ -32,6 +38,15 @@ public class ListChangeEvent<E> {
         private final List<S> removedElements;
 
         Change(int from, int to, List<S> removedElements) {
+            if (from < 0) {
+                throw new IllegalArgumentException("Parameter 'from' cannot be negative");
+            }
+            if (to < from) {
+                throw new IllegalArgumentException("Parameter 'to' cannot be smaller than 'from'");
+            }
+            if (removedElements == null) {
+                throw new NullPointerException("Parameter 'removedElements' cannot be null");
+            }
             this.from = from;
             this.to = to;
             this.removedElements = removedElements;
@@ -54,7 +69,7 @@ public class ListChangeEvent<E> {
         }
 
         public boolean isRemoved() {
-            return getTo() <= getFrom() && !getRemovedElements().isEmpty();
+            return getTo() == getFrom() && !getRemovedElements().isEmpty();
         }
 
         public boolean isReplaced() {
