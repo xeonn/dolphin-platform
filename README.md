@@ -674,3 +674,23 @@ Wie man sehen kann, ist es möglich dem Aufruf eine beliebige Anzahl von Paramet
 	manager.callAction(„hello-world:init“, nameParam, descParam);
 
 Sollten vom Client falsche oder zu wenig Parameter übergeben werden, so fliegt eine Exception im Server. Wahlweise kann man sich auch überlegen, ob man in der Param-Annotation im Server definieren kann, ob Parameter nur wahlweise sind und z.B. eine Default-Value angeben. Was haltet ihr von der Idee?
+
+## Datenfluss
+Eine wesentliche Designentscheidung, die wir recht zügig treffen müssen, ist die Frage, wo welche Änderungen durchgeführt werden können, also wie der Datenfluss verläuft. Drei Varianten stehen zur Auswahlé
+1. Sämtliche Änderungen sind auf beiden Seiten möglich.
+2. Alle Änderungen sind nur auf einer Seite möglich.
+3. Eine Mischform der ersten beiden Varianten, also beispielsweise können Objekte nur auf einer Seite angelegt und gelöscht, aber auf beiden Seiten modifiziert werden.
+
+Variante 2 erscheint auf den ersten Blick ungewöhnlich, aber vielversprechend, da sie sehr ähnlich zu Facebooks Flux Architektur ist, die momentan die Webentwicklerwelt im Sturm erobert. Das Hauptargument für diese Architektur ist, dass der Datenfluss nur ein eine Richtung verläuft und es daher viel einfacher wäre, ein solches System zu verstehen und darüber zu argumentieren. Natürlich sind die teilweise ziemlich euphorischen Erfolgsmeldungen mit Vorsicht zu geniessen, weil Flux bislang nur in neuen Projekten angewandt wurde und daher ein grosser Teil der berichteten Entwicklungsbeschleunigung von dem Mangel an Altlasten herrührt. Mit anderen Worten, niemand weiss bislang, wie sich ein auf Flux basiertes System nach Jahren des eher chaotischen Wachstums mit wechselnden Teammitgliedern unterschiedlicher Qualität verhält.
+
+Ich habe mir jetzt die Flux Architektur und davon abgeleitete Architekturen angeguckt, um ein tieferes Verständnis für diese recht essentielle Fragestellung zu entwicklen. Unterm Strich kann ich die Euphorie für Flux nicht teilen. Ein paar der Details erscheinen mir doch recht fragwürdig (vorsichtig ausgedrückt) und ich denke, es gibt jede Menge Fallstricke einem das System bei Nichbeachtung ziemlich zerschiessen können.
+
+Allerdings ist meine persönliche Meinung reine Spekulation, daher habe ich nach anderen Möglichkeiten gesucht, um Klarheit in Bezug auf Flux zu erhalten. Es stellt sich ziemlich schnell heraus, dass Flux eigentlich keine wirklich neue Architektur ist, sondern in anderen Domänen bereits Erfahrungen mit ähnlichen Änsätzen gesammelt wurden, namentlich in der Spieleentwicklung und in der Form des CQRS Patterns auf dem Server. Interessanterweise sind die Ergebnisse recht unterschiedlich. In der Spieleentwicklung ist der Ansatz sehr verbreitet, während die Erfolge des CQRS Patterns eher gemischt sind. Das Fazit der meisten Autoren, die ich zu dem Thema gelesen habe ist, dass CQRS niemals als Gesamtarchitektur eingesetzt werden sollte, aber für einzelne Komponenten einer Applikation durchaus Sinn macht. Als problematisch wird gesehen, dass man sich gerade bei einfachen CRUD Komponenten sehr viel Komplexität durch das CQRS Pattern einhandelt, ohne wirklich die Vorteile des Patterns geniessen zu können. Es ist daher auch nicht weiter überaschend, dass dieses Pattern bei 3D Spielen so erfolgreich ist, denn bei ihnen handelt es sich eigentlich kaum noch um klassische UIs, sondern eher um Simulationen, bei denen User Input nur eine von vielen Quellen ist.
+
+Meine Prognose für Flux lautet also, dass sich noch herausstellen wird, dass Flux nicht für alle Arten von Webanwendungen geeignet ist und für welche Anwendungen es Sinn macht. Ausserdem müssen noch einige Erfahrungen und daraus abgeleitete Best Practices gesammelt werden, bevor man sich relativ risikolos für oder gegen diese Architektur entscheiden kann.
+
+Als Fazit denke ich daher, wir sollten Variante 2 zwar ermöglichen, aber nicht zwingend vorschreiben.
+
+Im Moment sehe ich keinen Vorteil, den Variante 3 gegenüber Variante 1 hat. Ganz im Gegenteil glaube ich sogar, dass man in einfachen Fällen, bei denen das Presentation Model sehr nahe am Domain Object Model ist, nur unnötige Komplexität erzeugt. Ausserdem erscheint mir die Trennung, d.h. jedwede Form der Trennung, recht willkürlich.
+
+Daher plädiere ich für Variante 1 und nur wenn wir auf grössere Schwierigkeiten bei der Umsetzung stossen, sollten wir die Einschränkugen der Varianten 2 oder 3 erwägen.
