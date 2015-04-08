@@ -1,5 +1,6 @@
-package com.canoo.dolphin.collections;
+package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.collections.ListChangeEvent;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -50,5 +51,4 @@ public class TestObservableArrayListSublist {
 
         list.subList(2, 1);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server;
 
+import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.EnumDataTypesModel;
 import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
@@ -22,8 +23,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel() {
-        ServerDolphin dolphin = createServerDolphin();
-        BeanManager manager = new BeanManager(dolphin);
+        final ServerDolphin dolphin = createServerDolphin();
+        final ClassRepository classRepository = new ClassRepository(dolphin);
+        final BeanManager manager = new BeanManager(dolphin, classRepository);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -43,8 +45,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithSimpleModel() {
-        ServerDolphin dolphin = createServerDolphin();
-        BeanManager manager = new BeanManager(dolphin);
+        final ServerDolphin dolphin = createServerDolphin();
+        final ClassRepository classRepository = new ClassRepository(dolphin);
+        final BeanManager manager = new BeanManager(dolphin, classRepository);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -64,8 +67,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAllPrimitiveDataTypesModel() {
-        ServerDolphin dolphin = createServerDolphin();
-        BeanManager manager = new BeanManager(dolphin);
+        final ServerDolphin dolphin = createServerDolphin();
+        final ClassRepository classRepository = new ClassRepository(dolphin);
+        final BeanManager manager = new BeanManager(dolphin, classRepository);
 
         PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
 
@@ -111,8 +115,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithEnumDataTypeModel() {
-        ServerDolphin dolphin = createServerDolphin();
-        BeanManager manager = new BeanManager(dolphin);
+        final ServerDolphin dolphin = createServerDolphin();
+        final ClassRepository classRepository = new ClassRepository(dolphin);
+        final BeanManager manager = new BeanManager(dolphin, classRepository);
 
         EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
@@ -121,23 +126,24 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
         assertThat(enumAttribute.getValue(), nullValue());
 
-        model.getEnumProperty().set(EnumDataTypesModel.DataType.VALUE_1);
-        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.VALUE_1.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.VALUE_1));
+        model.getEnumProperty().set(EnumDataTypesModel.DataType.TEST_VALUE_1);
+        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.TEST_VALUE_1.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.TEST_VALUE_1));
 
         ServerPresentationModel enumModels = dolphin.findPresentationModelById(EnumDataTypesModel.DataType.class.getName());
         assertThat(enumModels, notNullValue());
 
-        enumAttribute.setValue(EnumDataTypesModel.DataType.VALUE_2.ordinal());
-        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.VALUE_2.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.VALUE_2));
+        enumAttribute.setValue(EnumDataTypesModel.DataType.TEST_VALUE_2.ordinal());
+        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.TEST_VALUE_2.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.TEST_VALUE_2));
     }
 
 
     @Test
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final BeanManager manager = new BeanManager(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin);
+        final BeanManager manager = new BeanManager(dolphin, classRepository);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         ref1.getTextProperty().set("ref1_text");

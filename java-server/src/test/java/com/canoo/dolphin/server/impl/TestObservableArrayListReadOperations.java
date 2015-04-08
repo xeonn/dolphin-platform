@@ -1,4 +1,4 @@
-package com.canoo.dolphin.collections;
+package com.canoo.dolphin.server.impl;
 
 import org.testng.annotations.Test;
 

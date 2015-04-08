@@ -1,5 +1,8 @@
-package com.canoo.dolphin.collections;
+package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.collections.ListChangeEvent;
+import com.canoo.dolphin.collections.ListChangeListener;
+import org.hamcrest.MatcherAssert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 
 public class TestObservableArrayListWriteOperations {
 
-    // TODO: clear, set, removeAll, retainAll
+    // TODO: removeAll, retainAll
 
     //////////////////////////////////////////
     // add(Object)
@@ -51,7 +54,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -67,7 +70,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
     }
 
 
@@ -87,7 +90,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -102,7 +105,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -117,7 +120,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(2)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(2)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -132,7 +135,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
     }
 
     @Test (expectedExceptions = IndexOutOfBoundsException.class)
@@ -164,7 +167,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
     }
 
     @Test
@@ -180,7 +183,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
     }
 
     @Test
@@ -196,7 +199,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
     }
 
     @Test
@@ -212,7 +215,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
     }
 
     @Test
@@ -247,7 +250,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
     }
 
     @Test
@@ -263,7 +266,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
     }
 
     @Test
@@ -279,7 +282,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
     }
 
     @Test
@@ -295,7 +298,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
     }
 
     @Test (expectedExceptions = IndexOutOfBoundsException.class)
@@ -328,7 +331,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -344,7 +347,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -386,7 +389,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -402,7 +405,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -418,7 +421,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(4)), hasProperty("removedElements", empty())));
     }
 
     @Test
@@ -434,7 +437,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
     }
 
     @Test (expectedExceptions = IndexOutOfBoundsException.class)
@@ -500,7 +503,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Arrays.asList("1", "2", "3")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Arrays.asList("1", "2", "3")))));
     }
 
 
@@ -521,7 +524,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("42")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("42")))));
     }
 
     @Test
@@ -537,7 +540,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("1")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("1")))));
     }
 
     @Test
@@ -553,7 +556,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("2")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("2")))));
     }
 
     @Test
@@ -569,7 +572,7 @@ public class TestObservableArrayListWriteOperations {
 
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
-        assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(3)), hasProperty("removedElements", is(Collections.singletonList("3")))));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(3)), hasProperty("removedElements", is(Collections.singletonList("3")))));
     }
 
     @Test (expectedExceptions = IndexOutOfBoundsException.class)

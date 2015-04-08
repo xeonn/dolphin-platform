@@ -1,79 +1,25 @@
 package com.canoo.dolphin.collections;
 
-import java.util.Collections;
 import java.util.List;
 
-public class ListChangeEvent<E> {
+public interface ListChangeEvent<E> {
 
-    private final ObservableList<E> source;
-    private final List<Change<E>> changes;
+    ObservableList<E> getSource();
 
-    ListChangeEvent(ObservableList<E> source, int from, int to, List<E> removedElements) {
-        this(source, Collections.singletonList(new Change<>(from, to, removedElements)));
-    }
+    List<Change<E>> getChanges();
 
-    ListChangeEvent(ObservableList<E> source, List<Change<E>> changes) {
-        if (source == null || changes == null) {
-            throw new NullPointerException("Parameters 'source' and 'changes' cannot be null");
-        }
-        if (changes.isEmpty()) {
-            throw new IllegalArgumentException("ChangeList cannot be empty");
-        }
-        this.source = source;
-        this.changes = changes;
-    }
+    public interface Change<S> {
 
-    public ObservableList<E> getSource() {
-        return source;
-    }
+        int getFrom();
 
-    public List<Change<E>> getChanges() {
-        return changes;
-    }
+        int getTo();
 
-    public static class Change<S> {
+        List<S> getRemovedElements();
 
-        private final int from;
-        private final int to;
-        private final List<S> removedElements;
+        boolean isAdded();
 
-        Change(int from, int to, List<S> removedElements) {
-            if (from < 0) {
-                throw new IllegalArgumentException("Parameter 'from' cannot be negative");
-            }
-            if (to < from) {
-                throw new IllegalArgumentException("Parameter 'to' cannot be smaller than 'from'");
-            }
-            if (removedElements == null) {
-                throw new NullPointerException("Parameter 'removedElements' cannot be null");
-            }
-            this.from = from;
-            this.to = to;
-            this.removedElements = removedElements;
-        }
+        boolean isRemoved();
 
-        public int getFrom() {
-            return from;
-        }
-
-        public int getTo() {
-            return to;
-        }
-
-        public List<S> getRemovedElements() {
-            return removedElements;
-        }
-
-        public boolean isAdded() {
-            return getTo() > getFrom() && getRemovedElements().isEmpty();
-        }
-
-        public boolean isRemoved() {
-            return getTo() == getFrom() && !getRemovedElements().isEmpty();
-        }
-
-        public boolean isReplaced() {
-            return getTo() > getFrom() && !getRemovedElements().isEmpty();
-        }
+        boolean isReplaced();
     }
 }

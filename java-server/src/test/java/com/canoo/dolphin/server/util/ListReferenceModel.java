@@ -4,9 +4,23 @@ import com.canoo.dolphin.collections.ObservableList;
 
 public class ListReferenceModel {
 
-    private ObservableList<SimpleTestModel> observableList;
+    public enum DataType {LIST_VALUE_1, LIST_VALUE_2}
 
-    public ObservableList<SimpleTestModel> getObservableList() {
-        return observableList;
+    private ObservableList<SimpleTestModel> objectList;
+
+    private ObservableList<String> primitiveList;
+
+    private ObservableList<DataType> enumList;
+
+    public ObservableList<SimpleTestModel> getObjectList() {
+        return objectList;
+    }
+
+    public ObservableList<String> getPrimitiveList() {
+        return primitiveList;
+    }
+
+    public ObservableList<DataType> getEnumList() {
+        return enumList;
     }
 }

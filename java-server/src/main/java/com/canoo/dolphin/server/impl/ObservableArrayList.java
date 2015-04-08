@@ -1,4 +1,8 @@
-package com.canoo.dolphin.collections;
+package com.canoo.dolphin.server.impl;
+
+import com.canoo.dolphin.collections.ListChangeEvent;
+import com.canoo.dolphin.collections.ListChangeListener;
+import com.canoo.dolphin.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,10 +35,36 @@ public class ObservableArrayList<E> implements ObservableList<E> {
         this(Arrays.asList(elements));
     }
 
-    protected final void fireListChanged(ListChangeEvent<E> event) {
+    protected void fireListChanged(ListChangeEvent<E> event) {
+        notifyInternalListeners(event);
+        notifyExternalListeners(event);
+    }
+
+    protected void notifyInternalListeners(ListChangeEvent<E> event) {
+
+    }
+
+    protected void notifyExternalListeners(ListChangeEvent<E> event) {
         for (final ListChangeListener<? super E> listener : listeners) {
             listener.listChanged(event);
         }
+    }
+
+    public void internalAdd(int index, E element) {
+        list.add(index, element);
+        notifyExternalListeners(new ListChangeEventImpl<>(this, index, index + 1, Collections.<E>emptyList()));
+    }
+
+    public void internalDelete(int from, int to) {
+        final List<E> toBeRemoved = list.subList(from, to);
+        final List<E> removedElements = Collections.unmodifiableList(new ArrayList<>(toBeRemoved));
+        toBeRemoved.clear();
+        notifyExternalListeners(new ListChangeEventImpl<>(this, from, from, removedElements));
+    }
+
+    public void internalReplace(int index, E newElement) {
+        final E oldElement = list.set(index, newElement);
+        notifyExternalListeners(new ListChangeEventImpl<>(this, index, index + 1, Collections.singletonList(oldElement)));
     }
 
     @Override
@@ -109,7 +139,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
             return false;
         }
         list.addAll(index, c);
-        fireListChanged(new ListChangeEvent<>(this, index, index + c.size(), Collections.<E>emptyList()));
+        fireListChanged(new ListChangeEventImpl<>(this, index, index + c.size(), Collections.<E>emptyList()));
         return true;
     }
 
@@ -132,7 +162,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
         }
         final ArrayList<E> removed = new ArrayList<>(list);
         list.clear();
-        fireListChanged(new ListChangeEvent<>(this, 0, 0, removed));
+        fireListChanged(new ListChangeEventImpl<>(this, 0, 0, removed));
     }
 
     @Override
@@ -143,20 +173,20 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     @Override
     public E set(int index, E element) {
         final E oldElement = list.set(index, element);
-        fireListChanged(new ListChangeEvent<>(this, index, index + 1, Collections.singletonList(oldElement)));
+        fireListChanged(new ListChangeEventImpl<>(this, index, index + 1, Collections.singletonList(oldElement)));
         return oldElement;
     }
 
     @Override
     public void add(int index, E element) {
         list.add(index, element);
-        fireListChanged(new ListChangeEvent<>(this, index, index + 1, Collections.<E>emptyList()));
+        fireListChanged(new ListChangeEventImpl<>(this, index, index + 1, Collections.<E>emptyList()));
     }
 
     @Override
     public E remove(int index) {
         final E oldElement = list.remove(index);
-        fireListChanged(new ListChangeEvent<>(this, index, index, Collections.singletonList(oldElement)));
+        fireListChanged(new ListChangeEventImpl<>(this, index, index, Collections.singletonList(oldElement)));
         return oldElement;
     }
 
@@ -183,7 +213,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         // TODO Implement wrapper to send events if sublist is modified
-        return list.subList(fromIndex, toIndex);
+        return Collections.unmodifiableList(list.subList(fromIndex, toIndex));
     }
 
     private class ListIteratorWrapper implements ListIterator<E> {

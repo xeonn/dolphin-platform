@@ -14,12 +14,12 @@ public class PropertyImpl<T> implements Property<T> {
 
     private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
-    private final DolphinAccessor dolphinAccessor;
+    private final BeanManagerAccess beanManagerAccess;
 
     private final Attribute attribute;
 
-    public PropertyImpl(final DolphinAccessor dolphinAccessor, final Attribute attribute) {
-        this.dolphinAccessor = dolphinAccessor;
+    public PropertyImpl(final BeanManagerAccess beanManagerAccess, final Attribute attribute) {
+        this.beanManagerAccess = beanManagerAccess;
         this.attribute = attribute;
 
 
@@ -27,18 +27,18 @@ public class PropertyImpl<T> implements Property<T> {
             @SuppressWarnings("unchecked")
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChanged((T) dolphinAccessor.map(attribute, evt.getOldValue()), (T) dolphinAccessor.map(attribute, evt.getNewValue()));
+                firePropertyChanged((T) beanManagerAccess.map(attribute, evt.getOldValue()), (T) beanManagerAccess.map(attribute, evt.getNewValue()));
             }
         });
     }
 
     public void set(T newValue) {
-        dolphinAccessor.setValue(attribute, newValue);
+        beanManagerAccess.setValue(attribute, newValue);
     }
 
     @SuppressWarnings("unchecked")
     public T get() {
-        return (T) dolphinAccessor.getValue(attribute);
+        return (T) beanManagerAccess.getValue(attribute);
     }
 
     public void addValueListener(ValueChangeListener<? super T> listener) {
@@ -56,9 +56,13 @@ public class PropertyImpl<T> implements Property<T> {
         }
     }
 
-    public interface DolphinAccessor {
+    public interface BeanManagerAccess {
+
         Object getValue(Attribute attribute);
+
         void setValue(Attribute attribute, Object value);
+
         Object map(Attribute attribute, Object value);
     }
+
 }
