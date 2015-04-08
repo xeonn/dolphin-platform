@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server;
 
+import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
@@ -19,7 +20,8 @@ public class TestFindAll extends AbstractDolphinBasedTest {
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         SimpleTestModel model1 = manager.create(SimpleTestModel.class);
         SimpleTestModel model2 = manager.create(SimpleTestModel.class);

@@ -88,6 +88,9 @@ public class ClassRepository {
         if (fieldType != FieldType.UNKNOWN) {
             findClassAttribute(fieldAttribute, Tag.VALUE_TYPE).setValue(fieldType.ordinal());
             findClassAttribute(fieldAttribute, Tag.VALUE).setValue(value.getClass().getName());
+            if (fieldType == FieldType.ENUM) {
+                register(value.getClass());
+            }
         }
         return fieldType;
     }
@@ -131,7 +134,7 @@ public class ClassRepository {
     private Class<?> calculateFieldClass(Attribute classAttribute) {
         try {
             return Class.forName((String) classAttribute.getValue());
-        } catch (ClassCastException | ClassNotFoundException ex) {
+        } catch (NullPointerException | ClassCastException | ClassNotFoundException ex) {
             // do nothing
         }
         return null;

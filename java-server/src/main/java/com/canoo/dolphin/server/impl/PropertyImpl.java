@@ -14,12 +14,12 @@ public class PropertyImpl<T> implements Property<T> {
 
     private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
-    private final BeanManagerAccess beanManagerAccess;
+    private final BeanRepository beanRepository;
 
     private final Attribute attribute;
 
-    public PropertyImpl(final BeanManagerAccess beanManagerAccess, final Attribute attribute) {
-        this.beanManagerAccess = beanManagerAccess;
+    public PropertyImpl(final BeanRepository beanRepository, final Attribute attribute) {
+        this.beanRepository = beanRepository;
         this.attribute = attribute;
 
 
@@ -27,18 +27,20 @@ public class PropertyImpl<T> implements Property<T> {
             @SuppressWarnings("unchecked")
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChanged((T) beanManagerAccess.map(attribute, evt.getOldValue()), (T) beanManagerAccess.map(attribute, evt.getNewValue()));
+                final T oldValue = (T) PropertyImpl.this.beanRepository.mapDolphinToObjects(attribute, evt.getOldValue());
+                final T newValue = (T) PropertyImpl.this.beanRepository.mapDolphinToObjects(attribute, evt.getNewValue());
+                firePropertyChanged(oldValue, newValue);
             }
         });
     }
 
     public void set(T newValue) {
-        beanManagerAccess.setValue(attribute, newValue);
+        beanRepository.setValue(attribute, newValue);
     }
 
     @SuppressWarnings("unchecked")
     public T get() {
-        return (T) beanManagerAccess.getValue(attribute);
+        return (T) beanRepository.getValue(attribute);
     }
 
     public void addValueListener(ValueChangeListener<? super T> listener) {
@@ -55,14 +57,4 @@ public class PropertyImpl<T> implements Property<T> {
             listener.valueChanged(event);
         }
     }
-
-    public interface BeanManagerAccess {
-
-        Object getValue(Attribute attribute);
-
-        void setValue(Attribute attribute, Object value);
-
-        Object map(Attribute attribute, Object value);
-    }
-
 }

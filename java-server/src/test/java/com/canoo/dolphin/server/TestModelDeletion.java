@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server;
 
+import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.EnumDataTypesModel;
@@ -25,7 +26,8 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
     public void testWithAnnotatedSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -44,7 +46,8 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -63,7 +66,8 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
     public void testWithEnumDataTypeModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
@@ -81,7 +85,8 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
@@ -100,7 +105,8 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
     public void testWithListReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanManager manager = new BeanManager(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanManager manager = new BeanManager(beanRepository);
 
         ListReferenceModel model = manager.create(ListReferenceModel.class);
 

@@ -1,7 +1,7 @@
-package com.canoo.dolphin.server.impl;
+package com.canoo.dolphin.server.impl.collections;
 
-import com.canoo.dolphin.collections.*;
 import com.canoo.dolphin.collections.ListChangeEvent;
+import com.canoo.dolphin.collections.ObservableList;
 import mockit.Mocked;
 import org.testng.annotations.Test;
 
