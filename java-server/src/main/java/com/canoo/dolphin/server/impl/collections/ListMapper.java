@@ -6,12 +6,10 @@ import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
 import com.canoo.dolphin.server.impl.DolphinUtils;
-import org.opendolphin.core.Attribute;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
-import org.opendolphin.core.server.ServerPresentationModel;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -20,10 +18,12 @@ public class ListMapper {
 
     private final ServerDolphin dolphin;
     private final BeanRepository beanRepository;
+    private final ClassRepository classRepository;
 
     public ListMapper(ServerDolphin dolphin, final ClassRepository classRepository, BeanRepository beanRepository) {
         this.dolphin = dolphin;
         this.beanRepository = beanRepository;
+        this.classRepository = classRepository;
 
         dolphin.getModelStore().addModelStoreListener(DolphinConstants.ADD_FROM_CLIENT, new ModelStoreListener() {
             @Override
@@ -116,16 +116,16 @@ public class ListMapper {
         }
     }
 
-    private void sendAdd(Class<?> beanClass, String sourceId, String attributeName, int pos, Object element) {
+    private void sendAdd(Class<?> beanClass, String sourceId, String attributeName, int pos, Object value) {
         final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
-        final ServerPresentationModel presentationModel = builder.withType(DolphinConstants.ADD_FROM_SERVER)
+        final ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(beanClass, attributeName, value);
+        final Object element = beanRepository.mapObjectsToDolphin(fieldType, value);
+        builder.withType(DolphinConstants.ADD_FROM_SERVER)
                 .withAttribute("source", sourceId)
                 .withAttribute("attribute", attributeName)
                 .withAttribute("pos", pos)
-                .withAttribute("element")
+                .withAttribute("element", element)
                 .create();
-        final Attribute relationAttribute = presentationModel.findAttributeByPropertyName("element");
-        beanRepository.setValue(beanClass, attributeName, relationAttribute, element);
     }
 
     private void sendRemove(String sourceId, String attributeName, int from, int to) {
@@ -138,15 +138,15 @@ public class ListMapper {
                 .create();
     }
 
-    private void sendReplace(Class<?> beanClass, String sourceId, String attributeName, int pos, Object element) {
+    private void sendReplace(Class<?> beanClass, String sourceId, String attributeName, int pos, Object value) {
         final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
-        final ServerPresentationModel presentationModel = builder.withType(DolphinConstants.SET_FROM_SERVER)
+        final ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(beanClass, attributeName, value);
+        final Object element = beanRepository.mapObjectsToDolphin(fieldType, value);
+        builder.withType(DolphinConstants.SET_FROM_SERVER)
                 .withAttribute("source", sourceId)
                 .withAttribute("attribute", attributeName)
                 .withAttribute("pos", pos)
-                .withAttribute("element")
+                .withAttribute("element", element)
                 .create();
-        final Attribute relationAttribute = presentationModel.findAttributeByPropertyName("element");
-        beanRepository.setValue(beanClass, attributeName, relationAttribute, element);
     }
 }

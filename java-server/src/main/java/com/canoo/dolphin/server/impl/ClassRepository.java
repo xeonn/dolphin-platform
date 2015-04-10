@@ -12,8 +12,7 @@ import java.util.Map;
 
 public class ClassRepository {
 
-    public static enum FieldType { UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN }
-    private static final String PM_TYPE = ClassRepository.class.getName();
+    public enum FieldType { UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN }
 
     private final Map<String, Field> fieldMap = new HashMap<>();
     private final Map<Class<?>, PresentationModel> classToPresentationModel = new HashMap<>();
@@ -31,15 +30,16 @@ public class ClassRepository {
 
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin)
-                .withType(PM_TYPE)
                 .withId(id);
 
         if (beanClass.isEnum()) {
+            builder.withType(DolphinConstants.DOLPHIN_ENUM);
             final Object[] values = beanClass.getEnumConstants();
             for (int i = 0, n = values.length; i < n; i++) {
                 builder.withAttribute(Integer.toString(i), values[i].toString());
             }
         } else {
+            builder.withType(DolphinConstants.DOLPHIN_BEAN);
             DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
                 @Override
                 public void run(Field field, String attributeName) {
