@@ -19,6 +19,7 @@
     "underscore": "~1.8.3",
     "polymer": "Polymer/polymer#~0.5.5",
     "paper-radio-button": "Polymer/paper-radio-button#~0.5.5",
-    "paper-radio-group": "Polymer/paper-radio-group#~0.5.5"
+    "paper-radio-group": "Polymer/paper-radio-group#~0.5.5",
+    "observe-js": "Polymer/observe-js#~0.5.5"
   }
 }

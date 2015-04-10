@@ -1,4 +1,5 @@
 "use strict";
+require("babelify/polyfill");
 
 import * as dolphin from './dolphin_client.es6';
 

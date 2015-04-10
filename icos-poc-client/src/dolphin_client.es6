@@ -1,4 +1,6 @@
 "use strict";
+require("babelify/polyfill");
+
 import {ClassRepository} from './classrepo.es6'
 import {exists} from './helpers.es6'
 
@@ -26,8 +28,8 @@ class Dolphin {
         this.allRemovedHandlers = [];
 
         this.dolphin.getClientModelStore().onModelStoreChange(event => {
-            let model = event.clientPresentationModel;
-            let type = model.presentationModelType;
+            const model = event.clientPresentationModel;
+            const type = model.presentationModelType;
             if (event.eventType === opendolphin.Type.ADDED) {
                 switch (type) {
                     case DOLPHIN_BEAN:
@@ -54,8 +56,8 @@ class Dolphin {
                         // do nothing
                         break;
                     default:
-                        let bean = this.classRepository.load(model);
-                        let handlerList = this.addedHandlers.get(type);
+                        const bean = this.classRepository.load(model);
+                        const handlerList = this.addedHandlers.get(type);
                         if (exists(handlerList)) {
                             for (let handler of handlerList) {
                                 handler(bean);
@@ -83,9 +85,9 @@ class Dolphin {
                         // do nothing
                         break;
                     default:
-                        let bean = this.classRepository.unload(model);
+                        const bean = this.classRepository.unload(model);
                         if (exists(bean)) {
-                            let handlerList = this.removedHandlers.get(type);
+                            const handlerList = this.removedHandlers.get(type);
                             if (exists(handlerList)) {
                                 for (let handler of handlerList) {
                                     handler(bean);

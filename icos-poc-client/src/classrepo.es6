@@ -27,9 +27,9 @@ export class ClassRepository {
                 break;
             case ENUM:
                 property.get = (ord) => {
-                    let enumInfo = this.enums.get(property.type);
+                    const enumInfo = this.enums.get(property.type);
                     return exists(enumInfo) ? enumInfo[ord] : null;
-                }
+                };
                 break;
             case DOLPHIN_BEAN:
                 property.get = (id) => this.beans.get(id);
@@ -49,7 +49,7 @@ export class ClassRepository {
         }
         console.debug("ClassRepository.registerClass", model);
 
-        let classInfo = {};
+        const classInfo = {};
         for (let attribute of model.attributes) {
             let property = classInfo[attribute.propertyName];
             if (!exists(property)) {
@@ -78,7 +78,7 @@ export class ClassRepository {
         }
         console.debug("ClassRepository.registerEnum", model);
 
-        let enumInfo = []
+        const enumInfo = [];
         for (let attribute of model.attributes) {
             enumInfo[parseInt(attribute.propertyName)] = attribute.value;
         }
@@ -97,10 +97,10 @@ export class ClassRepository {
 
     load(model) {
         console.debug("ClassRepository.load():", model);
-        let classInfo = this.classes.get(model.presentationModelType);
-        let bean = {};
+        const classInfo = this.classes.get(model.presentationModelType);
+        const bean = {};
         for (let attribute of model.attributes) {
-            let property = attribute.propertyName;
+            const property = attribute.propertyName;
             attribute.onValueChange(event =>
                 bean[property] = classInfo[property].get(event.newValue)
             );
@@ -112,7 +112,7 @@ export class ClassRepository {
 
     unload(model) {
         console.debug("ClassRepository.unload():", model);
-        let bean = this.beans.get(model.id);
+        const bean = this.beans.get(model.id);
         if (exists(bean)) {
             this.beans.delete(model.id);
         }
@@ -121,7 +121,7 @@ export class ClassRepository {
     }
 
     modifyList(source, attribute, from, count, newElements) {
-        let bean = this.beans.get(source);
+        const bean = this.beans.get(source);
         if (exists(bean)) {
             let list = bean[attribute];
             if (!exists(list)) {
@@ -135,13 +135,13 @@ export class ClassRepository {
 
     addListEntry(model) {
         console.debug("ClassRepository.addListEntry", model);
-        let source    = model.findAttributeByPropertyName('source').value;
-        let attribute = model.findAttributeByPropertyName('attribute').value;
-        let pos       = model.findAttributeByPropertyName('pos').value;
-        let element   = model.findAttributeByPropertyName('element').value;
-        let classInfo = this.classInfos.get(source);
+        const source    = model.findAttributeByPropertyName('source').value;
+        const attribute = model.findAttributeByPropertyName('attribute').value;
+        const pos       = model.findAttributeByPropertyName('pos').value;
+        const element   = model.findAttributeByPropertyName('element').value;
+        const classInfo = this.classInfos.get(source);
         if (exists(classInfo)) {
-            let entry = classInfo[attribute].get(element);
+            const entry = classInfo[attribute].get(element);
             if (exists(entry)) {
                 this.modifyList(source, attribute, pos, 0, entry);
             }
@@ -150,23 +150,23 @@ export class ClassRepository {
 
     delListEntry(model) {
         console.debug("ClassRepository.delListEntry", model);
-        let source    = model.findAttributeByPropertyName('source').value;
-        let attribute = model.findAttributeByPropertyName('attribute').value;
-        let from      = model.findAttributeByPropertyName('from').value;
-        let to        = model.findAttributeByPropertyName('to').value;
+        const source    = model.findAttributeByPropertyName('source').value;
+        const attribute = model.findAttributeByPropertyName('attribute').value;
+        const from      = model.findAttributeByPropertyName('from').value;
+        const to        = model.findAttributeByPropertyName('to').value;
         this.modifyList(source, attribute, from, to-from);
 
     }
 
     setListEntry(model) {
         console.debug("ClassRepository.setListEntry", model);
-        let source    = model.findAttributeByPropertyName('source').value;
-        let attribute = model.findAttributeByPropertyName('attribute').value;
-        let pos       = model.findAttributeByPropertyName('pos').value;
-        let element   = model.findAttributeByPropertyName('element').value;
-        let classInfo = this.classInfos.get(source);
+        const source    = model.findAttributeByPropertyName('source').value;
+        const attribute = model.findAttributeByPropertyName('attribute').value;
+        const pos       = model.findAttributeByPropertyName('pos').value;
+        const element   = model.findAttributeByPropertyName('element').value;
+        const classInfo = this.classInfos.get(source);
         if (exists(classInfo)) {
-            let entry = classInfo[attribute].get(element);
+            const entry = classInfo[attribute].get(element);
             if (exists(entry)) {
                 this.modifyList(source, attribute, pos, 1, entry);
             }
