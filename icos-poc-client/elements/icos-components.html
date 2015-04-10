@@ -15,7 +15,7 @@
 
 
 
-<polymer-element name="icos-question" attributes="data">
+<polymer-element name="icos-question" attributes="data" noscript>
     <template>
         <div style="display:{{data.visible? 'inherited' : 'none'}}">
             <h4>{{data.label}}</h4>
@@ -24,16 +24,6 @@
             </template>
         </div>
     </template>
-    <script>
-        Polymer({
-            observe: {
-                'data.value': 'updateValue'
-            },
-            updateValue: function(oldValue, newValue) {
-                dolphin.getAt(this.data.dolphinId).findAttributeByPropertyName('value').setValue(newValue);
-            }
-        });
-    </script>
 </polymer-element>
 
 

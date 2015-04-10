@@ -1,5 +1,5 @@
 "use strict";
-require("babelify/polyfill");
+require('babelify/polyfill');
 
 import {ClassRepository} from './classrepo.es6'
 import {exists} from './helpers.es6'
