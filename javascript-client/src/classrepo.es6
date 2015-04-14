@@ -1,6 +1,5 @@
 "use strict";
 import {exists} from './helpers.es6'
-const _ = require('../bower_components/lodash/lodash');
 
 const UNKNOWN = 0, BASIC_TYPE = 1, ENUM = 2, DOLPHIN_BEAN = 3;
 
@@ -51,7 +50,7 @@ export class ClassRepository {
         console.debug('ClassRepository.registerClass', model);
 
         const classInfo = {};
-        _.forEach(model.attributes, attribute => {
+        model.attributes.forEach(attribute => {
             let property = classInfo[attribute.propertyName];
             if (!exists(property)) {
                 property = classInfo[attribute.propertyName] = {
@@ -88,7 +87,7 @@ export class ClassRepository {
 
         const enumInfoFromDolphin = [];
         const enumInfoToDolphin = new Map();
-        _.forEach(model.attributes, attribute => {
+        model.attributes.forEach(attribute => {
             const index = parseInt(attribute.propertyName);
             enumInfoFromDolphin[index] = attribute.value;
             enumInfoToDolphin.set(attribute.value, index);
@@ -110,7 +109,8 @@ export class ClassRepository {
         console.debug('ClassRepository.load():', model);
         const classInfo = this.classes.get(model.presentationModelType);
         const bean = {};
-        _.filter(model.attributes, 'tag', opendolphin.Tag.value())
+        model.attributes
+            .filter(attribute => attribute.tag === opendolphin.Tag.value())
             .forEach(attribute => {
                 attribute.onValueChange(event => {
                     if (event.oldValue !== event.newValue) {

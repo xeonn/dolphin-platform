@@ -1,7 +1,9 @@
 "use strict";
-require('babelify/polyfill');
+if (!global._babelPolyfill) {
+    require('babelify/polyfill');
+}
 
-import * as dolphin from './dolphin_client.es6';
+import * as dolphin from '../../javascript-client/dist/dolphin.min.js';
 
 var SERVER_URL = 'http://localhost:8080/dolphin';
 

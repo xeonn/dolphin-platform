@@ -12,7 +12,7 @@ gulp.task('clean', function(cb) {
     del(['js'], cb);
 });
 
-gulp.task('scripts', ['clean'], function() {
+gulp.task('scripts', function() {
 
     var bundler = watchify(browserify({
         entries: ['./src/app.es6'],
