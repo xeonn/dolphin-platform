@@ -1,6 +1,9 @@
 "use strict";
-if (!global._babelPolyfill) {
+try {
     require('babelify/polyfill');
+} catch (e) {
+    // This will throw an error if polyfill is
+    // already required.
 }
 
 import {ClassRepository} from './classrepo.es6'
