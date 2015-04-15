@@ -6,6 +6,7 @@ import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -137,6 +138,14 @@ public class DolphinUtils {
         }
     }
 
+
+    public static void forAllMethods(Class modelClass, MethodIterator methodIterator) {
+        for (Method method : DolphinUtils.getInheritedDeclaredMethods(modelClass)) {
+            String attributeName = getDolphinAttributePropertyNameForMethod(method);
+            methodIterator.run(method, attributeName);
+        }
+    }
+    
     public static <T> void forAllObservableLists(Class<T> beanClass, FieldIterator fieldIterator) {
         for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
             if (ObservableList.class.isAssignableFrom(field.getType())) {
@@ -145,6 +154,10 @@ public class DolphinUtils {
                 fieldIterator.run(field, attributeName);
             }
         }
+    }
+
+    public static String getDolphinAttributePropertyNameForMethod(Method method) {
+        return method.getName().replace("get","");
     }
 
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {
@@ -161,8 +174,13 @@ public class DolphinUtils {
         return beanAnnotation == null || beanAnnotation.value().isEmpty()? beanClass.getName() : beanAnnotation.value();
     }
 
+
     public interface FieldIterator {
         public abstract void run(Field field, String attributeName);
+    }
+
+    public interface MethodIterator {
+        public abstract void run(Method method, String attributeName);
     }
 
     public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
