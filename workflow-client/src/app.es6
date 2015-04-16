@@ -18,4 +18,4 @@ dolphin.connect(SERVER_URL)
         }
     )
 
-    .send('FetchProcessDefinitionsCommand');
+    .send('ProcessDefinitionCommands:fetchAll');
