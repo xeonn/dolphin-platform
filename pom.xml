@@ -16,8 +16,8 @@
         <module>spring-boot-example</module>
         <module>wildfly-example</module>
         <module>hello-world-example</module>
-        <!--<module>icos-poc-server</module>-->
-        <!--<module>workflow-server</module>-->
+        <module>icos-poc-server</module>
+        <module>workflow-server</module>
 
       </modules>
 
