@@ -1,4 +1,5 @@
 "use strict";
+import '../bower_components/observe-js/src/observe.js'
 import {exists} from './helpers.es6'
 
 const UNKNOWN = 0, BASIC_TYPE = 1, ENUM = 2, DOLPHIN_BEAN = 3;

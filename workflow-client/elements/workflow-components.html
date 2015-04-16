@@ -1,0 +1,29 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+
+<polymer-element name="workflow-process-definition" attributes="data" noscript>
+    <template>
+        <div>
+            {{data.name}} {{data.id}}
+        </div>
+    </template>
+</polymer-element>
+
+<polymer-element name="workflow-main-view" attributes="data" noscript>
+    <template>
+        <core-scaffold>
+            <core-header-panel navigation flex mode="seamed">
+                <core-toolbar>Dolphin Workflow</core-toolbar>
+                <core-menu>
+                    <!--<template repeat="{{section in data.sections}}">-->
+                        <!--<icos-section data="{{section}}"></icos-section>-->
+                    <!--</template>-->
+                    <core-item icon="work" label="{{data.name}}" horizontal="" center="" layout=""></core-item>
+                </core-menu>
+            </core-header-panel>
+            <div tool>{{data.name}}</div>
+            <div>Main content goes here...</div>
+        </core-scaffold>
+    </template>
+</polymer-element>
