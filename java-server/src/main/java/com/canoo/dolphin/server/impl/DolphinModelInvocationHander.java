@@ -1,4 +1,4 @@
-package com.canoo.dolphin.server.proxy;
+package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
@@ -36,61 +36,54 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         propertyName2list = new HashMap<>();
         method2propDesc = new HashMap<>();
 
-        instance = (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, this);
+        instance =  (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, this);
+
+        beanRepository.registerClass(modelClass);
         try {
-            PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
-
-            builder.withType(DolphinUtils.getDolphinPresentationModelTypeForClass(modelClass));
-
             BeanInfo beanInfo = DolphinUtils.getBeanInfo(modelClass);
 
-            validate(beanInfo);
-
+            PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+            builder.withType(DolphinUtils.getDolphinPresentationModelTypeForClass(modelClass));
             buildAttributes(builder, beanInfo);
 
             final PresentationModel model = builder.create();
 
-            beanRepository.registerClass(modelClass);
-
             beanRepository.getObjectPmToDolphinPm().put(instance, model);
             beanRepository.getDolphinIdToObjectPm().put(model.getId(), instance);
 
-            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
-                String propName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
-                Attribute attribute = model.findAttributeByPropertyName(propName);
-                if(attribute == null) {
-                    throw new RuntimeException("Attribute not found for property"+propName);
-                }
-                Property property = new PropertyImpl(beanRepository, attribute);
-                String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
-                propertyName2prop.put(propertyName, property);
-                method2propDesc.put(propertyDescriptor.getReadMethod(), propertyDescriptor);
-                Method writeMethod = propertyDescriptor.getWriteMethod();
-                if (writeMethod != null) {
-                    method2propDesc.put(writeMethod, propertyDescriptor);
-                }
-
-            }
-
-
-            for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-                if (List.class.isAssignableFrom(descriptor.getPropertyType())) {
-                    final String propertyName = DolphinUtils.getDolphinAttributeName(descriptor);
-                    ObservableList observableList = new ObservableArrayList() {
-                        @Override
-                        protected void notifyInternalListeners(ListChangeEvent event) {
-                            if (beanRepository.getListMapper() != null) {
-                                beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
-                            }
-                        }
-                    };
-                    propertyName2list.put(propertyName, observableList);
-                }
-            }
+            forAllPropertyDescriptors(beanRepository, beanInfo, model);
         } catch (IllegalArgumentException iae) {
             throw iae;
         } catch (Exception e) {
             throw new RuntimeException("Can't create bean", e);
+        }
+    }
+
+    private void forAllPropertyDescriptors(final BeanRepository beanRepository, BeanInfo beanInfo, final PresentationModel model) {
+        for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+            final String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
+            Attribute attribute = model.findAttributeByPropertyName(propertyName);
+            if(attribute == null) {
+                throw new RuntimeException("Attribute not found for property "+propertyName);
+            }
+            Property property = new PropertyImpl(beanRepository, attribute);
+            propertyName2prop.put(propertyName, property);
+            method2propDesc.put(propertyDescriptor.getReadMethod(), propertyDescriptor);
+            Method writeMethod = propertyDescriptor.getWriteMethod();
+            if (writeMethod != null) {
+                method2propDesc.put(writeMethod, propertyDescriptor);
+            }
+            if (isList(propertyDescriptor)) {
+                ObservableList observableList = new ObservableArrayList() {
+                    @Override
+                    protected void notifyInternalListeners(ListChangeEvent event) {
+                        if (beanRepository.getListMapper() != null) {
+                            beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
+                        }
+                    }
+                };
+                propertyName2list.put(propertyName, observableList);
+            }
         }
     }
 
@@ -105,15 +98,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         }
     }
 
-    private void validate(BeanInfo beanInfo) {
-        for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-            if (Collection.class.isAssignableFrom(descriptor.getPropertyType())) {
-                if(descriptor.getWriteMethod() != null) {
-                    throw new IllegalArgumentException("Collections should not be set, method: " + descriptor.getWriteMethod().getName());
-                }
-            }
-        }
-    }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

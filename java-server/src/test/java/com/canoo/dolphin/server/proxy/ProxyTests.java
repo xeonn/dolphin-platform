@@ -29,7 +29,7 @@ import static org.testng.Assert.assertNotNull;
 public class ProxyTests extends AbstractDolphinBasedTest {
 
     private TestCarModel car;
-    private ModelProxyFactory factory;
+    private BeanManager manager;
     private ServerDolphin dolphin;
     private BeanRepository beanRepository;
 
@@ -38,15 +38,13 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         dolphin = createServerDolphin();
         ClassRepository classRepository = new ClassRepository(dolphin);
         beanRepository = new BeanRepository(dolphin, classRepository);
-
+        manager = new BeanManager(beanRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        factory = new ModelProxyFactory(dolphin, beanRepository);
-
     }
 
     @Test
     public void testProxyInstanceCreation_not_initialized() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
         assertNotNull(car);
 
         assertEquals(null, car.getBrandNameProperty().get());
@@ -54,7 +52,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void testProxyInstanceCreation() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
         assertNotNull(car);
 
         String expectedValue = "a String";
@@ -67,7 +65,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstance_Inheritance() {
-        TestCarManufacturer manufacturer = factory.create(TestCarManufacturer.class);
+        TestCarManufacturer manufacturer = manager.create(TestCarManufacturer.class);
 
         String expectedValue = "a Name";
 
@@ -93,7 +91,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstanceWithSetter() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
         assertNotNull(car);
 
         car.setYear(2015);
@@ -105,7 +103,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstance_List_Primitive() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
 
         car.getTripKilometerCounters().addAll(Arrays.asList(1, 3));
 
@@ -119,10 +117,10 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstance_List_Objects() {
-        car = factory.create(TestCarModel.class);
-        TestCarColor blue = factory.create(TestCarColor.class);
+        car = manager.create(TestCarModel.class);
+        TestCarColor blue = manager.create(TestCarColor.class);
         blue.setColorName("blue");
-        TestCarColor red = factory.create(TestCarColor.class);
+        TestCarColor red = manager.create(TestCarColor.class);
         red.setColorName("red");
 
         car.getCarColors().addAll(Arrays.asList(blue, red));
@@ -144,10 +142,10 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstanceWithAggregation() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
         assertNotNull(car);
 
-        TestCarManufacturer carManufacturer = factory.create(TestCarManufacturer.class);
+        TestCarManufacturer carManufacturer = manager.create(TestCarManufacturer.class);
 
         carManufacturer.setName("name");
         carManufacturer.setCapital("capital");
@@ -169,12 +167,10 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void testMixedModels() throws Exception {
-        BeanManager beanManager = new BeanManager(beanRepository);
+        SimpleTestModel simpleTestModel1 = manager.create(SimpleTestModel.class);
+        SimpleTestModel simpleTestModel2 = manager.create(SimpleTestModel.class);
 
-        SimpleTestModel simpleTestModel1 = beanManager.create(SimpleTestModel.class);
-        SimpleTestModel simpleTestModel2 = beanManager.create(SimpleTestModel.class);
-
-        TestMixedModel testMixedModel = factory.create(TestMixedModel.class);
+        TestMixedModel testMixedModel = manager.create(TestMixedModel.class);
 
         testMixedModel.getTestModels().addAll(Arrays.asList(simpleTestModel1, simpleTestModel2));
 
@@ -186,22 +182,13 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstanceWithSomeInterface() {
-        car = factory.create(TestCarModel.class);
+        car = manager.create(TestCarModel.class);
         assertNotNull(car);
 
-        Action action = factory.create(Action.class);
+        Action action = manager.create(Action.class);
         action.setEnabled(true);
 
         assertCorrectPM("enabled", "true", Action.class.getName(), 1);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Getter for property brandName should end with \"Property\"")
-    public void testInvalidPropertyName() throws Exception {
-        factory.create(TestInvalidPropertyInterface.class);
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Collections should not be set, method: setABC")
-    public void testInvalidSetterForCollection() throws Exception {
-        factory.create(TestNotSetCollection.class);
-    }
 }

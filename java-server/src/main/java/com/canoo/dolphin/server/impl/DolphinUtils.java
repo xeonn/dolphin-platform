@@ -142,8 +142,22 @@ public class DolphinUtils {
 
 
     public static BeanInfo getBeanInfo(Class<?> modelClass) {
-        return  getBeanInfo(new BetterBeanInfo(), Collections.<Class<?>>singleton(modelClass));
+        return validate(getBeanInfo(new BetterBeanInfo(), Collections.<Class<?>>singleton(modelClass)));
+    }
 
+    private static BeanInfo validate(BeanInfo beanInfo) {
+        for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+            if (Collection.class.isAssignableFrom(descriptor.getPropertyType())) {
+                if(descriptor.getWriteMethod() != null) {
+                    throw new IllegalArgumentException("Collections should not be set, method: " + descriptor.getWriteMethod().getName());
+                }
+                if (!List.class.isAssignableFrom(descriptor.getPropertyType())) {
+                    throw new IllegalArgumentException("Collections must be subtypes of List, method: " + descriptor.getName());
+                }
+            }
+            validatePropertyName(descriptor);
+        }
+        return beanInfo;
     }
 
     private static BeanInfo getBeanInfo(BetterBeanInfo betterBeanInfo, Set<Class<?>> modelClasses) {
@@ -179,14 +193,20 @@ public class DolphinUtils {
 
     //TODO(fabian, 16-04-2015): move to region BetterBeanInfo
     public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
-        if(Property.class.isAssignableFrom(descriptor.getPropertyType())){
-
-            if(!descriptor.getName().endsWith("Property")) {
-                throw new IllegalArgumentException(String.format( "Getter for property %s should end with \"Property\"", descriptor.getName()));
-            }
+        if(isProperty(descriptor)){
             return descriptor.getName().substring(0, descriptor.getName().length() - "Property".length());
         }
         return descriptor.getName();
+    }
+
+    private static boolean isProperty(PropertyDescriptor descriptor) {
+        return Property.class.isAssignableFrom(descriptor.getPropertyType());
+    }
+
+    private static void validatePropertyName(PropertyDescriptor descriptor) {
+        if(isProperty(descriptor) && !descriptor.getName().endsWith("Property")) {
+            throw new IllegalArgumentException(String.format("Getter for property %s should end with \"Property\"", descriptor.getName()));
+        }
     }
 
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {
