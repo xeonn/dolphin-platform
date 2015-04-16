@@ -2,8 +2,12 @@ package com.canoo.dolphin.workflow.server.activiti;
 
 import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.workflow.server.model.Activity;
+import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
+import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
 import com.canoo.dolphin.workflow.server.model.ProcessInstance;
+import com.canoo.dolphin.workflow.server.model.ProcessList;
 import org.activiti.engine.ManagementService;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("request")
@@ -27,6 +32,9 @@ public class ActivitiService {
     @Inject
     private BeanManager manager;
 
+    @Inject
+    private RepositoryService repositoryService;
+
     public ProcessInstance getProcessInstance(String processInstanceId) {
         List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
         if (list.isEmpty()) {
@@ -36,12 +44,30 @@ public class ActivitiService {
         }
     }
 
+    private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
+        ProcessDefinition mappedInstance = manager.create(ProcessDefinition.class);
+        mappedInstance.setId(processDefinition.getId());
+        mappedInstance.setName(processDefinition.getName());
+
+        List<org.activiti.engine.runtime.ProcessInstance> instances = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).list();
+        for (org.activiti.engine.runtime.ProcessInstance instance : instances) {
+            mappedInstance.getProcessInstances().add(mapLight(instance));
+        }
+        return mappedInstance;
+    }
+
     private ProcessInstance map(org.activiti.engine.runtime.ProcessInstance processInstance) {
         List<Activity> activities = findActivities(processInstance.getProcessDefinitionId());
         ProcessInstance mappedInstance = manager.create(ProcessInstance.class);
         mappedInstance.setId(processInstance.getId());
         mappedInstance.getActivities().addAll(activities);
         mappedInstance.setStartActivity(activities.get(0));
+        return mappedInstance;
+    }
+
+    private BaseProcessInstance mapLight(org.activiti.engine.runtime.ProcessInstance processInstance) {
+        BaseProcessInstance mappedInstance = manager.create(BaseProcessInstance.class);
+        mappedInstance.setId(processInstance.getId());
         return mappedInstance;
     }
 
@@ -58,5 +84,15 @@ public class ActivitiService {
             activity.setId(activityImpl.getId());
         }
         return result;
+    }
+
+    public ProcessList setupProcessList() {
+        final List<org.activiti.engine.repository.ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
+
+        final ProcessList processList = manager.create(ProcessList.class);
+
+        processList.getProcessDefinitions().addAll(processDefinitions.parallelStream().map(this::map).collect(Collectors.toList()));
+
+        return processList;
     }
 }

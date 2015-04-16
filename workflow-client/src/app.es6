@@ -20,4 +20,4 @@ dolphin.connect(SERVER_URL)
         }
     )
 
-    .send('ProcessDefinitionCommands:fetchAll');
+    .send('ActivitiController:init');
