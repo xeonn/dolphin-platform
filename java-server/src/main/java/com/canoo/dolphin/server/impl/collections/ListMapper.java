@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
-import com.canoo.dolphin.server.PresentationModelBuilder;
+import com.canoo.dolphin.server.impl.PresentationModelBuilder;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;

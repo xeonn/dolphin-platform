@@ -1,6 +1,5 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.server.PresentationModelBuilder;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;

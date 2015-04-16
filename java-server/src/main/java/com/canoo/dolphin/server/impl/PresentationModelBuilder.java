@@ -1,4 +1,4 @@
-package com.canoo.dolphin.server;
+package com.canoo.dolphin.server.impl;
 
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.DTO;
