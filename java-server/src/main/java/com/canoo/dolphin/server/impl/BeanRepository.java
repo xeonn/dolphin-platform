@@ -30,9 +30,13 @@ public class BeanRepository {
     public BeanRepository(ServerDolphin dolphin, ClassRepository classRepository) {
         this.dolphin = dolphin;
         this.classRepository = classRepository;
+        listMapper = new ListMapper(dolphin, classRepository, this);
     }
 
     public void setListMapper(ListMapper listMapper) {
+        if(listMapper != null) {
+            listMapper.unregisterListeners();
+        }
         this.listMapper = listMapper;
     }
 
@@ -41,12 +45,15 @@ public class BeanRepository {
     }
 
     public void setValue(Attribute attribute, Object value) {
-        final ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(attribute, value);
+        if (!(isManaged(value) || ReflectionHelper.isAllowedForUnmanaged(value.getClass()))) {
+            throw new IllegalArgumentException(String.format("Cannot assign unmanaged bean instance of type %s to property %s", value.getClass().getName(), attribute.getPropertyName()));
+        }
+        ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(attribute, value);
         attribute.setValue(mapObjectsToDolphin(fieldType, value));
     }
 
     public void setValue(Class<?> beanClass, String attributeName, Attribute relationAttribute, Object value) {
-        final ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(beanClass, attributeName, value);
+        ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(beanClass, attributeName, value);
         relationAttribute.setValue(mapObjectsToDolphin(fieldType, value));
     }
 
@@ -62,7 +69,10 @@ public class BeanRepository {
     }
 
     public Object mapDolphinToObjects(Attribute attribute, Object value) {
-        return mapDolphinToObjects(classRepository.getFieldType(attribute), classRepository.getFieldClass(attribute), value);
+
+        ClassRepository.FieldType fieldType = classRepository.getFieldType(attribute);
+        Class<?> fieldClass = classRepository.getFieldClass(attribute);
+        return mapDolphinToObjects(fieldType, fieldClass, value);
     }
 
     public Object mapDolphinToObjects(Class<?> beanClass, String attributeName, Object value) {
@@ -92,55 +102,29 @@ public class BeanRepository {
     }
 
     public boolean isManaged(Object bean) {
-        final PresentationModel model = objectPmToDolphinPm.get(bean);
+        PresentationModel model = objectPmToDolphinPm.get(bean);
         return model != null && dolphin.findPresentationModelById(model.getId()) != null;
     }
 
-    public <T> T create(final Class<T> beanClass) {
+    public <T> T create(Class<T> beanClass) {
+        if(beanClass.isInterface()) {
+            return new DolphinModelInvocationHander<T>(beanClass, dolphin, this).getInstance();
+        } else {
+
+            return createInstanceForClass(beanClass);
+        }
+    }
+
+    private <T> T createInstanceForClass(Class<T> beanClass) {
         try {
             classRepository.register(beanClass);
 
-            final T instance = beanClass.newInstance();
+            T instance = beanClass.newInstance();
 
-            final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+            PresentationModel model = buildPresentationModel(beanClass);
 
-            final String modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
-            builder.withType(modelType);
-
-            DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
-                @Override
-                public void run(Field field, String attributeName) {
-                    builder.withAttribute(attributeName);
-                }
-            });
-
-            final PresentationModel model = builder.create();
-
-            DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
-                @Override
-                public void run(Field field, String attributeName) {
-                    Attribute attribute = model.findAttributeByPropertyName(attributeName);
-                    @SuppressWarnings("unchecked")
-                    Property property = new PropertyImpl(BeanRepository.this, attribute);
-                    DolphinUtils.setPrivileged(field, instance, property);
-                }
-            });
-
-            DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
-                @SuppressWarnings("unchecked")
-                @Override
-                public void run(Field field, final String attributeName) {
-                    ObservableList observableList = new ObservableArrayList() {
-                        @Override
-                        protected void notifyInternalListeners(ListChangeEvent event) {
-                            if (listMapper != null) {
-                                listMapper.processEvent(beanClass, model.getId(), attributeName, event);
-                            }
-                        }
-                    };
-                    DolphinUtils.setPrivileged(field, instance, observableList);
-                }
-            });
+            forAllProperties(beanClass, instance, model);
+            forAllObservableLists(beanClass, instance, model);
 
             objectPmToDolphinPm.put(instance, model);
             dolphinIdToObjectPm.put(model.getId(), instance);
@@ -150,12 +134,66 @@ public class BeanRepository {
         }
     }
 
+    private <T> PresentationModel buildPresentationModel(Class<T> beanClass) {
+        final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+
+        String modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
+        builder.withType(modelType);
+
+        DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
+            @Override
+            public void run(Field field, String attributeName) {
+                builder.withAttribute(attributeName);
+            }
+        });
+
+        return builder.create();
+    }
+
+    private <T> void forAllProperties(Class<T> beanClass, final T instance, final PresentationModel model) {
+        DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
+            @Override
+            public void run(Field field, String attributeName) {
+                Attribute attribute = model.findAttributeByPropertyName(attributeName);
+                @SuppressWarnings("unchecked")
+                Property property = new PropertyImpl(BeanRepository.this, attribute);
+                ReflectionHelper.setPrivileged(field, instance, property);
+            }
+        });
+    }
+
+    private <T> void forAllObservableLists(final Class<T> beanClass, final T instance, final PresentationModel model) {
+        DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void run(Field field, final String attributeName) {
+                ObservableList observableList = new ObservableArrayList() {
+                    @Override
+                    protected void notifyInternalListeners(ListChangeEvent event) {
+                        if (listMapper != null) {
+                            listMapper.processEvent(beanClass, model.getId(), attributeName, event);
+                        }
+                    }
+                };
+                ReflectionHelper.setPrivileged(field, instance, observableList);
+            }
+        });
+    }
+
+    public void registerClass(Class beanClass) {
+        classRepository.register(beanClass);
+    }
+
     public <T> void delete(T bean) {
-        final PresentationModel model = objectPmToDolphinPm.remove(bean);
+        PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
             dolphinIdToObjectPm.remove(model.getId());
             dolphin.remove(model);
         }
+    }
+
+    public ListMapper getListMapper() {
+        return listMapper;
     }
 
     public void deleteAll(Class<?> beanClass) {
@@ -171,6 +209,14 @@ public class BeanRepository {
             ret.add((T) dolphinIdToObjectPm.get(model.getId()));
         }
         return ret;
+    }
+
+    public Map<String, Object> getDolphinIdToObjectPm() {
+        return dolphinIdToObjectPm;
+    }
+
+    public Map<Object, PresentationModel> getObjectPmToDolphinPm() {
+        return objectPmToDolphinPm;
     }
 
     public Object getBean(String sourceId) {

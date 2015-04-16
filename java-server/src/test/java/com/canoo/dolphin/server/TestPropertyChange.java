@@ -6,11 +6,7 @@ import com.canoo.dolphin.mapping.ValueChangeListener;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
-import com.canoo.dolphin.server.util.EnumDataTypesModel;
-import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
-import com.canoo.dolphin.server.util.SimpleTestModel;
-import com.canoo.dolphin.server.util.SingleReferenceModel;
+import com.canoo.dolphin.server.util.*;
 import org.opendolphin.core.server.ServerDolphin;
 import org.testng.annotations.Test;
 
@@ -120,12 +116,12 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
 
         final EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
-        final ListerResults<EnumDataTypesModel.DataType> results = new ListerResults<>();
-        final ValueChangeListener<EnumDataTypesModel.DataType> myListener = new ValueChangeListener<EnumDataTypesModel.DataType>() {
+        final ListerResults<DataType> results = new ListerResults<>();
+        final ValueChangeListener<DataType> myListener = new ValueChangeListener<DataType>() {
             @SuppressWarnings("unchecked")
             @Override
-            public void valueChanged(ValueChangeEvent<? extends EnumDataTypesModel.DataType> evt) {
-                assertThat((Property<EnumDataTypesModel.DataType>) evt.getSource(), is(model.getEnumProperty()));
+            public void valueChanged(ValueChangeEvent<? extends DataType> evt) {
+                assertThat((Property<DataType>) evt.getSource(), is(model.getEnumProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
                 results.listenerCalls++;
@@ -137,23 +133,23 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
 
-        model.getEnumProperty().set(EnumDataTypesModel.DataType.TEST_VALUE_1);
+        model.getEnumProperty().set(DataType.TEST_VALUE_1);
         assertThat(results.listenerCalls, is(1));
-        assertThat(results.newValue, is(EnumDataTypesModel.DataType.TEST_VALUE_1));
+        assertThat(results.newValue, is(DataType.TEST_VALUE_1));
         assertThat(results.oldValue, nullValue());
 
         results.listenerCalls = 0;
-        model.getEnumProperty().set(EnumDataTypesModel.DataType.TEST_VALUE_2);
+        model.getEnumProperty().set(DataType.TEST_VALUE_2);
         assertThat(results.listenerCalls, is(1));
-        assertThat(results.newValue, is(EnumDataTypesModel.DataType.TEST_VALUE_2));
-        assertThat(results.oldValue, is(EnumDataTypesModel.DataType.TEST_VALUE_1));
+        assertThat(results.newValue, is(DataType.TEST_VALUE_2));
+        assertThat(results.oldValue, is(DataType.TEST_VALUE_1));
 
         results.listenerCalls = 0;
         model.getEnumProperty().removeValueListener(myListener);
-        model.getEnumProperty().set(EnumDataTypesModel.DataType.TEST_VALUE_3);
+        model.getEnumProperty().set(DataType.TEST_VALUE_3);
         assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, is(EnumDataTypesModel.DataType.TEST_VALUE_2));
-        assertThat(results.oldValue, is(EnumDataTypesModel.DataType.TEST_VALUE_1));
+        assertThat(results.newValue, is(DataType.TEST_VALUE_2));
+        assertThat(results.oldValue, is(DataType.TEST_VALUE_1));
     }
 
 

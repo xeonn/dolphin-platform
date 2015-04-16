@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
 import com.canoo.dolphin.server.impl.DolphinUtils;
+import com.canoo.dolphin.server.impl.ReflectionHelper;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
@@ -33,7 +34,7 @@ public class DolphinCommandRegistration {
             @Override
             public void registerIn(ActionRegistry registry) {
 
-                for (final Method method : DolphinUtils.getInheritedDeclaredMethods(cls)) {
+                for (final Method method : ReflectionHelper.getInheritedDeclaredMethods(cls)) {
                     if (method.isAnnotationPresent(DolphinAction.class)) {
                         final String commandName = getCommandName(cls, method);
                         final List<String> paramNames = getParamNames(method);
@@ -56,7 +57,7 @@ public class DolphinCommandRegistration {
 
     private static void invokeMethodWithParams(Object instance, Method method, List<String> paramNames, ServerDolphin dolphin) throws InvocationTargetException, IllegalAccessException {
         Object[] args = getParam(dolphin, paramNames);
-        DolphinUtils.invokePrivileged(method, instance, args);
+        ReflectionHelper.invokePrivileged(method, instance, args);
     }
 
     private static String getCommandName(Class<?> cls, Method method) {

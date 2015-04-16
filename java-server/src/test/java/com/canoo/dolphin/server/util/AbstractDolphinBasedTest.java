@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.util;
 
-import com.canoo.dolphin.server.impl.DolphinUtils;
+import com.canoo.dolphin.server.impl.ReflectionHelper;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
@@ -18,7 +18,7 @@ public abstract class AbstractDolphinBasedTest {
 
         ServerModelStore store = config.getServerDolphin().getServerModelStore();
         try {
-            DolphinUtils.setPrivileged(ServerModelStore.class.getDeclaredField("currentResponse"), store, new ArrayList<>());
+            ReflectionHelper.setPrivileged(ServerModelStore.class.getDeclaredField("currentResponse"), store, new ArrayList<>());
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }

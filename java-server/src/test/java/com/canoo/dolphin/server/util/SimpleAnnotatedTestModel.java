@@ -11,10 +11,10 @@ import com.canoo.dolphin.mapping.Property;
 public class SimpleAnnotatedTestModel {
 
     @DolphinProperty("text_property")
-    private Property<String> text;
+    private Property<String> skdjfhksdjhf;
 
     public Property<String> getTextProperty() {
-        return text;
+        return skdjfhksdjhf;
     }
 
 }
