@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @DolphinController("ProcessDefinitionCommands")
-public class ProcessDefinitionsCommands {
+public class ActivitiController {
 
     @Inject
     private BeanManager manager;
