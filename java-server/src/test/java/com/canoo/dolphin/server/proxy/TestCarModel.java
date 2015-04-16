@@ -2,13 +2,14 @@ package com.canoo.dolphin.server.proxy;
 
 import com.canoo.dolphin.mapping.Property;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by hendrikebbers on 15.04.15.
  */
 
-public interface TestCarModel {
+public interface TestCarModel extends Serializable, Comparable {
 
     Integer getYear();
     void setYear(Integer inYear);
