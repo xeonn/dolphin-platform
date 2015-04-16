@@ -9,7 +9,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.Set;
 
-public class DolphinPlatformBootstrap implements ServletContainerInitializer {
+public class DolphinPlatformBootstrap {
 
     public static final String DOLPHIN_SERVLET_NAME = "dolphin-platform-servlet";
 
@@ -28,8 +28,7 @@ public class DolphinPlatformBootstrap implements ServletContainerInitializer {
         this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
     }
 
-    @Override
-    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext) throws ServletException {
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, DefaultDolphinServlet.class).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, InvalidationServlet.class).addMapping(dolphinInvalidationServletMapping);
     }

@@ -12,9 +12,11 @@
         <module>java-client</module>
         <module>java-server</module>
         <module>java-server-javaee</module>
+        <module>java-server-spring</module>
         <module>hello-world-example</module>
         <module>icos-poc-server</module>
         <module>workflow-server</module>
+        <module>spring-boot-example</module>
     </modules>
 
 

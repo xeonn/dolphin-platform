@@ -9,6 +9,7 @@ import org.opendolphin.core.server.ServerDolphin;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.servlet.ServletContext;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class CdiDolphinCommandManager implements DolphinCommandManager {
     }
 
     @Override
-    public void initCommandsForSession(ServerDolphin serverDolphin, Set<Class<?>> dolphinManagedClasses) {
+    public void initCommandsForSession(ServletContext sc, ServerDolphin serverDolphin, Set<Class<?>> dolphinManagedClasses) {
         BeanManager beanManager = BeanManagerProvider.getInstance().getBeanManager();
         for (Class<?> cls : dolphinManagedClasses) {
             Bean<?> bean = getBean(beanManager, cls);

@@ -4,6 +4,7 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.impl.DolphinParamRepository;
+import com.canoo.dolphin.server.impl.DolphinUtils;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -28,7 +29,7 @@ public class DolphinCommandRegistration {
             @Override
             public void registerIn(ActionRegistry registry) {
 
-                for (final Method method : cls.getMethods()) {
+                for (final Method method : DolphinUtils.getInheritedDeclaredMethods(cls)) {
                     if (method.isAnnotationPresent(DolphinAction.class)) {
                         final String commandName = getCommandName(cls, method);
                         final List<String> paramNames = getParamNames(method);
@@ -54,7 +55,7 @@ public class DolphinCommandRegistration {
         for(int i = 0; i < paramNames.size(); i++) {
             args[i] = getParam(paramNames.get(i), dolphin);
         }
-        method.invoke(instance, args);
+        DolphinUtils.invokePrivileged(method, instance, args);
     }
 
     private static String getCommandName(Class<?> cls, Method method) {
