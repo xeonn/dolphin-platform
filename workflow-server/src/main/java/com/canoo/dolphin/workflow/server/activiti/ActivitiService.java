@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@Scope("request")
+@Scope("session")
 public class ActivitiService {
 
     @Inject
@@ -36,23 +36,21 @@ public class ActivitiService {
     @Inject
     private RepositoryService repositoryService;
 
+    private WorkflowViewModel workflowViewModel;
+
     public void setupWorkflowViewModel() {
-        WorkflowViewModel workflowViewModel = manager.create(WorkflowViewModel.class);
+        workflowViewModel = manager.create(WorkflowViewModel.class);
         workflowViewModel.setProcessList(setupProcessList());
     }
 
-    public ProcessInstance getProcessInstance(String processInstanceId) {
+    public void showProcessInstance(String processInstanceId) {
         List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return map(list.get(0));
-        }
+        workflowViewModel.setProcessInstance(list.isEmpty() ? null : map(list.get(0)));
     }
 
     private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
         ProcessDefinition mappedInstance = manager.create(ProcessDefinition.class);
-        mappedInstance.setId(processDefinition.getId());
+        mappedInstance.setLabel(processDefinition.getId());
         mappedInstance.setName(processDefinition.getName());
 
         List<org.activiti.engine.runtime.ProcessInstance> instances = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).list();
@@ -65,31 +63,33 @@ public class ActivitiService {
     private ProcessInstance map(org.activiti.engine.runtime.ProcessInstance processInstance) {
         List<Activity> activities = createActivities(processInstance.getProcessDefinitionId());
         ProcessInstance mappedInstance = manager.create(ProcessInstance.class);
-        mappedInstance.setId(processInstance.getId());
+        mappedInstance.setLabel(processInstance.getId());
         mappedInstance.getActivities().addAll(activities);
-        mappedInstance.setStartActivity(activities.get(0));
+        if (!activities.isEmpty()) {
+            mappedInstance.setStartActivity(activities.get(0));
+        }
         return mappedInstance;
     }
 
     private BaseProcessInstance mapLight(org.activiti.engine.runtime.ProcessInstance processInstance) {
         BaseProcessInstance mappedInstance = manager.create(BaseProcessInstance.class);
-        mappedInstance.setId(processInstance.getId());
+        mappedInstance.setLabel(processInstance.getId());
         return mappedInstance;
     }
 
     private List<Activity> createActivities(String processDefinitionId) {
         ProcessDefinitionEntity processDefinitionEntity = managementService.executeCommand(new DeployProcessDefinitionCommand(processDefinitionId));
-        List<ActivityImpl> initialActivityStack = processDefinitionEntity.getInitialActivityStack();
+        List<ActivityImpl> initialActivityStack = processDefinitionEntity.getActivities();
         return createActivityList(initialActivityStack);
     }
 
     private List<Activity> createActivityList(List<ActivityImpl> activities) {
-        List<Activity> result = new ArrayList<>();
-        for (ActivityImpl activityImpl : activities) {
-            Activity activity = manager.create(Activity.class);
-            activity.setId(activityImpl.getId());
+        final List<Activity> result = new ArrayList<>();
+        for (final ActivityImpl activityImpl : activities) {
+            final Activity activity = manager.create(Activity.class);
+            activity.setLabel(activityImpl.getId());
+            result.add(activity);
         }
-        //TODO map outgoing activities ...
         return result;
     }
 

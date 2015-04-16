@@ -7,7 +7,7 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean("ProcessDefinition")
 public class ProcessDefinition {
 
-    private Property<String> id;
+    private Property<String> label;
     private Property<String> name;
     private ObservableList<BaseProcessInstance> processInstances;
 
@@ -23,11 +23,11 @@ public class ProcessDefinition {
         name.set(value);
     }
 
-    public String getId() {
-        return id.get();
+    public String getLabel() {
+        return label.get();
     }
 
-    public void setId(String value) {
-        id.set(value);
+    public void setLabel(String value) {
+        label.set(value);
     }
 }

@@ -5,18 +5,38 @@
 <link rel="import" href="../bower_components/core-item/core-item.html">
 
 
-<polymer-element name="workflow-menu" attributes="data" noscript>
+
+<polymer-element name="workflow-menuentry" attributes="data" extends="core-item" noscript>
     <template>
-        <core-menu>
+        <shadow></shadow>
+    </template>
+</polymer-element>
+
+
+<polymer-element name="workflow-menu" attributes="data">
+    <template>
+        <core-menu on-core-select="{{selectAction}}">
             <template repeat="{{processDefinition in data.processDefinitions}}">
                 <core-submenu label="{{processDefinition.name}}">
                     <template repeat="{{processInstance in processDefinition.processInstances}}">
-                        <core-item label="{{processInstance.id}}"></core-item>
+                        <workflow-menuentry label="{{processInstance.label}}" data="{{processInstance}}"></workflow-menuentry>
                     </template>
                 </core-submenu>
             </template>
         </core-menu>
     </template>
+    <script>
+        Polymer({
+            selectAction: function(e, detail) {
+                if (detail.isSelected) {
+                    var selectedItem = detail.item.data;
+                    if (typeof selectedItem !== 'undefined') {
+                        window.dolphin.send('WorkflowController:showProcessInstance', {processInstance: selectedItem});
+                    }
+                }
+            }
+        })
+    </script>
 </polymer-element>
 
 
@@ -27,7 +47,7 @@
                 <core-toolbar>Dolphin Workflow</core-toolbar>
                 <workflow-menu data="{{data.processList}}"></workflow-menu>
             </core-header-panel>
-            <div tool>Process Instance {{data.processInstance.id}}</div>
+            <div tool>Process Instance {{data.processInstance.label}}</div>
             <div>Main content goes here...</div>
         </core-scaffold>
     </template>

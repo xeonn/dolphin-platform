@@ -8,7 +8,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -39,6 +38,8 @@ public class DefaultDolphinServlet extends DolphinServlet {
      */
     private static ThreadLocal<ServerDolphin> dolphin = new ThreadLocal<>();
 
+    private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
+
     /**
      * Default constructor
      * Loads the implementation (Spring / JavaEE) for all generic interfaces by JavaEE and searches for all controller classes that should be managed by the dolphin platform
@@ -61,8 +62,10 @@ public class DefaultDolphinServlet extends DolphinServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         servletContext.set(req.getServletContext());
+        request.set(req);
         dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
         super.service(req, resp);
+        request.remove();
         servletContext.remove();
         dolphin.remove();
     }
@@ -72,8 +75,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
      * @return the dolphin
      */
     public static ServerDolphin getServerDolphin() {
-        ServerDolphin serverDolphin = dolphin.get();
-        return serverDolphin;
+        return dolphin.get();
     }
 
     @Override
@@ -81,6 +83,15 @@ public class DefaultDolphinServlet extends DolphinServlet {
         dolphin.set(serverDolphin);
         ServletContext context = servletContext.get();
         dolphinCommandRepository.initCommandsForSession(context, serverDolphin, dolphinManagedClasses);
+    }
+
+    public static void addToSession(Object o) {
+        request.get().getSession().setAttribute(o.getClass().getName(), o);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getFromSession(Class<T> cls) {
+        return (T) request.get().getSession().getAttribute(cls.getName());
     }
 
 }

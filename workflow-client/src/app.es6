@@ -10,12 +10,12 @@ import * as dolphin from '../../javascript-client/dist/dolphin.min.js';
 
 const SERVER_URL = 'http://localhost:8080/dolphin';
 
-dolphin.connect(SERVER_URL)
+global.dolphin = dolphin.connect(SERVER_URL);
 
+global.dolphin
     .onAdded('WorkflowViewModel',
         (data) => {
             document.querySelector('workflow-main-view').data = data;
         }
     )
-
-    .send('ActivitiController:init');
+    .send('WorkflowController:init');

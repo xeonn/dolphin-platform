@@ -5,12 +5,12 @@ import com.canoo.dolphin.mapping.Property;
 
 @DolphinBean("BaseProcessInstance")
 public class BaseProcessInstance {
-    private Property<String> id;
-    public String getId() {
-        return id.get();
+    private Property<String> label;
+    public String getLabel() {
+        return label.get();
     }
 
-    public void setId(String id) {
-        this.id.set(id);
+    public void setLabel(String id) {
+        this.label.set(id);
     }
 }

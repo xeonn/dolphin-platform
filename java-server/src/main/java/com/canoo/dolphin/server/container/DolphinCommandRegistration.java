@@ -3,10 +3,15 @@ package com.canoo.dolphin.server.container;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
-import com.canoo.dolphin.server.impl.DolphinParamRepository;
+import com.canoo.dolphin.server.impl.BeanRepository;
+import com.canoo.dolphin.server.impl.DolphinConstants;
 import com.canoo.dolphin.server.impl.DolphinUtils;
+import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
+import org.opendolphin.core.Attribute;
+import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerDolphin;
+import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
@@ -14,7 +19,6 @@ import org.opendolphin.core.server.comm.CommandHandler;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,10 +55,7 @@ public class DolphinCommandRegistration {
     }
 
     private static void invokeMethodWithParams(Object instance, Method method, List<String> paramNames, ServerDolphin dolphin) throws InvocationTargetException, IllegalAccessException {
-        Object[] args = new Object[paramNames.size()];
-        for(int i = 0; i < paramNames.size(); i++) {
-            args[i] = getParam(paramNames.get(i), dolphin);
-        }
+        Object[] args = getParam(dolphin, paramNames);
         DolphinUtils.invokePrivileged(method, instance, args);
     }
 
@@ -65,9 +66,8 @@ public class DolphinCommandRegistration {
     private static List<String> getParamNames(Method method) {
         final List<String> paramNames = new ArrayList<String>();
 
-        for(int i = 0; i < method.getTypeParameters().length; i++) {
-            TypeVariable<Method> typeVariable = method.getTypeParameters()[i];
-            String paramName = typeVariable.getName();
+        for(int i = 0; i < method.getParameterTypes().length; i++) {
+            String paramName = Integer.toString(i);
             for(Annotation annotation : method.getParameterAnnotations()[i]) {
                 if(annotation.annotationType().equals(Param.class)) {
                     Param param = (Param) annotation;
@@ -81,10 +81,19 @@ public class DolphinCommandRegistration {
         return paramNames;
     }
 
-    private static Object getParam(String name, ServerDolphin dolphin) {
-        //TODO: Aktuell noch Hack.
-        DolphinParamRepository paramRepository = new DolphinParamRepository(dolphin);
-        return paramRepository.getParam(name);
+    private static Object[] getParam(ServerDolphin dolphin, List<String> names) {
+        final List<Object> result = new ArrayList<>();
+        final List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_PARAMETER);
+        if (!presentationModels.isEmpty()) {
+            final ServerPresentationModel parameterModel = presentationModels.get(0);
+            for (final String name : names) {
+                final Attribute valueAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE);
+                final Attribute typeAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE_TYPE);
+                final BeanRepository beanRepository = DefaultDolphinServlet.getFromSession(BeanRepository.class);
+                result.add(beanRepository.mapDolphinToObject(typeAttribute.getValue().toString(), valueAttribute.getValue()));
+            }
+        }
+        return result.toArray(new Object[result.size()]);
     }
 
     private static String getNameSeparator() {

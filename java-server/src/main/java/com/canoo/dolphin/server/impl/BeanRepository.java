@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.canoo.dolphin.server.impl.ClassRepository.FieldType.DOLPHIN_BEAN;
+
 public class BeanRepository {
 
     private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
@@ -65,6 +67,13 @@ public class BeanRepository {
 
     public Object mapDolphinToObjects(Class<?> beanClass, String attributeName, Object value) {
         return mapDolphinToObjects(classRepository.getFieldType(beanClass, attributeName), classRepository.getFieldClass(beanClass, attributeName), value);
+    }
+
+    public Object mapDolphinToObject(String type, Object value) {
+        if (value == null) {
+            return null;
+        }
+        return DOLPHIN_BEAN.name().equals(type)? dolphinIdToObjectPm.get(value.toString()) : value;
     }
 
     private Object mapDolphinToObjects(ClassRepository.FieldType fieldType, Class<?> fieldClass, Object value) {

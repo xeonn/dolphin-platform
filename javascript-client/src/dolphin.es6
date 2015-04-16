@@ -138,7 +138,23 @@ class Dolphin {
         return this;
     }
 
-    send(command) {
+    send(command, params) {
+        if (exists (params)) {
+            const attributes = [];
+            for (let prop in params) {
+                if (params.hasOwnProperty(prop)) {
+                    const value = params[prop];
+                    if (typeof value === 'object') {
+                        attributes.push(this.dolphin.attribute(prop, null, this.classRepository.beanToDolphin.get(value), 'VALUE'));
+                        attributes.push(this.dolphin.attribute(prop, null, 'DOLPHIN_BEAN', 'VALUE_TYPE'))
+                    } else {
+                        attributes.push(this.dolphin.attribute(prop, null, value, 'VALUE'));
+                        attributes.push(this.dolphin.attribute(prop, null, 'BASIC_TYPE', 'VALUE_TYPE'))
+                    }
+                }
+            }
+            this.dolphin.presentationModel(null, '@@@ DOLPHIN_PARAMETER @@@', ...attributes);
+        }
         this.dolphin.send(command);
 
         return this;

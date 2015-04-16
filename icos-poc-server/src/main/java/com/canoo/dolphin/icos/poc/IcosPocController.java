@@ -9,7 +9,7 @@ import com.canoo.dolphin.icos.poc.platform.DolphinCommand;
 import com.canoo.dolphin.mapping.ValueChangeEvent;
 import com.canoo.dolphin.mapping.ValueChangeListener;
 import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.server.BeanManagerImpl;
+import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.collections.ListMapper;

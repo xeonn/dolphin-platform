@@ -7,18 +7,18 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean("Activity")
 public class Activity {
 
-    private Property<String> id;
+    private Property<String> label;
     private Property<String> activityName;
     private Property<String> description;
     private ObservableList<Activity> outgoingActivityIds;
     private Property<String> type;
 
-    public String getId() {
-        return id.get();
+    public String getLabel() {
+        return label.get();
     }
 
-    public void setId(String id) {
-        this.id.set(id);
+    public void setLabel(String id) {
+        this.label.set(id);
     }
 
     public String getActivityName() {

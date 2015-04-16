@@ -17,7 +17,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
- * Basic Bootstrap for Spring based application. The boostrap automatically starts the dolphin platform boostrap.
+ * Basic Bootstrap for Spring based application. The boostrap automatically starts the dolphin platform bootstrap.
  */
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
@@ -37,6 +37,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        DefaultDolphinServlet.addToSession(beanRepository);
         new ListMapper(dolphin, classRepository, beanRepository);
         return new BeanManagerImpl(beanRepository);
     }
