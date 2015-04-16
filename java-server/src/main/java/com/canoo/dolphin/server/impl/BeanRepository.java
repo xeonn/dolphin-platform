@@ -164,6 +164,19 @@ public class BeanRepository {
         return ret;
     }
 
+    public Object findBeanByDolphinId(String id) {
+        return dolphinIdToObjectPm.get(id);
+    }
+
+    public String getDolphinId(Object bean) {
+        for(Map.Entry<String, Object> entry : dolphinIdToObjectPm.entrySet()) {
+            if(bean.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
     public Object getBean(String sourceId) {
         return dolphinIdToObjectPm.get(sourceId);
     }

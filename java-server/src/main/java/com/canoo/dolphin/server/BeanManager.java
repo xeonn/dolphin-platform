@@ -21,4 +21,8 @@ public interface BeanManager extends Serializable {
     <T> List<T> findAll(Class<T> beanClass);
 
     <T> PropertyQuery<T> createQuery(Class<T> beanClass);
+
+    <T> T findById(Class<T> beanClass, String id);
+
+    public String getId(Object bean);
 }

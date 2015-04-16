@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.DolphinController;
+import com.canoo.dolphin.server.event.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.reflections.Reflections;
 
@@ -35,7 +36,9 @@ public class DolphinPlatformBootstrap {
     public void onStartup(ServletContext servletContext) throws ServletException {
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, DefaultDolphinServlet.class).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, InvalidationServlet.class).addMapping(dolphinInvalidationServletMapping);
-        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, CrossSiteOriginFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class),true,"/*");
+        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, CrossSiteOriginFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        servletContext.addListener(DolphinSessionHandlerCleaner.class);
     }
 
     private static Set<Class<?>> cachedDolphinBeanClasses;

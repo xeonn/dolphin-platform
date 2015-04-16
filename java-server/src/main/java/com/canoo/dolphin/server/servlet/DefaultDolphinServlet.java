@@ -1,14 +1,15 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.container.DolphinCommandManager;
+import com.canoo.dolphin.server.event.DolphinBasedEventHandler;
 import org.opendolphin.core.server.ServerDolphin;
+import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -62,18 +63,27 @@ public class DefaultDolphinServlet extends DolphinServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         servletContext.set(req.getServletContext());
         dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
+
+        DolphinBasedEventHandler.getInstance().sendEventsForCurrentDolphinSession();
+
         super.service(req, resp);
+
         servletContext.remove();
         dolphin.remove();
     }
 
     /**
      * Returns the current dolphin (based on the current session)
+     *
      * @return the dolphin
      */
     public static ServerDolphin getServerDolphin() {
         ServerDolphin serverDolphin = dolphin.get();
         return serverDolphin;
+    }
+
+    public static String getDolphinId() {
+        return ((ServerModelStore) getServerDolphin().getModelStore()).id + "";
     }
 
     @Override
