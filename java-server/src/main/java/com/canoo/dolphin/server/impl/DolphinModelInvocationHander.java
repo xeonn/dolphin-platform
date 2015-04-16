@@ -59,9 +59,9 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         }
     }
 
-    private void forAllPropertyDescriptors(final BeanRepository beanRepository, BeanInfo beanInfo, final PresentationModel model) {
+    private void forAllPropertyDescriptors(BeanRepository beanRepository, BeanInfo beanInfo, PresentationModel model) {
         for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
-            final String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
+            String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
             Attribute attribute = model.findAttributeByPropertyName(propertyName);
             if(attribute == null) {
                 throw new RuntimeException("Attribute not found for property "+propertyName);
@@ -74,16 +74,15 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
                 method2propDesc.put(writeMethod, propertyDescriptor);
             }
             if (isList(propertyDescriptor)) {
-                ObservableList observableList = new ObservableArrayList() {
-                    @Override
-                    protected void notifyInternalListeners(ListChangeEvent event) {
-                        if (beanRepository.getListMapper() != null) {
-                            beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
-                        }
-                    }
-                };
+                ObservableList observableList = new CheckedObservableArrayList(beanRepository, model, propertyName);
                 propertyName2list.put(propertyName, observableList);
             }
+        }
+    }
+
+    private void validateElement(Object element, BeanRepository beanRepository, String propertyName) {
+        if(!(beanRepository.isManaged(element) || ReflectionHelper.isAllowedForUnmanaged(element.getClass()))) {
+            throw new IllegalArgumentException(String.format("Cannot add unmanaged bean instance of type %s to list %s", element.getClass().getName(), propertyName));
         }
     }
 
@@ -132,5 +131,37 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
     public T getInstance() {
         return instance;
+    }
+
+    private class CheckedObservableArrayList extends ObservableArrayList {
+
+        private final BeanRepository beanRepository;
+        private final PresentationModel model;
+        private final String propertyName;
+
+        CheckedObservableArrayList(BeanRepository beanRepository, PresentationModel model, String propertyName) {
+            this.beanRepository = beanRepository;
+            this.model = model;
+            this.propertyName = propertyName;
+        }
+
+        @Override
+        protected void notifyInternalListeners(ListChangeEvent event) {
+            if (beanRepository.getListMapper() != null) {
+                beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
+            }
+        }
+
+        @Override
+        public void add(int index, Object element) {
+            validateElement(element, beanRepository, propertyName);
+            super.add(index, element);
+        }
+
+        @Override
+        public Object set(int index, Object element) {
+            validateElement(element, beanRepository, propertyName);
+            return super.set(index, element);
+        }
     }
 }

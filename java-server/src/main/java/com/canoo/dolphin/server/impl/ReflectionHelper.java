@@ -62,7 +62,19 @@ public class ReflectionHelper {
     }
 
     static boolean isProperty(PropertyDescriptor descriptor) {
-        return Property.class.isAssignableFrom(descriptor.getPropertyType());
+        return isProperty(descriptor.getPropertyType());
+    }
+
+    static boolean isProperty(Class<?> propertyType) {
+        return Property.class.isAssignableFrom(propertyType);
+    }
+
+    public static boolean isEnumType(Class<?> cls) {
+        return cls.isEnum();
+    }
+
+    public static boolean isAllowedForUnmanaged(Class<?> cls) {
+        return isBasicType(cls) || isProperty(cls) || isEnumType(cls);
     }
 
     public static boolean isBasicType(Class<?> cls) {

@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.proxy;
 
+import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
@@ -62,6 +63,28 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
         assertCorrectPM("brandName", expectedValue, TestCarModel.class.getName(), 5);
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testProxyInstance_OnlySetManagedBeans() {
+        TestMixedModel testMixedModel = manager.create(TestMixedModel.class);
+
+        testMixedModel.setSimpleModel(new SimpleTestModel());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testProxyInstance_OnlyAddManagedBeansToList() {
+        TestMixedModel testMixedModel = manager.create(TestMixedModel.class);
+
+        testMixedModel.getTestModels().add(new SimpleTestModel());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testProxyInstance_OnlySetManagedBeansToList() {
+        TestMixedModel testMixedModel = manager.create(TestMixedModel.class);
+
+        testMixedModel.getTestModels().set(0,new SimpleTestModel());
+    }
+
 
     @Test
     public void proxyInstance_Inheritance() {

@@ -3,12 +3,7 @@ package com.canoo.dolphin.server;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
-import com.canoo.dolphin.server.util.EnumDataTypesModel;
-import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
-import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
-import com.canoo.dolphin.server.util.SimpleTestModel;
-import com.canoo.dolphin.server.util.SingleReferenceModel;
+import com.canoo.dolphin.server.util.*;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -132,16 +127,16 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
         assertThat(enumAttribute.getValue(), nullValue());
 
-        model.getEnumProperty().set(EnumDataTypesModel.DataType.TEST_VALUE_1);
-        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.TEST_VALUE_1.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.TEST_VALUE_1));
+        model.getEnumProperty().set(DataType.TEST_VALUE_1);
+        assertThat(enumAttribute.getValue(), is((Object) DataType.TEST_VALUE_1.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(DataType.TEST_VALUE_1));
 
-        ServerPresentationModel enumModels = dolphin.findPresentationModelById(EnumDataTypesModel.DataType.class.getName());
+        ServerPresentationModel enumModels = dolphin.findPresentationModelById(DataType.class.getName());
         assertThat(enumModels, notNullValue());
 
-        enumAttribute.setValue(EnumDataTypesModel.DataType.TEST_VALUE_2.ordinal());
-        assertThat(enumAttribute.getValue(), is((Object) EnumDataTypesModel.DataType.TEST_VALUE_2.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(EnumDataTypesModel.DataType.TEST_VALUE_2));
+        enumAttribute.setValue(DataType.TEST_VALUE_2.ordinal());
+        assertThat(enumAttribute.getValue(), is((Object) DataType.TEST_VALUE_2.ordinal()));
+        assertThat(model.getEnumProperty().get(), is(DataType.TEST_VALUE_2));
     }
 
 

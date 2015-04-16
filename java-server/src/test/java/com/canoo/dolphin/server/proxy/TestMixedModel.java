@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface TestMixedModel {
 
+    SimpleTestModel getSimpleModel();
+    void setSimpleModel(SimpleTestModel model);
+
     List<SimpleTestModel> getTestModels();
 }
