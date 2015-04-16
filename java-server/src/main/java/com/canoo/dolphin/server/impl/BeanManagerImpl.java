@@ -1,11 +1,12 @@
-package com.canoo.dolphin.server;
+package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.impl.BeanRepository;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class BeanManagerImpl implements BeanManager{
+public class BeanManagerImpl implements BeanManager {
 
     private final BeanRepository beanRepository;
 
