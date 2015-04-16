@@ -17,7 +17,6 @@ public class CdiDolphinCommandManager implements DolphinCommandManager {
 
     public CdiDolphinCommandManager() {
         BeanManager beanManager = BeanManagerProvider.getInstance().getBeanManager();
-
         ServerDolphinBean dolphinBean = new ServerDolphinBean();
     }
 
