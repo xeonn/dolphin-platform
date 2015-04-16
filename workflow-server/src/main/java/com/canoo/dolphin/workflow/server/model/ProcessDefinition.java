@@ -1,5 +1,6 @@
 package com.canoo.dolphin.workflow.server.model;
 
+import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
@@ -8,6 +9,11 @@ public class ProcessDefinition {
 
     private Property<String> id;
     private Property<String> name;
+    private ObservableList<BaseProcessInstance> processInstances;
+
+    public ObservableList<BaseProcessInstance> getProcessInstances() {
+        return processInstances;
+    }
 
     public String getName() {
         return name.get();
