@@ -42,7 +42,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -69,7 +69,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -95,7 +95,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -121,7 +121,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -148,7 +148,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -174,7 +174,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -200,7 +200,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -229,7 +229,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -256,7 +256,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -287,7 +287,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -316,7 +316,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -347,7 +347,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -376,7 +376,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -407,7 +407,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -436,7 +436,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -472,7 +472,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -501,7 +501,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -529,7 +529,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -558,7 +558,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -586,7 +586,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -615,7 +615,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -648,7 +648,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -677,7 +677,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -706,7 +706,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -745,7 +745,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -771,7 +771,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -795,7 +795,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -820,7 +820,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -854,7 +854,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -887,7 +887,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -920,7 +920,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -958,7 +958,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -992,7 +992,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1030,7 +1030,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1056,7 +1056,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1082,7 +1082,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1113,7 +1113,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1138,7 +1138,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1163,7 +1163,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1188,7 +1188,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1213,7 +1213,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1238,7 +1238,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1268,7 +1268,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1294,7 +1294,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1320,7 +1320,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);

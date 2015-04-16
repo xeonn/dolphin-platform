@@ -3,13 +3,11 @@ package com.canoo.dolphin.workflow.server;
 import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
-import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessList;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.List;
 
 @DolphinController("ProcessDefinitionCommands")
@@ -32,13 +30,13 @@ public class ActivitiController {
             pD.setId(processDefinition.getId());
             pD.setName(processDefinition.getName());
 
-            BaseProcessInstance processInstance1 = manager.create(BaseProcessInstance.class);
-            processInstance1.setId("1");
-            BaseProcessInstance processInstance2 = manager.create(BaseProcessInstance.class);
-            processInstance2.setId("2");
-            BaseProcessInstance processInstance3 = manager.create(BaseProcessInstance.class);
-            processInstance3.setId("3");
-            pD.getProcessInstances().addAll(Arrays.asList(processInstance1, processInstance2, processInstance3));
+//            BaseProcessInstance processInstance1 = manager.create(BaseProcessInstance.class);
+//            processInstance1.setId("1");
+//            BaseProcessInstance processInstance2 = manager.create(BaseProcessInstance.class);
+//            processInstance2.setId("2");
+//            BaseProcessInstance processInstance3 = manager.create(BaseProcessInstance.class);
+//            processInstance3.setId("3");
+//            pD.getProcessInstances().addAll(Arrays.asList(processInstance1, processInstance2, processInstance3));
 
             processList.getProcessDefinitions().add(pD);
             processList.getProcessDefinitions().add(pD);

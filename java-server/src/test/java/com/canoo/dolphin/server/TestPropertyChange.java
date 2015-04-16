@@ -24,7 +24,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -69,7 +69,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -115,7 +115,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
@@ -161,7 +161,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);

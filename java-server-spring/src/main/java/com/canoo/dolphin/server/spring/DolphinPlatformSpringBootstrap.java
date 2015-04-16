@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.server.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
@@ -37,7 +38,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
         new ListMapper(dolphin, classRepository, beanRepository);
-        return new BeanManager(beanRepository);
+        return new BeanManagerImpl(beanRepository);
     }
 
     /**

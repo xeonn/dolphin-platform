@@ -1,34 +1,20 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.impl.BeanRepository;
-
+import java.io.Serializable;
 import java.util.List;
 
-public class BeanManager {
+/**
+ * Created by hendrikebbers on 16.04.15.
+ */
+public interface BeanManager extends Serializable {
 
-    private final BeanRepository beanRepository;
+    boolean isManaged(Object bean);
 
-    public BeanManager(BeanRepository beanRepository) {
-        this.beanRepository = beanRepository;
-    }
+    <T> T create(final Class<T> beanClass);
 
-    public boolean isManaged(Object bean) {
-        return beanRepository.isManaged(bean);
-    }
+    <T> void delete(T bean);
 
-    public <T> T create(final Class<T> beanClass) {
-        return beanRepository.create(beanClass);
-    }
+    void deleteAll(Class<?> beanClass);
 
-    public <T> void delete(T bean) {
-        beanRepository.delete(bean);
-    }
-
-    public void deleteAll(Class<?> beanClass) {
-        beanRepository.deleteAll(beanClass);
-    }
-
-    public <T> List<T> findAll(Class<T> beanClass) {
-        return beanRepository.findAll(beanClass);
-    }
+    <T> List<T> findAll(Class<T> beanClass);
 }
