@@ -84,7 +84,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         String propertyName = DolphinUtils.getDolphinAttributeName(descriptor1);
         if (Property.class.isAssignableFrom(method.getReturnType())) {
             return method2prop.get(propertyName);
-        } else if ("void".equals(method.getReturnType().getSimpleName())){
+        } else if (Void.TYPE.equals(method.getReturnType())){
             method2prop.get(propertyName).set(args[0]);
             return null;
         } else {
