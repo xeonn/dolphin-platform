@@ -19,11 +19,8 @@ public class ModelProxyFactory {
     }
 
 
-
-
-
     public <T> T create(Class<T> modelClass) {
-        return (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, new DolphinModelInvocationHander(modelClass, serverDolphin,beanRepository));
-    }
+        return new DolphinModelInvocationHander<T>(modelClass, serverDolphin, beanRepository).getInstance();
+      }
 
 }

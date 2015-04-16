@@ -5,9 +5,11 @@ import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import org.opendolphin.core.server.ServerDolphin;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 /**
@@ -15,20 +17,36 @@ import static org.testng.Assert.assertNull;
  */
 public class ProxyTests extends AbstractDolphinBasedTest {
 
+    private TestCarModelInterface myModel;
+
+    @BeforeMethod
+    public void setUp() throws Exception {
+        ServerDolphin dolphin = createServerDolphin();
+        ClassRepository classRepository = new ClassRepository(dolphin);
+        BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+
+        ModelProxyFactory factory = new ModelProxyFactory(dolphin,beanRepository);
+
+        myModel = factory.create(TestCarModelInterface.class);
+
+    }
+
+    @Test
+    public void testProxyInstanceCreation_not_initialized() {
+        assertNotNull(myModel);
+
+        assertEquals(null, myModel.getBrandNameProperty().get());
+    }
+
     @Test
     public void testProxyInstanceCreation() {
+        assertNotNull(myModel);
 
-        final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-
-        ModelProxyFactory factory = new ModelProxyFactory(createServerDolphin(),beanRepository);
-
-        TestCarModelInterface myModel = factory.create(TestCarModelInterface.class);
-        Assert.assertNotNull(myModel);
-
-        assertEquals("trabant",myModel.getBrandProperty());
+        myModel.getBrandNameProperty().set("a String");
+        assertEquals("a String", myModel.getBrandNameProperty().get());
     }
+
+
 
 
 }

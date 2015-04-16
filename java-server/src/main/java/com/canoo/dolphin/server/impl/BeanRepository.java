@@ -60,7 +60,10 @@ public class BeanRepository {
     }
 
     public Object mapDolphinToObjects(Attribute attribute, Object value) {
-        return mapDolphinToObjects(classRepository.getFieldType(attribute), classRepository.getFieldClass(attribute), value);
+
+        ClassRepository.FieldType fieldType = classRepository.getFieldType(attribute);
+        Class<?> fieldClass = classRepository.getFieldClass(attribute);
+        return mapDolphinToObjects(fieldType, fieldClass, value);
     }
 
     public Object mapDolphinToObjects(Class<?> beanClass, String attributeName, Object value) {
@@ -141,6 +144,10 @@ public class BeanRepository {
         }
     }
 
+    public void registerClass(Class beanClass) {
+        classRepository.register(beanClass);
+    }
+
     public <T> void delete(T bean) {
         final PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
@@ -162,6 +169,14 @@ public class BeanRepository {
             ret.add((T) dolphinIdToObjectPm.get(model.getId()));
         }
         return ret;
+    }
+
+    public Map<String, Object> getDolphinIdToObjectPm() {
+        return dolphinIdToObjectPm;
+    }
+
+    public Map<Object, PresentationModel> getObjectPmToDolphinPm() {
+        return objectPmToDolphinPm;
     }
 
     public Object getBean(String sourceId) {

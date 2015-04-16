@@ -6,6 +6,7 @@ import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,9 @@ public class ClassRepository {
 
     public enum FieldType { UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN }
 
+
     private final Map<String, Field> fieldMap = new HashMap<>();
+    private final Map<String, Method> methodMap = new HashMap<>();
     private final Map<Class<?>, PresentationModel> classToPresentationModel = new HashMap<>();
 
     private ServerDolphin dolphin;
@@ -47,6 +50,16 @@ public class ClassRepository {
                     builder.withAttribute(attributeName, null, Tag.VALUE);
                 }
             });
+
+            DolphinUtils.forAllMethods(beanClass, new DolphinUtils.MethodIterator() {
+                @Override
+                public void run(Method method, String attributeName) {
+                    methodMap.put(beanClass.getName() + "." + method, method);
+                    builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
+                    builder.withAttribute(attributeName, null, Tag.VALUE);
+                }
+            });
+
 
             DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
                 @Override
@@ -104,7 +117,7 @@ public class ClassRepository {
     }
 
     public Field getField(Class<?> beanClass, String attributeName) {
-        return fieldMap.get(beanClass.getName() + "." + attributeName);
+        return fieldMap.get(beanClass.getName() + "." + attributeName) ;
     }
 
 

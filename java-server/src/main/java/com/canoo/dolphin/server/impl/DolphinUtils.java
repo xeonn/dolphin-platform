@@ -5,6 +5,7 @@ import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
+import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -139,15 +140,15 @@ public class DolphinUtils {
     }
 
 
-    public static void forAllMethods(Class modelClass, MethodIterator methodIterator) {
-        for (Method method : DolphinUtils.getInheritedDeclaredMethods(modelClass)) {
+    public static void forAllMethods(Class<?> modelClass, MethodIterator methodIterator) {
+        for (Method method : getInheritedDeclaredMethods(modelClass)) {
             String attributeName = getDolphinAttributePropertyNameForMethod(method);
             methodIterator.run(method, attributeName);
         }
     }
     
     public static <T> void forAllObservableLists(Class<T> beanClass, FieldIterator fieldIterator) {
-        for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
+        for (Field field : getInheritedDeclaredFields(beanClass)) {
             if (ObservableList.class.isAssignableFrom(field.getType())) {
 
                 String attributeName = getDolphinAttributePropertyNameForField(field);
@@ -157,7 +158,11 @@ public class DolphinUtils {
     }
 
     public static String getDolphinAttributePropertyNameForMethod(Method method) {
-        return method.getName().replace("get","");
+        String propertyName = Introspector.decapitalize(method.getName().substring(method.getName().startsWith("is") ? 2 : 3));
+        if(Property.class.isAssignableFrom(method.getReturnType())) {
+            propertyName = propertyName.substring(0, propertyName.length() - "Property".length());
+        }
+        return propertyName;
     }
 
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {

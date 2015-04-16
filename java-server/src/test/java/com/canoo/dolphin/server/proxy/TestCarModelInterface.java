@@ -7,5 +7,6 @@ import com.canoo.dolphin.mapping.Property;
  */
 public interface TestCarModelInterface {
 
-    public Property<String> getBrandProperty();
+    public Property<String> getBrandNameProperty();
+
 }

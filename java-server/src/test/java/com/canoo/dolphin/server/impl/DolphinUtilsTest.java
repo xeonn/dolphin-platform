@@ -5,13 +5,16 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 
-import static org.testng.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 public class DolphinUtilsTest {
 
     @Test
     public void testGetDolphinAttributePropertyNameForMethod() throws Exception {
+        Method method = TestCarModelInterface.class.getDeclaredMethods()[0];
+        String nameForMethod = DolphinUtils.getDolphinAttributePropertyNameForMethod(method);
 
-        DolphinUtils.getDolphinAttributePropertyNameForMethod(TestCarModelInterface.class.getDeclaredMethods()[0]);
+        assertThat(nameForMethod, is("brandName"));
     }
 }
