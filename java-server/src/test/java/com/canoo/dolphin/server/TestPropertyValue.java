@@ -27,7 +27,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -50,7 +50,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -73,7 +73,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
 
@@ -122,7 +122,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
@@ -149,7 +149,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         ref1.getTextProperty().set("ref1_text");

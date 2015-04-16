@@ -27,7 +27,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -47,7 +47,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -67,7 +67,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
@@ -86,7 +86,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
@@ -106,7 +106,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
         ListReferenceModel model = manager.create(ListReferenceModel.class);
 

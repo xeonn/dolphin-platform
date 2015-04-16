@@ -18,7 +18,7 @@ public class TestDeleteAll extends AbstractDolphinBasedTest {
         final ServerDolphin dolphin = createServerDolphin();
         final ClassRepository classRepository = new ClassRepository(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManager manager = new BeanManager(beanRepository);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
 
 
         SimpleTestModel model1 = manager.create(SimpleTestModel.class);
