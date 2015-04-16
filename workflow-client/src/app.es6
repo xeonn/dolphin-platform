@@ -12,9 +12,11 @@ const SERVER_URL = 'http://localhost:8080/dolphin';
 
 dolphin.connect(SERVER_URL)
 
-    .onAdded('ProcessDefinition',
+    .onAdded('ProcessList',
         (data) => {
             document.querySelector('workflow-main-view').data = data;
+
+            //window.setInterval(() => {console.log(data)}, 1000);
         }
     )
 
