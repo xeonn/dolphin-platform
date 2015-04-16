@@ -1,21 +1,24 @@
 package com.canoo.dolphin.server.proxy;
 
+import com.canoo.dolphin.collections.ListChangeEvent;
+import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.PresentationModelBuilder;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.PropertyImpl;
+import com.canoo.dolphin.server.impl.collections.ObservableArrayList;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by hendrikebbers on 15.04.15.
@@ -24,10 +27,10 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
     private final T instance;
     private final Class modelClass;
-    private final Map<Method, PropertyDescriptor> method2propDesc ;
+    private final Map<Method, PropertyDescriptor> method2propDesc;
     private final Map<String, Property> method2prop;
 
-    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, BeanRepository beanRepository) {
+    public DolphinModelInvocationHander(final Class modelClass, ServerDolphin dolphin, final BeanRepository beanRepository) {
         this.modelClass = modelClass;
         method2prop = new HashMap<>();
         method2propDesc = new HashMap<>();
@@ -40,10 +43,10 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
             BeanInfo beanInfo = DolphinUtils.getBeanInfo(modelClass);
             for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-                builder.withAttribute(descriptor.getName());
-            }
+                    builder.withAttribute(descriptor.getName());
+                }
 
-            PresentationModel model = builder.create();
+            final PresentationModel model = builder.create();
             beanRepository.registerClass(modelClass);
             for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
                 Attribute attribute = model.findAttributeByPropertyName(propertyDescriptor.getName());
@@ -58,6 +61,23 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
             }
 
+//            for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+//                if (List.class.isAssignableFrom(descriptor.getPropertyType())) {
+//                    final String propertyName = DolphinUtils.getDolphinAttributeName(descriptor);
+//                    Property property = method2prop.get(propertyName);
+//                    ObservableList observableList = new ObservableArrayList() {
+//                        @Override
+//                        protected void notifyInternalListeners(ListChangeEvent event) {
+//                            if (beanRepository.getListMapper() != null) {
+//                                beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
+//                            }
+//                        }
+//                    };
+//                    property.set(observableList);
+//
+//                }
+//            }
+
             beanRepository.getObjectPmToDolphinPm().put(instance, model);
             beanRepository.getDolphinIdToObjectPm().put(model.getId(), instance);
         } catch (IllegalArgumentException iae) {
@@ -70,10 +90,13 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         System.out.println(method.getName());
-        if("hashCode".equalsIgnoreCase(method.getName())) {
+        if (args != null && args.length > 0 && Collection.class.isAssignableFrom(args[0].getClass())) {
+            throw new IllegalArgumentException("Must not set list property " + method.getName());
+        }
+        if ("hashCode".equalsIgnoreCase(method.getName())) {
             return System.identityHashCode(proxy);
         }
-        if("equals".equalsIgnoreCase(method.getName())) {
+        if ("equals".equalsIgnoreCase(method.getName())) {
             return System.identityHashCode(proxy) == System.identityHashCode(args[0]);
         }
         if ("toString".equalsIgnoreCase(method.getName())) {
@@ -84,7 +107,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         String propertyName = DolphinUtils.getDolphinAttributeName(descriptor1);
         if (Property.class.isAssignableFrom(method.getReturnType())) {
             return method2prop.get(propertyName);
-        } else if (Void.TYPE.equals(method.getReturnType())){
+        } else if (Void.TYPE.equals(method.getReturnType())) {
             method2prop.get(propertyName).set(args[0]);
             return null;
         } else {

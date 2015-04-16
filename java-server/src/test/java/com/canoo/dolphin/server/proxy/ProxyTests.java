@@ -2,10 +2,14 @@ package com.canoo.dolphin.server.proxy;
 
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
+import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import org.opendolphin.core.server.ServerDolphin;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -28,9 +32,8 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         ClassRepository classRepository = new ClassRepository(dolphin);
         BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
 
+        beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
         factory = new ModelProxyFactory(dolphin, beanRepository);
-
-
 
     }
 
@@ -71,6 +74,16 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         assertThat(car.getYear(), is(2015));
     }
 
+//    @Test
+//    public void proxyInstance_List_Primitive() {
+//        car = factory.create(TestCarModel.class);
+//
+//        car.getTripKilometerCounters().addAll(Arrays.asList(1, 3));
+//
+//        assertThat(car.getTripKilometerCountersProperty().get(), contains(1,3));
+//
+//
+//    }
 
     @Test
     public void proxyInstanceWithAggregation() {

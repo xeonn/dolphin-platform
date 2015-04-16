@@ -2,6 +2,8 @@ package com.canoo.dolphin.server.proxy;
 
 import com.canoo.dolphin.mapping.Property;
 
+import java.util.List;
+
 /**
  * Created by hendrikebbers on 15.04.15.
  */
@@ -15,6 +17,10 @@ public interface TestCarModel {
     void setCarManufacturer(TestCarManufacturer manufacturer);
 
     public Property<String> getBrandNameProperty();
+
+//    List<Integer> getTripKilometerCounters();
+//
+//    public Property<List<Integer>> getTripKilometerCountersProperty();
 
 
 

@@ -28,6 +28,7 @@ public class BeanRepository {
     public BeanRepository(ServerDolphin dolphin, ClassRepository classRepository) {
         this.dolphin = dolphin;
         this.classRepository = classRepository;
+        listMapper = new ListMapper(dolphin, classRepository, this);
     }
 
     public void setListMapper(ListMapper listMapper) {
@@ -154,6 +155,10 @@ public class BeanRepository {
             dolphinIdToObjectPm.remove(model.getId());
             dolphin.remove(model);
         }
+    }
+
+    public ListMapper getListMapper() {
+        return listMapper;
     }
 
     public void deleteAll(Class<?> beanClass) {
