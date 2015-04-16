@@ -32,6 +32,9 @@ public class BeanRepository {
     }
 
     public void setListMapper(ListMapper listMapper) {
+        if(listMapper != null) {
+            listMapper.unregisterListeners();
+        }
         this.listMapper = listMapper;
     }
 

@@ -154,7 +154,11 @@ public class DolphinUtils {
             Set<Class<?>> superclasses = new HashSet<>();
             for (Class<?> modelClass : modelClasses) {
                 BeanInfo beanInfo = Introspector.getBeanInfo(modelClass);
-                betterBeanInfo.addPropertyDescriptors(beanInfo.getPropertyDescriptors());
+                for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                    if (!"class".equals(propertyDescriptor.getName())) {
+                        betterBeanInfo.addPropertyDescriptors(propertyDescriptor);
+                    }
+                }
                 superclasses.addAll(Arrays.asList(modelClass.getInterfaces()));
             }
             return getBeanInfo(betterBeanInfo, superclasses);
@@ -173,8 +177,10 @@ public class DolphinUtils {
         }
     }
 
+    //TODO(fabian, 16-04-2015): move to region BetterBeanInfo
     public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
         if(Property.class.isAssignableFrom(descriptor.getPropertyType())){
+
             if(!descriptor.getName().endsWith("Property")) {
                 throw new IllegalArgumentException(String.format( "Getter for property %s should end with \"Property\"", descriptor.getName()));
             }

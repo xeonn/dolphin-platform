@@ -3,7 +3,7 @@ package com.canoo.dolphin.mapping;
 /**
  * Defines a property that can be part of a model. Since Java has no native property system this is needed to provide
  * listener / observer support to properties.
- * @param <T> Type of the property
+ * @param <T> Type of the property must be a scalar, not a collection
  */
 public interface Property<T> {
 

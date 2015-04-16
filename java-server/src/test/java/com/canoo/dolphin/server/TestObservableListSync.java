@@ -10,6 +10,7 @@ import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
 
+import javax.swing.event.EventListenerList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

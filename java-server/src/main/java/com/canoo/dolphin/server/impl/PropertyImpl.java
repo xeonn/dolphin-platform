@@ -7,6 +7,7 @@ import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,6 +36,9 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     public void set(T newValue) {
+        if(Collection.class.isAssignableFrom(newValue.getClass())){
+            throw new IllegalArgumentException("Type of the property must be a scalar, not a collection");
+        }
         beanRepository.setValue(attribute, newValue);
     }
 

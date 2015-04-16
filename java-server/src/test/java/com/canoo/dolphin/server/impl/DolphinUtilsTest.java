@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.server.proxy.TestCarManufacturer;
 import com.canoo.dolphin.server.proxy.TestCarModel;
+import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import org.testng.annotations.Test;
 
 import java.beans.BeanInfo;
@@ -21,11 +22,20 @@ public class DolphinUtilsTest {
     }
 
     @Test
-    public void testGetBeanInfoWithHierarchy() throws Exception {
+    public void testGetBeanInfoWithHierarchy_interface() throws Exception {
 
         BeanInfo beanInfo = DolphinUtils.getBeanInfo(TestCarManufacturer.class);
 
         assertThat(beanInfo.getPropertyDescriptors().length, is(3));
+
+    }
+
+    @Test
+    public void testGetBeanInfo_forClass() throws Exception {
+
+        BeanInfo beanInfo = DolphinUtils.getBeanInfo(SimpleAnnotatedTestModel.class);
+
+        assertThat(beanInfo.getPropertyDescriptors().length, is(1));
 
     }
 }

@@ -18,10 +18,6 @@ public interface TestCarModel {
 
     public Property<String> getBrandNameProperty();
 
-//    List<Integer> getTripKilometerCounters();
-//
-//    public Property<List<Integer>> getTripKilometerCountersProperty();
-
-
+    List<Integer> getTripKilometerCounters();
 
 }

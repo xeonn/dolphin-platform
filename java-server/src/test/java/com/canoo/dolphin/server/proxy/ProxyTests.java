@@ -74,16 +74,14 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         assertThat(car.getYear(), is(2015));
     }
 
-//    @Test
-//    public void proxyInstance_List_Primitive() {
-//        car = factory.create(TestCarModel.class);
-//
-//        car.getTripKilometerCounters().addAll(Arrays.asList(1, 3));
-//
-//        assertThat(car.getTripKilometerCountersProperty().get(), contains(1,3));
-//
-//
-//    }
+    @Test
+    public void proxyInstance_List_Primitive() {
+        car = factory.create(TestCarModel.class);
+
+        car.getTripKilometerCounters().addAll(Arrays.asList(1, 3));
+
+        assertThat(car.getTripKilometerCounters(), contains(1,3));
+    }
 
     @Test
     public void proxyInstanceWithAggregation() {
@@ -108,5 +106,10 @@ public class ProxyTests extends AbstractDolphinBasedTest {
     @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Getter for property brandName should end with \"Property\"")
     public void testInvalidPropertyName() throws Exception {
         factory.create(TestInvalidPropertyInterface.class);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Collections should not be set, method: setABC")
+    public void testInvalidSetterForCollection() throws Exception {
+        factory.create(TestNotSetCollection.class);
     }
 }
