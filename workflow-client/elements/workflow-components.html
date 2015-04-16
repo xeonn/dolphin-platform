@@ -1,0 +1,34 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-menu/core-submenu.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+
+
+<polymer-element name="workflow-menu" attributes="data" noscript>
+    <template>
+        <core-menu>
+            <template repeat="{{processDefinition in data.processDefinitions}}">
+                <core-submenu label="{{processDefinition.name}}">
+                    <template repeat="{{processInstance in processDefinition.processInstances}}">
+                        <core-item label="{{processInstance.id}}"></core-item>
+                    </template>
+                </core-submenu>
+            </template>
+        </core-menu>
+    </template>
+</polymer-element>
+
+
+<polymer-element name="workflow-main-view" attributes="data" noscript>
+    <template>
+        <core-scaffold>
+            <core-header-panel navigation flex mode="seamed">
+                <core-toolbar>Dolphin Workflow</core-toolbar>
+                <workflow-menu data="{{data}}"></workflow-menu>
+            </core-header-panel>
+            <div tool>Title</div>
+            <div>Main content goes here...</div>
+        </core-scaffold>
+    </template>
+</polymer-element>

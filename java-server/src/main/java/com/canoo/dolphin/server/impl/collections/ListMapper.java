@@ -24,6 +24,7 @@ public class ListMapper {
         this.dolphin = dolphin;
         this.beanRepository = beanRepository;
         this.classRepository = classRepository;
+        this.beanRepository.setListMapper(this);
 
         dolphin.getModelStore().addModelStoreListener(DolphinConstants.ADD_FROM_CLIENT, new ModelStoreListener() {
             @Override
