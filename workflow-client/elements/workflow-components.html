@@ -25,9 +25,9 @@
         <core-scaffold>
             <core-header-panel navigation flex mode="seamed">
                 <core-toolbar>Dolphin Workflow</core-toolbar>
-                <workflow-menu data="{{data}}"></workflow-menu>
+                <workflow-menu data="{{data.processList}}"></workflow-menu>
             </core-header-panel>
-            <div tool>Title</div>
+            <div tool>Process Instance {{data.processInstance.id}}</div>
             <div>Main content goes here...</div>
         </core-scaffold>
     </template>

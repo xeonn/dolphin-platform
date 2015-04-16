@@ -14,6 +14,6 @@ public class ActivitiController {
 
     @DolphinAction
     public void init() {
-        activitiService.setupProcessList();
+        activitiService.setupWorkflowViewModel();
     }
 }

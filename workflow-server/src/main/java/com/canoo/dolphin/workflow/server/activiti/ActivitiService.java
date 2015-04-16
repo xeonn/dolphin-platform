@@ -6,6 +6,7 @@ import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
 import com.canoo.dolphin.workflow.server.model.ProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessList;
+import com.canoo.dolphin.workflow.server.model.WorkflowViewModel;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -35,6 +36,11 @@ public class ActivitiService {
     @Inject
     private RepositoryService repositoryService;
 
+    public void setupWorkflowViewModel() {
+        WorkflowViewModel workflowViewModel = manager.create(WorkflowViewModel.class);
+        workflowViewModel.setProcessList(setupProcessList());
+    }
+
     public ProcessInstance getProcessInstance(String processInstanceId) {
         List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
         if (list.isEmpty()) {
@@ -57,7 +63,7 @@ public class ActivitiService {
     }
 
     private ProcessInstance map(org.activiti.engine.runtime.ProcessInstance processInstance) {
-        List<Activity> activities = findActivities(processInstance.getProcessDefinitionId());
+        List<Activity> activities = createActivities(processInstance.getProcessDefinitionId());
         ProcessInstance mappedInstance = manager.create(ProcessInstance.class);
         mappedInstance.setId(processInstance.getId());
         mappedInstance.getActivities().addAll(activities);
@@ -71,7 +77,7 @@ public class ActivitiService {
         return mappedInstance;
     }
 
-    public List<Activity> findActivities(String processDefinitionId) {
+    private List<Activity> createActivities(String processDefinitionId) {
         ProcessDefinitionEntity processDefinitionEntity = managementService.executeCommand(new DeployProcessDefinitionCommand(processDefinitionId));
         List<ActivityImpl> initialActivityStack = processDefinitionEntity.getInitialActivityStack();
         return createActivityList(initialActivityStack);
@@ -83,16 +89,14 @@ public class ActivitiService {
             Activity activity = manager.create(Activity.class);
             activity.setId(activityImpl.getId());
         }
+        //TODO map outgoing activities ...
         return result;
     }
 
-    public ProcessList setupProcessList() {
+    private ProcessList setupProcessList() {
         final List<org.activiti.engine.repository.ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
-
         final ProcessList processList = manager.create(ProcessList.class);
-
         processList.getProcessDefinitions().addAll(processDefinitions.parallelStream().map(this::map).collect(Collectors.toList()));
-
         return processList;
     }
 }
