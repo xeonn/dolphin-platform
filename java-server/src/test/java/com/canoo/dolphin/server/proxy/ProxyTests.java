@@ -1,10 +1,12 @@
 package com.canoo.dolphin.server.proxy;
 
+import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.SimpleTestModel;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -29,12 +31,13 @@ public class ProxyTests extends AbstractDolphinBasedTest {
     private TestCarModel car;
     private ModelProxyFactory factory;
     private ServerDolphin dolphin;
+    private BeanRepository beanRepository;
 
     @BeforeMethod
     public void setUp() throws Exception {
         dolphin = createServerDolphin();
         ClassRepository classRepository = new ClassRepository(dolphin);
-        BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        beanRepository = new BeanRepository(dolphin, classRepository);
 
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
         factory = new ModelProxyFactory(dolphin, beanRepository);
@@ -59,8 +62,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         car.getBrandNameProperty().set(expectedValue);
         assertEquals(expectedValue, car.getBrandNameProperty().get());
 
-
-        assertCorrectPM("brandName", expectedValue, TestCarModel.class.getName(), 4);
+        assertCorrectPM("brandName", expectedValue, TestCarModel.class.getName(), 5);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
         assertThat(car.getYear(), is(2015));
 
-        assertCorrectPM("year", "2015", TestCarModel.class.getName(), 4);
+        assertCorrectPM("year", "2015", TestCarModel.class.getName(), 5);
     }
 
     @Test
@@ -114,6 +116,31 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.DEL_FROM_SERVER), empty());
         assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.SET_FROM_SERVER), empty());
     }
+
+    @Test
+    public void proxyInstance_List_Objects() {
+        car = factory.create(TestCarModel.class);
+        TestCarColor blue = factory.create(TestCarColor.class);
+        blue.setColorName("blue");
+        TestCarColor red = factory.create(TestCarColor.class);
+        red.setColorName("red");
+
+        car.getCarColors().addAll(Arrays.asList(blue, red));
+
+        assertThat(car.getCarColors(), contains(blue,red));
+
+        List<ServerPresentationModel> testCarModels = dolphin.findAllPresentationModelsByType(TestCarModel.class.getName());
+        assertThat(testCarModels, hasSize(1));
+
+        List<ServerPresentationModel> colorModels = dolphin.findAllPresentationModelsByType(TestCarColor.class.getName());
+        assertThat(colorModels, hasSize(2));
+
+        List < ServerPresentationModel > changes = dolphin.findAllPresentationModelsByType(DolphinConstants.ADD_FROM_SERVER);
+        assertThat(changes, hasSize(2));
+        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.DEL_FROM_SERVER), empty());
+        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.SET_FROM_SERVER), empty());
+    }
+
 
     @Test
     public void proxyInstanceWithAggregation() {
@@ -138,7 +165,23 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         assertThat(carModels, hasSize(1));
         List<ServerPresentationModel> manufacturerModels = dolphin.findAllPresentationModelsByType(TestCarManufacturer.class.getName());
         assertThat(manufacturerModels, hasSize(1));
+    }
 
+    @Test
+    public void testMixedModels() throws Exception {
+        BeanManager beanManager = new BeanManager(beanRepository);
+
+        SimpleTestModel simpleTestModel1 = beanManager.create(SimpleTestModel.class);
+        SimpleTestModel simpleTestModel2 = beanManager.create(SimpleTestModel.class);
+
+        TestMixedModel testMixedModel = factory.create(TestMixedModel.class);
+
+        testMixedModel.getTestModels().addAll(Arrays.asList(simpleTestModel1, simpleTestModel2));
+
+        List<ServerPresentationModel> mixedModels = dolphin.findAllPresentationModelsByType(TestMixedModel.class.getName());
+        assertThat(mixedModels, hasSize(1));
+        List<ServerPresentationModel>  simpleTestModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
+        assertThat(simpleTestModels, hasSize(2));
     }
 
     @Test

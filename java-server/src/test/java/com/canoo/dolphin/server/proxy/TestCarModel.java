@@ -20,4 +20,6 @@ public interface TestCarModel {
 
     List<Integer> getTripKilometerCounters();
 
+    List<TestCarColor> getCarColors();
+
 }
