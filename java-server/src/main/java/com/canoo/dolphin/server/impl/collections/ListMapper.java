@@ -104,7 +104,7 @@ public class ListMapper {
             return saveInvoke(bean, classRepository.getPropertyDescriptor(bean.getClass(), attributeName));
         }else {
             Field field = classRepository.getField(bean.getClass(), attributeName);
-            return (ObservableArrayList) DolphinUtils.getPrivileged(field, bean);
+            return (ObservableArrayList) ReflectionHelper.getPrivileged(field, bean);
         }
     }
 

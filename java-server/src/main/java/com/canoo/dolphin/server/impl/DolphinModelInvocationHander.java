@@ -30,7 +30,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
     private final Map<String, Property> propertyName2prop;
     private final Map<String, ObservableList> propertyName2list;
 
-    public DolphinModelInvocationHander(final Class modelClass, ServerDolphin dolphin, final BeanRepository beanRepository) {
+    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, BeanRepository beanRepository) {
         this.modelClass = modelClass;
         propertyName2prop = new HashMap<>();
         propertyName2list = new HashMap<>();
@@ -46,7 +46,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
             builder.withType(DolphinUtils.getDolphinPresentationModelTypeForClass(modelClass));
             buildAttributes(builder, beanInfo);
 
-            final PresentationModel model = builder.create();
+            PresentationModel model = builder.create();
 
             beanRepository.getObjectPmToDolphinPm().put(instance, model);
             beanRepository.getDolphinIdToObjectPm().put(model.getId(), instance);
@@ -97,8 +97,6 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
             builder.withAttribute(propertyName);
         }
     }
-
-
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

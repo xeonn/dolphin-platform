@@ -3,7 +3,6 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.PresentationModelBuilder;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.impl.collections.ObservableArrayList;
@@ -147,7 +146,7 @@ public class BeanRepository {
                 Attribute attribute = model.findAttributeByPropertyName(attributeName);
                 @SuppressWarnings("unchecked")
                 Property property = new PropertyImpl(BeanRepository.this, attribute);
-                DolphinUtils.setPrivileged(field, instance, property);
+                ReflectionHelper.setPrivileged(field, instance, property);
             }
         });
     }
@@ -165,7 +164,7 @@ public class BeanRepository {
                         }
                     }
                 };
-                DolphinUtils.setPrivileged(field, instance, observableList);
+                ReflectionHelper.setPrivileged(field, instance, observableList);
             }
         });
     }

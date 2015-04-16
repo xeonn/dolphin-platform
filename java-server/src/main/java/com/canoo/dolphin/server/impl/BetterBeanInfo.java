@@ -1,18 +1,15 @@
 package com.canoo.dolphin.server.impl;
 
 import java.awt.*;
-import java.beans.BeanDescriptor;
-import java.beans.BeanInfo;
-import java.beans.EventSetDescriptor;
-import java.beans.MethodDescriptor;
-import java.beans.PropertyDescriptor;
-import java.beans.SimpleBeanInfo;
+import java.beans.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BetterBeanInfo implements BeanInfo {
-    Set<PropertyDescriptor> propertyDescriptors = new HashSet<>();
+
+    private final Set<PropertyDescriptor> propertyDescriptors = new HashSet<>();
+
     @Override
     public BeanDescriptor getBeanDescriptor() {
         return null;

@@ -1,6 +1,5 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.server.PresentationModelBuilder;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -173,7 +172,7 @@ public class ClassRepository {
         }
 
         final Class<?> clazz = value.getClass();
-        if (DolphinUtils.isBasicType(clazz)) {
+        if (ReflectionHelper.isBasicType(clazz)) {
             return FieldType.BASIC_TYPE;
         }
         if (clazz.isEnum()) {
