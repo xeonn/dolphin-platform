@@ -1,5 +1,7 @@
 package com.canoo.dolphin.server;
 
+import com.canoo.dolphin.server.query.PropertyQuery;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,4 +19,6 @@ public interface BeanManager extends Serializable {
     void deleteAll(Class<?> beanClass);
 
     <T> List<T> findAll(Class<T> beanClass);
+
+    <T> PropertyQuery<T> createQuery(Class<T> beanClass);
 }
