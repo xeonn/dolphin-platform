@@ -14,7 +14,7 @@
         <module>java-server-javaee</module>
         <module>hello-world-example</module>
         <module>icos-poc-server</module>
-        <module>dolphin-workflow</module>
+        <module>workflow-server</module>
     </modules>
 
 
