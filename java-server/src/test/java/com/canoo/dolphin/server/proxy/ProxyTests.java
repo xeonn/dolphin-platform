@@ -18,34 +18,37 @@ import static org.testng.Assert.assertNotNull;
  */
 public class ProxyTests extends AbstractDolphinBasedTest {
 
-    private TestCarModel myModel;
+    private TestCarModel car;
     private ModelProxyFactory factory;
+    private ServerDolphin dolphin;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        ServerDolphin dolphin = createServerDolphin();
+        dolphin = createServerDolphin();
         ClassRepository classRepository = new ClassRepository(dolphin);
         BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
 
         factory = new ModelProxyFactory(dolphin, beanRepository);
 
-        myModel = factory.create(TestCarModel.class);
+
 
     }
 
     @Test
     public void testProxyInstanceCreation_not_initialized() {
-        assertNotNull(myModel);
+        car = factory.create(TestCarModel.class);
+        assertNotNull(car);
 
-        assertEquals(null, myModel.getBrandNameProperty().get());
+        assertEquals(null, car.getBrandNameProperty().get());
     }
 
     @Test
     public void testProxyInstanceCreation() {
-        assertNotNull(myModel);
+        car = factory.create(TestCarModel.class);
+        assertNotNull(car);
 
-        myModel.getBrandNameProperty().set("a String");
-        assertEquals("a String", myModel.getBrandNameProperty().get());
+        car.getBrandNameProperty().set("a String");
+        assertEquals("a String", car.getBrandNameProperty().get());
     }
 
     @Test
@@ -60,11 +63,33 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
     @Test
     public void proxyInstanceWithSetter() {
-        assertNotNull(myModel);
+        car = factory.create(TestCarModel.class);
+        assertNotNull(car);
 
-        myModel.setYear(2015);
+        car.setYear(2015);
 
-        assertThat(myModel.getYear(), is(2015));
+        assertThat(car.getYear(), is(2015));
+    }
+
+
+    @Test
+    public void proxyInstanceWithAggregation() {
+        car = factory.create(TestCarModel.class);
+        assertNotNull(car);
+
+        TestCarManufacturer carManufacturer = factory.create(TestCarManufacturer.class);
+
+        carManufacturer.setName("name");
+        carManufacturer.setCapital("capital");
+        carManufacturer.setNation("schwiiz");
+
+        car.setCarManufacturer(carManufacturer);
+
+        TestCarManufacturer manufacturer = car.getCarManufacturer();
+        assertThat(manufacturer, is(carManufacturer));
+        assertThat(manufacturer.getName(),is("name"));
+        assertThat(manufacturer.getCapital(),is("capital"));
+        assertThat(manufacturer.getNation(),is("schwiiz"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Getter for property brandName should end with \"Property\"")

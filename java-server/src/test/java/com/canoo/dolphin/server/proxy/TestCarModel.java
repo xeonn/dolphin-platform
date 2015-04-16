@@ -8,10 +8,11 @@ import com.canoo.dolphin.mapping.Property;
 
 public interface TestCarModel {
 
-
-
     Integer getYear();
     void setYear(Integer inYear);
+
+    TestCarManufacturer getCarManufacturer();
+    void setCarManufacturer(TestCarManufacturer manufacturer);
 
     public Property<String> getBrandNameProperty();
 

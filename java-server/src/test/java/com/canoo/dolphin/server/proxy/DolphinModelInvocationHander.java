@@ -69,12 +69,12 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(method.getName());
         if("hashCode".equalsIgnoreCase(method.getName())) {
-
             return System.identityHashCode(proxy);
         }
         if("equals".equalsIgnoreCase(method.getName())) {
-            return args[0].equals(proxy);
+            return System.identityHashCode(proxy) == System.identityHashCode(args[0]);
         }
         if ("toString".equalsIgnoreCase(method.getName())) {
             return DolphinModelInvocationHander.class.getName() + "@" + System.identityHashCode(proxy);

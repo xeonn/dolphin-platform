@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ClassRepository {
 
-    public enum FieldType { UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN }
+    public enum FieldType {UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN}
 
 
     private final Map<String, Field> fieldMap = new HashMap<>();
@@ -54,17 +54,13 @@ public class ClassRepository {
                 }
             });
 
-            try {
-                BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
-                for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
-                    String attributeName = propertyDescriptor.getName();
-                    builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
-                    builder.withAttribute(attributeName, null, Tag.VALUE);
-                }
-            } catch (IntrospectionException e) {
-                e.printStackTrace();
-            }
 
+            BeanInfo beanInfo = DolphinUtils.getBeanInfo(beanClass);
+            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                String attributeName = propertyDescriptor.getName();
+                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
+                builder.withAttribute(attributeName, null, Tag.VALUE);
+            }
 
             DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
                 @Override
@@ -122,10 +118,8 @@ public class ClassRepository {
     }
 
     public Field getField(Class<?> beanClass, String attributeName) {
-        return fieldMap.get(beanClass.getName() + "." + attributeName) ;
+        return fieldMap.get(beanClass.getName() + "." + attributeName);
     }
-
-
 
 
     private Attribute findClassAttribute(Attribute fieldAttribute, Tag tag) {
@@ -141,7 +135,7 @@ public class ClassRepository {
 
     private FieldType calculateFieldType(Attribute classAttribute) {
         try {
-            return FieldType.values()[(Integer)classAttribute.getValue()];
+            return FieldType.values()[(Integer) classAttribute.getValue()];
         } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
             // do nothing
         }
