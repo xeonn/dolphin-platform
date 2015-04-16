@@ -3,6 +3,7 @@ package com.canoo.dolphin.server;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.mapping.ValueChangeEvent;
 import com.canoo.dolphin.mapping.ValueChangeListener;
+import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;

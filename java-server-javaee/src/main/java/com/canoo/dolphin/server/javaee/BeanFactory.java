@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.server.BeanManagerImpl;
+import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;

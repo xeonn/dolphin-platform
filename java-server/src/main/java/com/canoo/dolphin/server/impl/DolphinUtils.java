@@ -164,4 +164,16 @@ public class DolphinUtils {
     public interface FieldIterator {
         public abstract void run(Field field, String attributeName);
     }
+
+    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
+        for (Field field : DolphinUtils.getInheritedDeclaredFields(bean.getClass())) {
+            if (Property.class.isAssignableFrom(field.getType())) {
+                if(name.equals(getDolphinAttributePropertyNameForField(field))) {
+                    return (Property<T>) DolphinUtils.getPrivileged(field, bean);
+                }
+            }
+        }
+        return null;
+    }
+
 }
