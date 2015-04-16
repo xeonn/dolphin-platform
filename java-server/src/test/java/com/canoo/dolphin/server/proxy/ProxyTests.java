@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -17,7 +18,7 @@ import static org.testng.Assert.assertNotNull;
  */
 public class ProxyTests extends AbstractDolphinBasedTest {
 
-    private TestCarModelInterface myModel;
+    private TestCarModel myModel;
     private ModelProxyFactory factory;
 
     @BeforeMethod
@@ -28,7 +29,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
 
         factory = new ModelProxyFactory(dolphin, beanRepository);
 
-        myModel = factory.create(TestCarModelInterface.class);
+        myModel = factory.create(TestCarModel.class);
 
     }
 
@@ -46,6 +47,16 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         myModel.getBrandNameProperty().set("a String");
         assertEquals("a String", myModel.getBrandNameProperty().get());
     }
+
+    @Test
+    public void proxyInstance_Inheritance() {
+        TestCarManufacturer manufacturer = factory.create(TestCarManufacturer.class);
+
+        manufacturer.setName("a Name");
+
+        assertThat(manufacturer.getName(), is("a Name"));
+    }
+
 
     @Test
     public void proxyInstanceWithSetter() {

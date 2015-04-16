@@ -15,9 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by hendrikebbers on 26.03.15.
@@ -144,13 +142,27 @@ public class DolphinUtils {
 
 
     public static BeanInfo getBeanInfo(Class<?> modelClass) {
+        return  getBeanInfo(new BetterBeanInfo(), Collections.<Class<?>>singleton(modelClass));
+
+    }
+
+    private static BeanInfo getBeanInfo(BetterBeanInfo betterBeanInfo, Set<Class<?>> modelClasses) {
+        if(modelClasses.isEmpty()){
+            return betterBeanInfo;
+        }
         try {
-            return Introspector.getBeanInfo(modelClass);
+            Set<Class<?>> superclasses = new HashSet<>();
+            for (Class<?> modelClass : modelClasses) {
+                BeanInfo beanInfo = Introspector.getBeanInfo(modelClass);
+                betterBeanInfo.addPropertyDescriptors(beanInfo.getPropertyDescriptors());
+                superclasses.addAll(Arrays.asList(modelClass.getInterfaces()));
+            }
+            return getBeanInfo(betterBeanInfo, superclasses);
         } catch (IntrospectionException e) {
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     public static <T> void forAllObservableLists(Class<T> beanClass, FieldIterator fieldIterator) {
         for (Field field : getInheritedDeclaredFields(beanClass)) {
             if (ObservableList.class.isAssignableFrom(field.getType())) {
