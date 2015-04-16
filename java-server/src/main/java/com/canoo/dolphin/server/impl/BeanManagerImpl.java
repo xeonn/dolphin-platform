@@ -16,22 +16,27 @@ public class BeanManagerImpl implements BeanManager {
         this.beanRepository = beanRepository;
     }
 
+    @Override
     public boolean isManaged(Object bean) {
         return beanRepository.isManaged(bean);
     }
 
+    @Override
     public <T> T create(final Class<T> beanClass) {
         return beanRepository.create(beanClass);
     }
 
+    @Override
     public <T> void delete(T bean) {
         beanRepository.delete(bean);
     }
 
+    @Override
     public void deleteAll(Class<?> beanClass) {
         beanRepository.deleteAll(beanClass);
     }
 
+    @Override
     public <T> List<T> findAll(Class<T> beanClass) {
         return beanRepository.findAll(beanClass);
     }

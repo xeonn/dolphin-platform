@@ -1,11 +1,7 @@
 package com.canoo.dolphin.server.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
-import com.canoo.dolphin.server.impl.PresentationModelBuilder;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.DolphinConstants;
-import com.canoo.dolphin.server.impl.DolphinUtils;
+import com.canoo.dolphin.server.impl.*;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
@@ -187,6 +183,6 @@ public class ListMapper {
     public void unregisterListeners() {
         dolphin.getServerModelStore().removeModelStoreListener(DolphinConstants.ADD_FROM_CLIENT,addListener);
         dolphin.getServerModelStore().removeModelStoreListener(DolphinConstants.SET_FROM_CLIENT,setListener);
-        dolphin.getServerModelStore().removeModelStoreListener(DolphinConstants.DEL_FROM_CLIENT,deleteListener);
+        dolphin.getServerModelStore().removeModelStoreListener(DolphinConstants.DEL_FROM_CLIENT, deleteListener);
     }
 }

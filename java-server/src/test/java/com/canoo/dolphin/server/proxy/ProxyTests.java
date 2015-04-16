@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.proxy;
 
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
@@ -39,7 +40,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         dolphin = createServerDolphin();
         ClassRepository classRepository = new ClassRepository(dolphin);
         beanRepository = new BeanRepository(dolphin, classRepository);
-        manager = new BeanManager(beanRepository);
+        manager = new BeanManagerImpl(beanRepository);
         beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
     }
 

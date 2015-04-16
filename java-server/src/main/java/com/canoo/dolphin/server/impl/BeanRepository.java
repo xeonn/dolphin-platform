@@ -3,7 +3,6 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.PresentationModelBuilder;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.impl.collections.ObservableArrayList;
 import org.opendolphin.core.Attribute;

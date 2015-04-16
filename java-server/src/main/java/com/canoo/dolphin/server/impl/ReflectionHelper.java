@@ -4,6 +4,8 @@ import com.canoo.dolphin.mapping.Property;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -51,11 +53,40 @@ public class ReflectionHelper {
         });
     }
 
+    public static void invokePrivileged(final Method method, final Object obj, final Object... args) {
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                boolean wasAccessible = method.isAccessible();
+                try {
+                    method.setAccessible(true);
+                    method.invoke(obj, args);
+                    return null; // return nothing...
+                } catch (InvocationTargetException | IllegalAccessException ex) {
+                    throw new IllegalStateException("Cannot invoke method: "
+                            + method, ex);
+                } finally {
+                    method.setAccessible(wasAccessible);
+                }
+            }
+        });
+    }
+
     public static List<Field> getInheritedDeclaredFields(Class<?> type) {
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
             result.addAll(Arrays.asList(i.getDeclaredFields()));
+            i = i.getSuperclass();
+        }
+        return result;
+    }
+
+    public static List<Method> getInheritedDeclaredMethods(Class<?> type) {
+        List<Method> result = new ArrayList<>();
+        Class<?> i = type;
+        while (i != null && i != Object.class) {
+            result.addAll(Arrays.asList(i.getDeclaredMethods()));
             i = i.getSuperclass();
         }
         return result;
