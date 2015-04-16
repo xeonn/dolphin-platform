@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -19,7 +20,9 @@ public class DefaultDolphinServlet extends DolphinServlet {
 
     private final Set<Class<?>> dolphinManagedClasses;
 
-    private ServletContext servletContext;
+    private static ThreadLocal<ServletContext> servletContext = new ThreadLocal<>();
+
+    private static ThreadLocal<ServerDolphin> dolphin = new ThreadLocal<>();
 
     public DefaultDolphinServlet() {
         ServiceLoader<DolphinCommandManager> serviceLoader = ServiceLoader.load(DolphinCommandManager.class);
@@ -38,14 +41,23 @@ public class DefaultDolphinServlet extends DolphinServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        servletContext = req.getServletContext();
+        servletContext.set(req.getServletContext());
+        dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
         super.service(req, resp);
+        servletContext.remove();
+        dolphin.remove();
     }
 
+    public static ServerDolphin getServerDolphin() {
+        ServerDolphin serverDolphin = dolphin.get();
+        return serverDolphin;
+    }
 
     @Override
     protected void registerApplicationActions(ServerDolphin serverDolphin) {
-        dolphinCommandRepository.initCommandsForSession(servletContext, serverDolphin, dolphinManagedClasses);
+        dolphin.set(serverDolphin);
+        ServletContext context = servletContext.get();
+        dolphinCommandRepository.initCommandsForSession(context, serverDolphin, dolphinManagedClasses);
     }
 
 }
