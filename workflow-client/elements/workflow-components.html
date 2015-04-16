@@ -1,5 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-menu/core-submenu.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
 
 
@@ -7,7 +9,11 @@
     <template>
         <core-menu>
             <template repeat="{{processDefinition in data.processDefinitions}}">
-                <core-item icon="work" label="{{processDefinition.name}}" horizontal center layout></core-item>
+                <core-submenu label="{{processDefinition.name}}">
+                    <template repeat="{{processInstance in processDefinition.processInstances}}">
+                        <core-item label="{{processInstance.id}}"></core-item>
+                    </template>
+                </core-submenu>
             </template>
         </core-menu>
     </template>

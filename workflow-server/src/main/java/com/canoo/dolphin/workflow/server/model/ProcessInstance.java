@@ -1,11 +1,13 @@
 package com.canoo.dolphin.workflow.server.model;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
+@DolphinBean("ProcessInstance")
 public class ProcessInstance extends BaseProcessInstance {
-    private Property<ProcessDefinition> processDefinition;
 
+    private Property<ProcessDefinition> processDefinition;
     private Property<Activity> startActivity;
     private ObservableList<Activity> activities;
 
