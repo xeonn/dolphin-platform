@@ -5,7 +5,10 @@ import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -130,7 +133,7 @@ public class DolphinUtils {
     }
 
     public static <T> void forAllProperties(Class<T> beanClass, FieldIterator fieldIterator) {
-        for (Field field : DolphinUtils.getInheritedDeclaredFields(beanClass)) {
+        for (Field field : getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType())) {
 
                 String attributeName = getDolphinAttributePropertyNameForField(field);
@@ -140,10 +143,11 @@ public class DolphinUtils {
     }
 
 
-    public static void forAllMethods(Class<?> modelClass, MethodIterator methodIterator) {
-        for (Method method : getInheritedDeclaredMethods(modelClass)) {
-            String attributeName = getDolphinAttributePropertyNameForMethod(method);
-            methodIterator.run(method, attributeName);
+    public static BeanInfo getBeanInfo(Class<?> modelClass) {
+        try {
+            return Introspector.getBeanInfo(modelClass);
+        } catch (IntrospectionException e) {
+            throw new IllegalArgumentException(e);
         }
     }
     
@@ -157,12 +161,14 @@ public class DolphinUtils {
         }
     }
 
-    public static String getDolphinAttributePropertyNameForMethod(Method method) {
-        String propertyName = Introspector.decapitalize(method.getName().substring(method.getName().startsWith("is") ? 2 : 3));
-        if(Property.class.isAssignableFrom(method.getReturnType())) {
-            propertyName = propertyName.substring(0, propertyName.length() - "Property".length());
+    public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
+        if(Property.class.isAssignableFrom(descriptor.getPropertyType())){
+            if(!descriptor.getName().endsWith("Property")) {
+                throw new IllegalArgumentException(String.format( "Getter for property %s should end with \"Property\"", descriptor.getName()));
+            }
+            return descriptor.getName().substring(0, descriptor.getName().length() - "Property".length());
         }
-        return propertyName;
+        return descriptor.getName();
     }
 
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {

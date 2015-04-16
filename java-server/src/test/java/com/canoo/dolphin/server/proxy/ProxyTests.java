@@ -4,13 +4,13 @@ import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import org.opendolphin.core.server.ServerDolphin;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
 
 /**
  * Created by hendrikebbers on 15.04.15.
@@ -18,6 +18,7 @@ import static org.testng.Assert.assertNull;
 public class ProxyTests extends AbstractDolphinBasedTest {
 
     private TestCarModelInterface myModel;
+    private ModelProxyFactory factory;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -25,7 +26,7 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         ClassRepository classRepository = new ClassRepository(dolphin);
         BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
 
-        ModelProxyFactory factory = new ModelProxyFactory(dolphin,beanRepository);
+        factory = new ModelProxyFactory(dolphin, beanRepository);
 
         myModel = factory.create(TestCarModelInterface.class);
 
@@ -46,7 +47,17 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         assertEquals("a String", myModel.getBrandNameProperty().get());
     }
 
+    @Test
+    public void proxyInstanceWithSetter() {
+        assertNotNull(myModel);
 
+        myModel.setYear(2015);
 
+        assertThat(myModel.getYear(), is(2015));
+    }
 
+    @Test(expectedExceptions = IllegalArgumentException.class,expectedExceptionsMessageRegExp = "Getter for property brandName should end with \"Property\"")
+    public void testInvalidPropertyName() throws Exception {
+        factory.create(TestInvalidPropertyInterface.class);
+    }
 }

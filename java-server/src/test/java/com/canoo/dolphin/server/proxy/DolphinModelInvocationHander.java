@@ -9,6 +9,8 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
+import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -21,40 +23,45 @@ import java.util.Map;
 public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
     private final T instance;
+    private final Class modelClass;
+    private final Map<Method, PropertyDescriptor> method2propDesc ;
+    private final Map<String, Property> method2prop;
 
-    Map<String, Property<?>> method2prop;
-
-    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, final BeanRepository beanRepository) {
+    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, BeanRepository beanRepository) {
+        this.modelClass = modelClass;
         method2prop = new HashMap<>();
+        method2propDesc = new HashMap<>();
         instance = (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, this);
         try {
-            final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
+            PresentationModelBuilder builder = new PresentationModelBuilder(dolphin);
 
-            final String modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(modelClass);
+            String modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(modelClass);
             builder.withType(modelType);
 
+            BeanInfo beanInfo = DolphinUtils.getBeanInfo(modelClass);
+            for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+                builder.withAttribute(descriptor.getName());
+            }
 
-            DolphinUtils.forAllMethods(modelClass, new DolphinUtils.MethodIterator() {
-                @Override
-                public void run(Method method, String attributeName) {
-                    builder.withAttribute(attributeName);
-                }
-            });
-
-            final PresentationModel model = builder.create();
+            PresentationModel model = builder.create();
             beanRepository.registerClass(modelClass);
-            DolphinUtils.forAllMethods(modelClass, new DolphinUtils.MethodIterator() {
-                @Override
-                public void run(Method method, String attributeName) {
-                    String propertyName = DolphinUtils.getDolphinAttributePropertyNameForMethod(method);
-
-                    Attribute attribute = model.findAttributeByPropertyName(attributeName);
-                    Property property = new PropertyImpl(beanRepository, attribute);
-                    method2prop.put(propertyName, property);
+            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                Attribute attribute = model.findAttributeByPropertyName(propertyDescriptor.getName());
+                Property property = new PropertyImpl(beanRepository, attribute);
+                String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
+                method2prop.put(propertyName, property);
+                method2propDesc.put(propertyDescriptor.getReadMethod(), propertyDescriptor);
+                Method writeMethod = propertyDescriptor.getWriteMethod();
+                if (writeMethod != null) {
+                    method2propDesc.put(writeMethod, propertyDescriptor);
                 }
-            });
+
+            }
+
             beanRepository.getObjectPmToDolphinPm().put(instance, model);
             beanRepository.getDolphinIdToObjectPm().put(model.getId(), instance);
+        } catch (IllegalArgumentException iae) {
+            throw iae;
         } catch (Exception e) {
             throw new RuntimeException("Can't create bean", e);
         }
@@ -72,11 +79,17 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         if ("toString".equalsIgnoreCase(method.getName())) {
             return DolphinModelInvocationHander.class.getName() + "@" + System.identityHashCode(proxy);
         }
-        System.out.println(method.getName());
+        PropertyDescriptor descriptor1 = method2propDesc.get(method);
 
-        String propertyName = DolphinUtils.getDolphinAttributePropertyNameForMethod(method);
-
-        return method2prop.get(propertyName);
+        String propertyName = DolphinUtils.getDolphinAttributeName(descriptor1);
+        if (Property.class.isAssignableFrom(method.getReturnType())) {
+            return method2prop.get(propertyName);
+        } else if ("void".equals(method.getReturnType().getSimpleName())){
+            method2prop.get(propertyName).set(args[0]);
+            return null;
+        } else {
+            return method2prop.get(propertyName).get();
+        }
     }
 
     public T getInstance() {

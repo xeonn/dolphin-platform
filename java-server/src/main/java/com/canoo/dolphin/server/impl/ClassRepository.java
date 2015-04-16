@@ -5,6 +5,10 @@ import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -16,7 +20,6 @@ public class ClassRepository {
 
 
     private final Map<String, Field> fieldMap = new HashMap<>();
-    private final Map<String, Method> methodMap = new HashMap<>();
     private final Map<Class<?>, PresentationModel> classToPresentationModel = new HashMap<>();
 
     private ServerDolphin dolphin;
@@ -51,14 +54,16 @@ public class ClassRepository {
                 }
             });
 
-            DolphinUtils.forAllMethods(beanClass, new DolphinUtils.MethodIterator() {
-                @Override
-                public void run(Method method, String attributeName) {
-                    methodMap.put(beanClass.getName() + "." + method, method);
+            try {
+                BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
+                for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                    String attributeName = propertyDescriptor.getName();
                     builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
                     builder.withAttribute(attributeName, null, Tag.VALUE);
                 }
-            });
+            } catch (IntrospectionException e) {
+                e.printStackTrace();
+            }
 
 
             DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
