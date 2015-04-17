@@ -3,25 +3,25 @@ package com.canoo.dolphin.server.event;
 /**
  * Created by hendrikebbers on 17.04.15.
  */
-public class Event<T> {
+public class Event {
 
-    private String address;
+    private final String address;
 
-    private T message;
+    private final Object message;
 
-    private long sendTimestamp;
+    private final long sendTimestamp;
 
-    protected Event(String address, T message, long sendTimestamp) {
+    public Event(String address, Object message) {
         this.address = address;
         this.message = message;
-        this.sendTimestamp = sendTimestamp;
+        this.sendTimestamp = System.currentTimeMillis();
     }
 
     public String getAddress() {
         return address;
     }
 
-    public T getMessage() {
+    public Object getMessage() {
         return message;
     }
 

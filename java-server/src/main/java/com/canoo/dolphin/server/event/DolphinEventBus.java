@@ -1,7 +1,5 @@
 package com.canoo.dolphin.server.event;
 
-import com.canoo.dolphin.mapping.ReferenceIdentifier;
-
 /**
  * The dolphin event bus that can be used to send messages to other dolphin sessions.
  */
@@ -21,12 +19,13 @@ public interface DolphinEventBus {
      * @param handler the handler
      * @return a unique identifier that can be used to unregister the handler
      */
-    ReferenceIdentifier registerHandler(String address, EventHandler handler);
+    void registerHandler(String address, EventHandler handler);
 
     /**
      * Unregister the handler / listener. The needed {@link com.canoo.dolphin.mapping.ReferenceIdentifier} must be
      * created by calling {@link #registerHandler(String, EventHandler)}.
-     * @param handlerIdentifier the identifier for the registered handler
+     * @param address the identifier for the registered handler
+     * @param handler
      */
-    void unregisterHandler(ReferenceIdentifier handlerIdentifier);
+    void unregisterHandler(String address, EventHandler handler);
 }

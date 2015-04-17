@@ -11,6 +11,7 @@ public class PollingController {
         try {
             DolphinEventBusImpl.getInstance().listenOnEventsForCurrentDolphinSession(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
               //this exception is called when the clients has an update and needs to stop the polling.
             // Therefore we do nothing here
         }
