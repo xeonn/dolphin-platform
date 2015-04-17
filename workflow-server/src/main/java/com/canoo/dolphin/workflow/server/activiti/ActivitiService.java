@@ -35,6 +35,8 @@ public class ActivitiService {
     @Inject
     private RepositoryService repositoryService;
 
+    @Inject
+    private StartProcessService startProcessService;
 
     public WorkflowViewModel setupWorkflowViewModel() {
         WorkflowViewModel workflowViewModel = manager.create(WorkflowViewModel.class);
@@ -45,7 +47,7 @@ public class ActivitiService {
     public ProcessInstance createProcessInstance(String processInstanceId) {
 
         List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
-       return                                list.isEmpty() ? null : map(list.get(0));
+        return list.isEmpty() ? null : map(list.get(0));
     }
 
     private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
@@ -128,5 +130,9 @@ public class ActivitiService {
         final ProcessList processList = manager.create(ProcessList.class);
         processList.getProcessDefinitions().addAll(processDefinitions.parallelStream().map(this::map).collect(Collectors.toList()));
         return processList;
+    }
+
+    public ProcessInstance startProcessInstance(ProcessDefinition processDefinition) {
+        return map(startProcessService.startProcess(processDefinition.getLabel()));
     }
 }

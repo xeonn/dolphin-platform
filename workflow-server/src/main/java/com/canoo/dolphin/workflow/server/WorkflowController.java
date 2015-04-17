@@ -9,6 +9,7 @@ import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.workflow.server.activiti.ActivitiService;
 import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
+import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
 import com.canoo.dolphin.workflow.server.model.ProcessInstance;
 import com.canoo.dolphin.workflow.server.model.WorkflowViewModel;
 
@@ -34,9 +35,16 @@ public class WorkflowController {
 
     @DolphinAction
     public void showProcessInstance(@Param("processInstance") BaseProcessInstance baseProcessInstance) {
-        unsubscribe();
+        unsubscribeFromOldProcessInstance();
         ProcessInstance processInstance = activitiService.createProcessInstance(baseProcessInstance.getLabel());
         subscribe(processInstance);
+        workflowViewModel.setProcessInstance(processInstance);
+    }
+
+    @DolphinAction
+    public void startProcessInstanceAndShow(@Param("processDefinition") ProcessDefinition processDefinition) {
+        ProcessInstance processInstance = activitiService.startProcessInstance(processDefinition);
+        processDefinition.getProcessInstances().add(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
     }
 
@@ -49,7 +57,7 @@ public class WorkflowController {
         });
     }
 
-    private void unsubscribe() {
+    private void unsubscribeFromOldProcessInstance() {
         if (subscription != null) {
             subscription.unsubscribe();
             subscription = null;
