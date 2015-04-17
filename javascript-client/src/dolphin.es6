@@ -18,14 +18,19 @@ const DOLPHIN_LIST_ADD_FROM_CLIENT = '@@@ LIST_ADD_FROM_CLIENT @@@';
 const DOLPHIN_LIST_DEL_FROM_CLIENT = '@@@ LIST_DEL_FROM_CLIENT @@@';
 const DOLPHIN_LIST_SET_FROM_CLIENT = '@@@ LIST_SET_FROM_CLIENT @@@';
 
-export function connect(url) {
+export function connect(url, config) {
     console.debug('connect called', url);
-    return new Dolphin(url);
+    return new Dolphin(url, config);
 }
 
 class Dolphin {
-    constructor(url) {
+    constructor(url, config) {
         this.dolphin = opendolphin.dolphin(url, true);
+        if (exists(config)) {
+            if (config.serverPush) {
+                this.dolphin.startPushListening('ServerPushController:longPoll', 'ServerPushController:release');
+            }
+        }
         this.classRepository = new ClassRepository();
         this.addedHandlers = new Map();
         this.removedHandlers = new Map();
