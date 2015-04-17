@@ -1,5 +1,7 @@
 package com.canoo.dolphin.mapping;
 
+import com.canoo.dolphin.event.ValueChangeListener;
+
 /**
  * Defines a property that can be part of a model. Since Java has no native property system this is needed to provide
  * listener / observer support to properties.

@@ -1,4 +1,6 @@
-package com.canoo.dolphin.mapping;
+package com.canoo.dolphin.event;
+
+import com.canoo.dolphin.mapping.Property;
 
 public class ValueChangeEvent<T> {
 

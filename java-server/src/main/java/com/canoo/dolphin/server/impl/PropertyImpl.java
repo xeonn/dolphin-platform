@@ -1,8 +1,8 @@
 package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.mapping.ValueChangeEvent;
-import com.canoo.dolphin.mapping.ValueChangeListener;
+import com.canoo.dolphin.event.ValueChangeEvent;
+import com.canoo.dolphin.event.ValueChangeListener;
 import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;
