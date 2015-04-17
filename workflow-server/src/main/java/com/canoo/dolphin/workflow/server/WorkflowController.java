@@ -35,7 +35,7 @@ public class WorkflowController {
         if (messageHandler != null) {
             eventBus.unregisterHandler(messageHandler);
         } else {
-            messageHandler = message -> System.out.println("we are in messagehandler and received a message: " + message);
+            messageHandler = message -> System.out.println("we are in messagehandler and received a message: " + message.getData());
         }
         ProcessInstance processInstance = activitiService.createProcessInstance(baseProcessInstance.getLabel());
         eventBus.registerHandler("processInstance/" + processInstance.getLabel(), messageHandler);
