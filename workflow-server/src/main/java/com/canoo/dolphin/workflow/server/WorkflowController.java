@@ -3,10 +3,6 @@ package com.canoo.dolphin.workflow.server;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
-import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.Message;
-import com.canoo.dolphin.server.event.MessageListener;
-import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.workflow.server.activiti.ActivitiService;
 import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
@@ -20,24 +16,23 @@ public class WorkflowController {
 
     private WorkflowViewModel workflowViewModel;
 
-    private Subscription subscription;
-
     @Inject
     private ActivitiService activitiService;
 
     @Inject
-    private DolphinEventBus eventBus;
+    private WorkflowSubscriptionService workflowSubscriptionService;
+
 
     @DolphinAction
     public void init() {
-        workflowViewModel = activitiService.setupWorkflowViewModel();
+        workflowViewModel = activitiService.createWorkflowViewModel();
     }
 
     @DolphinAction
     public void showProcessInstance(@Param("processInstance") BaseProcessInstance baseProcessInstance) {
-        unsubscribeFromOldProcessInstance();
-        ProcessInstance processInstance = activitiService.createProcessInstance(baseProcessInstance.getLabel());
-        subscribe(processInstance);
+        workflowSubscriptionService.unsubscribe();
+        ProcessInstance processInstance = activitiService.findProcessInstance(baseProcessInstance);
+        workflowSubscriptionService.subscribe(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
     }
 
@@ -46,21 +41,5 @@ public class WorkflowController {
         ProcessInstance processInstance = activitiService.startProcessInstance(processDefinition);
         processDefinition.getProcessInstances().add(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
-    }
-
-    private void subscribe(ProcessInstance processInstance) {
-        subscription = eventBus.subscribe("processInstance/" + processInstance.getLabel(), new MessageListener() {
-            @Override
-            public void onMessage(Message message) {
-                System.out.println("got message: " + message.getData());
-            }
-        });
-    }
-
-    private void unsubscribeFromOldProcessInstance() {
-        if (subscription != null) {
-            subscription.unsubscribe();
-            subscription = null;
-        }
     }
 }

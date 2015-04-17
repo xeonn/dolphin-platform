@@ -38,16 +38,20 @@ public class ActivitiService {
     @Inject
     private StartProcessService startProcessService;
 
-    public WorkflowViewModel setupWorkflowViewModel() {
+    public WorkflowViewModel createWorkflowViewModel() {
         WorkflowViewModel workflowViewModel = manager.create(WorkflowViewModel.class);
-        workflowViewModel.setProcessList(setupProcessList());
+        final ProcessList processList = manager.create(ProcessList.class);
+        processList.getProcessDefinitions().addAll(repositoryService.createProcessDefinitionQuery().list().stream().map(this::map).collect(Collectors.toList()));
+        workflowViewModel.setProcessList(processList);
         return workflowViewModel;
     }
 
-    public ProcessInstance createProcessInstance(String processInstanceId) {
+    public ProcessInstance findProcessInstance(BaseProcessInstance processInstance) {
+        return map(runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getLabel()).list().get(0));
+    }
 
-        List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
-        return list.isEmpty() ? null : map(list.get(0));
+    public ProcessInstance startProcessInstance(ProcessDefinition processDefinition) {
+        return map(startProcessService.startProcess(processDefinition.getLabel()));
     }
 
     private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
@@ -125,14 +129,4 @@ public class ActivitiService {
         }
     }
 
-    private ProcessList setupProcessList() {
-        final List<org.activiti.engine.repository.ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery().list();
-        final ProcessList processList = manager.create(ProcessList.class);
-        processList.getProcessDefinitions().addAll(processDefinitions.parallelStream().map(this::map).collect(Collectors.toList()));
-        return processList;
-    }
-
-    public ProcessInstance startProcessInstance(ProcessDefinition processDefinition) {
-        return map(startProcessService.startProcess(processDefinition.getLabel()));
-    }
 }

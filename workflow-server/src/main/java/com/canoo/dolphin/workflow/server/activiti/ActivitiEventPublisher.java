@@ -1,9 +1,9 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import org.activiti.engine.delegate.event.ActivitiEvent;
-import org.activiti.engine.delegate.event.ActivitiEventListener;
-import org.activiti.engine.delegate.event.ActivitiEventType;
+import org.activiti.engine.delegate.event.*;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -22,14 +22,23 @@ public class ActivitiEventPublisher implements ActivitiEventListener {
         String processInstanceId = event.getProcessInstanceId();
         ActivitiEventType type = event.getType();
         switch (type) {
+            case ENTITY_CREATED:
+                ActivitiEntityEvent activitiEntityEvent = (ActivitiEntityEvent) event;
+                Object entity = activitiEntityEvent.getEntity();
+                if (entity instanceof ExecutionEntity) {
+                    ActivityImpl activity = ((ExecutionEntity) entity).getActivity();
+                    if ("startEvent".equals(activity.getProperty("type"))) {
+                        eventBus.publish("create", new ProcessInstanceStartedEvent((event.getProcessInstanceId())));
+                    }
+                }
+                break;
             case ACTIVITY_STARTED:
+                eventBus.publish("processInstance/" + processInstanceId, new ActivityStartedEvent(((ActivitiActivityEvent) event).getActivityId()));
+                return;
             case ACTIVITY_COMPLETED:
-            case ACTIVITY_CANCELLED:
+                eventBus.publish("processInstance/" + processInstanceId, new ActivityCompletedEvent(((ActivitiActivityEvent) event).getActivityId()));
+                return;
             default:
-        }
-
-        if (processInstanceId != null) {
-            eventBus.publish("processInstance/" + processInstanceId, event);
         }
     }
 
