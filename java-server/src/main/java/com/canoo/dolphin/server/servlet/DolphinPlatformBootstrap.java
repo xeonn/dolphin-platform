@@ -40,13 +40,5 @@ public class DolphinPlatformBootstrap {
         servletContext.addListener(DolphinSessionHandlerCleaner.class);
     }
 
-    private static Set<Class<?>> cachedDolphinBeanClasses;
 
-    public static synchronized Set<Class<?>> findAllDolphinBeanClasses() {
-        if(cachedDolphinBeanClasses == null) {
-            Reflections reflections = new Reflections("");
-            cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
-        }
-        return cachedDolphinBeanClasses;
-    }
 }
