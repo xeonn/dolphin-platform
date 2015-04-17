@@ -19,8 +19,8 @@
                     host.removeChild(host.firstChild);
                 }
 
-                var width = host.offsetWidth;
-                var height = 1000;
+                var width = Math.max(1200, host.offsetWidth);
+                var height = Math.max(1000, host.offsetHeight);
 
 
                 var startEventRenderer = function(r, n) {
@@ -85,7 +85,7 @@
                             var label = typeof transition.transitionName === 'undefined' || transition.transitionName === null? '' : transition.transitionName;
                             var sublabel = typeof transition.conditionText === 'undefined' || transition.conditionText === null? '' : transition.conditionText;
                             var target = transition.target;
-                            g.addEdge(activity.activityId, target.activityId, {directed : true, label: label + ' ' + sublabel});
+                            g.addEdge(activity.activityId, target.activityId, {directed: true, label: label + ' ' + sublabel, fill: '#000|2'});
                         });
                     }
                 });
