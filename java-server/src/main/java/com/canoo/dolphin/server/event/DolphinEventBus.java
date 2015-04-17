@@ -26,4 +26,6 @@ public interface DolphinEventBus {
      * @param handler the handler
      */
     void unregisterHandler(String topic, MessageHandler handler);
+
+    void unregisterHandler(MessageHandler messageHandler);
 }

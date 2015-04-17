@@ -26,7 +26,10 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     private EventBus eventBus = new EventBus();
 
     private DataflowQueue sender = new DataflowQueue();
+
     private Lock lock = new ReentrantLock();
+
+    private Map<String, DataflowQueue> receiverPerSession = new HashMap<>();
 
     private Map<String, Set<MessageHandler>> handlersPerSession = new HashMap<String, Set<MessageHandler>>() {
         @Override
@@ -40,8 +43,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         }
     };
 
-
-    private Map<String, List<MessageHandler>> handlers = new HashMap<String, List<MessageHandler>>() {
+    private Map<String, List<MessageHandler>> handlersPerTopic = new HashMap<String, List<MessageHandler>>() {
         @Override
         public List<MessageHandler> get(Object key) {
             List<MessageHandler> eventHandlers = super.get(key);
@@ -64,8 +66,13 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         lock.lock();
         try {
             String dolphinId = getDolphinId();
+            DataflowQueue currentReceiver = receiverPerSession.get(dolphinId);
+            if (currentReceiver == null) {
+                currentReceiver = new DataflowQueue();
+                eventBus.subscribe(currentReceiver);
+            }
             handlersPerSession.get(dolphinId).add(handler);
-            handlers.get(topic).add(handler);
+            handlersPerTopic.get(topic).add(handler);
         } finally {
             lock.unlock();
         }
@@ -78,21 +85,50 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     public void unregisterHandler(String topic, MessageHandler handler) {
         lock.lock();
         try {
-            handlers.get(topic).remove(handler);
-            handlersPerSession.get(getDolphinId()).remove(handler);
+            handlersPerTopic.get(topic).remove(handler);
+            String dolphinId = getDolphinId();
+            handlersPerSession.get(dolphinId).remove(handler);
+            if (handlersPerSession.get(dolphinId).isEmpty()) {
+                eventBus.unSubscribe(receiverPerSession.remove(dolphinId));
+            }
         } finally {
             lock.unlock();
         }
     }
 
+    @Override
+    public void unregisterHandler(MessageHandler messageHandler) {
+        lock.lock();
+        try {
+            for (List<MessageHandler> messageHandlers : handlersPerTopic.values()) {
+                messageHandlers.remove(messageHandler);
+            }
+            for (Set<MessageHandler> messageHandlers : handlersPerSession.values()) {
+                messageHandlers.remove(messageHandler);
+            }
+            String dolphinId = getDolphinId();
+            if (handlersPerSession.get(dolphinId).isEmpty()) {
+                eventBus.unSubscribe(receiverPerSession.remove(dolphinId));
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+
     public void unregisterHandlersForCurrentDolphinSession() {
         lock.lock();
         try {
-            Set<MessageHandler> eventHandlers = handlersPerSession.remove(getDolphinId());
+            String dolphinId = getDolphinId();
+            Set<MessageHandler> eventHandlers = handlersPerSession.remove(dolphinId);
             for (Set<MessageHandler> eventHandlerSet : handlersPerSession.values()) {
                 for (MessageHandler eventHandler : eventHandlers) {
                     eventHandlerSet.remove(eventHandler);
                 }
+            }
+            DataflowQueue dataflowQueue = receiverPerSession.remove(dolphinId);
+            if (dataflowQueue != null) {
+                eventBus.unSubscribe(dataflowQueue);
             }
         } finally {
             lock.unlock();
@@ -100,14 +136,15 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void listenOnEventsForCurrentDolphinSession(long time, TimeUnit unit) throws InterruptedException {
-        Message event = (Message) sender.getVal(time, unit);
+        String dolphinId = getDolphinId();
+        DataflowQueue receiver = receiverPerSession.get(dolphinId);
+        Message event = (Message) receiver.getVal(time, unit);
         while (event != null) {
             String topic = event.getTopic();
             lock.lock();
             try {
-                List<MessageHandler> eventHandlers = handlers.get(topic);
+                List<MessageHandler> eventHandlers = handlersPerTopic.get(topic);
                 for (MessageHandler eventHandler : eventHandlers) {
-                    String dolphinId = getDolphinId();
                     if (handlersPerSession.get(dolphinId).contains(eventHandler)) {
                         eventHandler.onMessage(event);
                     }
@@ -115,7 +152,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             } finally {
                 lock.unlock();
             }
-            event = (Message) sender.getVal(20, TimeUnit.MILLISECONDS);
+            event = (Message) receiver.getVal(20, TimeUnit.MILLISECONDS);
         }
 
     }
