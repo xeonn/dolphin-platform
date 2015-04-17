@@ -107,7 +107,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                 messageHandlers.remove(messageHandler);
             }
             String dolphinId = getDolphinId();
-            if (handlersPerSession.get(dolphinId).isEmpty()) {
+            if (!handlersPerSession.get(dolphinId).isEmpty()) {
                 eventBus.unSubscribe(receiverPerSession.remove(dolphinId));
             }
         } finally {

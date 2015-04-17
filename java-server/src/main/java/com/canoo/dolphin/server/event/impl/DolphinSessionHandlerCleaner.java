@@ -10,11 +10,11 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-
+        System.out.println("Hello");
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        DolphinEventBusImpl.getInstance().unregisterHandlersForCurrentDolphinSession();
+//        DolphinEventBusImpl.getInstance().unregisterHandlersForCurrentDolphinSession();
     }
 }
