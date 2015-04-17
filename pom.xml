@@ -13,6 +13,7 @@
         <module>java-server</module>
         <module>java-server-javaee</module>
         <module>java-server-spring</module>
+        <module>java-client-javafx</module>
         <module>spring-boot-example</module>
         <module>wildfly-example</module>
         <module>hello-world-example</module>
