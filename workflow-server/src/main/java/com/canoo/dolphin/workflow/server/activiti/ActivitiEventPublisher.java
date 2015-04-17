@@ -3,11 +3,13 @@ package com.canoo.dolphin.workflow.server.activiti;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import org.activiti.engine.delegate.event.ActivitiEvent;
 import org.activiti.engine.delegate.event.ActivitiEventListener;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+@Component
 public class ActivitiEventPublisher implements ActivitiEventListener {
 
     @Inject
