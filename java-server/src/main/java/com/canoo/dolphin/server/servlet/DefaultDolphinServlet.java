@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.container.DolphinCommandManager;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.container.DolphinCommandRegistration;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
@@ -58,7 +58,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
             throw new RuntimeException("No " + DolphinCommandManager.class + " found!");
         }
 
-        dolphinManagedClasses = DolphinPlatformBootstrap.findAllDolphinBeanClasses();
+        dolphinManagedClasses = DolphinCommandRegistration.findAllDolphinBeanClasses();
     }
 
     @Override
@@ -76,6 +76,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
 
     /**
      * Returns the current dolphin (based on the current session)
+     *
      * @return the dolphin
      */
     public static ServerDolphin getServerDolphin() {

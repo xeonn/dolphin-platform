@@ -8,6 +8,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -82,17 +83,26 @@ public class ActivitiService {
 
     private List<Activity> createActivityList(List<ActivityImpl> activityImpls) {
         final List<Activity> result = new ArrayList<>();
-        final Map<String, Activity> idMappings = new HashMap<>();
+        final Map<String, Activity> activitiesById = new HashMap<>();
         for (final ActivityImpl activityImpl : activityImpls) {
-            final Activity activity = manager.create(Activity.class);
-            idMappings.put(activityImpl.getId(), activity);
-            activity.setLabel(activityImpl.getId());
+            Activity activity = createActivityWithoutTransitions(activityImpl);
+            activitiesById.put(activityImpl.getId(), activity);
             result.add(activity);
         }
         for (ActivityImpl activityImpl : activityImpls) {
-            createOutGoingTransitions(activityImpl, idMappings);
+            createOutGoingTransitions(activityImpl, activitiesById);
         }
         return result;
+    }
+
+    private Activity createActivityWithoutTransitions(ActivityImpl activityImpl) {
+        final Activity activity = manager.create(Activity.class);
+        activity.setActivityId(activityImpl.getId());
+        Map<String, Object> properties = activityImpl.getProperties();
+        activity.setType((String) properties.get("type"));
+        activity.setActivityName((String) properties.get("name"));
+        activity.setDescription((String) properties.get("documentation"));
+        return activity;
     }
 
     private void createOutGoingTransitions(ActivityImpl sourceImpl, Map<String, Activity> idMappings) {
@@ -103,10 +113,14 @@ public class ActivitiService {
                 throw new IllegalStateException("failed to understand activitis transitions");
             }
             Transition transition = manager.create(Transition.class);
+            Map<String, Object> properties = ((TransitionImpl) transitionImpl).getProperties();
             String targetId = transitionImpl.getDestination().getId();
             transition.setSource(source);
             transition.setTarget(idMappings.get(targetId));
-            transition.setLabel(transitionImpl.getId());
+            transition.setActivityId(transitionImpl.getId());
+            transition.setTransitionName((String) properties.get("name"));
+            transition.setConditionText((String) properties.get("conditionText"));
+            transition.setDescription((String) properties.get("documentation"));
             source.getOutgoingTransitions().add(transition);
         }
     }

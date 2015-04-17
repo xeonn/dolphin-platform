@@ -7,25 +7,23 @@ public interface DolphinEventBus {
 
     /**
      * Publish a message to the given address
-     * @param address the address
-     * @param message the message
+     * @param topic the topic
+     * @param data the data of the message
      */
-    void publish(String address, Object message);
+    void publish(String address, Object data);
 
     /**
      * Register as a handler / listener for a given address. All messages that will be published for the given address
      * by any dolphin session will trigger the given handler in the correct dolphin session.
-     * @param address the address
+     * @param topic the topic
      * @param handler the handler
-     * @return a unique identifier that can be used to unregister the handler
      */
-    void registerHandler(String address, EventHandler handler);
+    void registerHandler(String topic, MessageHandler handler);
 
     /**
-     * Unregister the handler / listener. The needed {@link com.canoo.dolphin.mapping.ReferenceIdentifier} must be
-     * created by calling {@link #registerHandler(String, EventHandler)}.
-     * @param address the identifier for the registered handler
-     * @param handler
+     * Unregister the handler / listener.
+     * @param topic the topic
+     * @param handler the handler
      */
-    void unregisterHandler(String address, EventHandler handler);
+    void unregisterHandler(String topic, MessageHandler handler);
 }

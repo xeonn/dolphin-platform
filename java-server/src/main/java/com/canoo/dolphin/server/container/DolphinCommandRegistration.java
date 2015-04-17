@@ -15,12 +15,14 @@ import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
+import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by hendrikebbers on 18.03.15.
@@ -117,5 +119,15 @@ public class DolphinCommandRegistration {
             name = actionAnnotation.value();
         }
         return name;
+    }
+
+    private static Set<Class<?>> cachedDolphinBeanClasses;
+
+    public static synchronized Set<Class<?>> findAllDolphinBeanClasses() {
+        if(cachedDolphinBeanClasses == null) {
+            Reflections reflections = new Reflections("");
+            cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
+        }
+        return cachedDolphinBeanClasses;
     }
 }
