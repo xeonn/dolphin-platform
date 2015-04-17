@@ -6,9 +6,13 @@ import com.canoo.dolphin.mapping.Property;
 
 @DolphinBean("Transition")
 public class Transition {
+    private Property<String> activityId;
     private Property<Activity> source;
     private Property<Activity> target;
-    private Property<String> label;
+    private Property<String> transitionName;
+    private Property<String> conditionText;
+    private Property<String> description;
+
 
     public Activity getSource() {
         return source.get();
@@ -26,11 +30,37 @@ public class Transition {
         this.target.set(target);
     }
 
-    public String getLabel() {
-        return label.get();
+    public String getTransitionName() {
+        return transitionName.get();
     }
 
-    public void setLabel(String label) {
-        this.label.set(label);
+    public void setTransitionName(String transitionName) {
+        this.transitionName.set(transitionName);
     }
+
+    public String getActivityId() {
+        return activityId.get();
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId.set(activityId);
+    }
+
+    public String getConditionText() {
+        return conditionText.get();
+    }
+
+    public void setConditionText(String conditionText) {
+        this.conditionText.set(conditionText);
+    }
+
+    public String getDescription() {
+        return description.get();
+    }
+
+    public void setDescription(String description) {
+        this.description.set(description);
+    }
+
+
 }
