@@ -1,11 +1,7 @@
 package com.canoo.dolphin.server.proxy;
 
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.DolphinConstants;
+import com.canoo.dolphin.server.impl.*;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.SimpleTestModel;
@@ -21,9 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.empty;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.*;
 
 /**
  * Created by hendrikebbers on 15.04.15.
@@ -213,6 +207,17 @@ public class ProxyTests extends AbstractDolphinBasedTest {
         action.setEnabled(true);
 
         assertCorrectPM("enabled", "true", Action.class.getName(), 1);
+    }
+
+    @Test
+    public void testIsProxyType() throws Exception {
+        TestCarModel testCarModel = manager.create(TestCarModel.class);
+
+        assertFalse(ReflectionHelper.isProxyInstance("No Proxy"));
+        assertTrue(ReflectionHelper.isProxyInstance(testCarModel));
+
+        SimpleTestModel simpleTestModel = manager.create(SimpleTestModel.class);
+        assertFalse(ReflectionHelper.isProxyInstance(simpleTestModel));
     }
 
 }

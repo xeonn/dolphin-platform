@@ -1,4 +1,4 @@
-package com.canoo.dolphin.workflow.server;
+package com.canoo.dolphin.workflow.server.activiti;
 
 import org.springframework.stereotype.Component;
 

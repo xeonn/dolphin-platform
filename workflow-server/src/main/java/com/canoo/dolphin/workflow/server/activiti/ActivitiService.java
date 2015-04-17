@@ -1,23 +1,21 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
 import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.workflow.server.model.Activity;
-import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
-import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
-import com.canoo.dolphin.workflow.server.model.ProcessInstance;
-import com.canoo.dolphin.workflow.server.model.ProcessList;
-import com.canoo.dolphin.workflow.server.model.WorkflowViewModel;
+import com.canoo.dolphin.workflow.server.model.*;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,7 +50,6 @@ public class ActivitiService {
         ProcessDefinition mappedInstance = manager.create(ProcessDefinition.class);
         mappedInstance.setLabel(processDefinition.getId());
         mappedInstance.setName(processDefinition.getName());
-
         List<org.activiti.engine.runtime.ProcessInstance> instances = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).list();
         for (org.activiti.engine.runtime.ProcessInstance instance : instances) {
             mappedInstance.getProcessInstances().add(mapLight(instance));
@@ -79,18 +76,39 @@ public class ActivitiService {
 
     private List<Activity> createActivities(String processDefinitionId) {
         ProcessDefinitionEntity processDefinitionEntity = managementService.executeCommand(new DeployProcessDefinitionCommand(processDefinitionId));
-        List<ActivityImpl> initialActivityStack = processDefinitionEntity.getActivities();
-        return createActivityList(initialActivityStack);
+        List<ActivityImpl> activities = processDefinitionEntity.getActivities();
+        return createActivityList(activities);
     }
 
-    private List<Activity> createActivityList(List<ActivityImpl> activities) {
+    private List<Activity> createActivityList(List<ActivityImpl> activityImpls) {
         final List<Activity> result = new ArrayList<>();
-        for (final ActivityImpl activityImpl : activities) {
+        final Map<String, Activity> idMappings = new HashMap<>();
+        for (final ActivityImpl activityImpl : activityImpls) {
             final Activity activity = manager.create(Activity.class);
+            idMappings.put(activityImpl.getId(), activity);
             activity.setLabel(activityImpl.getId());
             result.add(activity);
         }
+        for (ActivityImpl activityImpl : activityImpls) {
+            createOutGoingTransitions(activityImpl, idMappings);
+        }
         return result;
+    }
+
+    private void createOutGoingTransitions(ActivityImpl sourceImpl, Map<String, Activity> idMappings) {
+        List<PvmTransition> outgoingTransitions = sourceImpl.getOutgoingTransitions();
+        for (PvmTransition transitionImpl : outgoingTransitions) {
+            Activity source = idMappings.get(transitionImpl.getSource().getId());
+            if (!source.getLabel().equals(sourceImpl.getId())) {
+                throw new IllegalStateException("failed to understand activitis transitions");
+            }
+            Transition transition = manager.create(Transition.class);
+            String targetId = transitionImpl.getDestination().getId();
+            transition.setSource(source);
+            transition.setTarget(idMappings.get(targetId));
+            transition.setLabel(transitionImpl.getId());
+            source.getOutgoingTransitions().add(transition);
+        }
     }
 
     private ProcessList setupProcessList() {

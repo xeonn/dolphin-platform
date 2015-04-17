@@ -4,14 +4,12 @@ import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.server.impl.collections.ListMapper;
+import org.opendolphin.core.server.ServerDolphin;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
+import java.beans.*;
+import java.lang.reflect.*;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -113,19 +111,23 @@ public class DolphinUtils {
         public abstract void run(Field field, String attributeName);
     }
 
-    public interface MethodIterator {
-        public abstract void run(Method method, String attributeName);
+    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
+        return (Property<T>) (ReflectionHelper.isProxyInstance(bean) ? getPropertyForProxy(bean, name) : getPropertyForClass(bean, name));
     }
 
-    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
+    private static <T> Property<T> getPropertyForClass(Object bean, String name) {
         for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
             if (Property.class.isAssignableFrom(field.getType())) {
-                if(name.equals(getDolphinAttributePropertyNameForField(field))) {
+                if (name.equals(getDolphinAttributePropertyNameForField(field))) {
                     return (Property<T>) ReflectionHelper.getPrivileged(field, bean);
                 }
             }
         }
         return null;
+    }
+
+    private static <T> Property<T> getPropertyForProxy(Object bean, String name) {
+        return ((DolphinModelInvocationHander) Proxy.getInvocationHandler(bean)).getProperty(name);
     }
 
 }

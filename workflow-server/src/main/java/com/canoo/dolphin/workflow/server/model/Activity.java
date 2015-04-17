@@ -10,7 +10,7 @@ public class Activity {
     private Property<String> label;
     private Property<String> activityName;
     private Property<String> description;
-    private ObservableList<Activity> outgoingActivityIds;
+    private ObservableList<Transition> outgoingTransitions;
     private Property<String> type;
 
     public String getLabel() {
@@ -37,8 +37,8 @@ public class Activity {
         this.description.set(description);
     }
 
-    public ObservableList<Activity> getOutgoingActivityIds() {
-        return outgoingActivityIds;
+    public ObservableList<Transition> getOutgoingTransitions() {
+        return outgoingTransitions;
     }
 
     public String getType() {

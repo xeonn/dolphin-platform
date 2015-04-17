@@ -22,17 +22,17 @@ public class BeanManagerImpl implements BeanManager {
     }
 
     @Override
-    public <T> T create(final Class<T> beanClass) {
+    public <T> T create(Class<T> beanClass) {
         return beanRepository.create(beanClass);
     }
 
     @Override
-    public <T> void delete(T bean) {
+    public <T> void detach(T bean) {
         beanRepository.delete(bean);
     }
 
     @Override
-    public void deleteAll(Class<?> beanClass) {
+    public void detachAll(Class<?> beanClass) {
         beanRepository.deleteAll(beanClass);
     }
 
@@ -44,5 +44,23 @@ public class BeanManagerImpl implements BeanManager {
     @Override
     public <T> PropertyQuery<T> createQuery(Class<T> beanClass) {
         return new PropertyQuery<>(beanClass, this);
+    }
+
+    @Override
+    public <T> T findById(Class<T> beanClass, String id) {
+        Object bean = beanRepository.findBeanByDolphinId(id);
+        if(bean != null && beanClass.isAssignableFrom(bean.getClass())) {
+            return (T) bean;
+        }
+        return null;
+    }
+
+    @Override
+    public String getId(Object bean) {
+        String id = beanRepository.getDolphinId(bean);
+        if(id == null) {
+            throw new RuntimeException("Given bean is not managed and has no id");
+        }
+        return id;
     }
 }

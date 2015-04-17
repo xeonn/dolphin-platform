@@ -32,7 +32,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
-        manager.delete(model);
+        manager.detach(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
         assertThat(dolphinModels, empty());
@@ -52,7 +52,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
-        manager.delete(model);
+        manager.detach(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
         assertThat(dolphinModels, empty());
@@ -72,7 +72,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
 
-        manager.delete(model);
+        manager.detach(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName());
         assertThat(dolphinModels, empty());
@@ -91,7 +91,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
-        manager.delete(model);
+        manager.detach(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
         assertThat(dolphinModels, empty());
@@ -111,7 +111,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         ListReferenceModel model = manager.create(ListReferenceModel.class);
 
-        manager.delete(model);
+        manager.detach(model);
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName());
         assertThat(dolphinModels, empty());

@@ -1,9 +1,7 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
-import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
-import org.activiti.engine.impl.persistence.deploy.DeploymentCache;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 
 class DeployProcessDefinitionCommand implements Command<ProcessDefinitionEntity> {
@@ -15,10 +13,10 @@ class DeployProcessDefinitionCommand implements Command<ProcessDefinitionEntity>
     }
 
     public ProcessDefinitionEntity execute(CommandContext commandContext) {
-        DeploymentCache<ProcessDefinitionEntity> deploymentCache = Context.getProcessEngineConfiguration().getProcessDefinitionCache();
-        if (processDefinitionId != null) {
-            return deploymentCache.get(processDefinitionId);
+        if (processDefinitionId == null) {
+            return null;
         }
-        return null;
+        return commandContext.getProcessEngineConfiguration()
+                .getDeploymentManager().findDeployedProcessDefinitionById(processDefinitionId);
     }
 }

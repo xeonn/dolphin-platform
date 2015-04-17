@@ -9,11 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PropertyQuery<T> {
 
-    private Class<T> beanClass;
+    private final Class<T> beanClass;
 
-    private List<PropertyQueryParam<?>> queryParams;
+    private final List<PropertyQueryParam<?>> queryParams;
 
-    private BeanManager manager;
+    private final BeanManager manager;
 
     public PropertyQuery(Class<T> beanClass, BeanManager manager) {
         this.beanClass = beanClass;
@@ -22,19 +22,19 @@ public class PropertyQuery<T> {
     }
 
     public PropertyQuery<T> withEquals(String name, Object value) {
-        return with(name, new EqualsValueCheck<Object>(value));
+        return with(name, new EqualsValueCheck<>(value));
     }
 
     public PropertyQuery<T> withNotEquals(String name, Object value) {
-        return with(name, new NotEqualsValueCheck<Object>(value));
+        return with(name, new NotEqualsValueCheck<>(value));
     }
 
     public PropertyQuery<T> withNull(String name) {
-        return with(name, new NullValueCheck<Object>());
+        return with(name, new NullValueCheck<>());
     }
 
     public PropertyQuery<T> withNotNull(String name) {
-        return with(name, new NotNullValueCheck<Object>());
+        return with(name, new NotNullValueCheck<>());
     }
 
     public PropertyQuery<T> with(String name, ValueCheck check) {
@@ -42,7 +42,19 @@ public class PropertyQuery<T> {
         return this;
     }
 
-    public List<T> run() {
+    public T getSingle() {
+        List<T> result = getAll();
+
+        if(result.isEmpty()) {
+            return null;
+        }
+        if(result.size() > 1) {
+            throw new RuntimeException("Query returns multiple beans");
+        }
+        return result.get(0);
+    }
+
+    public List<T> getAll() {
         List<T> result = new CopyOnWriteArrayList<>(manager.findAll(beanClass));
 
         for(T bean : result) {

@@ -1,6 +1,8 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
@@ -50,6 +52,12 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Scope("session")
     protected ServerDolphin createDolphin() {
         return DefaultDolphinServlet.getServerDolphin();
+    }
+
+    @Bean
+    @Scope("singleton")
+    protected DolphinEventBus createEventBus() {
+        return DolphinEventBusImpl.getInstance();
     }
 
 }
