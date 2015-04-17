@@ -24,7 +24,6 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     private EventBus eventBus = new EventBus();
-
     private DataflowQueue sender = new DataflowQueue();
     private Lock lock = new ReentrantLock();
 
@@ -84,6 +83,22 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             lock.unlock();
         }
     }
+
+    @Override
+    public void unregisterHandler(MessageHandler messageHandler) {
+        lock.lock();
+        try {
+            for (List<MessageHandler> messageHandlers : handlers.values()) {
+                messageHandlers.remove(messageHandler);
+            }
+            for (Set<MessageHandler> messageHandlers : handlersPerSession.values()) {
+                messageHandlers.remove(messageHandler);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     public void unregisterHandlersForCurrentDolphinSession() {
         lock.lock();

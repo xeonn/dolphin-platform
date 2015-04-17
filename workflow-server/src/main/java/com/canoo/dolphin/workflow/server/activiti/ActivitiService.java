@@ -35,16 +35,17 @@ public class ActivitiService {
     @Inject
     private RepositoryService repositoryService;
 
-    private WorkflowViewModel workflowViewModel;
 
-    public void setupWorkflowViewModel() {
-        workflowViewModel = manager.create(WorkflowViewModel.class);
+    public WorkflowViewModel setupWorkflowViewModel() {
+        WorkflowViewModel workflowViewModel = manager.create(WorkflowViewModel.class);
         workflowViewModel.setProcessList(setupProcessList());
+        return workflowViewModel;
     }
 
-    public void showProcessInstance(String processInstanceId) {
+    public ProcessInstance createProcessInstance(String processInstanceId) {
+
         List<org.activiti.engine.runtime.ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).list();
-        workflowViewModel.setProcessInstance(list.isEmpty() ? null : map(list.get(0)));
+       return                                list.isEmpty() ? null : map(list.get(0));
     }
 
     private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
