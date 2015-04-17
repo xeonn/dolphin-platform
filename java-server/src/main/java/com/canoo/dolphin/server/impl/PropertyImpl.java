@@ -36,7 +36,7 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     public void set(T newValue) {
-        if(Collection.class.isAssignableFrom(newValue.getClass())){
+        if(newValue != null && Collection.class.isAssignableFrom(newValue.getClass())){
             throw new IllegalArgumentException("Type of the property must be a scalar, not a collection");
         }
         beanRepository.setValue(attribute, newValue);

@@ -45,7 +45,7 @@ public class BeanRepository {
     }
 
     public void setValue(Attribute attribute, Object value) {
-        if (!(isManaged(value) || ReflectionHelper.isAllowedForUnmanaged(value.getClass()))) {
+        if (value != null && !isManaged(value) && !ReflectionHelper.isAllowedForUnmanaged(value.getClass())) {
             throw new IllegalArgumentException(String.format("Cannot assign unmanaged bean instance of type %s to property %s", value.getClass().getName(), attribute.getPropertyName()));
         }
         ClassRepository.FieldType fieldType = classRepository.calculateFieldTypeFromValue(attribute, value);

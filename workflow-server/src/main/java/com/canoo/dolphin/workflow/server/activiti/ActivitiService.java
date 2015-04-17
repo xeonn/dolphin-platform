@@ -109,9 +109,6 @@ public class ActivitiService {
         List<PvmTransition> outgoingTransitions = sourceImpl.getOutgoingTransitions();
         for (PvmTransition transitionImpl : outgoingTransitions) {
             Activity source = idMappings.get(transitionImpl.getSource().getId());
-            if (!source.getLabel().equals(sourceImpl.getId())) {
-                throw new IllegalStateException("failed to understand activitis transitions");
-            }
             Transition transition = manager.create(Transition.class);
             Map<String, Object> properties = ((TransitionImpl) transitionImpl).getProperties();
             String targetId = transitionImpl.getDestination().getId();

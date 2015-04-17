@@ -15,20 +15,66 @@
                 console.log("processInstance changed", newValue);
 
                 var host = this.$.flowchart;
+                if (typeof host.firstChild !== 'undefined' && host.firstChild !== null) {
+                    host.removeChild(host.firstChild);
+                }
 
-                var width = 1200;
-                var height = 800;
+                var width = host.offsetWidth;
+                var height = 1000;
+
+
+                var startEventRenderer = function(r, n) {
+                    return r.set()
+                            .push(r.circle(0, 0, 20).attr({'stroke-width': 2, 'fill': '#fff'}))
+                            .push(r.text(0, 30, n.label).attr({'font-size': 15}));
+                };
+
+                var endEventRenderer = function(r, n) {
+                    return r.set()
+                            .push(r.circle(0, 0, 20)).attr({'stroke-width': 5, 'fill': '#fff'})
+                            .push(r.text(0, 30, n.label).attr({'font-size': 15}));
+                };
+
+                var exclusiveGatewayRenderer = function(r, n) {
+                    return r.set()
+                            .push(r.path('M30,0L0,30L-30,0,L0,-30,Z').attr({'stroke-width': 2, 'fill': '#fff'}))
+                            .push(r.path('M10,15,L-10,-15M10,-15,L-10,15').attr({'stroke-width': 5}))
+                            .push(r.text(0, 40, n.label).attr({'font-size': 15}));
+                };
+
+                var taskRenderer = function(r, n) {
+                    return r.set()
+                            .push(r.rect(-75, -50, 150, 100, 10).attr({'stroke-width': 2, 'fill': '#fff'}))
+                            .push(r.text(0, 0, n.label).attr({'font-size': 15}));
+                };
 
                 var g = new Graph();
 
-                var activityCounter = 1;
-                newValue.activities.forEach(function(activity, index) {
+                newValue.activities.forEach(function(activity) {
                     /*
                     activityName, activityId, description, type
                     */
-                    var label = typeof activity.activityLabel === 'undefined' || activity.activityLabel === null? 'Activity ' + (activityCounter++) : activity.activityLabel;
+                    var label = typeof activity.activityName === 'undefined' || activity.activityName === null? ' ' : activity.activityName;
 
-                    g.addNode(activity.label, {label: label});
+                    var renderer;
+                    switch (activity.type) {
+                        case 'startEvent':
+                            renderer = startEventRenderer;
+                            break;
+                        case 'endEvent':
+                            renderer = endEventRenderer;
+                            break;
+                        case 'exclusiveGateway':
+                            renderer = exclusiveGatewayRenderer;
+                            break;
+                        case 'userTask':
+                        case 'serviceTask':
+                        case 'subProcess':
+                            renderer = taskRenderer;
+                            break;
+                    }
+
+                    g.addNode(activity.activityId, {label: label, render: renderer});
                 });
                 newValue.activities.forEach(function(activity) {
                     if (typeof activity.outgoingTransitions !== 'undefined' && activity.outgoingTransitions !== null) {
@@ -39,108 +85,10 @@
                             var label = typeof transition.transitionName === 'undefined' || transition.transitionName === null? '' : transition.transitionName;
                             var sublabel = typeof transition.conditionText === 'undefined' || transition.conditionText === null? '' : transition.conditionText;
                             var target = transition.target;
-                            g.addEdge(activity.label, target.label, {directed : true, label: label + '<br>' + sublabel});
+                            g.addEdge(activity.activityId, target.activityId, {directed : true, label: label + ' ' + sublabel});
                         });
                     }
                 });
-
-
-//                /* add a simple node */
-//                g.addNode("strawberry");
-//                g.addNode("cherry");
-//
-//                /* add a node with a customized label */
-//                g.addNode("1", { label : "Tomato" });
-//
-//
-//                /* add a node with a customized shape
-//                 (the Raphael graph drawing implementation can draw this shape, please
-//                 consult the RaphaelJS reference for details http://raphaeljs.com/) */
-//                var render = function(r, n) {
-//                    var label = r.text(0, 30, n.label).attr({opacity:0});
-//                    //the Raphael set is obligatory, containing all you want to display
-//                    var set = r.set()
-//                            .push(r.rect(-30, -13, 62, 86)
-//                                    .attr({ fill: '#fa8', 'stroke-width': 2, r: 9 })
-//                    )
-//                            .push(label);
-//
-//                    // make the label show only on hover
-//                    set.hover(
-//                            function mouseIn() {
-//                                label.animate({ opacity: 1, 'fill-opacity': 1 }, 500);
-//                            },
-//                            function mouseOut() {
-//                                label.animate({opacity:0},300);
-//                            }
-//                    );
-//
-//                    var tooltip = r.set()
-//                            .push(
-//                            r.rect(0, 0, 90, 30).attr({ fill: '#fec', 'stroke-width': 1, r: 9 })
-//                    ).push(
-//                            r.text(25, 15, 'overlay').attr({ fill: '#000000' })
-//                    );
-//                    for(var i in set.items) {
-//                        set.items[i].tooltip(tooltip);
-//                    }
-//                    //            set.tooltip(r.set().push(r.rect(0, 0, 30, 30).attr({"fill": "#fec", "stroke-width": 1, r : "9px"})).hide());
-//                    return set;
-//                };
-//
-//                g.addNode('id35', {
-//                    label: "meat\nand\ngreed",
-//                    /* filling the shape with a color makes it easier to be dragged */
-//                    /* arguments: r = Raphael object, n : node object */
-//                    render: render
-//                });
-//                //    g.addNode("Wheat", {
-//                /* filling the shape with a color makes it easier to be dragged */
-//                /* arguments: r = Raphael object, n : node object */
-//                //        shapes : [ {
-//                //                type: "rect",
-//                //                x: 10,
-//                //                y: 10,
-//                //                width: 25,
-//                //                height: 25,
-//                //                stroke: "#f00"
-//                //            }, {
-//                //                type: "text",
-//                //                x: 30,
-//                //                y: 40,
-//                //                text: "Dump"
-//                //            }],
-//                //        overlay : "<b>Hello <a href=\"http://wikipedia.org/\">World!</a></b>"
-//                //    });
-//
-//                var st = {
-//                    directed: true,
-//                    label: 'Label',
-//                    'label-style' : {
-//                        'font-size': 20
-//                    }
-//                };
-//                g.addEdge('kiwi', 'penguin', st);
-//
-//                /* connect nodes with edges */
-//                g.addEdge('strawberry', 'cherry', {directed: true});
-//                g.addEdge('cherry', 'apple');
-//                g.addEdge('cherry', 'apple');
-//                g.addEdge('1', 'id35');
-//                g.addEdge('penguin', 'id35');
-//                g.addEdge('penguin', 'apple');
-//                g.addEdge('kiwi', 'id35');
-//
-//                /* a directed connection, using an arrow */
-//                g.addEdge('1', 'cherry', { directed: true } );
-//
-//                /* customize the colors of that edge */
-//                g.addEdge('id35', 'apple', { stroke: '#bfa' , fill: '#56f', label: 'Meat-to-Apple' });
-//
-//                /* add an unknown node implicitly by adding an edge */
-//                g.addEdge('strawberry', 'apple');
-//
-//                //g.removeNode("1");
 
                 /* layout the graph using the Spring layout implementation */
                 var layouter = new Graph.Layout.Spring(g);
@@ -161,44 +109,6 @@
                 //    console.log(g.nodes["kiwi"]);
                 //redraw();
 
-
-
-
-
-//                var text = 'graph LR\n';
-////                newValue.activities.forEach(function(activity) {
-////                    text += 'A' + activity.label + '[' + activity.label + ']\n';
-////                });
-////                newValue.activities.forEach(function(activity) {
-////                    text +=  'A' + newValue.startActivity.label + ' --> A' + activity.label + '\n';
-////                });
-//
-//
-////                text += 'Start[Start] --> Start\n';
-////
-////                newValue.activities.forEach(function(activity, index) {
-////                    text +=  'Start' + ' --> A' + index + '[A' + index + ']\n';
-////                });
-//
-//                text += 'A[Square Rect] -- Link text --> B((Circle))\n';
-//                text += 'A --> C(Round Rect)\n';
-//                text += 'B --> D{Rhombus}\n';
-//                text += 'C --> D\n';
-//
-//                var node = document.createElement('div');
-//                node.classList.add('mermaid');
-//                node.textContent = text;
-//
-//                var host = this.$.flowchart;
-//                if (typeof host.firstChild !== 'undefined' && host.firstChild !== null) {
-//                    host.removeChild(host.firstChild);
-//                }
-//                host.appendChild(node);
-//
-//                console.log("Result 1", mermaid.parse("graph LR\nA[Square Rect] -- Link text --> B((Circle))\nA --> C(Round Rect)\nB --> D{Rhombus}\nC --> D"));
-//                console.log("Result 2", mermaid.parse(text));
-//
-//                mermaid.init(node);
             }
         })
     </script>
