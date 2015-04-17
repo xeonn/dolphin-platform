@@ -27,12 +27,12 @@ public class BeanManagerImpl implements BeanManager {
     }
 
     @Override
-    public <T> void delete(T bean) {
+    public <T> void detach(T bean) {
         beanRepository.delete(bean);
     }
 
     @Override
-    public void deleteAll(Class<?> beanClass) {
+    public void detachAll(Class<?> beanClass) {
         beanRepository.deleteAll(beanClass);
     }
 

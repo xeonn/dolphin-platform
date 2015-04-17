@@ -1,4 +1,4 @@
-package com.canoo.dolphin.server.event;
+package com.canoo.dolphin.server.event.impl;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;

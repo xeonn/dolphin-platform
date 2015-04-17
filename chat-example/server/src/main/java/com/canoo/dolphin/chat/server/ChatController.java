@@ -9,7 +9,7 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.HandlerIdentifier;
+import com.canoo.dolphin.mapping.ReferenceIdentifier;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -24,14 +24,14 @@ public class ChatController {
     @Inject
     private DolphinEventBus eventBus;
 
-    private Map<Long, HandlerIdentifier> eventHandlerIdentifiers = new HashMap<>();
+    private Map<Long, ReferenceIdentifier> eventHandlerIdentifiers = new HashMap<>();
 
     @DolphinAction
     public void init(@Param Long chatId) {
         Chat chat = manager.create(Chat.class);
         chat.getEntityIdProperty().set(chatId);
 
-        HandlerIdentifier handlerIdentifier = eventBus.registerHandler("chat." + chatId, v -> System.out.println(""));
+        ReferenceIdentifier handlerIdentifier = eventBus.registerHandler("chat." + chatId, v -> System.out.println(""));
         eventHandlerIdentifiers.put(chatId, handlerIdentifier);
     }
 
@@ -39,10 +39,10 @@ public class ChatController {
     public void close(@Param Long chatId) {
         Chat chat = manager.createQuery(Chat.class).withEquals("entityId", chatId).getSingle();
 
-        HandlerIdentifier handlerIdentifier = eventHandlerIdentifiers.remove(chatId);
+        ReferenceIdentifier handlerIdentifier = eventHandlerIdentifiers.remove(chatId);
         eventBus.unregisterHandler(handlerIdentifier);
 
-        manager.delete(chat);
+        manager.detach(chat);
     }
 
     @DolphinAction

@@ -1,15 +1,15 @@
-package com.canoo.dolphin.server.event;
+package com.canoo.dolphin.mapping;
 
 import java.util.UUID;
 
 /**
  * Created by hendrikebbers on 16.04.15.
  */
-public class HandlerIdentifier {
+public class ReferenceIdentifier {
 
     private String id;
 
-    protected HandlerIdentifier() {
+    protected ReferenceIdentifier() {
         id = UUID.randomUUID().toString();
     }
 
@@ -20,9 +20,9 @@ public class HandlerIdentifier {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof HandlerIdentifier)) return false;
+        if (!(o instanceof ReferenceIdentifier)) return false;
 
-        HandlerIdentifier that = (HandlerIdentifier) o;
+        ReferenceIdentifier that = (ReferenceIdentifier) o;
 
         if (!id.equals(that.id)) return false;
 

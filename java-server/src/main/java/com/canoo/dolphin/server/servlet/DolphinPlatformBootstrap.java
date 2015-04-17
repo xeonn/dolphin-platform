@@ -1,12 +1,11 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.DolphinController;
-import com.canoo.dolphin.server.event.DolphinSessionHandlerCleaner;
+import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.reflections.Reflections;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.EnumSet;
