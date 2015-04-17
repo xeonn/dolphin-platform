@@ -1,7 +1,9 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.container.DolphinCommandManager;
+import com.canoo.dolphin.server.event.DolphinEventBusImpl;
 import org.opendolphin.core.server.ServerDolphin;
+import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
 
 import javax.servlet.ServletContext;
@@ -64,7 +66,11 @@ public class DefaultDolphinServlet extends DolphinServlet {
         servletContext.set(req.getServletContext());
         request.set(req);
         dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
+
+        DolphinEventBusImpl.getInstance().sendEventsForCurrentDolphinSession();
+
         super.service(req, resp);
+
         request.remove();
         servletContext.remove();
         dolphin.remove();
@@ -92,6 +98,10 @@ public class DefaultDolphinServlet extends DolphinServlet {
     @SuppressWarnings("unchecked")
     public static <T> T getFromSession(Class<T> cls) {
         return (T) request.get().getSession().getAttribute(cls.getName());
+    }
+
+    public static String getDolphinId() {
+        return ((ServerModelStore) getServerDolphin().getModelStore()).id + "";
     }
 
 }

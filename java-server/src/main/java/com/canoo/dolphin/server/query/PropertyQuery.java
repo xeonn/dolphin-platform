@@ -42,7 +42,19 @@ public class PropertyQuery<T> {
         return this;
     }
 
-    public List<T> run() {
+    public T getSingle() {
+        List<T> result = getAll();
+
+        if(result.isEmpty()) {
+            return null;
+        }
+        if(result.size() > 1) {
+            throw new RuntimeException("Query returns multiple beans");
+        }
+        return result.get(0);
+    }
+
+    public List<T> getAll() {
         List<T> result = new CopyOnWriteArrayList<>(manager.findAll(beanClass));
 
         for(T bean : result) {
