@@ -16,8 +16,9 @@ public class SpringDolphinCommandManager implements DolphinCommandManager {
 
     @Override
     public void initCommandsForSession(ServletContext sc, ServerDolphin serverDolphin, Set<Class<?>> dolphinManagedClasses) {
+        ApplicationContext context = getContext(sc);
         for (Class<?> dolphinControllerClass : dolphinManagedClasses) {
-            Object managedInstance = getContext(sc).getAutowireCapableBeanFactory().createBean(dolphinControllerClass);
+            Object managedInstance = context.getAutowireCapableBeanFactory().createBean(dolphinControllerClass);
             DolphinCommandRegistration.registerAllCommands(serverDolphin, dolphinControllerClass, managedInstance);
         }
     }

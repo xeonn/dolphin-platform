@@ -21,6 +21,6 @@ public class ServerPushController {
 
     @DolphinAction
     public void release() {
-        DolphinEventBusImpl.getInstance().releaseCurrentSession();
+        DolphinEventBusImpl.getInstance().release();
     }
 }

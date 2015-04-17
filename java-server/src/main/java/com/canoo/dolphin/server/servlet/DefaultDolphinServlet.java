@@ -6,10 +6,10 @@ import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -21,6 +21,11 @@ import java.util.Set;
 public class DefaultDolphinServlet extends DolphinServlet {
 
     /**
+     * this constant is already defined in DolphinServlet. It should maybe public there.
+     */
+    private static final String DOLPHIN_ATTRIBUTE_ID = DolphinServlet.class.getName();
+
+    /**
      * The current command manager (based on used infarstucture - Spring or JavaEE/CDI). The instance will be loaded by SPI
      */
     private final DolphinCommandManager dolphinCommandRepository;
@@ -29,16 +34,6 @@ public class DefaultDolphinServlet extends DolphinServlet {
      * A set that contains all dolphin controllers that will be used as controllers on server site and defines the dolphin commands
      */
     private final Set<Class<?>> dolphinManagedClasses;
-
-    /**
-     * Contains the current servlet context
-     */
-    private static ThreadLocal<ServletContext> servletContext = new ThreadLocal<>();
-
-    /**
-     * Contains the current dolphin
-     */
-    private static ThreadLocal<ServerDolphin> dolphin = new ThreadLocal<>();
 
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
 
@@ -63,15 +58,9 @@ public class DefaultDolphinServlet extends DolphinServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        servletContext.set(req.getServletContext());
         request.set(req);
-        dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
-
         super.service(req, resp);
-
         request.remove();
-        servletContext.remove();
-        dolphin.remove();
     }
 
     /**
@@ -80,27 +69,39 @@ public class DefaultDolphinServlet extends DolphinServlet {
      * @return the dolphin
      */
     public static ServerDolphin getServerDolphin() {
-        return dolphin.get();
+        return getServerDolphin(getSession());
+    }
+
+    private static HttpSession getSession() {
+        return request.get().getSession();
     }
 
     @Override
     protected void registerApplicationActions(ServerDolphin serverDolphin) {
-        dolphin.set(serverDolphin);
-        ServletContext context = servletContext.get();
-        dolphinCommandRepository.initCommandsForSession(context, serverDolphin, dolphinManagedClasses);
+        //this is done by DolphinServlet after! calling this method.
+        getSession().setAttribute(DOLPHIN_ATTRIBUTE_ID, serverDolphin);
+        dolphinCommandRepository.initCommandsForSession(getServletContext(), serverDolphin, dolphinManagedClasses);
     }
 
     public static void addToSession(Object o) {
-        request.get().getSession().setAttribute(o.getClass().getName(), o);
+        getSession().setAttribute(o.getClass().getName(), o);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T getFromSession(Class<T> cls) {
-        return (T) request.get().getSession().getAttribute(cls.getName());
+        return (T) getSession().getAttribute(cls.getName());
     }
 
     public static String getDolphinId() {
-        return ((ServerModelStore) getServerDolphin().getModelStore()).id + "";
+        return getDolphinId(getSession());
+    }
+
+    public static String getDolphinId(HttpSession session) {
+        return ((ServerModelStore) getServerDolphin(session).getModelStore()).id + "";
+    }
+
+    private static ServerDolphin getServerDolphin(HttpSession session) {
+        return (ServerDolphin) session.getAttribute(DOLPHIN_ATTRIBUTE_ID);
     }
 
 }
