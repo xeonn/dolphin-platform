@@ -1,8 +1,8 @@
 package com.canoo.dolphin.example.server;
 
 import com.canoo.dolphin.example.HelloWorldModel;
-import com.canoo.dolphin.mapping.ValueChangeEvent;
-import com.canoo.dolphin.mapping.ValueChangeListener;
+import com.canoo.dolphin.event.ValueChangeEvent;
+import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;

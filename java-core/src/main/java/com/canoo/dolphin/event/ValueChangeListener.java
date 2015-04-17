@@ -1,6 +1,5 @@
-package com.canoo.dolphin.mapping;
+package com.canoo.dolphin.event;
 
-import java.beans.PropertyChangeEvent;
 import java.util.EventListener;
 
 /**

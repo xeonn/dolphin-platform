@@ -4,7 +4,9 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.MessageHandler;
+import com.canoo.dolphin.server.event.Message;
+import com.canoo.dolphin.server.event.MessageListener;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.workflow.server.activiti.ActivitiService;
 import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessInstance;
@@ -17,7 +19,7 @@ public class WorkflowController {
 
     private WorkflowViewModel workflowViewModel;
 
-    private MessageHandler messageHandler;
+    private Subscription subscription;
 
     @Inject
     private ActivitiService activitiService;
@@ -32,13 +34,25 @@ public class WorkflowController {
 
     @DolphinAction
     public void showProcessInstance(@Param("processInstance") BaseProcessInstance baseProcessInstance) {
-        if (messageHandler != null) {
-            eventBus.unregisterHandler(messageHandler);
-        } else {
-            messageHandler = message -> System.out.println("we are in messagehandler and received a message: " + message.getData());
-        }
+        unsubscribe();
         ProcessInstance processInstance = activitiService.createProcessInstance(baseProcessInstance.getLabel());
-        eventBus.registerHandler("processInstance/" + processInstance.getLabel(), messageHandler);
+        subscribe(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
+    }
+
+    private void subscribe(ProcessInstance processInstance) {
+        subscription = eventBus.subscribe("processInstance/" + processInstance.getLabel(), new MessageListener() {
+            @Override
+            public void onMessage(Message message) {
+                System.out.println("got message: " + message.getData());
+            }
+        });
+    }
+
+    private void unsubscribe() {
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
     }
 }
