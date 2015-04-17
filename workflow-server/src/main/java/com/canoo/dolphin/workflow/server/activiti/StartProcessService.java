@@ -25,8 +25,7 @@ public class StartProcessService {
                 processVariables.put("phoneNumber", "02476/346341");
                 return runtimeService.startProcessInstanceByKey("hireProcess", processVariables);
             default:
-                System.out.println("process not found. key: " + key);
-                return null;
+                return runtimeService.startProcessInstanceByKey(key);
         }
     }
 }
