@@ -7,8 +7,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+/**
+ * Method to create JavaFX property wrappers for dolphin platform properties
+ */
 public class JavaFXBinder {
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.DoubleProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
         final DoubleProperty property = new SimpleDoubleProperty(dolphinProperty.get());
 
@@ -27,6 +35,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.IntegerProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
         final IntegerProperty property = new SimpleIntegerProperty(dolphinProperty.get());
 
@@ -45,6 +58,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.FloatProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static FloatProperty wrapFloatProperty(final Property<Float> dolphinProperty) {
         final FloatProperty property = new SimpleFloatProperty(dolphinProperty.get());
 
@@ -63,6 +81,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.LongProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static LongProperty wrapLongProperty(final Property<Long> dolphinProperty) {
         final LongProperty property = new SimpleLongProperty(dolphinProperty.get());
 
@@ -81,6 +104,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.BooleanProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static BooleanProperty wrapBooleanProperty(final Property<Boolean> dolphinProperty) {
         final BooleanProperty property = new SimpleBooleanProperty(dolphinProperty.get());
 
@@ -99,6 +127,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.StringProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static StringProperty wrapStringProperty(final Property<String> dolphinProperty) {
         final StringProperty property = new SimpleStringProperty(dolphinProperty.get());
 
@@ -117,6 +150,11 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.beans.property.ObjectProperty} as a wrapper for a dolphin platform property
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
     public static <T> ObjectProperty<T> wrapObjectProperty(final Property<T> dolphinProperty) {
         final ObjectProperty<T> property = new SimpleObjectProperty<>(dolphinProperty.get());
 
@@ -135,6 +173,12 @@ public class JavaFXBinder {
         return property;
     }
 
+    /**
+     * Create a JavaFX {@link javafx.collections.ObservableList} wrapper for a dolphin platform list
+     * @param dolphinList the dolphin platform list
+     * @param <T> type of the list content
+     * @return the JavaFX list
+     */
     public static <T> ObservableList<T> wrapList(com.canoo.dolphin.collections.ObservableList<T> dolphinList) {
         final ObservableList<T> list = FXCollections.observableArrayList(dolphinList);
 
@@ -187,6 +231,5 @@ public class JavaFXBinder {
 
     //TODO: HACK
     private static boolean listenToDolphin = true;
-
 
 }
