@@ -1,13 +1,14 @@
 package com.canoo.dolphin.server.event.impl;
 
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
-import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.core.server.EventBus;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -69,6 +70,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             DataflowQueue currentReceiver = receiverPerSession.get(dolphinId);
             if (currentReceiver == null) {
                 currentReceiver = new DataflowQueue();
+                receiverPerSession.put(dolphinId, currentReceiver);
                 eventBus.subscribe(currentReceiver);
             }
             handlersPerSession.get(dolphinId).add(handler);
@@ -83,6 +85,10 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         return DefaultDolphinServlet.getDolphinId();
     }
 
+    protected String getDolphinId(HttpSession session) {
+        return DefaultDolphinServlet.getDolphinId(session);
+    }
+
     public void unregisterHandler(SubscriptionImpl subscription) {
         lock.lock();
         try {
@@ -91,17 +97,17 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             String dolphinId = getDolphinId();
             handlersPerSession.get(dolphinId).remove(handler);
             if (handlersPerSession.get(dolphinId).isEmpty()) {
-                eventBus.unSubscribe(receiverPerSession.remove(dolphinId));
+                eventBus.unSubscribe(receiverPerSession.get(dolphinId));
             }
         } finally {
             lock.unlock();
         }
     }
-    
-    public void unregisterHandlersForCurrentDolphinSession() {
+
+    public void unregisterHandlersForCurrentDolphinSession(HttpSession session) {
         lock.lock();
         try {
-            String dolphinId = getDolphinId();
+            String dolphinId = getDolphinId(session);
             Set<MessageListener> eventHandlers = handlersPerSession.remove(dolphinId);
             for (Set<MessageListener> eventHandlerSet : handlersPerSession.values()) {
                 for (MessageListener eventHandler : eventHandlers) {
@@ -120,6 +126,10 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     public void listenOnEventsForCurrentDolphinSession(long time, TimeUnit unit) throws InterruptedException {
         String dolphinId = getDolphinId();
         DataflowQueue receiver = receiverPerSession.get(dolphinId);
+        if (receiver == null) {
+            receiver = new DataflowQueue();
+            receiverPerSession.put(dolphinId, receiver);
+        }
         Object val = receiver.getVal(time, unit);
         if (val == releaseVal) {
             return;
@@ -143,8 +153,12 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     @SuppressWarnings("unchecked")
-    public void releaseCurrentSession() {
-        DataflowQueue receiverToRelease = receiverPerSession.get(getDolphinId());
-        receiverToRelease.leftShift(releaseVal);
+    public void release() {
+        for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
+            if (dataflowQueue != null) {
+                dataflowQueue.leftShift(releaseVal);
+            }
+        }
+
     }
 }

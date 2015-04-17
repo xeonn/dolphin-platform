@@ -94,8 +94,8 @@ public class DolphinCommandRegistration {
                 final BeanRepository beanRepository = DefaultDolphinServlet.getFromSession(BeanRepository.class);
                 result.add(beanRepository.mapDolphinToObject(typeAttribute.getValue().toString(), valueAttribute.getValue()));
             }
+            dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);
         }
-        dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);
         return result.toArray(new Object[result.size()]);
     }
 

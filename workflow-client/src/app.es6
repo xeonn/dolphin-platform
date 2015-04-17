@@ -12,6 +12,8 @@ const SERVER_URL = 'http://localhost:8080/dolphin';
 
 global.dolphin = dolphin.connect(SERVER_URL);
 
+global.dolphin.dolphin.startPushListening('ServerPushController:longPoll', 'ServerPushController:release');
+
 global.dolphin
     .onAdded('WorkflowViewModel',
         (data) => {
