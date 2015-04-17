@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.container.DolphinCommandManager;
-import com.canoo.dolphin.server.event.DolphinBasedEventHandler;
+import com.canoo.dolphin.server.event.DolphinEventBusImpl;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
@@ -64,7 +64,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
         servletContext.set(req.getServletContext());
         dolphin.set((ServerDolphin) req.getSession(true).getAttribute(DolphinServlet.class.getName()));
 
-        DolphinBasedEventHandler.getInstance().sendEventsForCurrentDolphinSession();
+        DolphinEventBusImpl.getInstance().sendEventsForCurrentDolphinSession();
 
         super.service(req, resp);
 

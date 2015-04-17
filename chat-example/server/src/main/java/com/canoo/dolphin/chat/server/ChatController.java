@@ -9,7 +9,6 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.EventHandler;
 import com.canoo.dolphin.server.event.HandlerIdentifier;
 
 import javax.inject.Inject;
@@ -35,7 +34,6 @@ public class ChatController {
         HandlerIdentifier handlerIdentifier = eventBus.registerHandler("chat." + chatId, v -> System.out.println(""));
         eventHandlerIdentifiers.put(chatId, handlerIdentifier);
     }
-
 
     @DolphinAction
     public void close(@Param Long chatId) {
