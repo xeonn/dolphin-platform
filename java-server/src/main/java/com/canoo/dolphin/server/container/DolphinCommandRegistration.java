@@ -5,7 +5,6 @@ import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
-import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.ReflectionHelper;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.Attribute;
@@ -94,6 +93,7 @@ public class DolphinCommandRegistration {
                 result.add(beanRepository.mapDolphinToObject(typeAttribute.getValue().toString(), valueAttribute.getValue()));
             }
         }
+        dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);
         return result.toArray(new Object[result.size()]);
     }
 

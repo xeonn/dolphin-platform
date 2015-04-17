@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../bower_components/core-menu/core-submenu.html">
 <link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="workflow-canvas.html">
 
 
 
@@ -48,7 +49,7 @@
                 <workflow-menu data="{{data.processList}}"></workflow-menu>
             </core-header-panel>
             <div tool>Process Instance {{data.processInstance.label}}</div>
-            <div>Main content goes here...</div>
+            <workflow-canvas data="{{data.processInstance}}"></workflow-canvas>
         </core-scaffold>
     </template>
 </polymer-element>
