@@ -6,6 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -110,5 +111,9 @@ public class ReflectionHelper {
 
     public static boolean isBasicType(Class<?> cls) {
         return cls.isPrimitive() || cls.equals(String.class) || cls.equals(Boolean.class) || cls.equals(Byte.class) || Number.class.isAssignableFrom(cls);
+    }
+
+    public static boolean isProxyInstance(Object bean) {
+        return Proxy.isProxyClass(bean.getClass());
     }
 }

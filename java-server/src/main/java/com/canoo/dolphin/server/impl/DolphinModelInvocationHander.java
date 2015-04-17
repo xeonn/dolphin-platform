@@ -24,6 +24,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
     private final Class modelClass;
     private final Map<Method, PropertyDescriptor> method2propDesc;
     private final Map<String, Property> propertyName2prop;
+
     private final Map<String, ObservableList> propertyName2list;
 
     public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, BeanRepository beanRepository) {
@@ -119,6 +120,10 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
                 return propertyName2prop.get(propertyName).get();
             }
         }
+    }
+
+    public Property<T> getProperty(String name) {
+        return propertyName2prop.get(name);
     }
 
     private boolean isList(PropertyDescriptor descriptor) {

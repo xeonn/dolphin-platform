@@ -22,7 +22,7 @@ public class BeanManagerImpl implements BeanManager {
     }
 
     @Override
-    public <T> T create(final Class<T> beanClass) {
+    public <T> T create(Class<T> beanClass) {
         return beanRepository.create(beanClass);
     }
 
@@ -55,6 +55,7 @@ public class BeanManagerImpl implements BeanManager {
         return null;
     }
 
+    @Override
     public String getId(Object bean) {
         String id = beanRepository.getDolphinId(bean);
         if(id == null) {
