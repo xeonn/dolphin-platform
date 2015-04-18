@@ -21,6 +21,7 @@ public class WorkflowController {
 
     private WorkflowViewModel workflowViewModel;
     private Subscription subscription;
+    private Subscription createSubscription;
 
     @Inject
     private ActivitiService activitiService;
@@ -51,12 +52,12 @@ public class WorkflowController {
     }
 
     public void subscribe() {
-        subscription = eventBus.subscribe("create", new MessageListener() {
+        createSubscription = eventBus.subscribe("create", new MessageListener() {
             @Override
             public void onMessage(Message message) {
                 final Object data = message.getData();
                 if (data instanceof ProcessInstanceStartedEvent) {
-                    final ProcessInstanceStartedEvent event = (ProcessInstanceStartedEvent)data;
+                    final ProcessInstanceStartedEvent event = (ProcessInstanceStartedEvent) data;
                     final String definitionId = event.getProcessDefinitionId();
                     final String instanceId = event.getProcessInstanceId();
                     workflowViewModel.getProcessList().getProcessDefinitions();
