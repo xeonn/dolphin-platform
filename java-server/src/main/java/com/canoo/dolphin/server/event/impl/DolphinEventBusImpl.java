@@ -14,6 +14,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
+/**
+ * TODO locking is wrong and suboptimal.
+ * TODO release should only happen per dolphin session.
+ * TODO maybe introduce a dataFlowQueue per session and topic to reduce looping.
+ */
 public class DolphinEventBusImpl implements DolphinEventBus {
 
     private static DolphinEventBusImpl instance = new DolphinEventBusImpl();
@@ -154,11 +160,15 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     @SuppressWarnings("unchecked")
     public void release() {
-        for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
-            if (dataflowQueue != null) {
-                dataflowQueue.leftShift(releaseVal);
+        lock.lock();
+        try {
+            for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
+                if (dataflowQueue != null) {
+                    dataflowQueue.leftShift(releaseVal);
+                }
             }
+        } finally {
+            lock.unlock();
         }
-
     }
 }
