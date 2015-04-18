@@ -97,9 +97,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             handlersPerTopic.get(subscription.getTopic()).remove(handler);
             String dolphinId = getDolphinId();
             handlersPerSession.get(dolphinId).remove(handler);
-            if (handlersPerSession.get(dolphinId).isEmpty()) {
-                eventBus.unSubscribe(receiverPerSession.get(dolphinId));
-            }
+
         } finally {
             lock.unlock();
         }
@@ -124,31 +122,43 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void listenOnEventsForCurrentDolphinSession(long time, TimeUnit unit) throws InterruptedException {
+        lock.lock();
+        DataflowQueue receiver;
         String dolphinId = getDolphinId();
-        DataflowQueue receiver = receiverPerSession.get(dolphinId);
-        if (receiver == null) {
-            receiver = new DataflowQueue();
-            receiverPerSession.put(dolphinId, receiver);
+        try {
+            receiver = receiverPerSession.get(dolphinId);
+            if (receiver == null) {
+                receiver = new DataflowQueue();
+                eventBus.subscribe(receiver);
+                receiverPerSession.put(dolphinId, receiver);
+            }
+        } finally {
+            lock.unlock();
         }
+        System.out.println("started polling for dolphin id: " + dolphinId);
         Object val = receiver.getVal(time, unit);
-        if (val == releaseVal) {
-            return;
-        }
-        Message event = (Message) val;
-        while (event != null) {
+
+        while (val != null) {
+            if (val == releaseVal) {
+                System.out.println("released polling for dolphin id: " + dolphinId);
+                return;
+            }
+            Message event = (Message) val;
             String topic = event.getTopic();
             lock.lock();
             try {
+                System.out.println("handle event for dolphin id " + dolphinId + " and topic " + topic);
                 List<MessageListener> eventHandlers = handlersPerTopic.get(topic);
                 for (MessageListener eventHandler : eventHandlers) {
                     if (handlersPerSession.get(dolphinId).contains(eventHandler)) {
+                        System.out.println("call handler for dolphin id " + dolphinId + " and topic " + topic);
                         eventHandler.onMessage(event);
                     }
                 }
             } finally {
                 lock.unlock();
             }
-            event = (Message) receiver.getVal(20, TimeUnit.MILLISECONDS);
+            val = receiver.getVal(20, TimeUnit.MILLISECONDS);
         }
     }
 
