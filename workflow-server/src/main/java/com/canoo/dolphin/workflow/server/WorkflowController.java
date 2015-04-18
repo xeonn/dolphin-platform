@@ -1,9 +1,14 @@
 package com.canoo.dolphin.workflow.server;
 
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
+import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.Message;
+import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.workflow.server.activiti.ActivitiService;
+import com.canoo.dolphin.workflow.server.activiti.ProcessInstanceStartedEvent;
 import com.canoo.dolphin.workflow.server.model.BaseProcessInstance;
 import com.canoo.dolphin.workflow.server.model.ProcessDefinition;
 import com.canoo.dolphin.workflow.server.model.ProcessInstance;
@@ -15,24 +20,26 @@ import javax.inject.Inject;
 public class WorkflowController {
 
     private WorkflowViewModel workflowViewModel;
+    private Subscription subscription;
 
     @Inject
     private ActivitiService activitiService;
 
     @Inject
-    private WorkflowSubscriptionService workflowSubscriptionService;
+    private DolphinEventBus eventBus;
 
 
     @DolphinAction
     public void init() {
         workflowViewModel = activitiService.createWorkflowViewModel();
+        subscribe();
     }
 
     @DolphinAction
     public void showProcessInstance(@Param("processInstance") BaseProcessInstance baseProcessInstance) {
-        workflowSubscriptionService.unsubscribe();
+        unsubscribe();
         ProcessInstance processInstance = activitiService.findProcessInstance(baseProcessInstance);
-        workflowSubscriptionService.subscribe(processInstance);
+        subscribe(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
     }
 
@@ -41,5 +48,49 @@ public class WorkflowController {
         ProcessInstance processInstance = activitiService.startProcessInstance(processDefinition);
         processDefinition.getProcessInstances().add(processInstance);
         workflowViewModel.setProcessInstance(processInstance);
+    }
+
+    public void subscribe() {
+        subscription = eventBus.subscribe("create", new MessageListener() {
+            @Override
+            public void onMessage(Message message) {
+                final Object data = message.getData();
+                if (data instanceof ProcessInstanceStartedEvent) {
+                    final ProcessInstanceStartedEvent event = (ProcessInstanceStartedEvent)data;
+                    final String definitionId = event.getProcessDefinitionId();
+                    final String instanceId = event.getProcessInstanceId();
+                    workflowViewModel.getProcessList().getProcessDefinitions();
+                    for (ProcessDefinition processDefinition : workflowViewModel.getProcessList().getProcessDefinitions()) {
+                        if (processDefinition.getLabel().equals(definitionId)) {
+                            for (BaseProcessInstance processInstance : processDefinition.getProcessInstances()) {
+                                if (processInstance.getLabel().equals(instanceId)) {
+                                    return;
+                                }
+                            }
+                            processDefinition.getProcessInstances().add(activitiService.findBaseProcessInstance(instanceId));
+                            return;
+                        }
+                    }
+                } else {
+                    System.out.println("got message: " + message.getData());
+                }
+            }
+        });
+    }
+
+    public void subscribe(ProcessInstance processInstance) {
+        subscription = eventBus.subscribe("processInstance/" + processInstance.getLabel(), new MessageListener() {
+            @Override
+            public void onMessage(Message message) {
+                System.out.println("got message: " + message.getData());
+            }
+        });
+    }
+
+    public void unsubscribe() {
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
     }
 }

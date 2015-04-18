@@ -24,7 +24,7 @@ public class WorkflowBootStrap {
         runtimeService.addEventListener(eventPublisher);
 
         //start one example process
-        startProcessService.startProcess("hireProcess");
+        startProcessService.startProcessByKey("hireProcess");
     }
 
 }

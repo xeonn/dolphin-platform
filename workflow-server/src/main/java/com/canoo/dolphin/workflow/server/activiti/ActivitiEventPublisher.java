@@ -28,7 +28,7 @@ public class ActivitiEventPublisher implements ActivitiEventListener {
                 if (entity instanceof ExecutionEntity) {
                     ActivityImpl activity = ((ExecutionEntity) entity).getActivity();
                     if ("startEvent".equals(activity.getProperty("type"))) {
-                        eventBus.publish("create", new ProcessInstanceStartedEvent((event.getProcessInstanceId())));
+                        eventBus.publish("create", new ProcessInstanceStartedEvent(event.getProcessDefinitionId(), event.getProcessInstanceId()));
                     }
                 }
                 break;

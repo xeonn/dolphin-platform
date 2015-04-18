@@ -50,8 +50,12 @@ public class ActivitiService {
         return map(runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getLabel()).list().get(0));
     }
 
+    public BaseProcessInstance findBaseProcessInstance(String id) {
+        return createBaseProcessInstance(id);
+    }
+
     public ProcessInstance startProcessInstance(ProcessDefinition processDefinition) {
-        return map(startProcessService.startProcess(processDefinition.getLabel()));
+        return map(startProcessService.startProcessById(processDefinition.getLabel()));
     }
 
     private ProcessDefinition map(org.activiti.engine.repository.ProcessDefinition processDefinition) {
@@ -60,7 +64,7 @@ public class ActivitiService {
         mappedInstance.setName(processDefinition.getName());
         List<org.activiti.engine.runtime.ProcessInstance> instances = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).list();
         for (org.activiti.engine.runtime.ProcessInstance instance : instances) {
-            mappedInstance.getProcessInstances().add(mapLight(instance));
+            mappedInstance.getProcessInstances().add(createBaseProcessInstance(instance.getId()));
         }
         return mappedInstance;
     }
@@ -76,9 +80,9 @@ public class ActivitiService {
         return mappedInstance;
     }
 
-    private BaseProcessInstance mapLight(org.activiti.engine.runtime.ProcessInstance processInstance) {
+    private BaseProcessInstance createBaseProcessInstance(String id) {
         BaseProcessInstance mappedInstance = manager.create(BaseProcessInstance.class);
-        mappedInstance.setLabel(processInstance.getId());
+        mappedInstance.setLabel(id);
         return mappedInstance;
     }
 

@@ -17,7 +17,7 @@ public class StartProcessService {
     @Inject
     private RuntimeService runtimeService;
 
-    public ProcessInstance startProcess(String key) {
+    public ProcessInstance startProcessByKey(String key) {
         switch (key) {
             case HIRE_PROCESS:
                 HashMap<String, Object> processVariables = new HashMap<>();
@@ -27,5 +27,15 @@ public class StartProcessService {
             default:
                 return runtimeService.startProcessInstanceByKey(key);
         }
+    }
+
+    public ProcessInstance startProcessById(String id) {
+        if (id != null && id.startsWith(HIRE_PROCESS)) {
+            HashMap<String, Object> processVariables = new HashMap<>();
+            processVariables.put("applicantName", "Dolphin Workflow1");
+            processVariables.put("phoneNumber", "02476/346341");
+            return runtimeService.startProcessInstanceById(id, processVariables);
+        }
+        return runtimeService.startProcessInstanceById(id);
     }
 }
