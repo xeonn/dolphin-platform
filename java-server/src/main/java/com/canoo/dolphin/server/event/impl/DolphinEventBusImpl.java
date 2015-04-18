@@ -8,12 +8,17 @@ import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.core.server.EventBus;
 
-import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
+/**
+ * TODO locking is wrong and suboptimal.
+ * TODO release should only happen per dolphin session.
+ * TODO maybe introduce a dataFlowQueue per session and topic to reduce looping.
+ */
 public class DolphinEventBusImpl implements DolphinEventBus {
 
     private static DolphinEventBusImpl instance = new DolphinEventBusImpl();
@@ -85,10 +90,6 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         return DefaultDolphinServlet.getDolphinId();
     }
 
-    protected String getDolphinId(HttpSession session) {
-        return DefaultDolphinServlet.getDolphinId(session);
-    }
-
     public void unregisterHandler(SubscriptionImpl subscription) {
         lock.lock();
         try {
@@ -104,10 +105,9 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         }
     }
 
-    public void unregisterHandlersForCurrentDolphinSession(HttpSession session) {
+    public void unregisterDolphinSession(String dolphinId) {
         lock.lock();
         try {
-            String dolphinId = getDolphinId(session);
             Set<MessageListener> eventHandlers = handlersPerSession.remove(dolphinId);
             for (Set<MessageListener> eventHandlerSet : handlersPerSession.values()) {
                 for (MessageListener eventHandler : eventHandlers) {
@@ -154,11 +154,15 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     @SuppressWarnings("unchecked")
     public void release() {
-        for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
-            if (dataflowQueue != null) {
-                dataflowQueue.leftShift(releaseVal);
+        lock.lock();
+        try {
+            for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
+                if (dataflowQueue != null) {
+                    dataflowQueue.leftShift(releaseVal);
+                }
             }
+        } finally {
+            lock.unlock();
         }
-
     }
 }

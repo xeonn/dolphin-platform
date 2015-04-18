@@ -97,7 +97,13 @@ public class DefaultDolphinServlet extends DolphinServlet {
     }
 
     public static String getDolphinId(HttpSession session) {
-        return ((ServerModelStore) getServerDolphin(session).getModelStore()).id + "";
+        ServerModelStore modelStore = getModelStore(session);
+        return modelStore != null ? modelStore.id + "" : null;
+    }
+
+    private static ServerModelStore getModelStore(HttpSession session) {
+        ServerDolphin serverDolphin = getServerDolphin(session);
+        return serverDolphin != null ? (ServerModelStore) serverDolphin.getModelStore() : null;
     }
 
     private static ServerDolphin getServerDolphin(HttpSession session) {

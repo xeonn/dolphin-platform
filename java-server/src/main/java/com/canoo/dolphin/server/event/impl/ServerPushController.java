@@ -11,7 +11,7 @@ public class ServerPushController {
     @DolphinAction
     public void longPoll() {
         try {
-            DolphinEventBusImpl.getInstance().listenOnEventsForCurrentDolphinSession(10, TimeUnit.SECONDS);
+            DolphinEventBusImpl.getInstance().listenOnEventsForCurrentDolphinSession(500, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //this exception is called when the clients has an update and needs to stop the polling.

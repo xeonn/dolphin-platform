@@ -7,17 +7,8 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean("ProcessInstance")
 public class ProcessInstance extends BaseProcessInstance {
 
-    private Property<ProcessDefinition> processDefinition;
     private Property<Activity> startActivity;
     private ObservableList<Activity> activities;
-
-    public ProcessDefinition getProcessDefinition() {
-        return processDefinition.get();
-    }
-
-    public void setProcessDefinition(ProcessDefinition processDefinition) {
-        this.processDefinition.set(processDefinition);
-    }
 
     public Activity getStartActivity() {
         return startActivity.get();
