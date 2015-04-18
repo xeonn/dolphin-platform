@@ -2,23 +2,46 @@
 <link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
 <link rel="import" href="../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../bower_components/core-menu/core-submenu.html">
-<link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/font-awesome-polymer-icons/fa-icons.html">
 <link rel="import" href="workflow-canvas.html">
 
 
 
-<polymer-element name="workflow-menuentry" attributes="data" extends="core-item" noscript>
+<polymer-element name="workflow-menuentry" attributes="data" extends="core-item" on-click="{{buttonClick}}">
     <template>
         <shadow></shadow>
     </template>
+    <script>
+        Polymer({
+            buttonClick: function() {
+                window.dolphin.send('WorkflowController:showProcessInstance', {processInstance: this.data});
+            }
+        })
+    </script>
 </polymer-element>
 
 
-<polymer-element name="workflow-menu" attributes="data">
+<polymer-element name="workflow-start-button" attributes="data" extends="core-item">
     <template>
-        <core-menu on-core-select="{{selectAction}}">
+        <core-icon-button icon="fa:play" on-click="{{buttonClick}}"> <em>Start new process</em></core-icon-button>
+    </template>
+    <script>
+        Polymer({
+            buttonClick: function() {
+                window.dolphin.send('WorkflowController:startProcessInstanceAndShow', {processDefinition: this.data});
+            }
+        })
+    </script>
+</polymer-element>
+
+
+<polymer-element name="workflow-menu" attributes="data" noscript>
+    <template>
+        <core-menu>
             <template repeat="{{processDefinition in data.processDefinitions}}">
                 <core-submenu label="{{processDefinition.name}}">
+                    <workflow-start-button data="{{processDefinition}}"></workflow-start-button>
                     <template repeat="{{processInstance in processDefinition.processInstances}}">
                         <workflow-menuentry label="{{processInstance.label}}" data="{{processInstance}}"></workflow-menuentry>
                     </template>
@@ -26,18 +49,6 @@
             </template>
         </core-menu>
     </template>
-    <script>
-        Polymer({
-            selectAction: function(e, detail) {
-                if (detail.isSelected) {
-                    var selectedItem = detail.item.data;
-                    if (typeof selectedItem !== 'undefined') {
-                        window.dolphin.send('WorkflowController:showProcessInstance', {processInstance: selectedItem});
-                    }
-                }
-            }
-        })
-    </script>
 </polymer-element>
 
 
