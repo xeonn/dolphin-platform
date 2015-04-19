@@ -8,171 +8,109 @@ import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.core.server.EventBus;
 
-import java.util.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-
-/**
- * TODO locking is wrong and suboptimal.
- * TODO release should only happen per dolphin session.
- * TODO maybe introduce a dataFlowQueue per session and topic to reduce looping.
- */
 public class DolphinEventBusImpl implements DolphinEventBus {
 
-    private static DolphinEventBusImpl instance = new DolphinEventBusImpl();
+    private static final DolphinEventBusImpl instance = new DolphinEventBusImpl();
 
     public static DolphinEventBusImpl getInstance() {
         return instance;
     }
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
 
-    private DataflowQueue sender = new DataflowQueue();
-
-    private Lock lock = new ReentrantLock();
+    private final DataflowQueue sender = new DataflowQueue();
 
     private final Object releaseVal = new Object();
 
-    private Map<String, DataflowQueue> receiverPerSession = new HashMap<>();
-
-    private Map<String, Set<MessageListener>> handlersPerSession = new HashMap<String, Set<MessageListener>>() {
-        @Override
-        public Set<MessageListener> get(Object key) {
-            Set<MessageListener> eventHandlers = super.get(key);
-            if (eventHandlers == null) {
-                eventHandlers = new HashSet<>();
-                put(key.toString(), eventHandlers);
-            }
-            return eventHandlers;
-        }
-    };
-
-    private Map<String, List<MessageListener>> handlersPerTopic = new HashMap<String, List<MessageListener>>() {
-        @Override
-        public List<MessageListener> get(Object key) {
-            List<MessageListener> eventHandlers = super.get(key);
-            if (eventHandlers == null) {
-                eventHandlers = new ArrayList<>();
-                put(key.toString(), eventHandlers);
-            }
-            return eventHandlers;
-        }
-    };
+    private Map<String, Receiver> receiverPerSession = new ConcurrentHashMap<>();
 
     private DolphinEventBusImpl() {
     }
 
     public void publish(String topic, Object data) {
-        eventBus.publish(sender, new Message(topic, data));
+        eventBus.publish(sender, new MessageImpl(topic, data));
     }
 
     public Subscription subscribe(String topic, MessageListener handler) {
-        lock.lock();
-        try {
-            String dolphinId = getDolphinId();
-            DataflowQueue currentReceiver = receiverPerSession.get(dolphinId);
-            if (currentReceiver == null) {
-                currentReceiver = new DataflowQueue();
-                receiverPerSession.put(dolphinId, currentReceiver);
-                eventBus.subscribe(currentReceiver);
-            }
-            handlersPerSession.get(dolphinId).add(handler);
-            handlersPerTopic.get(topic).add(handler);
-            return new SubscriptionImpl(this, topic, handler);
-        } finally {
-            lock.unlock();
-        }
+        return getReceiverInSession(true).subscribe(this, topic, handler);
     }
 
     protected String getDolphinId() {
         return DefaultDolphinServlet.getDolphinId();
     }
 
-    public void unregisterHandler(SubscriptionImpl subscription) {
-        lock.lock();
-        try {
-            MessageListener handler = subscription.getHandler();
-            handlersPerTopic.get(subscription.getTopic()).remove(handler);
-            String dolphinId = getDolphinId();
-            handlersPerSession.get(dolphinId).remove(handler);
-
-        } finally {
-            lock.unlock();
+    public void unsubscribe(DolphinEventBusSubscription subscription) {
+        Receiver receiverInSession = getReceiverInSession(false);
+        if (receiverInSession != null) {
+            receiverInSession.unsubscribe(subscription.getTopic(), subscription.getHandler());
         }
     }
 
-    public void unregisterDolphinSession(String dolphinId) {
-        lock.lock();
-        try {
-            Set<MessageListener> eventHandlers = handlersPerSession.remove(dolphinId);
-            for (Set<MessageListener> eventHandlerSet : handlersPerSession.values()) {
-                for (MessageListener eventHandler : eventHandlers) {
-                    eventHandlerSet.remove(eventHandler);
-                }
-            }
-            DataflowQueue dataflowQueue = receiverPerSession.remove(dolphinId);
-            if (dataflowQueue != null) {
-                eventBus.unSubscribe(dataflowQueue);
-            }
-        } finally {
-            lock.unlock();
+    public void unsubscribeSession(String dolphinId) {
+        Receiver receiver = receiverPerSession.remove(dolphinId);
+        if (receiver != null) {
+            receiver.unsubscribeFromEventBus(eventBus);
+            receiver.unsubscribeAllTopics();
         }
     }
 
-    public void listenOnEventsForCurrentDolphinSession(long time, TimeUnit unit) throws InterruptedException {
-        lock.lock();
-        DataflowQueue receiver;
+    private Receiver getReceiverInSession(boolean create) {
         String dolphinId = getDolphinId();
-        try {
-            receiver = receiverPerSession.get(dolphinId);
-            if (receiver == null) {
-                receiver = new DataflowQueue();
-                eventBus.subscribe(receiver);
-                receiverPerSession.put(dolphinId, receiver);
-            }
-        } finally {
-            lock.unlock();
+        Receiver receiver = receiverPerSession.get(dolphinId);
+        if (receiver == null && create) {
+            receiver = new Receiver();
+            receiverPerSession.put(dolphinId, receiver);
         }
-        System.out.println("started polling for dolphin id: " + dolphinId);
-        Object val = receiver.getVal(time, unit);
+        return receiver;
+    }
 
-        while (val != null) {
-            if (val == releaseVal) {
-                System.out.println("released polling for dolphin id: " + dolphinId);
-                return;
-            }
-            Message event = (Message) val;
-            String topic = event.getTopic();
-            lock.lock();
-            try {
-                System.out.println("handle event for dolphin id " + dolphinId + " and topic " + topic);
-                List<MessageListener> eventHandlers = handlersPerTopic.get(topic);
-                for (MessageListener eventHandler : eventHandlers) {
-                    if (handlersPerSession.get(dolphinId).contains(eventHandler)) {
-                        System.out.println("call handler for dolphin id " + dolphinId + " and topic " + topic);
-                        eventHandler.onMessage(event);
-                    }
+
+    /**
+     * this method blocks till a release event occurs or there is something to handle in this session
+     * this is the only location where we subscribe to our eventBus.
+     * So if listenOnEventsForCurrentDolphinSession is not called from client, we will never listen to the eventBus.
+     * TODO it is not optimal to try to get events after 20 milliseconds, because if there are many events we will never return
+     */
+    public void listenOnEventsForCurrentDolphinSession() throws InterruptedException {
+        String dolphinId = getDolphinId();
+        System.out.println("long poll call from dolphin session " + dolphinId);
+        Receiver receiverInSession = getReceiverInSession(true);
+        if (!receiverInSession.isListeningToEventBus()) {
+            receiverInSession.subscribeToEventBus(eventBus);
+        }
+        DataflowQueue receiverQueue = receiverInSession.getReceiverQueue();
+
+        boolean somethingHandled = false;
+
+        while (!somethingHandled) {
+            //blocking call
+            Object val = receiverQueue.getVal();
+
+            while (val != null) {
+                if (val == releaseVal) {
+                    return;
                 }
-            } finally {
-                lock.unlock();
+                Message event = (Message) val;
+                System.out.println("handle event for dolphinId: " + dolphinId);
+                somethingHandled |= receiverInSession.handle(event);
+                val = receiverQueue.getVal(20, TimeUnit.MILLISECONDS);
             }
-            val = receiver.getVal(20, TimeUnit.MILLISECONDS);
         }
     }
 
+    /**
+     * TODO we must release per session!!!
+     */
     @SuppressWarnings("unchecked")
     public void release() {
-        lock.lock();
-        try {
-            for (DataflowQueue dataflowQueue : receiverPerSession.values()) {
-                if (dataflowQueue != null) {
-                    dataflowQueue.leftShift(releaseVal);
-                }
+        for (Receiver receiver : receiverPerSession.values()) {
+            if (receiver.isListeningToEventBus()) {
+                receiver.getReceiverQueue().leftShift(releaseVal);
             }
-        } finally {
-            lock.unlock();
         }
     }
 }

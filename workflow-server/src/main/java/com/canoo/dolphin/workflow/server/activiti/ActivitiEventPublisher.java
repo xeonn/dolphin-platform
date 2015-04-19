@@ -1,7 +1,10 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import org.activiti.engine.delegate.event.*;
+import org.activiti.engine.delegate.event.ActivitiEntityEvent;
+import org.activiti.engine.delegate.event.ActivitiEvent;
+import org.activiti.engine.delegate.event.ActivitiEventListener;
+import org.activiti.engine.delegate.event.ActivitiEventType;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.springframework.stereotype.Component;
@@ -19,7 +22,7 @@ public class ActivitiEventPublisher implements ActivitiEventListener {
     @Override
     public void onEvent(ActivitiEvent event) {
         //for now we only post event which were fired in the context of a process instance
-        String processInstanceId = event.getProcessInstanceId();
+        //String processInstanceId = event.getProcessInstanceId();
         ActivitiEventType type = event.getType();
         switch (type) {
             case ENTITY_CREATED:
@@ -33,10 +36,10 @@ public class ActivitiEventPublisher implements ActivitiEventListener {
                 }
                 break;
             case ACTIVITY_STARTED:
-                eventBus.publish("processInstance/" + processInstanceId, new ActivityStartedEvent(((ActivitiActivityEvent) event).getActivityId()));
+                //eventBus.publish("processInstance/" + processInstanceId, new ActivityStartedEvent(((ActivitiActivityEvent) event).getActivityId()));
                 return;
             case ACTIVITY_COMPLETED:
-                eventBus.publish("processInstance/" + processInstanceId, new ActivityCompletedEvent(((ActivitiActivityEvent) event).getActivityId()));
+                //eventBus.publish("processInstance/" + processInstanceId, new ActivityCompletedEvent(((ActivitiActivityEvent) event).getActivityId()));
                 return;
             default:
         }

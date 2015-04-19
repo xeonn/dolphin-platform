@@ -14,6 +14,8 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         String dolphinId = DefaultDolphinServlet.getDolphinId(se.getSession());
-        DolphinEventBusImpl.getInstance().unregisterDolphinSession(dolphinId);
+        if (dolphinId != null) {
+            DolphinEventBusImpl.getInstance().unsubscribeSession(dolphinId);
+        }
     }
 }
