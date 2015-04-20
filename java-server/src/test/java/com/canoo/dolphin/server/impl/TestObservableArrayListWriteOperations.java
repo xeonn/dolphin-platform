@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ListChangeListener;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.impl.collections.ObservableArrayList;
 import org.hamcrest.MatcherAssert;
 import org.testng.annotations.Test;
@@ -29,8 +30,8 @@ public class TestObservableArrayListWriteOperations {
     public void removeListener_shouldNotFireListener() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
-        list.removeListListener(listener);
+        final Subscription subscription = list.subscribeToListChanges(listener);
+        subscription.unsubscribe();
 
         list.add("42");
 
@@ -46,7 +47,7 @@ public class TestObservableArrayListWriteOperations {
     public void addToEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.add("42");
 
@@ -62,7 +63,7 @@ public class TestObservableArrayListWriteOperations {
     public void addToNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.add("42");
 
@@ -83,7 +84,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddToEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.add(0, "42");
 
@@ -98,7 +99,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAtBeginningOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.add(0, "42");
 
@@ -113,7 +114,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddInMiddleOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.add(1, "42");
 
@@ -128,7 +129,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAtEndOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.add(3, "42");
 
@@ -159,7 +160,7 @@ public class TestObservableArrayListWriteOperations {
     public void removeOnSingleElementList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("42");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.remove("42");
 
@@ -175,7 +176,7 @@ public class TestObservableArrayListWriteOperations {
     public void removeAtBeginningOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.remove("1");
 
@@ -191,7 +192,7 @@ public class TestObservableArrayListWriteOperations {
     public void removeInMiddleOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.remove("2");
 
@@ -207,7 +208,7 @@ public class TestObservableArrayListWriteOperations {
     public void removeAtEndOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.remove("3");
 
@@ -223,7 +224,7 @@ public class TestObservableArrayListWriteOperations {
     public void removeNonExistingObject_shouldBeNoOp() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.remove("42");
 
@@ -242,7 +243,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedRemoveOnSingleElementList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("42");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.remove(0);
 
@@ -258,7 +259,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedRemoveAtBeginningOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.remove(0);
 
@@ -274,7 +275,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedRemoveInMiddleOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.remove(1);
 
@@ -290,7 +291,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedRemoveAtEndOfNonEmptyList_shouldRemoveElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.remove(2);
 
@@ -323,7 +324,7 @@ public class TestObservableArrayListWriteOperations {
     public void addAllToEmptyList_shouldAddElements() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(Arrays.asList("1", "2", "3"));
 
@@ -339,7 +340,7 @@ public class TestObservableArrayListWriteOperations {
     public void addAllToNonEmptyList_shouldAddElements() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(Arrays.asList("42", "43", "44"));
 
@@ -355,7 +356,7 @@ public class TestObservableArrayListWriteOperations {
     public void addAllEmptyList_shouldBeNoOp() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(Collections.<String>emptyList());
 
@@ -381,7 +382,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAllToEmptyList_shouldAddElements() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(0, Arrays.asList("1", "2", "3"));
 
@@ -397,7 +398,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAllAtBeginningOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(0, Arrays.asList("42", "43", "44"));
 
@@ -413,7 +414,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAllInMiddleOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(1, Arrays.asList("42", "43", "44"));
 
@@ -429,7 +430,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAllAtEndOfNonEmptyList_shouldAddElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(3, Arrays.asList("42", "43", "44"));
 
@@ -457,7 +458,7 @@ public class TestObservableArrayListWriteOperations {
     public void indexedAddAllEmptyList_shouldBeNoOp() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final boolean result = list.addAll(0, Collections.<String>emptyList());
 
@@ -483,7 +484,7 @@ public class TestObservableArrayListWriteOperations {
     public void clearOnEmtpyList_shouldBeNoOp() {
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.clear();
 
@@ -496,7 +497,7 @@ public class TestObservableArrayListWriteOperations {
     public void clearOnNonEmptyList_shouldClearList() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         list.clear();
 
@@ -516,7 +517,7 @@ public class TestObservableArrayListWriteOperations {
     public void setOnSingleElementList_shouldSetElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("42");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.set(0, "1");
 
@@ -532,7 +533,7 @@ public class TestObservableArrayListWriteOperations {
     public void setAtBeginningOfNonEmptyList_shouldSetElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.set(0, "42");
 
@@ -548,7 +549,7 @@ public class TestObservableArrayListWriteOperations {
     public void setInMiddleOfNonEmptyList_shouldSetElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.set(1, "42");
 
@@ -564,7 +565,7 @@ public class TestObservableArrayListWriteOperations {
     public void setAtEndOfNonEmptyList_shouldSetElement() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
-        list.addListListener(listener);
+        list.subscribeToListChanges(listener);
 
         final String result = list.set(2, "42");
 

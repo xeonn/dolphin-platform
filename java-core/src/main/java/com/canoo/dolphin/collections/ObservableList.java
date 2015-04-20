@@ -1,10 +1,10 @@
 package com.canoo.dolphin.collections;
 
+import com.canoo.dolphin.event.Subscription;
+
 import java.util.List;
 
 public interface ObservableList<E> extends List<E> {
 
-    void addListListener(ListChangeListener<? super E> listener);
-
-    void removeListListener(ListChangeListener<? super E> listener);
+    Subscription subscribeToListChanges(ListChangeListener<? super E> listener);
 }

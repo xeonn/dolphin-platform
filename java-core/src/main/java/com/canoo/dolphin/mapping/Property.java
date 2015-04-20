@@ -1,5 +1,6 @@
 package com.canoo.dolphin.mapping;
 
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeListener;
 
 /**
@@ -25,12 +26,5 @@ public interface Property<T> {
      * Adds a change listener to the property that will be called whenever the value of the property changes
      * @param listener the change listener
      */
-    void addValueListener(ValueChangeListener<? super T> listener);
-
-    /**
-     * Removes a change listener
-     * @param listener the change listener
-     */
-    void removeValueListener(ValueChangeListener<? super T> listener);
-
+    Subscription subscribeToValueChanges(ValueChangeListener<? super T> listener);
 }
