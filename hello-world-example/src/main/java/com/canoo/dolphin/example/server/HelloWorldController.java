@@ -19,7 +19,7 @@ public class HelloWorldController {
     public void init() {
         HelloWorldModel model = manager.create(HelloWorldModel.class);
         model.getTextProperty().set("Hello World");
-        model.getTextProperty().addValueListener(new ValueChangeListener<String>() {
+        model.getTextProperty().subscribeToValueChanges(new ValueChangeListener<String>() {
             @Override
             public void valueChanged(ValueChangeEvent<? extends String> evt) {
                 System.out.println("Client changed Text: " + evt.getNewValue());

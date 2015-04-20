@@ -71,7 +71,7 @@ public class IcosPocController extends AbstractDolphinCommand {
 
 
         // A simple business rule :)
-        legalEntity.getValueProperty().addValueListener(new ValueChangeListener<String>() {
+        legalEntity.getValueProperty().subscribeToValueChanges(new ValueChangeListener<String>() {
             @Override
             public void valueChanged(ValueChangeEvent<? extends String> event) {
                 typeOfRelation.setVisible(!"yes".equals(event.getNewValue()));

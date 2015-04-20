@@ -1,12 +1,8 @@
 package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.query.PropertyQuery;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Observable;
 
 public class BeanManagerImpl implements BeanManager {
 
@@ -39,28 +35,5 @@ public class BeanManagerImpl implements BeanManager {
     @Override
     public <T> List<T> findAll(Class<T> beanClass) {
         return beanRepository.findAll(beanClass);
-    }
-
-    @Override
-    public <T> PropertyQuery<T> createQuery(Class<T> beanClass) {
-        return new PropertyQuery<>(beanClass, this);
-    }
-
-    @Override
-    public <T> T findById(Class<T> beanClass, String id) {
-        Object bean = beanRepository.findBeanByDolphinId(id);
-        if(bean != null && beanClass.isAssignableFrom(bean.getClass())) {
-            return (T) bean;
-        }
-        return null;
-    }
-
-    @Override
-    public String getId(Object bean) {
-        String id = beanRepository.getDolphinId(bean);
-        if(id == null) {
-            throw new RuntimeException("Given bean is not managed and has no id");
-        }
-        return id;
     }
 }

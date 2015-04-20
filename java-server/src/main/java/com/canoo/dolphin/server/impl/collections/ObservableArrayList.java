@@ -3,6 +3,7 @@ package com.canoo.dolphin.server.impl.collections;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ListChangeListener;
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.event.Subscription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,13 +71,14 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     }
 
     @Override
-    public void addListListener(ListChangeListener<? super E> listener) {
+    public Subscription subscribeToListChanges(final ListChangeListener<? super E> listener) {
         listeners.add(listener);
-    }
-
-    @Override
-    public void removeListListener(ListChangeListener<? super E> listener) {
-        listeners.remove(listener);
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+                listeners.remove(listener);
+            }
+        };
     }
 
     @Override

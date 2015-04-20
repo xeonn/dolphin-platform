@@ -1,7 +1,5 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.query.PropertyQuery;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -52,33 +50,5 @@ public interface BeanManager extends Serializable {
      * @return a list of all managed beans of the type
      */
     <T> List<T> findAll(Class<T> beanClass);
-
-    /**
-     * Creates a query factory to define a query for sepcific dolphin bean instances of the given type.
-     *
-     * @param beanClass the bean type
-     * @param <T>       the bean type
-     * @return the query factory
-     */
-    <T> PropertyQuery<T> createQuery(Class<T> beanClass);
-
-    /**
-     * Returns the dolphin bean of the given type that is defined by the given unique dolphin id.
-     *
-     * @param beanClass the bean type
-     * @param id        the unique id
-     * @param <T>       the bean type
-     * @return the bean
-     */
-    <T> T findById(Class<T> beanClass, String id);
-
-    /**
-     * Returns the unique dolphin id for the given managed dolphin bean. If the bean isn't managed by dolphin an
-     * exception will be thrown
-     *
-     * @param bean the bean
-     * @return the unique dolphin id of the bean
-     */
-    public String getId(Object bean);
 
 }

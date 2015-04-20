@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
@@ -35,6 +36,7 @@ public class PropertyImpl<T> implements Property<T> {
         });
     }
 
+    @Override
     public void set(T newValue) {
         if(newValue != null && Collection.class.isAssignableFrom(newValue.getClass())){
             throw new IllegalArgumentException("Type of the property must be a scalar, not a collection");
@@ -42,17 +44,21 @@ public class PropertyImpl<T> implements Property<T> {
         beanRepository.setValue(attribute, newValue);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T get() {
         return (T) beanRepository.getValue(attribute);
     }
 
-    public void addValueListener(ValueChangeListener<? super T> listener) {
+    @Override
+    public Subscription subscribeToValueChanges(final ValueChangeListener<? super T> listener) {
         listeners.add(listener);
-    }
-
-    public void removeValueListener(ValueChangeListener<? super T> listener) {
-        listeners.remove(listener);
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+                listeners.remove(listener);
+            }
+        };
     }
 
     protected void firePropertyChanged(T oldValue, T newValue) {
