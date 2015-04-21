@@ -1,6 +1,5 @@
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.mapping.util.ParamConstants;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.client.ClientAttribute;

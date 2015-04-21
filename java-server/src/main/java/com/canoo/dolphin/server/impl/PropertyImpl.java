@@ -61,8 +61,23 @@ public class PropertyImpl<T> implements Property<T> {
         };
     }
 
-    protected void firePropertyChanged(T oldValue, T newValue) {
-        final ValueChangeEvent<T> event = new ValueChangeEvent<>(this, oldValue, newValue);
+    protected void firePropertyChanged(final T oldValue, final T newValue) {
+        final ValueChangeEvent<T> event = new ValueChangeEvent<T>() {
+            @Override
+            public Property<T> getSource() {
+                return PropertyImpl.this;
+            }
+
+            @Override
+            public T getOldValue() {
+                return oldValue;
+            }
+
+            @Override
+            public T getNewValue() {
+                return newValue;
+            }
+        };
         for(ValueChangeListener<? super T> listener : listeners) {
             listener.valueChanged(event);
         }

@@ -4,15 +4,9 @@ import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.BeanManager;
-import com.canoo.dolphin.server.impl.collections.ListMapper;
-import org.opendolphin.core.server.ServerDolphin;
 
 import java.beans.*;
 import java.lang.reflect.*;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.*;
 
 /**

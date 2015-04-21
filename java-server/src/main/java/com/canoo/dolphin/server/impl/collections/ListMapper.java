@@ -1,7 +1,11 @@
 package com.canoo.dolphin.server.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
-import com.canoo.dolphin.server.impl.*;
+import com.canoo.dolphin.server.impl.BeanRepository;
+import com.canoo.dolphin.server.impl.ClassRepository;
+import com.canoo.dolphin.server.impl.DolphinConstants;
+import com.canoo.dolphin.server.impl.PresentationModelBuilder;
+import com.canoo.dolphin.server.impl.ReflectionHelper;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
