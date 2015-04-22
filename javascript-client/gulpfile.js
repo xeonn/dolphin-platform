@@ -6,15 +6,18 @@ var shim = require('browserify-shim');
 var del = require('del');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
+var mocha = require('gulp-mocha');
 var rename = require('gulp-rename');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var gutil = require('gulp-util');
+var assign = require('lodash.assign');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var watchify = require('watchify');
 
-gulp.task('clean', function(cb) {
-    del(['dist'], cb);
+gulp.task('clean', function() {
+    del(['dist']);
 });
 
 gulp.task('lint', function() {
@@ -23,28 +26,40 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('build', ['lint'], function() {
+gulp.task('test', ['lint'], function() {
+    return gulp.src(['test/**/test-*.js'], { read: false })
+        .pipe(mocha({reporter: 'spec'}));
+});
 
-    browserify({
+gulp.task('build', function() {
+
+    var bundler = watchify(browserify(assign({}, watchify.args, {
         entries: './src/dolphin.es6',
         standalone: 'dolphin',
         debug: true
-    })
-        //.external('./bower_components/opendolphin/index.js')
-        .transform(babelify)
-        .bundle()
-        .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source('dolphin.js'))
-        .pipe(buffer())
-        .pipe(rename({ extname: '.min.js' }))
-        .pipe(sourcemaps.init({loadMaps: true}))
-        //.pipe(uglify())
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./dist'))
+    })));
+
+    bundler.on('update', rebundle);
+
+    function rebundle() {
+        return bundler
+            .transform(babelify)
+            .bundle()
+            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .pipe(source('dolphin.js'))
+            .pipe(buffer())
+            .pipe(rename({extname: '.min.js'}))
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest('./dist'));
+    }
+
+    return rebundle();
 });
 
 gulp.task('watch', function() {
-    gulp.watch('src/**/*.js', ['build']);
+    gulp.watch(['src/**', 'test/**'], ['test']);
 });
 
-gulp.task('default', ['build', 'watch']);
+gulp.task('default', ['test', 'build', 'watch']);
