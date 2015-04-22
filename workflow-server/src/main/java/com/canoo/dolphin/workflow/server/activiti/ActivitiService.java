@@ -1,6 +1,6 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.workflow.server.model.*;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.RepositoryService;

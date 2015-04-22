@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.spring;
 
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
@@ -30,7 +30,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     /**
-     * Method to create a spring managed {@link com.canoo.dolphin.server.BeanManager} instance in session scope.
+     * Method to create a spring managed {@link BeanManager} instance in session scope.
      * @return the instance
      */
     @Bean

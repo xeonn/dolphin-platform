@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.javaee;
 
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;

@@ -8,7 +8,7 @@ import com.canoo.dolphin.icos.poc.platform.AbstractDolphinCommand;
 import com.canoo.dolphin.icos.poc.platform.DolphinCommand;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;

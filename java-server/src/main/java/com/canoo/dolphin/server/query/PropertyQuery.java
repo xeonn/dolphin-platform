@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.query;
 
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.impl.DolphinUtils;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.BeanManager;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.proxy.TestCarManufacturer;
 import com.canoo.dolphin.server.proxy.TestCarModel;
@@ -16,9 +16,8 @@ import org.testng.annotations.Test;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.testng.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.testng.Assert.assertNotNull;
 
 public class DolphinUtilsTest extends AbstractDolphinBasedTest {

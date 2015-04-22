@@ -9,13 +9,13 @@ import java.util.List;
 public class ListChangeEventImpl<E> implements ListChangeEvent<E> {
 
     private final ObservableList<E> source;
-    private final List<ListChangeEvent.Change<E>> changes;
+    private final List<Change<E>> changes;
 
     ListChangeEventImpl(ObservableList<E> source, int from, int to, List<E> removedElements) {
-        this(source, Collections.<ListChangeEvent.Change<E>>singletonList(new ChangeImpl<>(from, to, removedElements)));
+        this(source, Collections.<Change<E>>singletonList(new ChangeImpl<>(from, to, removedElements)));
     }
 
-    ListChangeEventImpl(ObservableList<E> source, List<ListChangeEvent.Change<E>> changes) {
+    ListChangeEventImpl(ObservableList<E> source, List<Change<E>> changes) {
         if (source == null || changes == null) {
             throw new NullPointerException("Parameters 'source' and 'changes' cannot be null");
         }
@@ -30,11 +30,11 @@ public class ListChangeEventImpl<E> implements ListChangeEvent<E> {
         return source;
     }
 
-    public List<ListChangeEvent.Change<E>> getChanges() {
+    public List<Change<E>> getChanges() {
         return changes;
     }
 
-    public static class ChangeImpl<S> implements ListChangeEvent.Change<S> {
+    public static class ChangeImpl<S> implements Change<S> {
 
         private final int from;
         private final int to;

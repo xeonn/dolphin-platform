@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.proxy;
 
-import com.canoo.dolphin.server.BeanManager;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.impl.*;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
