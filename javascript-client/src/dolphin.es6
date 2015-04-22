@@ -6,8 +6,9 @@ try {
     // already required.
 }
 
+const exists = require('./utils.js').exists;
+
 import {ClassRepository} from './classrepo.es6'
-import {exists} from './helpers.es6'
 
 const DOLPHIN_BEAN = '@@@ DOLPHIN_BEAN @@@';
 const DOLPHIN_ENUM = '@@@ DOLPHIN_ENUM @@@';

@@ -1,5 +1,5 @@
 "use strict";
 
-export function exists(object) {
+module.exports.exists = function (object) {
     return typeof object !== 'undefined' && object !== null;
-}
+};
