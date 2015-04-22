@@ -25,7 +25,7 @@ export function connect(url, config) {
 
 class Dolphin {
     constructor(url, config) {
-        this.dolphin = opendolphin.dolphin(url, true);
+        this.dolphin = opendolphin.dolphin(url, true, 4);
         if (exists(config)) {
             if (config.serverPush) {
                 this.dolphin.startPushListening('ServerPushController:longPoll', 'ServerPushController:release');
