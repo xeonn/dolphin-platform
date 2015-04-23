@@ -38,7 +38,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
             }
         };
 
-        final Subscription subscription = model.getTextProperty().subscribeToValueChanges(myListener);
+        final Subscription subscription = model.getTextProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
@@ -83,7 +83,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
             }
         };
 
-        final Subscription subscription = model.getTextProperty().subscribeToValueChanges(myListener);
+        final Subscription subscription = model.getTextProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
@@ -129,7 +129,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
             }
         };
 
-        final Subscription subscription = model.getEnumProperty().subscribeToValueChanges(myListener);
+        final Subscription subscription = model.getEnumProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
@@ -179,7 +179,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
             }
         };
 
-        final Subscription subscription = model.getReferenceProperty().subscribeToValueChanges(myListener);
+        final Subscription subscription = model.getReferenceProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());

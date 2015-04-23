@@ -132,6 +132,11 @@ Dolphin.prototype.isManaged = function(bean) {
 };
 
 
+Dolphin.prototype.create = function(type) {
+    throw "Not implemented yet";
+};
+
+
 Dolphin.prototype.add = function(type, bean) {
     throw "Not implemented yet";
 };
