@@ -19,8 +19,9 @@
         <module>hello-world-example</module>
         <module>icos-poc-server</module>
         <module>workflow-server</module>
+        <module>performance-test</module>
 
-      </modules>
+    </modules>
 
 
       <properties>
