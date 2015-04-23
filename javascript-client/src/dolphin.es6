@@ -8,7 +8,7 @@ try {
 
 const exists = require('./utils.js').exists;
 
-import {ClassRepository} from './classrepo.es6'
+import {ClassRepository} from './classrepo.js'
 
 const DOLPHIN_BEAN = '@@@ DOLPHIN_BEAN @@@';
 const DOLPHIN_ENUM = '@@@ DOLPHIN_ENUM @@@';

@@ -1,4 +1,4 @@
-/*jslint node: true */
+/*jslint browserify: true */
 "use strict";
 
 module.exports.exists = function (object) {

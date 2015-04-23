@@ -21,12 +21,13 @@ gulp.task('clean', function() {
 });
 
 gulp.task('lint', function() {
-    return gulp.src('./src/**/*.js')
+    return gulp.src(['./src/**/*.js', '!./src/polyfills.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
 
 gulp.task('test', ['lint'], function() {
+    gutil.log('*********************************************');
     return gulp.src(['test/**/test-*.js'], { read: false })
         .pipe(mocha({reporter: 'spec'}));
 });
@@ -50,7 +51,7 @@ gulp.task('build', function() {
             .pipe(buffer())
             .pipe(rename({extname: '.min.js'}))
             .pipe(sourcemaps.init({loadMaps: true}))
-            .pipe(uglify())
+            //.pipe(uglify())
             .pipe(sourcemaps.write('./'))
             .pipe(gulp.dest('./dist'));
     }
