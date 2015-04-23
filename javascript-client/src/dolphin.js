@@ -127,7 +127,38 @@ function Dolphin(url, config) {
 }
 
 
+Dolphin.prototype.isManaged = function(bean) {
+    throw "Not implemented yet";
+};
+
+
+Dolphin.prototype.add = function(type, bean) {
+    throw "Not implemented yet";
+};
+
+
+Dolphin.prototype.addAll = function(type, collection) {
+    throw "Not implemented yet";
+};
+
+
+Dolphin.prototype.remove = function(bean) {
+    throw "Not implemented yet";
+};
+
+
+Dolphin.prototype.removeAll = function(collection) {
+    throw "Not implemented yet";
+};
+
+
+Dolphin.prototype.removeIf = function(predicate) {
+    throw "Not implemented yet";
+};
+
+
 Dolphin.prototype.onAdded = function(type, eventHandler) {
+    // TODO: Probably safer to use copy-on-write here
     if (!exists(eventHandler)) {
         this.allAddedHandlers.push(type);
     } else {
@@ -139,11 +170,13 @@ Dolphin.prototype.onAdded = function(type, eventHandler) {
         handlerList.push(eventHandler);
     }
 
-    return this;
+    // TODO: Return subscription
+    return null;
 };
 
 
 Dolphin.prototype.onRemoved = function(type, eventHandler) {
+    // TODO: Probably safer to use copy-on-write here
     if (!exists(eventHandler)) {
         this.allRemovedHandlers.push(type);
     } else {
@@ -155,7 +188,8 @@ Dolphin.prototype.onRemoved = function(type, eventHandler) {
         handlerList.push(eventHandler);
     }
 
-    return this;
+    // TODO: Return subscription
+    return null;
 };
 
 
@@ -179,5 +213,6 @@ Dolphin.prototype.send = function(command, params) {
     }
     this.dolphin.send(command);
 
-    return this;
+    // TODO: Return promise
+    return null;
 };

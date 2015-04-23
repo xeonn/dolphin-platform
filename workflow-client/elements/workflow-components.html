@@ -14,7 +14,7 @@
     <script>
         Polymer({
             buttonClick: function() {
-                window.dolphin.send('WorkflowController:showProcessInstance', {processInstance: this.data});
+                dolphin.send('WorkflowController:showProcessInstance', {processInstance: this.data});
             }
         })
     </script>
@@ -28,7 +28,7 @@
     <script>
         Polymer({
             buttonClick: function() {
-                window.dolphin.send('WorkflowController:startProcessInstanceAndShow', {processDefinition: this.data});
+                dolphin.send('WorkflowController:startProcessInstanceAndShow', {processDefinition: this.data});
             }
         })
     </script>

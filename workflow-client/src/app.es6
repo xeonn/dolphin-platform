@@ -6,16 +6,14 @@ try {
     // already required.
 }
 
-var dolphin = require('../../javascript-client/dist/dolphin.min.js');
-
 const SERVER_URL = 'http://localhost:8080/dolphin';
 
-global.dolphin = dolphin.connect(SERVER_URL, {serverPush: false});
+var connector = require('../../javascript-client/dist/dolphin.min.js');
 
-global.dolphin
-    .onAdded('WorkflowViewModel',
-        (data) => {
-            document.querySelector('workflow-main-view').data = data;
-        }
-    )
-    .send('WorkflowController:init');
+var dolphin = global.dolphin = connector.connect(SERVER_URL, {serverPush: false});
+
+dolphin.onAdded('WorkflowViewModel',
+    data => document.querySelector('workflow-main-view').data = data
+);
+
+dolphin.send('WorkflowController:init');
