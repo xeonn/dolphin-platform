@@ -9,7 +9,6 @@
   "author": "",
   "license": "ALv2",
   "devDependencies": {
-    "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "browserify-shim": "^3.8.5",
     "chai": "^2.2.0",

@@ -1,6 +1,5 @@
 "use strict";
 
-var babelify = require('babelify');
 var browserify = require('browserify');
 var shim = require('browserify-shim');
 var del = require('del');
@@ -45,7 +44,6 @@ gulp.task('build', function() {
 
     function rebundle() {
         return bundler
-            //.transform(babelify)
             .bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
             .pipe(source('dolphin.js'))
