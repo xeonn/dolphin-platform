@@ -6,11 +6,11 @@ try {
     // already required.
 }
 
-import * as dolphin from '../../javascript-client/dist/dolphin.min.js';
+var dolphin = require('../../javascript-client/dist/dolphin.min.js');
 
 const SERVER_URL = 'http://localhost:8080/dolphin';
 
-global.dolphin = dolphin.connect(SERVER_URL, {serverPush: true});
+global.dolphin = dolphin.connect(SERVER_URL, {serverPush: false});
 
 global.dolphin
     .onAdded('WorkflowViewModel',

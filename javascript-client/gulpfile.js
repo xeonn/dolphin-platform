@@ -21,6 +21,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('lint', function() {
+    gutil.log('*********************************************');
     return gulp.src(['./src/**/*.js', '!./src/polyfills.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
@@ -35,7 +36,7 @@ gulp.task('test', ['lint'], function() {
 gulp.task('build', function() {
 
     var bundler = watchify(browserify(assign({}, watchify.args, {
-        entries: './src/dolphin.es6',
+        entries: './src/dolphin.js',
         standalone: 'dolphin',
         debug: true
     })));
@@ -44,7 +45,7 @@ gulp.task('build', function() {
 
     function rebundle() {
         return bundler
-            .transform(babelify)
+            //.transform(babelify)
             .bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
             .pipe(source('dolphin.js'))
