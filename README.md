@@ -694,3 +694,88 @@ Als Fazit denke ich daher, wir sollten Variante 2 zwar ermöglichen, aber nicht 
 Im Moment sehe ich keinen Vorteil, den Variante 3 gegenüber Variante 1 hat. Ganz im Gegenteil glaube ich sogar, dass man in einfachen Fällen, bei denen das Presentation Model sehr nahe am Domain Object Model ist, nur unnötige Komplexität erzeugt. Ausserdem erscheint mir die Trennung, d.h. jedwede Form der Trennung, recht willkürlich.
 
 Daher plädiere ich für Variante 1 und nur wenn wir auf grössere Schwierigkeiten bei der Umsetzung stossen, sollten wir die Einschränkugen der Varianten 2 oder 3 erwägen.
+
+## Interceptoren in der Dolphin Platform
+Meiner Meinung nach ist es nötig, dass Interceptoren in der Dolphin Platform ermöglicht werden. Das Konzept von Interceptoren wird heutzutage in allen gängigen Java Enterprise Frameworks angeboten und für verschiedene Usecases genutzt. 
+
+### Was sind Interceptoren?
+Interceptoren sind Bestandteile die innerhalb eines Zyklus / Workflow an fest definierter Stelle aufgerufen werden. Die bekanntesten Interceptoren in der Java-Welt sind hierbei sicherlich die beiden Annotations @PostConstruct und @PreDestroy. Diese werden eigentlich in jedem Framework das mit gemanagten Objekten arbeitet eingesetzt. Hierbei kann man Methoden innerhalb einer Klasse mit diesen Annotations versehen. Die Methoden werden dann zur Laufzeit aufgerufen sobald eine neue Instanz der Klasse vom Container erstellt wird bzw. vom Container entfernt wird. Dies ist nötig, da im Container in der Regel mit Dependency Injection gearbeitet wird. Das bedeutet, dass das injizierte Fields beim Ausführen des Konstruktors der Klasse noch nicht vorhanden sind sondern erst im nächsten Step durch den Container hinzugefügt / injected werden. Nach diesem Schritt wird dann die mit @PostConstruct annotierte Methode aufgerufen. Hierdurch bekommt man einen Code-Block der initial bei der Erstellung einer Instanz aufgerufen wird und zusätzlich bereits die injizierten Fields nutzen kann.
+Eine Andere Variante von Interceptoren sind z.B. die Filter in der Servlet API. Durch Nutzung des Interfaces kann man Filter definieren die z.B. zu jedem Request aufgerufen werden bevor das eigentliche Servlet aufgerufen wird. Diese Filter werden für verschiedene Dinge benutzt. Z.B. kann hierdurch Security implementiert werden, indem man nur Request mit den korrekten Security-Token durchlässt. In der Dolphin Platform nutzen wir das ganze z.B. um global Site Origin Requests zu erlauben und somit auch JavaScript Clients nutzen zu können.
+Für beide der hier vorgestellten Varianten gibt es in den verschiedenen Java Frameworks leicht unterschiedliche Vorgehensweisen / Implementierungen. Grundlegend kann man aber folgendes festhalten: In der Regel gibt es Interceptoren die durch Annotations innerhalb einer Klasse (oder Elternklasse) gesetzt werden und dann nur in dieser Klasse (oder Kind-Klassen) genutzt werden. Zusätzlich gibt es interfaces die Interceptoren definieren. Implementierungen dieser Interfaces können als globale Interceptoren oder als Interceptoren für eine Submenge genutzt werden. Bei Servlet-Filtern kann man z.B. angeben für welche URLs der Filter gelten soll. So kann man einen Filter leicht als („ /* “) oder für eine Untermenge („ /secure/* , /monitoring, /data/* “) definieren. In der Zerfällt API wird da aktuell noch mit den String basierten Mappings gearbeitet. In vielen anderen Frameworks (CDI, JAX-RS, Spring) gibt es aber bereits deutlich einfachere und Annotation basierte Ansätze. 
+In der Regel unterschiedet man hier zwischen 3 verschiedenen Typen / Ansätzen die heute oft alle angeboten werden:
+- Named Binding
+- Global Binding
+- Dynamic Binding
+
+#### Named Binding
+Im Named Binding wird die Zugehörigkeit eines Interceptors über eine Annotation definiert. Als Beispiel definieren wir hierfür die Annotation @NotAllowed. Passend zu dieser Annotation definieren wir nun einen Interceptor. Best Practice ist hierbei, dass der Interceptor mit der Annotation versehen ist. Hierdurch wird angezeigt, dass der Interceptor zur Annotation gehört:
+
+	@NotAllowed
+	class NotAllowedInterceptor implements Interceptor {
+
+		@Override
+		public void onCall() {
+			throw new CallNotAllowedException();
+		}
+
+	}
+
+Nun können wir z.B. hergehen und alle Methoden dessen Aufrufe durch den Interceptor behandelt werden sollen mit der @NotAllowed Annotation versehen:
+
+	class MyManagedBean {
+
+		@NotAllowed
+		public void doSomethingBad() {…}
+
+		public void doSomethingCool() {…}
+
+	}
+
+Hierdurch wird automatisch der Interceptor bei jedem Aufruf der „doSomethingBad()“ Methode ausgeführt. Wird „doSomethingCool()“ aufgerufen, wird der Interceptor allerdings nicht ausgeführt.
+
+#### Global Binding
+Hierbei gelten Interceptoren grundsätzlich immer. Hierbei gibt es verschiedene Möglichkeiten, wie man das ganze umsetzten kann. Man kann z.B. eine Grundlegende Annotation definieren mit der globale Interceptoren versehen werden oder sagen dass Interceptoren ohne Annotation immer global sind.
+
+#### Dynamic Binding
+Das ganze basiert eigentlich auf einem globalen Interceptor bei dem man intern in der Implementierung überprüft, ob der Interceptor greifen soll. Hier ein Beispiel wie so etwas aussehen kann:
+
+	class NotAllowedInterceptor implements Interceptor {
+
+		@Override
+		public void onCall(Class toIntercept) {
+			if(toIntercept.equals(MyManagedBean.class)) {
+				throw new CallNotAllowedException();
+			}
+		}
+
+	}
+
+
+### Wofür benötigt man Interceptoren?
+Schaut man sich die Basis-Tutorials für Frameworks an so tauchen Interceptoren hier oft kaum auf. Sie sind also quasi ein Pro-Feature der Frameworks. Je komplexer das Framework (z.B. Spring) ist, um so weniger werden Interceptoren auch benötigt. Im Java-EE Umfeld benötigt man sie auch eher selten, da bereits die Application-Server Interceptoren für die wichtigen Dinge bereitstellen.
+Hier einmal ein paar Beispiele, was man mit Interceptoren in der Regel macht:
+- **Security:** Will man einzelne Endpunkte oder Methoden in einem System schützen werden heute Interceptoren für diesen Zweck eingesetzt. In JavaEE / Spring kann man z.B. Methoden mit der Annotation @RolesAllowed(„Administrator“) eine Methode für Aufrufe sperren wenn der Benutzer der Session nicht die „Administrator“ Rolle besitzt. Intern nutzen die ApplicationServer (oder Spring) nun Interceptoren um beim Methoden-Aufruf genau dies zu überprüfen.
+- **Logging:** Gerne werden Interceptoren auch für Logging / Debugging genutzt, um so z.B. alle Methodenaufrufe zu loggen.
+- **Monitoring:** Interceptoren können zum Monitoring eines Systems genutzt werden. Hierbei kann z.B. die Häufigkeit und die Laufzeit von Methodenaufrufen überwacht werden.
+- **Anreicherung von Daten**: Teilweise werden Interceptoren auch dazu genutzt um Daten anzureichern. So kann man einen Servlet-Filter z.B. dazu nutzen um immer eine bestimmte Variable in den Request hinzuzufügen. Diese steht in den eigentlichen Servlets dann zur Verfügung.
+
+### Wofür benötigt wir Interceptoren in der Dolphin Platform?
+Ich denke, dass einer der wichtigsten Gründe hier Security ist. Wie bereits geschrieben wird Security in JavaEE realisiert, indem die Application Server Interceptoren für die verschiedenen Java EE Spezifikationen auf Basis ihrer internen Security bereitstellen. Da aber weder Java EE noch Spring die Dolphin Platform kennt, können Application Server keine Möglichkeit der Security für die Dolphin Platform bieten. Dies kann man aber relativ einfach mit einem Interceptor regeln. Hier kann man z.B. einen Interceptor schreiben, der die Standard Security-Annotations von JavaEE und Spring für alle Dolphin Platform Actions unterstützt. Würde man dies nicht tun, kann man durch „Dolphin-Action-Injection“ das vorhandene System angreifen und z.B. als normaler User Actions ausführen die nur für einen Admin bestimmt sind. In einem späteren Step denke ich, dass diese Security Interceptoren z.B. als grundlegendes Modul für die Dolphin Platform angeboten werden sollen. Dies könnte z.B. einer der „Nicht-Open-Source“ Punkte sein für den Canoo dann geld nimmt. Genau so kann man auf der Basis relativ einfach ein Monitoring Tool für die Dolphin Platform entwickeln und vertreiben.
+Aber nicht nur für globale Platform-Punkte werden Interceptoren benötigt. Stellen wir uns einmal folgendes Szenario vor: Eine Firma nutzt die Dolphin Platform um alle ihre Projekte zu entwickeln. Mit der Zeit hat diese Firma ein paar globale Module definiert, die in allen ihren Anwendungen eingesetzt werden. Diese Module könnten z.B. Dialoge für die allgemeine Benutzerverwaltung der Anwendung oder ähnliches beinhalten. Die Firma hat nun X verschiedene Anwendungen entwickelt in denen jeweils das Modul integriert ist und die Benutzerverwaltung angezeigt / genutzt werden kann. Die verschiedenen Anwendungen besitzen Intern jetzt aber leider unterschiedliche Berechtigungs-Modelle. Anwendung A kennt z.B. nur eine einzige Gruppe und jeder Benutzer darf alles tun. Also kann auch jeder Benutzter die Benutzerverwaltung aus dem globalen Modul nutzen. Anwendung B besitzt aber ein weiter ausgebautes Rollen-Model und hierdurch können nur Benutzer der Gruppe „Administrator“ die Benutzerverwaltung nutzen. Selbst wenn man im UI die View nun ausblenden würden: Das ganze reicht aus Security-Sicht nicht aus, da hierbei ein Angriffsszenario entsteht in dem die Actions auf Server-Seite trotzdem aufgerufen werden können und somit Informationen der Benutzer an den Client übertragen werden. Dies kann nur gelöst werden indem die Actions nur von spezifischen Rollen aufgerufen werden können. Da die Benutzerverwaltung aber in einem globalen / Anwendungs-Unabhängigen Modul definiert ist, kann man hier auf keinem Fall diese Berechtigungen hinterlegen. Das Modul kennt ja schließlich nicht die Rollen der Anwendungen in denen es genutzt wird. Die Lösung ist hierbei ein Interceptor in der eigentlichen Anwendung. Dieser verbietet den Zugriff auf die Action der Benutzerverwaltung für spezielle Gruppen. Somit kann die Benutzerverwaltung weiterhin ohne Kenntnis eines spezifischen Rollenkonzeptes in einem globalen Modul liegen und Das Rollenkonzept mit der Security ist nur innerhalb der spezifischen Anwendung bekannt.
+
+### Wie könnten Interceptoren in der Dolphin Platform aussehen?
+Ich bin selber noch nicht ganz sicher, ob wir Interceptoren für Beans und Properties benötigen. Sicher brauchen wir sie aber für die Actions. Hierbei benötigen Interceptoren die vor dem Call einer Action und nach dem Call einer Action aufgerufen werden. Somit würde ich zwei Interfaces mit je einer Methode vorschlagen:
+- **PreDolphinActionInterceptor**: Wird vor einer Dolphin Action ausgeführt
+- **PostDolphinActionInterceptor**: Wird nach einer Dolphin Action ausgeführt
+Wie die Methoden-Signaturen genau auszusehen haben, kann ich aktuell auch noch nicht sagen. Hier muss man sich noch einmal genau ansehen, wie andere Interceptoren aufgebaut sind, etc.
+
+Interceptoren die zur Laufzeit angezogen werden, müssen zusätzlich mit einer Annotation versehen werden. Hier schlage ich einfach @DolphinActionInterceptor vor.
+
+Um Namen Interceptors zu nutzen muss es eine NamedBinding Annotation geben. Diese wird bei den Custom Name Annotations genutzt und diese zu bestimmen. Siehe als Beispiel die Definion einer „NotAllowed“ Annotation.
+
+	@NameBinding
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface NotAllowed {}
+
+Solange kein Named Binding an einem Interceptor per Annotation angegeben ist, wird dieser immer als globaler Interceptor ausgeführt.
+Erkennen können wir Interceptors anhand der Interfaces und genau wie die Dolphin Commands beim Class-Scan zur Laufzeit finden und laden.
