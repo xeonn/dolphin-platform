@@ -39,7 +39,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (property.get() != e.getNewValue().doubleValue()) {
                 property.set(e.getNewValue().doubleValue());
             }
@@ -62,7 +62,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (property.get() != e.getNewValue().intValue()) {
                 property.set(e.getNewValue().intValue());
             }
@@ -85,7 +85,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (property.get() != e.getNewValue().floatValue()) {
                 property.set(e.getNewValue().floatValue());
             }
@@ -108,7 +108,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (property.get() != e.getNewValue().longValue()) {
                 property.set(e.getNewValue().longValue());
             }
@@ -131,7 +131,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (property.get() != e.getNewValue().booleanValue()) {
                 property.set(e.getNewValue().booleanValue());
             }
@@ -154,7 +154,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (!property.get().equals(e.getNewValue())) {
                 property.set(e.getNewValue());
             }
@@ -177,7 +177,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinProperty.subscribeToValueChanges(e -> {
+        dolphinProperty.onChanged(e -> {
             if (!property.get().equals(e.getNewValue())) {
                 property.set(e.getNewValue());
             }
@@ -218,7 +218,7 @@ public class JavaFXBinder {
             }
         });
 
-        dolphinList.subscribeToListChanges(e -> {
+        dolphinList.onChanged(e -> {
             if (listenToDolphin) {
                 listenToFx = false;
                 for (ListChangeEvent.Change<? extends T> c : e.getChanges()) {

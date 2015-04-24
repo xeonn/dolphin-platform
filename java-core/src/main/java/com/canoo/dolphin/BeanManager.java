@@ -1,10 +1,11 @@
 package com.canoo.dolphin;
 
-import com.canoo.dolphin.event.BeanCreationListener;
-import com.canoo.dolphin.event.BeanDestructionListener;
+import com.canoo.dolphin.event.BeanAddedListener;
+import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,20 +32,33 @@ public interface BeanManager extends Serializable {
     <T> T create(final Class<T> beanClass);
 
     /**
-     * Detaches the given managed dolphin bean. by calling this method the given bean will become unmanaged and won't be
+     * Remove the given managed dolphin bean. by calling this method the given bean will become unmanaged and won't be
      * synced with the client.
      *
      * @param bean the bean
-     * @param <T>  type of the bean
      */
-    <T> void detach(T bean);
+    void remove(Object bean);
 
     /**
-     * Detaches all beans of the given type.
+     * Remove all beans of the given type.
      *
      * @param beanClass the class that defines the bean type.
      */
-    void detachAll(Class<?> beanClass);
+    void removeAll(Class<?> beanClass);
+
+    /**
+     * Remove all beans of the given type.
+     *
+     * @param beans the beans that should be removed.
+     */
+    void removeAll(Object... beans);
+
+    /**
+     * Remove all beans of the given type.
+     *
+     * @param beans the beans that should be removed.
+     */
+    void removeAll(Collection<?> beans);
 
     /**
      * Returns a list of all dolphin managed beans of the given type / class
@@ -63,7 +77,7 @@ public interface BeanManager extends Serializable {
      * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    <T> Subscription subscribeToBeanCreations(Class<T> beanClass, BeanCreationListener<? super T> listener);
+    <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener);
 
     /**
      * Subscribe a listener to all bean creation events.
@@ -71,7 +85,7 @@ public interface BeanManager extends Serializable {
      * @param listener the listener which receives the creation events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription subscribeToBeanCreations(BeanCreationListener<?> listener);
+    Subscription onAdded(BeanAddedListener<Object> listener);
 
     /**
      * Subscribe a listener to all bean destruction events for a specific class.
@@ -81,7 +95,7 @@ public interface BeanManager extends Serializable {
      * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    <T>Subscription subscribeToBeanDestructions(Class<T> beanClass, BeanDestructionListener<? super T> listener);
+    <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener);
 
     /**
      * Subscribe a listener to all bean destruction events.
@@ -89,6 +103,6 @@ public interface BeanManager extends Serializable {
      * @param listener the listener which receives the destruction events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription subscribeToBeanCreations(BeanDestructionListener<?> listener);
+    Subscription onRemoved(BeanRemovedListener<Object> listener);
 
 }

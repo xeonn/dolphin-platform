@@ -51,7 +51,7 @@ public class PropertyImpl<T> implements Property<T> {
     }
 
     @Override
-    public Subscription subscribeToValueChanges(final ValueChangeListener<? super T> listener) {
+    public Subscription onChanged(final ValueChangeListener<? super T> listener) {
         listeners.add(listener);
         return new Subscription() {
             @Override

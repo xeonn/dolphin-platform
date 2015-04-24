@@ -33,7 +33,7 @@ public class TestDeleteAll extends AbstractDolphinBasedTest {
 
         SimpleAnnotatedTestModel wrongModel = manager.create(SimpleAnnotatedTestModel.class);
 
-        manager.detachAll(SimpleTestModel.class);
+        manager.removeAll(SimpleTestModel.class);
         assertThat(manager.isManaged(model1), is(false));
         assertThat(manager.isManaged(model2), is(false));
         assertThat(manager.isManaged(model3), is(false));

@@ -71,7 +71,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     }
 
     @Override
-    public Subscription subscribeToListChanges(final ListChangeListener<? super E> listener) {
+    public Subscription onChanged(final ListChangeListener<? super E> listener) {
         listeners.add(listener);
         return new Subscription() {
             @Override

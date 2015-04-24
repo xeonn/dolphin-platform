@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ObservableList<E> extends List<E> {
 
-    Subscription subscribeToListChanges(ListChangeListener<? super E> listener);
+    Subscription onChanged(ListChangeListener<? super E> listener);
 }

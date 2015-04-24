@@ -6,16 +6,14 @@ try {
     // already required.
 }
 
-import * as dolphin from '../../javascript-client/dist/dolphin.min.js';
+const SERVER_URL = 'http://localhost:8080/dolphin';
 
-var SERVER_URL = 'http://localhost:8080/dolphin';
+var connector = require('../../javascript-client/dist/dolphin.min.js');
 
-dolphin.connect(SERVER_URL)
+var dolphin = connector.connect(SERVER_URL, {serverPush: false});
 
-    .onAdded('Questionnaire',
-        (data) => {
-            document.querySelector('icos-questionnaire').data = data;
-        }
-    )
+dolphin.onAdded('Questionnaire',
+    data => document.querySelector('icos-questionnaire').data = data
+);
 
-    .send('COMMAND_INIT');
+dolphin.send('COMMAND_INIT');
