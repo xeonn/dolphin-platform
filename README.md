@@ -767,6 +767,7 @@ Aber nicht nur für globale Platform-Punkte werden Interceptoren benötigt. Stel
 Ich bin selber noch nicht ganz sicher, ob wir Interceptoren für Beans und Properties benötigen. Sicher brauchen wir sie aber für die Actions. Hierbei benötigen Interceptoren die vor dem Call einer Action und nach dem Call einer Action aufgerufen werden. Somit würde ich zwei Interfaces mit je einer Methode vorschlagen:
 - **PreDolphinActionInterceptor**: Wird vor einer Dolphin Action ausgeführt
 - **PostDolphinActionInterceptor**: Wird nach einer Dolphin Action ausgeführt
+
 Wie die Methoden-Signaturen genau auszusehen haben, kann ich aktuell auch noch nicht sagen. Hier muss man sich noch einmal genau ansehen, wie andere Interceptoren aufgebaut sind, etc.
 
 Interceptoren die zur Laufzeit angezogen werden, müssen zusätzlich mit einer Annotation versehen werden. Hier schlage ich einfach @DolphinActionInterceptor vor.
