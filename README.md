@@ -834,9 +834,9 @@ Das ganze funktioniert allerdings nur so lange, wie man pro Session nur eine Ins
 Das ist auf jedenfalls eine Lösung für das Problem, allerdings bin ich mittlerweile der Meinung, dass es nicht der eleganteste Weg ist. Ich denke, dass wir ein Grundlegendes Problem mit dem Scope der Controller haben, da der Session Scope eigentlich nicht richtig ist. Eigentlich benötigen wir für unsere Controller einen völlig neuen Scope der an eine View gebunden ist. Da es den View-Scope bereits in einigen Frameworks gibt, würde ich einmal hergehen und das ganze „Presentation-Scope“ nennen. Das ganze besagt, dass eine Instanz des Controllers genau zu einer Presentation gehört. Das würde bedeutet, dass solch eine Presentation-Instanz automatisch erstellt wird, sobald es eine neue View-Instanz gibt. Schauen wir uns einmal an, wie eine solche Lösung aussehen könnte:
 Im Client wird ja mit einem BeanManager gearbeitet um die Controller Actions im Server aufzurufen. Nun könnte man z.B. hergehen und folgende API für den Client spezifizieren:
 
-ManagerFactory factory = …;
-BeanManager manager = factory.create(„MyController“);
-manager.call(„onSave“);
+	ManagerFactory factory = …;
+	BeanManager manager = factory.create(„MyController“);
+	manager.call(„onSave“);
 
 In diesem Beispiel gibt es nicht mehr wie bisher einen globalen BeanManager sondern eine factory. Sobald eine neue View nun angezeigt wird, kann man sich einen BeanManager für den Controller der View erstellen. Dies ist nun auch der Zeitpunkt in dem auf Server-Seite eine neue Controller-Instanz erstellt wird. Der so im Client erstellte Manager ist somit mit der spezifischen Controller Instanz im Server verbunden und alle alle Action Calls werden auch an diese Instanz weitergeleitet. Dies hat zusätzlich den Vorteil, dass man nur noch den Methodennamen bei einem ActionCall angeben muss.
 Intern könnte das ganze z.B. so gelöst sein, dass der factory.create(…) Aufruf einen globalen in der Dolphin Platform definierten REST-Endpoint im Server anspricht und hierdurch eine neue Instanz des Controllers erstellt. Durch eine UUID, welche beim REST Aufruf vom Server zurückgegeben wird können Anfragen des Clients direkt an die richtige Controller Instanz geleitet werden.
@@ -871,7 +871,7 @@ Laut meiner letzten Idee liegen alle Bean Instanzen automatisch in einem „Clie
 
 Hierdurch teilen sich alle ModelStores einer Session PresentationModels für die data-Property (und alle darunter liegenden Properties). Würde man nun z.B. davon ausgehen, dass die Daten grundsätzlich auf allen Clients gleich sein sollen, so kann man z.B. auch einfach den Singleton-Scope nutzen:
 
-public MyBean {
+	public MyBean {
 				
 		private Property<String> name;
 		
