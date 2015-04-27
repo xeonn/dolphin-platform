@@ -1,6 +1,6 @@
 package com.canoo.dolphin.event;
 
-public interface BeanDestructionListener<T> {
+public interface BeanRemovedListener<T> {
 
     void beanDestructed(T model);
 

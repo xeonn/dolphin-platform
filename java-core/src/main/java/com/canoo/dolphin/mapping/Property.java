@@ -26,5 +26,5 @@ public interface Property<T> {
      * Adds a change listener to the property that will be called whenever the value of the property changes
      * @param listener the change listener
      */
-    Subscription subscribeToValueChanges(ValueChangeListener<? super T> listener);
+    Subscription onChanged(ValueChangeListener<? super T> listener);
 }
