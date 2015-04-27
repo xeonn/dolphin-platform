@@ -780,3 +780,107 @@ Um Namen Interceptors zu nutzen muss es eine NamedBinding Annotation geben. Dies
 
 Solange kein Named Binding an einem Interceptor per Annotation angegeben ist, wird dieser immer als globaler Interceptor ausgeführt.
 Erkennen können wir Interceptors anhand der Interfaces und genau wie die Dolphin Commands beim Class-Scan zur Laufzeit finden und laden.
+
+## Überlegungen zum Servlet-Konzept und zu Scopes in der Dolphin Platform
+Aktuell liegen so ziemlich alle Variablen der Dolphin Platform im Servlet-Scope. Es wird z.B. bereits durch Open Dolphin vorgegeben, dass pro Session genau ein Dolphin erzeugt wird. Hierdurch liegen dann automatisch alle Presentation-Models im Servlet-Scope. Die Dolphin Platform übernimmt dieses Konzept und definiert die Controller-Instanzen passend zu den Beans auch als Session-Scoped. Dieses Vorgehen führt allerdings zu mehreren Problemen. Schauen wir uns z.B. mal die Definition eines Controllers für einen CRUD Dialog an:
+
+	@DolphinController
+	class MyController {
+	
+		@DolphinAction
+		public void onSave() {}
+	
+		@DolphinAction
+		public void onDelete() {}
+	
+	}
+
+Dieser Kontrollre-Typ könnte nun an ein Formular gebunden sein. Im Formular zeigt man nun Daten an oder editiert diese. Diese Daten sind als Dolphin Bean definiert und werden somit automatisch zwischen Server und Client synchronisiert. Ruft man nun die „onSave“ Action auf sollen die Daten z.B. in die DB geschrieben werden. Die große Frage ist nun aber, wie man an diese Daten kommt. Der einfachste Ansätze ist sicherlich, dass man die Daten einfach in der Klasse als Field hält:
+
+	@DolphinController
+	class MyController {
+	
+		private MyData data;
+
+		@DolphinAction
+		public void onSave() {
+			internalSaveData(data);
+		}
+	
+		@DolphinAction
+		public void onDelete() {
+			internalDeleteData(data);
+		}
+	
+	}
+
+Das ganze funktioniert allerdings nur so lange, wie man pro Session nur eine Instanz der View erzeugt. Arbeitet man aber z.B. mit einem dynamischen Client in dem beliebig neue Ansichten per Tab erzeugt werden können, so bekommt man mit diesem Ansatz schnell Probleme: Sobald eine zweite Instanz der View erstellt wird, teilen sich die View-Instanzen den Controller. Dies führt dazu, dass sich beide Views die selben Daten teilen. Das ist sicherlich aber nicht das gewünschte Ergebnis und daher ist dieser Ansatz eigentlich nicht Nutzbar. Um dieses Problem zu umgehen haben wir Action-Parameter eingeführt. Hierdurch kann man bei Aufruf einer Dolphin Action im Client Parameter mitgeben. Dies führ dazu, dass unser Controller nun wie folgt aussieht:
+
+	@DolphinController
+	class MyController {
+		
+		@DolphinAction
+		public void onSave(@Param(„data“) MyData data) {
+			internalSaveData(data);
+		}
+	
+		@DolphinAction
+		public void onDelete(@Param(„data“) MyData data) {
+			internalDeleteData(data);
+		}
+	
+	}
+
+Das ist auf jedenfalls eine Lösung für das Problem, allerdings bin ich mittlerweile der Meinung, dass es nicht der eleganteste Weg ist. Ich denke, dass wir ein Grundlegendes Problem mit dem Scope der Controller haben, da der Session Scope eigentlich nicht richtig ist. Eigentlich benötigen wir für unsere Controller einen völlig neuen Scope der an eine View gebunden ist. Da es den View-Scope bereits in einigen Frameworks gibt, würde ich einmal hergehen und das ganze „Presentation-Scope“ nennen. Das ganze besagt, dass eine Instanz des Controllers genau zu einer Presentation gehört. Das würde bedeutet, dass solch eine Presentation-Instanz automatisch erstellt wird, sobald es eine neue View-Instanz gibt. Schauen wir uns einmal an, wie eine solche Lösung aussehen könnte:
+Im Client wird ja mit einem BeanManager gearbeitet um die Controller Actions im Server aufzurufen. Nun könnte man z.B. hergehen und folgende API für den Client spezifizieren:
+
+ManagerFactory factory = …;
+BeanManager manager = factory.create(„MyController“);
+manager.call(„onSave“);
+
+In diesem Beispiel gibt es nicht mehr wie bisher einen globalen BeanManager sondern eine factory. Sobald eine neue View nun angezeigt wird, kann man sich einen BeanManager für den Controller der View erstellen. Dies ist nun auch der Zeitpunkt in dem auf Server-Seite eine neue Controller-Instanz erstellt wird. Der so im Client erstellte Manager ist somit mit der spezifischen Controller Instanz im Server verbunden und alle alle Action Calls werden auch an diese Instanz weitergeleitet. Dies hat zusätzlich den Vorteil, dass man nur noch den Methodennamen bei einem ActionCall angeben muss.
+Intern könnte das ganze z.B. so gelöst sein, dass der factory.create(…) Aufruf einen globalen in der Dolphin Platform definierten REST-Endpoint im Server anspricht und hierdurch eine neue Instanz des Controllers erstellt. Durch eine UUID, welche beim REST Aufruf vom Server zurückgegeben wird können Anfragen des Clients direkt an die richtige Controller Instanz geleitet werden.
+Da der Controller nun nicht mehr im Session Scope liegt und im Normalfall eine deutlich kürzere Lebensdauer hat, müssen Instanzen gelöscht werden, sobald sie nicht mehr benötigt werden. Dies könnte man z.B. auch über die Client-Seite regeln, indem der BeanManager eine detach() / delete() Methode anbietet. Diese führt wiederum einen REST-Call aus der im Server die Controller-Instanz für die Garbage-Collection freigibt. Alle Beans liegen natürlich weiterhin im Session-Scope, so dass man vom BeanManager (Client & Server) theoretisch auf alle Beans der Session zugreifen kann. Allerdings muss auch hier meiner Meinung etwas geändert werden. Dadurch, dass alle Beans im Session-Scope liegen werden sie z.B. zwischen verschiedenen Typs per default geteilt, da ein Browser in der Regel für ein neues Tab keine neue Session aufmacht. Die Frage ist, ob man nicht auch hier besser einen neuen Scope (z.B. Client-Scope) definiert. Hierbei besitzt jedes Tab seinen eigenen Dolphin und ModelStore. Somit würden Beans nicht mehr in 2 Tabs geteilt sondern es würden Instanzen für jedes Bean erstellt. Diese hätte zum Vorteil, dass man z.B. auch sinnvoll mit eindeutigen URLs arbeiten kann und diese problemlos in mehreren Tabs öffnen könnte. Da Security, etc. ja nach wie vor in der Session bleibt, würde durch das öffnen eines neuen Tabs somit einfach ein neuer Dolphin erstellt. Abhängig von der URL würde nun eine bestimmte View der Anwendung dargestellt und „mit Leben gefüllt“.
+Zusammenfassung: Aktuell bin ich also der Meinung, dass man vom Session-Scope weg kommt und 2 neue Scopes definiert: Client & Presentation. Dies würde das Verständnis und die Programmierung der Controller sicherlich deutlich vereinfachen und Probleme mit mehreren Tabs lösen. Da diese Scopes quasi von selbst gemanagt werden und für den Entwickler nicht beeinflussbar sind, erhöht sich hierdurch einer Meinung nach auch nicht die Komplexität. Nachteil ist, dass man im Client ein destroy() aufrufen muss um den Controller für die Garbage-Collection freizugeben.
+
+
+## Überlegungen zur Synchronisation von Daten
+Es soll mit der Platform ja auch einfach möglich sein Daten über mehrere Dialoge zu synchronisieren. In Open Dolphin werden hierfür Qualifier geboten, welche aktuell in der Dolphin Platform noch keine Verwendung finden. Ich habe mir ein paar Gedanken zu der Synchronisation gemacht und mir ist ein weiterer Ansatz eingefallen, wie man Daten synchronisieren könnte.
+Stellen wir uns mal vor, dass wir folgendes Bean haben:
+
+	public MyBean {
+		
+		private Property<String> name;
+		
+		private Property<String> desc;
+		
+		private Property<Data> data;
+	}
+
+Laut meiner letzten Idee liegen alle Bean Instanzen automatisch in einem „Client-Scope“, so dass es pro Client / Browser-Tab einen ModelStore gibt. Geht man nun aber davon aus, dass die Data-List z.B. bei einem Benutzer immer gleich sein soll (also auch über X Tabs), so könnte man das model wie folgt annotieren:
+		
+	public MyBean {
+				
+		private Property<String> name;
+		
+		private Property<String> desc;
+		
+		@BeanScope(SESSION)
+		private Property<Data> data;
+	}
+
+Hierdurch teilen sich alle ModelStores einer Session PresentationModels für die data-Property (und alle darunter liegenden Properties). Würde man nun z.B. davon ausgehen, dass die Daten grundsätzlich auf allen Clients gleich sein sollen, so kann man z.B. auch einfach den Singleton-Scope nutzen:
+
+public MyBean {
+				
+		private Property<String> name;
+		
+		private Property<String> desc;
+		
+		@BeanScope(SINGLETON)
+		private Property<Data> data;
+	}
+
+Hierdurch würde eine Änderung an einem beliebigen Client automatisch auf allen anderen Clients durchschlagen.
+Interessant wär es, wenn man die Möglichkeit hätte, eigene Scopes zu definieren. So könnte man z.B. per Plugin / Erweiterung einen USER & ROLE Scope einfügen. Hierdurch könnte ein User z.B. auf einem Desktop-Client und der mobile Version auf dem iPad automatisch Daten synchronisieren.
+Wie gesagt, das ganze ist nur eine Idee und ich dachte, dass ich das mal festhalte bevor ich es vergesse :) Kommentare / Diskussionen sind jederzeit willkommen.
