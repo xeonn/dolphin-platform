@@ -29,10 +29,11 @@ public class DolphinUtilsTest extends AbstractDolphinBasedTest {
     @BeforeMethod
     public void setUp() throws Exception {
         dolphin = createServerDolphin();
-        ClassRepository classRepository = new ClassRepository(dolphin);
-        beanRepository = new BeanRepository(dolphin, classRepository);
-        manager = new BeanManagerImpl(beanRepository);
-        beanRepository.setListMapper(new ListMapper(dolphin, classRepository, beanRepository));
+        BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        manager = new BeanManagerImpl(beanRepository, beanBuilder);
     }
 
     @Test

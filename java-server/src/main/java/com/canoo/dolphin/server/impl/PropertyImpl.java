@@ -1,53 +1,53 @@
 package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
+import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.server.impl.info.PropertyInfo;
 import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * An implementation of {@link Property} that is used for all Dolphin Beans generated from class definitions.
+ *
+ * @param <T> The type of the wrapped property.
+ */
 public class PropertyImpl<T> implements Property<T> {
 
+    private final Attribute attribute;
+    private final PropertyInfo propertyInfo;
     private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
-    private final BeanRepository beanRepository;
 
-    private final Attribute attribute;
-
-    public PropertyImpl(final BeanRepository beanRepository, final Attribute attribute) {
-        this.beanRepository = beanRepository;
+    public PropertyImpl(Attribute attribute, final PropertyInfo propertyInfo) {
         this.attribute = attribute;
-
+        this.propertyInfo = propertyInfo;
 
         attribute.addPropertyChangeListener(Attribute.VALUE, new PropertyChangeListener() {
             @SuppressWarnings("unchecked")
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                final T oldValue = (T) PropertyImpl.this.beanRepository.mapDolphinToObjects(attribute, evt.getOldValue());
-                final T newValue = (T) PropertyImpl.this.beanRepository.mapDolphinToObjects(attribute, evt.getNewValue());
+                final T oldValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getOldValue());
+                final T newValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getNewValue());
                 firePropertyChanged(oldValue, newValue);
             }
         });
     }
 
     @Override
-    public void set(T newValue) {
-        if(newValue != null && Collection.class.isAssignableFrom(newValue.getClass())){
-            throw new IllegalArgumentException("Type of the property must be a scalar, not a collection");
-        }
-        beanRepository.setValue(attribute, newValue);
+    public void set(T value) {
+        attribute.setValue(propertyInfo.convertToDolphin(value));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public T get() {
-        return (T) beanRepository.getValue(attribute);
+        return (T) propertyInfo.convertFromDolphin(attribute.getValue());
     }
 
     @Override

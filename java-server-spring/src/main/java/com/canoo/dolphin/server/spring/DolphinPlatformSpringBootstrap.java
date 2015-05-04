@@ -3,6 +3,7 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.BeanBuilder;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
@@ -37,11 +38,13 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Scope("session")
     protected BeanManager createManager() {
         ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
         DefaultDolphinServlet.addToSession(beanRepository);
-        new ListMapper(dolphin, classRepository, beanRepository);
-        return new BeanManagerImpl(beanRepository);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        return new BeanManagerImpl(beanRepository, beanBuilder);
+
     }
 
     /**

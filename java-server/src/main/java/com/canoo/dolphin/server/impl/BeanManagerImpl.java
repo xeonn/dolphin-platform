@@ -9,12 +9,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A {@code BeanManagerImpl} implements {@link BeanManager}
+ */
+// TODO Do we really need this or can we move the implementation to BeanManager directly?
 public class BeanManagerImpl implements BeanManager {
 
     private final BeanRepository beanRepository;
+    private final BeanBuilder beanBuilder;
 
-    public BeanManagerImpl(BeanRepository beanRepository) {
+    public BeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder) {
         this.beanRepository = beanRepository;
+        this.beanBuilder = beanBuilder;
     }
 
     @Override
@@ -24,7 +30,7 @@ public class BeanManagerImpl implements BeanManager {
 
     @Override
     public <T> T create(Class<T> beanClass) {
-        return beanRepository.create(beanClass);
+        return beanBuilder.create(beanClass);
     }
 
     @Override
@@ -34,7 +40,9 @@ public class BeanManagerImpl implements BeanManager {
 
     @Override
     public void removeAll(Class<?> beanClass) {
-        beanRepository.deleteAll(beanClass);
+        for (Object bean : findAll(beanClass)) {
+            beanRepository.delete(bean);
+        }
     }
 
     @Override
@@ -65,7 +73,7 @@ public class BeanManagerImpl implements BeanManager {
     }
 
     @Override
-    public <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
+    public <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

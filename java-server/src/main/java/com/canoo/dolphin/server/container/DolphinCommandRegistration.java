@@ -4,7 +4,9 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.impl.BeanRepository;
+import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.DolphinConstants;
+import com.canoo.dolphin.server.impl.DolphinUtils;
 import com.canoo.dolphin.server.impl.ReflectionHelper;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.Attribute;
@@ -91,8 +93,9 @@ public class DolphinCommandRegistration {
             for (final String name : names) {
                 final Attribute valueAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE);
                 final Attribute typeAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE_TYPE);
+                final ClassRepository.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
                 final BeanRepository beanRepository = DefaultDolphinServlet.getFromSession(BeanRepository.class);
-                result.add(beanRepository.mapDolphinToObject(typeAttribute.getValue().toString(), valueAttribute.getValue()));
+                result.add(beanRepository.mapDolphinToObject(valueAttribute.getValue(), fieldType));
             }
             dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);
         }

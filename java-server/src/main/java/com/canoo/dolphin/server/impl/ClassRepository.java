@@ -1,5 +1,11 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.server.impl.info.ClassInfo;
+import com.canoo.dolphin.server.impl.info.ClassPropertyInfo;
+import com.canoo.dolphin.server.impl.info.InterfacePropertyInfo;
+import com.canoo.dolphin.server.impl.info.PropertyInfo;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
@@ -8,176 +14,127 @@ import org.opendolphin.core.server.ServerDolphin;
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * A {@code ClassRepository} manages {@link ClassInfo} objects for all registered Dolphin Beans. A {@code ClassInfo}
+ * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
+ */
 public class ClassRepository {
 
-    public enum FieldType {UNKNOWN, BASIC_TYPE, ENUM, DOLPHIN_BEAN}
+    public enum FieldType {UNKNOWN, BASIC_TYPE, DOLPHIN_BEAN}
 
+    private final ServerDolphin dolphin;
+    private final Converters.Converter initialConverter;
 
-    private final Map<String, Field> fieldMap = new HashMap<>();
-    private final Map<String, PropertyDescriptor> propertyDescriptorMap = new HashMap<>();
-    private final Map<Class<?>, PresentationModel> classToPresentationModel = new HashMap<>();
+    private final Map<Class<?>, ClassInfo> classInfoMap = new HashMap<>();
 
-    private ServerDolphin dolphin;
-
-    public ClassRepository(ServerDolphin dolphin) {
+    public ClassRepository(ServerDolphin dolphin, BeanRepository beanRepository) {
         this.dolphin = dolphin;
+        this.initialConverter = new Converters(beanRepository).getUnknownTypeConverter();
     }
 
-    public void register(final Class<?> beanClass) {
-        if (classToPresentationModel.containsKey(beanClass)) {
-            return;
+    public ClassInfo getClassInfo(final Class<?> beanClass) {
+        final ClassInfo existingClassInfo = classInfoMap.get(beanClass);
+        if (existingClassInfo != null) {
+            return existingClassInfo;
         }
+
+        final ClassInfo newClassInfo;
+        if (beanClass.isInterface()) {
+            final PresentationModel model = createPresentationModelForInterface(beanClass);
+            newClassInfo = createClassInfoForInterface(beanClass, model);
+        } else {
+            final PresentationModel model = createPresentationModelForClass(beanClass);
+            newClassInfo = createClassInfoForClass(beanClass, model);
+
+        }
+
+        classInfoMap.put(beanClass, newClassInfo);
+        return newClassInfo;
+    }
+
+    private PresentationModel createPresentationModelForInterface(Class<?> beanClass) {
+        final BeanInfo beanInfo = DolphinUtils.getBeanInfo(beanClass);
 
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin)
-                .withId(id);
+                .withId(id)
+                .withType(DolphinConstants.DOLPHIN_BEAN);
 
-        if (beanClass.isEnum()) {
-            builder.withType(DolphinConstants.DOLPHIN_ENUM);
-            final Object[] values = beanClass.getEnumConstants();
-            for (int i = 0, n = values.length; i < n; i++) {
-                builder.withAttribute(Integer.toString(i), values[i].toString());
-            }
-        } else {
-            builder.withType(DolphinConstants.DOLPHIN_BEAN);
+        for (final PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+            final String attributeName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
+            builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE);
+        }
 
-            if (beanClass.isInterface()) {
-                addAttributesForInterface(beanClass, builder);
+        return builder.create();
+    }
+
+    private ClassInfo createClassInfoForInterface(Class<?> beanClass, PresentationModel model) {
+        final BeanInfo beanInfo = DolphinUtils.getBeanInfo(beanClass);
+
+        final List<PropertyInfo> propertyInfos = new ArrayList<>();
+        final List<PropertyInfo> observableListInfos = new ArrayList<>();
+
+        for (final PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+            final String attributeName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
+            final Attribute attribute = model.findAttributeByPropertyName(attributeName);
+            final PropertyInfo propertyInfo = new InterfacePropertyInfo(attribute, attributeName, initialConverter, propertyDescriptor);
+            if (List.class.isAssignableFrom(propertyDescriptor.getPropertyType())) {
+                observableListInfos.add(propertyInfo);
             } else {
-                addAttributesForClass(beanClass, builder);
+                propertyInfos.add(propertyInfo);
             }
         }
 
-        final PresentationModel createdPresentationModel = builder.create();
-        classToPresentationModel.put(beanClass, createdPresentationModel);
+        return new ClassInfo(beanClass, propertyInfos, observableListInfos);
     }
 
-    private void addAttributesForClass(final Class<?> beanClass, final PresentationModelBuilder builder) {
-        DolphinUtils.forAllProperties(beanClass, new DolphinUtils.FieldIterator() {
-            @Override
-            public void run(Field field, String attributeName) {
-                fieldMap.put(beanClass.getName() + "." + attributeName, field);
-                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
-                builder.withAttribute(attributeName, null, Tag.VALUE);
-            }
-        });
-        DolphinUtils.forAllObservableLists(beanClass, new DolphinUtils.FieldIterator() {
-            @Override
-            public void run(Field field, String attributeName) {
-                fieldMap.put(beanClass.getName() + "." + attributeName, field);
-                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
-                builder.withAttribute(attributeName, null, Tag.VALUE);
-            }
-        });
-    }
+    private PresentationModel createPresentationModelForClass(Class<?> beanClass) {
+        final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
+        final PresentationModelBuilder builder = new PresentationModelBuilder(dolphin)
+                .withId(id)
+                .withType(DolphinConstants.DOLPHIN_BEAN);
 
-    private void addAttributesForInterface(Class<?> beanClass, PresentationModelBuilder builder) {
-        BeanInfo beanInfo = DolphinUtils.getBeanInfo(beanClass);
-        for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
-            String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
-            PropertyDescriptor existing = propertyDescriptorMap.put(beanClass.getName() + "." + propertyName, propertyDescriptor);
-            if (existing == null) {
-                builder.withAttribute(propertyName, FieldType.UNKNOWN.ordinal(), Tag.VALUE_TYPE);
-                builder.withAttribute(propertyName, null, Tag.VALUE);
+        for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
+            if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
+                final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
+                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE);
             }
         }
+
+        return builder.create();
     }
 
-    public FieldType getFieldType(Attribute fieldAttribute) {
-        final Attribute classAttribute = findClassAttribute(fieldAttribute, Tag.VALUE_TYPE);
-        return calculateFieldType(classAttribute);
-    }
+    private ClassInfo createClassInfoForClass(Class<?> beanClass, PresentationModel model) {
+        final List<PropertyInfo> propertyInfos = new ArrayList<>();
+        final List<PropertyInfo> observableListInfos = new ArrayList<>();
 
-    public FieldType getFieldType(Class<?> beanClass, String attributeName) {
-        final Attribute classAttribute = findClassAttribute(beanClass, attributeName, Tag.VALUE_TYPE);
-        return calculateFieldType(classAttribute);
-    }
 
-    public Class<?> getFieldClass(Attribute fieldAttribute) {
-        final Attribute classAttribute = findClassAttribute(fieldAttribute, Tag.VALUE);
-        return calculateFieldClass(classAttribute);
-    }
-
-    public Class<?> getFieldClass(Class<?> beanClass, String attributeName) {
-        final Attribute classAttribute = findClassAttribute(beanClass, attributeName, Tag.VALUE);
-        return calculateFieldClass(classAttribute);
-    }
-
-    public FieldType calculateFieldTypeFromValue(Attribute fieldAttribute, Object value) {
-        final FieldType fieldType = calculateFieldType(value);
-        if (fieldType != FieldType.UNKNOWN) {
-            findClassAttribute(fieldAttribute, Tag.VALUE_TYPE).setValue(fieldType.ordinal());
-            findClassAttribute(fieldAttribute, Tag.VALUE).setValue(value.getClass().getName());
-            if (fieldType == FieldType.ENUM) {
-                register(value.getClass());
+        for (Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
+            PropertyType type = null;
+            if (Property.class.isAssignableFrom(field.getType())) {
+                type = PropertyType.PROPERTY;
+            } else if (ObservableList.class.isAssignableFrom(field.getType())) {
+                type = PropertyType.OBSERVABLE_LIST;
+            }
+            if (type != null) {
+                final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
+                final Attribute attribute = model.findAttributeByPropertyName(attributeName);
+                final PropertyInfo propertyInfo = new ClassPropertyInfo(attribute, attributeName, initialConverter, field);
+                if (type == PropertyType.PROPERTY) {
+                    propertyInfos.add(propertyInfo);
+                } else {
+                    observableListInfos.add(propertyInfo);
+                }
             }
         }
-        return fieldType;
+
+        return new ClassInfo(beanClass, propertyInfos, observableListInfos);
     }
 
-    public FieldType calculateFieldTypeFromValue(Class<?> beanClass, String attributeName, Object value) {
-        final FieldType fieldType = calculateFieldType(value);
-        if (fieldType != FieldType.UNKNOWN) {
-            findClassAttribute(beanClass, attributeName, Tag.VALUE_TYPE).setValue(fieldType.ordinal());
-            findClassAttribute(beanClass, attributeName, Tag.VALUE).setValue(value.getClass().getName());
-        }
-        return fieldType;
-    }
-
-    public PropertyDescriptor getPropertyDescriptor(Class<?> beanClass, String attributeName) {
-        return propertyDescriptorMap.get(beanClass.getName() + "." + attributeName);
-    }
-
-    public Field getField(Class<?> beanClass, String attributeName) {
-        return fieldMap.get(beanClass.getName() + "." + attributeName);
-    }
-
-
-    private Attribute findClassAttribute(Attribute fieldAttribute, Tag tag) {
-        final String classModelId = fieldAttribute.getPresentationModel().getPresentationModelType();
-        final PresentationModel classModel = dolphin.findPresentationModelById(classModelId);
-        return classModel.findAttributeByPropertyNameAndTag(fieldAttribute.getPropertyName(), tag);
-    }
-
-    private Attribute findClassAttribute(Class<?> beanClass, String attributeName, Tag tag) {
-        final PresentationModel classModel = classToPresentationModel.get(beanClass);
-        return classModel.findAttributeByPropertyNameAndTag(attributeName, tag);
-    }
-
-    private FieldType calculateFieldType(Attribute classAttribute) {
-        try {
-            return FieldType.values()[(Integer) classAttribute.getValue()];
-        } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
-            // do nothing
-        }
-        return FieldType.UNKNOWN;
-    }
-
-    private Class<?> calculateFieldClass(Attribute classAttribute) {
-        try {
-            return Class.forName((String) classAttribute.getValue());
-        } catch (NullPointerException | ClassCastException | ClassNotFoundException ex) {
-            // do nothing
-        }
-        return null;
-    }
-
-    private static FieldType calculateFieldType(Object value) {
-        if (value == null) {
-            return FieldType.UNKNOWN;
-        }
-
-        final Class<?> clazz = value.getClass();
-        if (ReflectionHelper.isBasicType(clazz)) {
-            return FieldType.BASIC_TYPE;
-        }
-        if (clazz.isEnum()) {
-            return FieldType.ENUM;
-        }
-        return FieldType.DOLPHIN_BEAN;
-    }
-
+    private enum PropertyType {PROPERTY, OBSERVABLE_LIST}
 }

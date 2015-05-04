@@ -10,17 +10,11 @@ public class ListReferenceModel {
 
     private ObservableList<String> primitiveList;
 
-    private ObservableList<DataType> enumList;
-
     public ObservableList<SimpleTestModel> getObjectList() {
         return objectList;
     }
 
     public ObservableList<String> getPrimitiveList() {
         return primitiveList;
-    }
-
-    public ObservableList<DataType> getEnumList() {
-        return enumList;
     }
 }

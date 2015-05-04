@@ -3,7 +3,10 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.impl.collections.ObservableArrayList;
+import com.canoo.dolphin.server.impl.info.ClassInfo;
+import com.canoo.dolphin.server.impl.info.PropertyInfo;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
@@ -13,29 +16,34 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * Created by hendrikebbers on 15.04.15.
- */
+// TODO Replace with an implementation that does not rely on BeanInfo
+@Deprecated
 public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
     private final T instance;
     private final Class modelClass;
     private final Map<Method, PropertyDescriptor> method2propDesc;
     private final Map<String, Property> propertyName2prop;
+    private final ListMapper listMapper;
 
     private final Map<String, ObservableList> propertyName2list;
 
-    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, BeanRepository beanRepository) {
+    public DolphinModelInvocationHander(Class modelClass, ServerDolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, ListMapper listMapper) {
         this.modelClass = modelClass;
+        this.listMapper = listMapper;
         propertyName2prop = new HashMap<>();
         propertyName2list = new HashMap<>();
         method2propDesc = new HashMap<>();
 
         instance =  (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, this);
 
-        beanRepository.registerClass(modelClass);
+        final ClassInfo classInfo = classRepository.getClassInfo(modelClass);
         try {
             BeanInfo beanInfo = DolphinUtils.getBeanInfo(modelClass);
 
@@ -45,10 +53,9 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
             PresentationModel model = builder.create();
 
-            beanRepository.getObjectPmToDolphinPm().put(instance, model);
-            beanRepository.getDolphinIdToObjectPm().put(model.getId(), instance);
+            beanRepository.registerBean(instance, model);
 
-            forAllPropertyDescriptors(beanRepository, beanInfo, model);
+            forAllPropertyDescriptors(beanRepository, beanInfo, model, classInfo);
         } catch (IllegalArgumentException iae) {
             throw iae;
         } catch (Exception e) {
@@ -56,14 +63,15 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
         }
     }
 
-    private void forAllPropertyDescriptors(BeanRepository beanRepository, BeanInfo beanInfo, PresentationModel model) {
+    private void forAllPropertyDescriptors(BeanRepository beanRepository, BeanInfo beanInfo, PresentationModel model, ClassInfo classInfo) {
         for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
             String propertyName = DolphinUtils.getDolphinAttributeName(propertyDescriptor);
             Attribute attribute = model.findAttributeByPropertyName(propertyName);
             if(attribute == null) {
                 throw new RuntimeException("Attribute not found for property "+propertyName);
             }
-            Property property = new PropertyImpl(beanRepository, attribute);
+            final PropertyInfo propertyInfo = isList(propertyDescriptor)? classInfo.getObservableListInfo(propertyName) : classInfo.getPropertyInfo(propertyName);
+            Property property = new PropertyImpl(attribute, propertyInfo);
             propertyName2prop.put(propertyName, property);
             method2propDesc.put(propertyDescriptor.getReadMethod(), propertyDescriptor);
             Method writeMethod = propertyDescriptor.getWriteMethod();
@@ -71,7 +79,7 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
                 method2propDesc.put(writeMethod, propertyDescriptor);
             }
             if (isList(propertyDescriptor)) {
-                ObservableList observableList = new CheckedObservableArrayList(beanRepository, model, propertyName);
+                ObservableList observableList = new CheckedObservableArrayList(beanRepository, model, propertyInfo);
                 propertyName2list.put(propertyName, observableList);
             }
         }
@@ -138,30 +146,28 @@ public class DolphinModelInvocationHander<T> implements InvocationHandler {
 
         private final BeanRepository beanRepository;
         private final PresentationModel model;
-        private final String propertyName;
+        private final PropertyInfo propertyInfo;
 
-        CheckedObservableArrayList(BeanRepository beanRepository, PresentationModel model, String propertyName) {
+        CheckedObservableArrayList(BeanRepository beanRepository, PresentationModel model, PropertyInfo propertyInfo) {
             this.beanRepository = beanRepository;
             this.model = model;
-            this.propertyName = propertyName;
+            this.propertyInfo = propertyInfo;
         }
 
         @Override
         protected void notifyInternalListeners(ListChangeEvent event) {
-            if (beanRepository.getListMapper() != null) {
-                beanRepository.getListMapper().processEvent(modelClass, model.getId(), propertyName, event);
-            }
+            listMapper.processEvent(propertyInfo, model.getId(), event);
         }
 
         @Override
         public void add(int index, Object element) {
-            validateElement(element, beanRepository, propertyName);
+            validateElement(element, beanRepository, propertyInfo.getAttributeName());
             super.add(index, element);
         }
 
         @Override
         public Object set(int index, Object element) {
-            validateElement(element, beanRepository, propertyName);
+            validateElement(element, beanRepository, propertyInfo.getAttributeName());
             return super.set(index, element);
         }
     }

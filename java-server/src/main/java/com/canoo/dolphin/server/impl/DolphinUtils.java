@@ -1,27 +1,26 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
-import java.beans.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Created by hendrikebbers on 26.03.15.
+ * The class {@code DolphinUtils} is a horrible class that we should get rid of asap.
  */
 public class DolphinUtils {
-
-    public static <T> void forAllProperties(Class<T> beanClass, FieldIterator fieldIterator) {
-        for (Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
-            if (Property.class.isAssignableFrom(field.getType())) {
-                String attributeName = getDolphinAttributePropertyNameForField(field);
-                fieldIterator.run(field, attributeName);
-            }
-        }
-    }
 
     public static BeanInfo getBeanInfo(Class<?> modelClass) {
         return validate(getBeanInfo(new BetterBeanInfo(), Collections.<Class<?>>singleton(modelClass)));
@@ -40,16 +39,6 @@ public class DolphinUtils {
             validatePropertyName(descriptor);
         }
         return beanInfo;
-    }
-
-    public static <T> void forAllObservableLists(Class<T> beanClass, FieldIterator fieldIterator) {
-        for (Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
-            if (ObservableList.class.isAssignableFrom(field.getType())) {
-
-                String attributeName = getDolphinAttributePropertyNameForField(field);
-                fieldIterator.run(field, attributeName);
-            }
-        }
     }
 
     public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
@@ -101,10 +90,6 @@ public class DolphinUtils {
     }
 
 
-    public interface FieldIterator {
-        public abstract void run(Field field, String attributeName);
-    }
-
     public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
         return (Property<T>) (ReflectionHelper.isProxyInstance(bean) ? getPropertyForProxy(bean, name) : getPropertyForClass(bean, name));
     }
@@ -122,6 +107,18 @@ public class DolphinUtils {
 
     private static <T> Property<T> getPropertyForProxy(Object bean, String name) {
         return ((DolphinModelInvocationHander) Proxy.getInvocationHandler(bean)).getProperty(name);
+    }
+
+    public static Object mapFieldTypeToDolphin(ClassRepository.FieldType fieldType) {
+        return fieldType.ordinal();
+    }
+
+    public static ClassRepository.FieldType mapFieldTypeFromDolphin(Object value) {
+        try {
+            return ClassRepository.FieldType.values()[(Integer)value];
+        } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
+            return ClassRepository.FieldType.UNKNOWN;
+        }
     }
 
 }

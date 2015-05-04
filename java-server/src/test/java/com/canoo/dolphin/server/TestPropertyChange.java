@@ -4,9 +4,11 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
+import com.canoo.dolphin.server.impl.BeanBuilder;
 import com.canoo.dolphin.server.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
+import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.*;
 import org.opendolphin.core.server.ServerDolphin;
 import org.testng.annotations.Test;
@@ -20,9 +22,11 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
     @Test
     public void testWithAnnotatedSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -65,9 +69,11 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
     @Test
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -109,57 +115,13 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithEnumDataTypeModel() {
-        final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
-
-        final EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
-
-        final ListerResults<DataType> results = new ListerResults<>();
-        final ValueChangeListener<DataType> myListener = new ValueChangeListener<DataType>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends DataType> evt) {
-                assertThat((Property<DataType>) evt.getSource(), is(model.getEnumProperty()));
-                results.newValue = evt.getNewValue();
-                results.oldValue = evt.getOldValue();
-                results.listenerCalls++;
-            }
-        };
-
-        final Subscription subscription = model.getEnumProperty().onChanged(myListener);
-        assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, nullValue());
-        assertThat(results.oldValue, nullValue());
-
-        model.getEnumProperty().set(DataType.TEST_VALUE_1);
-        assertThat(results.listenerCalls, is(1));
-        assertThat(results.newValue, is(DataType.TEST_VALUE_1));
-        assertThat(results.oldValue, nullValue());
-
-        results.listenerCalls = 0;
-        model.getEnumProperty().set(DataType.TEST_VALUE_2);
-        assertThat(results.listenerCalls, is(1));
-        assertThat(results.newValue, is(DataType.TEST_VALUE_2));
-        assertThat(results.oldValue, is(DataType.TEST_VALUE_1));
-
-        results.listenerCalls = 0;
-        subscription.unsubscribe();
-        model.getEnumProperty().set(DataType.TEST_VALUE_3);
-        assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, is(DataType.TEST_VALUE_2));
-        assertThat(results.oldValue, is(DataType.TEST_VALUE_1));
-    }
-
-
-    @Test
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);

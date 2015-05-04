@@ -8,7 +8,7 @@ public interface ListChangeEvent<E> {
 
     List<Change<E>> getChanges();
 
-    public interface Change<S> {
+    interface Change<S> {
 
         int getFrom();
 
