@@ -1,1 +1,0 @@
-Das JavaScript Client Modul der Dolphin Platform
