@@ -19,6 +19,6 @@
     "paper-radio-button": "Polymer/paper-radio-button#~0.5.5",
     "paper-radio-group": "Polymer/paper-radio-group#~0.5.5",
     "paper-menu-button": "Polymer/paper-menu-button#~0.5.5",
-    "dolphin-js": "~0.1.0"
+    "dolphin-js": "~0.2.0"
   }
 }

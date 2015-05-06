@@ -34,7 +34,7 @@ public class IcosPocController extends AbstractDolphinCommand {
 
         final Question legalEntity = manager.create(Question.class);
         legalEntity.setLabel("Legal Entity");
-        legalEntity.setType(Question.Type.RADIO_GROUP);
+        legalEntity.setType(Question.Type.RADIO_GROUP.name());
         legalEntity.setVisible(true);
         section.getQuestions().add(legalEntity);
 
@@ -50,7 +50,7 @@ public class IcosPocController extends AbstractDolphinCommand {
 
         final Question typeOfRelation = manager.create(Question.class);
         typeOfRelation.setLabel("Type of Relation");
-        typeOfRelation.setType(Question.Type.RADIO_GROUP);
+        typeOfRelation.setType(Question.Type.RADIO_GROUP.name());
         typeOfRelation.setVisible(true);
         section.getQuestions().add(typeOfRelation);
 
