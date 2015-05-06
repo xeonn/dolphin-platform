@@ -17,11 +17,11 @@ public class Question {
         label.set(value);
     }
 
-    private Property<Type> type;
-    public Type getType() {
+    private Property<String> type;
+    public String getType() {
         return type.get();
     }
-    public void setType(Type value) {
+    public void setType(String value) {
         type.set(value);
     }
 
