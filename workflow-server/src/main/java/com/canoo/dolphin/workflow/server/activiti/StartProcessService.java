@@ -5,10 +5,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.HashMap;
 
-@Singleton
 @Component
 public class StartProcessService {
 

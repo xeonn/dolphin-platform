@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * represents one listener to the queue. It need not to be thread safe, because it is related to one dolphin session.
+ */
 public class Receiver {
 
     DataflowQueue receiverQueue;
@@ -21,29 +24,26 @@ public class Receiver {
         return receiverQueue;
     }
 
-    public Subscription subscribe(DolphinEventBusImpl eventBus, String topic, MessageListener handler) {
+    public Subscription subscribe(final String topic, final MessageListener handler) {
         List<MessageListener> messageListeners = listenersPerTopic.get(topic);
         if (messageListeners == null) {
             messageListeners = new ArrayList<>();
             listenersPerTopic.put(topic, messageListeners);
         }
         messageListeners.add(handler);
-        return new DolphinEventBusSubscription(eventBus, topic, handler);
-    }
-
-    public void unsubscribe(String topic, MessageListener handler) {
-        List<MessageListener> messageListeners = listenersPerTopic.get(topic);
-        if (messageListeners == null) {
-            return;
-        }
-        messageListeners.remove(handler);
-        if (messageListeners.isEmpty()) {
-            listenersPerTopic.remove(topic);
-        }
-    }
-
-    public void unsubscribeAllTopics() {
-        listenersPerTopic.clear();
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+                List<MessageListener> messageListeners = listenersPerTopic.get(topic);
+                if (messageListeners == null) {
+                    return;
+                }
+                messageListeners.remove(handler);
+                if (messageListeners.isEmpty()) {
+                    listenersPerTopic.remove(topic);
+                }
+            }
+        };
     }
 
     public boolean handle(Message event) {
@@ -51,7 +51,8 @@ public class Receiver {
         if (messageListeners == null || messageListeners.isEmpty()) {
             return false;
         }
-        for (MessageListener messageListener : messageListeners) {
+        // iterate over copy, because the list could be changed in an onMessage method
+        for (MessageListener messageListener : new ArrayList<>(messageListeners)) {
             messageListener.onMessage(event);
         }
         return true;
@@ -61,14 +62,15 @@ public class Receiver {
         return receiverQueue != null;
     }
 
-    public void unsubscribeFromEventBus(EventBus eventBus) {
+    public void unregister(EventBus eventBus) {
         if (isListeningToEventBus()) {
             eventBus.unSubscribe(receiverQueue);
             receiverQueue = null;
         }
+        listenersPerTopic.clear();
     }
 
-    public void subscribeToEventBus(EventBus eventBus) {
+    public void register(EventBus eventBus) {
         if (isListeningToEventBus()) {
             return;
         }

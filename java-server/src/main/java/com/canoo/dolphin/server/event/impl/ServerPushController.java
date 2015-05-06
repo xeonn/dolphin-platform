@@ -9,7 +9,7 @@ public class ServerPushController {
     @DolphinAction
     public void longPoll() {
         try {
-            DolphinEventBusImpl.getInstance().listenOnEventsForCurrentDolphinSession();
+            getEventBus().longPoll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -17,6 +17,10 @@ public class ServerPushController {
 
     @DolphinAction
     public void release() {
-        DolphinEventBusImpl.getInstance().release();
+        getEventBus().release();
+    }
+
+    private DolphinEventBusImpl getEventBus() {
+        return DolphinEventBusImpl.getInstance();
     }
 }
