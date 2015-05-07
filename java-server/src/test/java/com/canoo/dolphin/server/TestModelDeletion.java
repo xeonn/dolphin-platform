@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
 import com.canoo.dolphin.server.util.ListReferenceModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
@@ -111,6 +112,29 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         assertThat(manager.isManaged(model), is(false));
     }
+
+    @Test
+    public void testWithInheritedModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+
+        ChildModel model = manager.create(ChildModel.class);
+
+        manager.remove(model);
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ChildModel.class.getName());
+        assertThat(dolphinModels, empty());
+
+        Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
+        assertThat(allDolphinModels, hasSize(1));
+
+        assertThat(manager.isManaged(model), is(false));
+    }
+
 
 }
 

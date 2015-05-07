@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
 import com.canoo.dolphin.server.util.ListReferenceModel;
 import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
@@ -20,6 +21,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -181,6 +183,41 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         List<Attribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, empty());
+    }
+
+    @Test
+    public void testWithInheritedModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+
+        ChildModel model = manager.create(ChildModel.class);
+
+        assertThat(model, notNullValue());
+        assertThat(model.getParentProperty(), notNullValue());
+        assertThat(model.getParentProperty().get(), nullValue());
+        assertThat(model.getChildProperty(), notNullValue());
+        assertThat(model.getChildProperty().get(), nullValue());
+        assertThat(manager.isManaged(model), is(true));
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ChildModel.class.getName());
+        assertThat(dolphinModels, hasSize(1));
+
+        ServerPresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<Attribute> attributes = dolphinModel.getAttributes();
+        assertThat(attributes, hasSize(2));
+
+        for(Attribute attribute : attributes) {
+            assertThat(attribute.getPropertyName(), anyOf(is("childProperty"), is("parentProperty")));
+            assertThat(attribute.getValue(), nullValue());
+            assertThat(attribute.getBaseValue(), nullValue());
+            assertThat(attribute.getQualifier(), nullValue());
+            assertThat(attribute.getTag(), is(Tag.VALUE));
+        }
     }
 
 }
