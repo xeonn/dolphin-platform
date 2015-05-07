@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.canoo</groupId>
+    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>icos-poc-server</artifactId>
     <version>0.1-SNAPSHOT</version>
 
@@ -15,8 +15,9 @@
     </parent>
 
     <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
@@ -30,7 +31,7 @@
             <version>0.9.9-RC1</version>
         </dependency>
         <dependency>
-            <groupId>com.canoo</groupId>
+            <groupId>com.canoo.dolphin-platform</groupId>
             <artifactId>dolphin-platform-server</artifactId>
             <version>${project.version}</version>
         </dependency>
