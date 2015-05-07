@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.impl.BeanRepository;
 import com.canoo.dolphin.server.impl.ClassRepository;
 import com.canoo.dolphin.server.impl.collections.ListMapper;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
 import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
@@ -156,4 +157,37 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(referenceAttribute.getValue(), is((Object) ref2PM.getId()));
         assertThat(model.getReferenceProperty().get(), is(ref2));
     }
+
+    @Test
+    public void testWithInheritedModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+
+        ChildModel model = manager.create(ChildModel.class);
+
+        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ChildModel.class.getName()).get(0);
+
+        Attribute childAttribute = dolphinModel.findAttributeByPropertyName("childProperty");
+        assertThat(childAttribute.getValue(), nullValue());
+        Attribute parentAttribute = dolphinModel.findAttributeByPropertyName("parentProperty");
+        assertThat(parentAttribute.getValue(), nullValue());
+
+        model.getChildProperty().set("Hallo Platform");
+        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getChildProperty().get(), is("Hallo Platform"));
+        assertThat(parentAttribute.getValue(), nullValue());
+        assertThat(model.getParentProperty().get(), nullValue());
+
+        parentAttribute.setValue("Hallo Dolphin");
+        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getChildProperty().get(), is("Hallo Platform"));
+        assertThat(parentAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat(model.getParentProperty().get(), is("Hallo Dolphin"));
+    }
+
+
 }
