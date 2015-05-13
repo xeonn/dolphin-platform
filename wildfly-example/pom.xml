@@ -3,20 +3,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.canoo</groupId>
+        <groupId>com.canoo.dolphin-platform</groupId>
         <artifactId>dolphin-platform</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
-    <groupId>com.canoo</groupId>
+    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>wildfly-example</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>com.canoo</groupId>
+            <groupId>com.canoo.dolphin-platform</groupId>
             <artifactId>dolphin-platform-server-javaee</artifactId>
             <version>${project.version}</version>
         </dependency>
