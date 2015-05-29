@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.util;
 
-import com.canoo.dolphin.server.impl.ReflectionHelper;
+import com.canoo.dolphin.impl.ReflectionHelper;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;

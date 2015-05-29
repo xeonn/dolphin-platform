@@ -1,13 +1,14 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.impl.BeanBuilder;
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.BeanBuilder;
+import com.canoo.dolphin.impl.BeanRepository;
+import com.canoo.dolphin.impl.ClassRepository;
+import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -23,10 +24,11 @@ public class BeanFactory {
         ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         DefaultDolphinServlet.addToSession(beanRepository);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        return new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        return new BeanManager(beanRepository, beanBuilder);
     }
 
     @Produces

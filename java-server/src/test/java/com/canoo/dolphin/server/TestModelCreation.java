@@ -1,10 +1,12 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.impl.BeanBuilder;
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.collections.ListMapper;
+import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanBuilder;
+import com.canoo.dolphin.impl.BeanRepository;
+import com.canoo.dolphin.impl.ClassRepository;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.ChildModel;
 import com.canoo.dolphin.server.util.ListReferenceModel;
@@ -34,10 +36,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithAnnotatedSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -66,10 +69,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -99,10 +103,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithAllPrimitiveDatatypes() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
 
@@ -132,10 +137,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
@@ -165,10 +171,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithListReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         ListReferenceModel model = manager.create(ListReferenceModel.class);
 
@@ -189,10 +196,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     public void testWithInheritedModel() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
 
         ChildModel model = manager.create(ChildModel.class);
 

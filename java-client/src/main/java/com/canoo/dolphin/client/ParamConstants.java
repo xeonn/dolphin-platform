@@ -3,6 +3,7 @@ package com.canoo.dolphin.client;
 /**
  * Created by hendrikebbers on 31.03.15.
  */
+@Deprecated
 public final class ParamConstants {
 
     public static final String PM_TYPE = "param-presentation-model";
