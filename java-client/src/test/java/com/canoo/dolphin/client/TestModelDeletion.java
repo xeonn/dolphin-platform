@@ -14,6 +14,9 @@ import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.comm.JsonCodec;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
@@ -29,6 +32,10 @@ public class TestModelDeletion {
     @Test
     public void testWithAnnotatedSimpleModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -52,6 +59,10 @@ public class TestModelDeletion {
     @Test
     public void testWithSimpleModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -75,6 +86,10 @@ public class TestModelDeletion {
     @Test
     public void testWithSingleReferenceModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -98,6 +113,10 @@ public class TestModelDeletion {
     @Test
     public void testWithListReferenceModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -121,6 +140,10 @@ public class TestModelDeletion {
     @Test
     public void testWithInheritedModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);

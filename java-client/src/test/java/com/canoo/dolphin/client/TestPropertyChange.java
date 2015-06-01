@@ -16,6 +16,9 @@ import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.client.util.SimpleTestModel;
 import com.canoo.dolphin.client.util.SingleReferenceModel;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.comm.JsonCodec;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,6 +30,10 @@ public class TestPropertyChange {
     @Test
     public void testWithAnnotatedSimpleModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -75,6 +82,10 @@ public class TestPropertyChange {
     @Test
     public void testWithSimpleModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -124,6 +135,10 @@ public class TestPropertyChange {
     @Test
     public void testWithSingleReferenceModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
@@ -176,6 +191,10 @@ public class TestPropertyChange {
     @Test
     public void testWithInheritedModel() {
         final ClientDolphin dolphin = new ClientDolphin();
+        dolphin.setClientModelStore(new ClientModelStore(dolphin));
+        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
+        connector.setCodec(new JsonCodec());
+        dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);

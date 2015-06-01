@@ -32,7 +32,7 @@ public class ClientPresentationModelBuilder extends PresentationModelBuilder {
 
     @Override
     public ClientPresentationModelBuilder withAttribute(String name, Object value, Tag tag) {
-        attributes.add(new ClientAttribute(name, value, type));
+        attributes.add(new ClientAttribute(name, value, null, tag));
         return this;
     }
 
