@@ -280,7 +280,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     @Override
     public boolean setAll(Collection<? extends E> col) {
         clear();
-        addAll(col);
+        return addAll(col);
     }
 
     @Override
