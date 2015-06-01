@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanBuilder;
 import com.canoo.dolphin.impl.BeanRepository;
 import com.canoo.dolphin.impl.ClassRepository;
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 
 public class DolphinUtilsTest extends AbstractDolphinBasedTest {
 
-    private BeanManager manager;
+    private BeanManagerImpl manager;
     private ServerDolphin dolphin;
     private BeanRepository beanRepository;
 
@@ -33,7 +33,7 @@ public class DolphinUtilsTest extends AbstractDolphinBasedTest {
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        manager = new BeanManager(beanRepository, beanBuilder);
+        manager = new BeanManagerImpl(beanRepository, beanBuilder);
     }
 
     @Test

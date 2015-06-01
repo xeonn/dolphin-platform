@@ -1,20 +1,20 @@
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
 import com.canoo.dolphin.client.util.ListReferenceModel;
 import com.canoo.dolphin.client.util.SimpleTestModel;
 import com.canoo.dolphin.impl.BeanBuilder;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepository;
 import com.canoo.dolphin.impl.ClassRepository;
 import com.canoo.dolphin.impl.DolphinConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapper;
+import mockit.Mocked;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
-import org.opendolphin.core.comm.JsonCodec;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -34,18 +34,16 @@ public class TestObservableListSync {
     // Adding, removing, and replacing all element types as user
     //////////////////////////////////////////////////////////////
     @Test
-    public void addingObjectElementAsUser_shouldAddElement() {
+    public void addingObjectElementAsUser_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -67,18 +65,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingPrimitiveElementAsUser_shouldAddElement() {
+    public void addingPrimitiveElementAsUser_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -99,18 +95,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingObjectElementAsUser_shouldDeleteElement() {
+    public void deletingObjectElementAsUser_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -132,18 +126,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingPrimitiveElementAsUser_shouldDeleteElement() {
+    public void deletingPrimitiveElementAsUser_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -164,18 +156,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replaceObjectElementAsUser_shouldReplaceElement() {
+    public void replaceObjectElementAsUser_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -199,18 +189,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacePrimitiveElementAsUser_shouldReplaceElement() {
+    public void replacePrimitiveElementAsUser_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -237,18 +225,16 @@ public class TestObservableListSync {
     // Adding elements at different positions as user
     //////////////////////////////////////////////////////////////
     @Test
-    public void addingSingleElementInBeginningAsUser_shouldAddElement() {
+    public void addingSingleElementInBeginningAsUser_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -272,18 +258,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingMultipleElementInBeginningAsUser_shouldAddElements() {
+    public void addingMultipleElementInBeginningAsUser_shouldAddElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -309,18 +293,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingSingleElementInMiddleAsUser_shouldAddElement() {
+    public void addingSingleElementInMiddleAsUser_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -344,18 +326,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingMultipleElementInMiddleAsUser_shouldAddElements() {
+    public void addingMultipleElementInMiddleAsUser_shouldAddElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -381,18 +361,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingSingleElementAtEndAsUser_shouldAddElement() {
+    public void addingSingleElementAtEndAsUser_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -416,18 +394,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingMultipleElementAtEndAsUser_shouldAddElements() {
+    public void addingMultipleElementAtEndAsUser_shouldAddElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -458,18 +434,16 @@ public class TestObservableListSync {
     // Removing elements from different positions as user
     //////////////////////////////////////////////////////////////
     @Test
-    public void deletingSingleElementInBeginningAsUser_shouldRemoveElement() {
+    public void deletingSingleElementInBeginningAsUser_shouldRemoveElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -493,18 +467,16 @@ public class TestObservableListSync {
 
     // TODO: Enable once ObservableArrayList.sublist() was implemented completely
     @Test (enabled = false)
-    public void deletingMultipleElementInBeginningAsUser_shouldRemoveElements() {
+    public void deletingMultipleElementInBeginningAsUser_shouldRemoveElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -527,18 +499,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingSingleElementInMiddleAsUser_shouldDeleteElement() {
+    public void deletingSingleElementInMiddleAsUser_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -562,18 +532,16 @@ public class TestObservableListSync {
 
     // TODO: Enable once ObservableArrayList.sublist() was implemented completely
     @Test (enabled = false)
-    public void deletingMultipleElementInMiddleAsUser_shouldDeleteElements() {
+    public void deletingMultipleElementInMiddleAsUser_shouldDeleteElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -596,18 +564,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingSingleElementAtEndAsUser_shouldDeleteElement() {
+    public void deletingSingleElementAtEndAsUser_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -631,18 +597,16 @@ public class TestObservableListSync {
 
     // TODO: Enable once ObservableArrayList.sublist() was implemented completely
     @Test (enabled = false)
-    public void deletingMultipleElementAtEndAsUser_shouldAddElements() {
+    public void deletingMultipleElementAtEndAsUser_shouldAddElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -670,18 +634,16 @@ public class TestObservableListSync {
     // Replacing elements from different positions as user
     //////////////////////////////////////////////////////////////
     @Test
-    public void replacingSingleElementAtBeginningAsUser_shouldReplaceElement() {
+    public void replacingSingleElementAtBeginningAsUser_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -705,18 +667,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingSingleElementInMiddleAsUser_shouldReplaceElement() {
+    public void replacingSingleElementInMiddleAsUser_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -740,18 +700,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingSingleElementAtEndAsUser_shouldReplaceElement() {
+    public void replacingSingleElementAtEndAsUser_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -785,18 +743,16 @@ public class TestObservableListSync {
     // Adding, removing, and replacing all element types from dolphin
     ///////////////////////////////////////////////////////////////////
     @Test
-    public void addingObjectElementFromDolphin_shouldAddElement() {
+    public void addingObjectElementFromDolphin_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -818,18 +774,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingPrimitiveElementFromDolphin_shouldAddElement() {
+    public void addingPrimitiveElementFromDolphin_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -848,18 +802,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingObjectElementFromDolphin_shouldDeleteElement() {
+    public void deletingObjectElementFromDolphin_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -888,18 +840,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingPrimitiveElementFromDolphin_shouldDeleteElement() {
+    public void deletingPrimitiveElementFromDolphin_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -927,18 +877,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingObjectElementFromDolphin_shouldReplaceElement() {
+    public void replacingObjectElementFromDolphin_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -972,18 +920,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingPrimitiveElementFromDolphin_shouldReplaceElement() {
+    public void replacingPrimitiveElementFromDolphin_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1017,18 +963,16 @@ public class TestObservableListSync {
     // Adding elements at different positions from dolphin
     //////////////////////////////////////////////////////////////
     @Test
-    public void addingSingleElementInBeginningFromDolphin_shouldAddElement() {
+    public void addingSingleElementInBeginningFromDolphin_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1049,18 +993,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingSingleElementInMiddleFromDolphin_shouldAddElement() {
+    public void addingSingleElementInMiddleFromDolphin_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1081,18 +1023,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void addingSingleElementAtEndFromDolphin_shouldAddElement() {
+    public void addingSingleElementAtEndFromDolphin_shouldAddElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1118,18 +1058,16 @@ public class TestObservableListSync {
     // Removing elements from different positions from dolphin
     //////////////////////////////////////////////////////////////
     @Test
-    public void deletingSingleElementInBeginningFromDolphin_shouldRemoveElement() {
+    public void deletingSingleElementInBeginningFromDolphin_shouldRemoveElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1149,18 +1087,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingMultipleElementInBeginningFromDolphin_shouldRemoveElements() {
+    public void deletingMultipleElementInBeginningFromDolphin_shouldRemoveElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1180,18 +1116,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingSingleElementInMiddleFromDolphin_shouldDeleteElement() {
+    public void deletingSingleElementInMiddleFromDolphin_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1211,18 +1145,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingMultipleElementInMiddleFromDolphin_shouldRemoveElements() {
+    public void deletingMultipleElementInMiddleFromDolphin_shouldRemoveElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1242,18 +1174,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingSingleElementAtEndFromDolphin_shouldDeleteElement() {
+    public void deletingSingleElementAtEndFromDolphin_shouldDeleteElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1273,18 +1203,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void deletingMultipleElementAtEndFromDolphin_shouldRemoveElements() {
+    public void deletingMultipleElementAtEndFromDolphin_shouldRemoveElements(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1309,18 +1237,16 @@ public class TestObservableListSync {
     // Replacing elements from different positions from dolphin
     //////////////////////////////////////////////////////////////
     @Test
-    public void replacingSingleElementAtBeginningFromDolphin_shouldReplaceElement() {
+    public void replacingSingleElementAtBeginningFromDolphin_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1341,18 +1267,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingSingleElementInMiddleFromDolphin_shouldReplaceElement() {
+    public void replacingSingleElementInMiddleFromDolphin_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);
@@ -1373,18 +1297,16 @@ public class TestObservableListSync {
     }
 
     @Test
-    public void replacingSingleElementAtEndFromDolphin_shouldReplaceElement() {
+    public void replacingSingleElementAtEndFromDolphin_shouldReplaceElement(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector connector = new HttpClientConnector(dolphin, "http://localhost");
-        connector.setCodec(new JsonCodec());
         dolphin.setClientConnector(connector);
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final ListReferenceModel model = manager.create(ListReferenceModel.class);
         final PresentationModel sourceModel = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName()).get(0);

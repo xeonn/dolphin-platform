@@ -1,6 +1,6 @@
 package com.canoo.dolphin.icos.poc;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.icos.poc.model.Option;
@@ -27,7 +27,7 @@ public class IcosPocController extends AbstractDolphinCommand {
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
         final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManager manager = new BeanManager(beanRepository, beanBuilder);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final Questionnaire questionnaire = manager.create(Questionnaire.class);
 

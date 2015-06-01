@@ -1,6 +1,6 @@
 package com.canoo.dolphin.example.server;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.example.HelloWorldModel;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
 public class HelloWorldController {
 
     @Inject
-    private BeanManager manager;
+    private BeanManagerImpl manager;
 
     @DolphinAction("init")
     public void init() {

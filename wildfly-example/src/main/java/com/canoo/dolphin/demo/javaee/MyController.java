@@ -1,6 +1,6 @@
 package com.canoo.dolphin.demo.javaee;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 
@@ -10,7 +10,7 @@ import javax.inject.Inject;
 public class MyController {
 
     @Inject
-    private BeanManager manager;
+    private BeanManagerImpl manager;
 
     @DolphinAction
     public void callMe() {}

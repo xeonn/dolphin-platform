@@ -3,8 +3,6 @@ package com.canoo.dolphin;
 import com.canoo.dolphin.event.BeanAddedListener;
 import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.impl.BeanBuilder;
-import com.canoo.dolphin.impl.BeanRepository;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -13,15 +11,7 @@ import java.util.List;
 /**
  * Basic Manager to work with beans that are synced with the client.
  */
-public class BeanManager implements Serializable {
-
-    private final BeanRepository beanRepository;
-    private final BeanBuilder beanBuilder;
-
-    public BeanManager(BeanRepository beanRepository, BeanBuilder beanBuilder) {
-        this.beanRepository = beanRepository;
-        this.beanBuilder = beanBuilder;
-    }
+public interface BeanManager extends Serializable {
 
     /**
      * Checks if the given object is a dolphin bean that is synced with the client
@@ -29,9 +19,7 @@ public class BeanManager implements Serializable {
      * @param bean the object
      * @return true if the given object is a dolphin bean
      */
-    public boolean isManaged(Object bean) {
-        return beanRepository.isManaged(bean);
-    }
+    boolean isManaged(Object bean);
 
     /**
      * Creates a new instance of the given dolphin bean class that will automatically be synced with the client.
@@ -41,9 +29,7 @@ public class BeanManager implements Serializable {
      * @param <T>       bean type
      * @return the new bean instance
      */
-    public <T> T create(Class<T> beanClass) {
-        return beanBuilder.create(beanClass);
-    }
+    <T> T create(Class<T> beanClass);
 
     /**
      * Remove the given managed dolphin bean. by calling this method the given bean will become unmanaged and won't be
@@ -51,42 +37,28 @@ public class BeanManager implements Serializable {
      *
      * @param bean the bean
      */
-    public void remove(Object bean) {
-        beanRepository.delete(bean);
-    }
+    void remove(Object bean);
 
     /**
      * Remove all beans of the given type.
      *
      * @param beanClass the class that defines the bean type.
      */
-    public void removeAll(Class<?> beanClass) {
-        for (Object bean : findAll(beanClass)) {
-            beanRepository.delete(bean);
-        }
-    }
+    void removeAll(Class<?> beanClass);
 
     /**
      * Remove all beans of the given type.
      *
      * @param beans the beans that should be removed.
      */
-    public void removeAll(Object... beans) {
-        for (final Object bean : beans) {
-            remove(bean);
-        }
-    }
+    void removeAll(Object... beans);
 
     /**
      * Remove all beans of the given type.
      *
      * @param beans the beans that should be removed.
      */
-    public void removeAll(Collection<?> beans) {
-        for (final Object bean : beans) {
-            remove(bean);
-        }
-    }
+    void removeAll(Collection<?> beans);
 
     /**
      * Returns a list of all dolphin managed beans of the given type / class
@@ -95,9 +67,7 @@ public class BeanManager implements Serializable {
      * @param <T>       the bean type
      * @return a list of all managed beans of the type
      */
-    public <T> List<T> findAll(Class<T> beanClass) {
-        return beanRepository.findAll(beanClass);
-    }
+    <T> List<T> findAll(Class<T> beanClass);
 
     /**
      * Subscribe a listener to all bean creation events for a specific class.
@@ -107,9 +77,7 @@ public class BeanManager implements Serializable {
      * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    public <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener);
 
     /**
      * Subscribe a listener to all bean creation events.
@@ -117,9 +85,7 @@ public class BeanManager implements Serializable {
      * @param listener the listener which receives the creation events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    public Subscription onAdded(BeanAddedListener<Object> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    Subscription onAdded(BeanAddedListener<Object> listener);
 
     /**
      * Subscribe a listener to all bean destruction events for a specific class.
@@ -129,9 +95,7 @@ public class BeanManager implements Serializable {
      * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    public <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener);
 
     /**
      * Subscribe a listener to all bean destruction events.
@@ -139,8 +103,6 @@ public class BeanManager implements Serializable {
      * @param listener the listener which receives the destruction events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    public Subscription onRemoved(BeanRemovedListener<Object> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    Subscription onRemoved(BeanRemovedListener<Object> listener);
 
 }
