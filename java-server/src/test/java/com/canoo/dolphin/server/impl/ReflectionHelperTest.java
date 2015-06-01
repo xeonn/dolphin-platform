@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.server.util.DataType;
 import org.testng.annotations.Test;
 

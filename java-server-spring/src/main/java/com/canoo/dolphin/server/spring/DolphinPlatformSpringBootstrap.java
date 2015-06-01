@@ -1,13 +1,14 @@
 package com.canoo.dolphin.server.spring;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.impl.BeanBuilder;
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.BeanBuilder;
+import com.canoo.dolphin.impl.BeanRepository;
+import com.canoo.dolphin.impl.ClassRepository;
+import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
@@ -31,18 +32,19 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     /**
-     * Method to create a spring managed {@link BeanManager} instance in session scope.
+     * Method to create a spring managed {@link BeanManagerImpl} instance in session scope.
      * @return the instance
      */
     @Bean
     @Scope("session")
-    protected BeanManager createManager() {
+    protected BeanManagerImpl createManager() {
         ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         DefaultDolphinServlet.addToSession(beanRepository);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
         return new BeanManagerImpl(beanRepository, beanBuilder);
 
     }

@@ -1,6 +1,6 @@
 package com.canoo.dolphin.workflow.server.activiti;
 
-import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.workflow.server.model.*;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.RepositoryService;
@@ -30,7 +30,7 @@ public class ActivitiService {
     private ManagementService managementService;
 
     @Inject
-    private BeanManager manager;
+    private BeanManagerImpl manager;
 
     @Inject
     private RepositoryService repositoryService;

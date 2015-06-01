@@ -29,7 +29,7 @@ public interface BeanManager extends Serializable {
      * @param <T>       bean type
      * @return the new bean instance
      */
-    <T> T create(final Class<T> beanClass);
+    <T> T create(Class<T> beanClass);
 
     /**
      * Remove the given managed dolphin bean. by calling this method the given bean will become unmanaged and won't be
