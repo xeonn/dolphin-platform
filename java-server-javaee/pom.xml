@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.canoo</groupId>
         <artifactId>dolphin-platform</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../</relativePath>
     </parent>
 
     <groupId>com.canoo</groupId>
     <artifactId>dolphin-platform-server-javaee</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <dependencies>
         <dependency>

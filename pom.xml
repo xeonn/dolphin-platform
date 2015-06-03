@@ -5,7 +5,7 @@
     <groupId>com.canoo</groupId>
     <artifactId>dolphin-platform</artifactId>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <modules>
         <module>java-core</module>
@@ -14,13 +14,6 @@
         <module>java-server-javaee</module>
         <module>java-server-spring</module>
         <module>java-client-javafx</module>
-        <module>spring-boot-example</module>
-        <module>wildfly-example</module>
-        <module>hello-world-example</module>
-        <module>icos-poc-server</module>
-        <module>workflow-server</module>
-        <module>performance-test</module>
-
     </modules>
 
 
@@ -50,5 +43,18 @@
               <scope>test</scope>
           </dependency>
       </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Canoo's Internal Repository</name>
+            <url>https://ci.canoo.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Canoo's Internal Snapshot Repository</name>
+            <url>https://ci.canoo.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
   </project>
