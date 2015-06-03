@@ -1,5 +1,6 @@
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.event.BeanAddedListener;
 import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
@@ -8,7 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public class BeanManagerImpl implements Serializable {
+public class BeanManagerImpl implements Serializable, BeanManager {
 
     private final BeanRepository beanRepository;
     private final BeanBuilder beanBuilder;
