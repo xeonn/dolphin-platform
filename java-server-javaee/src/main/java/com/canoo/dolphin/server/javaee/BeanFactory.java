@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.server.event.DolphinEventBus;
@@ -20,7 +21,7 @@ public class BeanFactory {
 
     @Produces
     @SessionScoped
-    public BeanManagerImpl createManager() {
+    public BeanManager createManager() {
         ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
         final BeanRepository beanRepository = new BeanRepository(dolphin);
         DefaultDolphinServlet.addToSession(beanRepository);
