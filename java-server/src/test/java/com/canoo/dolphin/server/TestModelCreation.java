@@ -16,6 +16,7 @@ import com.canoo.dolphin.server.util.SimpleTestModel;
 import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
+import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
@@ -54,7 +55,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(1));
 
         Attribute textAttribute = attributes.get(0);
@@ -87,7 +88,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(1));
 
         Attribute textAttribute = attributes.get(0);
@@ -121,7 +122,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(8));
 
         for(Attribute attribute : attributes) {
@@ -155,7 +156,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(1));
 
 
@@ -188,7 +189,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, empty());
     }
 
@@ -216,7 +217,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(2));
 
         for(Attribute attribute : attributes) {

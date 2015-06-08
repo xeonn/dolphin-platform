@@ -19,6 +19,7 @@ import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.testng.annotations.Test;
 
@@ -53,7 +54,7 @@ public class TestModelCreation {
         assertThat(model.getTextProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -88,7 +89,7 @@ public class TestModelCreation {
         assertThat(model.getTextProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -124,7 +125,7 @@ public class TestModelCreation {
         assertThat(model.getTextProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName());
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -160,7 +161,7 @@ public class TestModelCreation {
         assertThat(model.getReferenceProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -195,7 +196,7 @@ public class TestModelCreation {
         assertThat(model.getObjectList(), empty());
         assertThat(model.getPrimitiveList(), empty());
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName());
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -225,7 +226,7 @@ public class TestModelCreation {
         assertThat(model.getChildProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<PresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ChildModel.class.getName());
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ChildModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);

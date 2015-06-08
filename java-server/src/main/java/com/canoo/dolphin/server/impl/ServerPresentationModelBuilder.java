@@ -10,7 +10,7 @@ import org.opendolphin.core.server.Slot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerPresentationModelBuilder extends PresentationModelBuilder {
+public class ServerPresentationModelBuilder extends PresentationModelBuilder<ServerPresentationModel> {
 
     private List<Slot> slots;
 

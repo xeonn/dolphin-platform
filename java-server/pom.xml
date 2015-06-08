@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-server</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-combined</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

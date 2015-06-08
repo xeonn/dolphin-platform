@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-shared</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
         </dependency>
     </dependencies>
 

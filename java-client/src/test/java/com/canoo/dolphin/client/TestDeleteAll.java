@@ -13,6 +13,7 @@ import mockit.Mocked;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.testng.annotations.Test;
 
@@ -49,7 +50,7 @@ public class TestDeleteAll {
         assertThat(manager.isManaged(model3), is(false));
         assertThat(manager.isManaged(wrongModel), is(true));
 
-        List<PresentationModel> testModels = dolphin.findAllPresentationModelsByType("com.canoo.dolphin.client.util.SimpleTestModel");
+        List<ClientPresentationModel> testModels = dolphin.findAllPresentationModelsByType("com.canoo.dolphin.client.util.SimpleTestModel");
         assertThat(testModels, hasSize(0));
 
     }

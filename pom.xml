@@ -15,13 +15,6 @@
         <module>java-server-javaee</module>
         <module>java-server-spring</module>
         <module>java-client-javafx</module>
-        <module>spring-boot-example</module>
-        <module>wildfly-example</module>
-        <module>hello-world-example</module>
-        <module>icos-poc-server</module>
-        <module>workflow-server</module>
-        <module>performance-test</module>
-
     </modules>
 
 
@@ -29,6 +22,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.source>1.7</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <open-dolphin.version>1.0-RC1</open-dolphin.version>
     </properties>
 
     <dependencies>
