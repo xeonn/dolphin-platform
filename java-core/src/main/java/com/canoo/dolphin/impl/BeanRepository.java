@@ -36,9 +36,9 @@ public class BeanRepository {
     public BeanRepository(Dolphin dolphin, EventDispatcher dispatcher) {
         this.dolphin = dolphin;
 
-        dispatcher.addRemovedHandler(new EventDispatcher.ModelRemovedHandler() {
+        dispatcher.addRemovedHandler(new EventDispatcher.DolphinEventHandler() {
             @Override
-            public void onModelRemoved(PresentationModel model) {
+            public void onEvent(PresentationModel model) {
                 final Object bean = dolphinIdToObjectPm.remove(model.getId());
                 if (bean != null) {
                     objectPmToDolphinPm.remove(bean);

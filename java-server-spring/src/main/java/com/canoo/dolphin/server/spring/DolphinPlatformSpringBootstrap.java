@@ -2,11 +2,10 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
-import com.canoo.dolphin.server.impl.ServerListMapper;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
@@ -43,7 +42,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         DefaultDolphinServlet.addToSession(beanRepository);
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ServerListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new BeanManagerImpl(beanRepository, beanBuilder);
 

@@ -1,135 +1,116 @@
 package com.canoo.dolphin.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
-import com.canoo.dolphin.impl.BeanRepository;
-import com.canoo.dolphin.impl.ClassRepository;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.info.ClassInfo;
 import com.canoo.dolphin.impl.info.PropertyInfo;
 import org.opendolphin.core.Dolphin;
-import org.opendolphin.core.ModelStoreEvent;
-import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
 
 import java.util.List;
 
-public abstract class ListMapper {
+public class ListMapper {
 
     private final Dolphin dolphin;
     private final BeanRepository beanRepository;
     private final ClassRepository classRepository;
     protected final PresentationModelBuilderFactory builderFactory;
 
-    public ListMapper(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
+    public ListMapper(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
         this.dolphin = dolphin;
         this.beanRepository = beanRepository;
         this.classRepository = classRepository;
         this.builderFactory = builderFactory;
 
-        dolphin.addModelStoreListener(getAddEntryKey(), createAddListener());
-        dolphin.addModelStoreListener(getDelEntryKey(), createDeleteListener());
-        dolphin.addModelStoreListener(getSetEntryKey(), createSetListener());
+        dispatcher.addListElementAddHandler(createAddListener());
+        dispatcher.addListElementDelHandler(createDelListener());
+        dispatcher.addListElementSetHandler(createSetListener());
     }
 
-    protected abstract String getAddEntryKey();
-    protected abstract String getDelEntryKey();
-    protected abstract String getSetEntryKey();
-
-    private ModelStoreListener createAddListener() {
-        return new ModelStoreListener() {
-            @Override
+    private EventDispatcher.DolphinEventHandler createAddListener() {
+        return new EventDispatcher.DolphinEventHandler() {
             @SuppressWarnings("unchecked")
-            public void modelStoreChanged(ModelStoreEvent modelStoreEvent) {
-                if (modelStoreEvent.getType() == ModelStoreEvent.Type.ADDED) {
-                    PresentationModel model = null;
-                    try {
-                        model = modelStoreEvent.getPresentationModel();
-                        final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                        final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
+            @Override
+            public void onEvent(PresentationModel model) {
+                try {
+                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
+                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
-                        final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
-                        final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
+                    final Object bean = beanRepository.getBean(sourceId);
+                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
+                    final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
-                        final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
+                    final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                        final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
-                        final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
+                    final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
+                    final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
 
-                        final Object value = observableListInfo.convertFromDolphin(dolphinValue);
-                        list.internalAdd(pos, value);
-                    } catch (NullPointerException | ClassCastException ex) {
-                        System.out.println("Invalid ADD_FROM_CLIENT command received: " + model);
-                    } finally {
-                        if (model != null) {
-                            dolphin.remove(model);
-                        }
+                    final Object value = observableListInfo.convertFromDolphin(dolphinValue);
+                    list.internalAdd(pos, value);
+                } catch (NullPointerException | ClassCastException ex) {
+                    System.out.println("Invalid LIST_ADD command received: " + model);
+                } finally {
+                    if (model != null) {
+                        dolphin.remove(model);
                     }
                 }
             }
         };
     }
 
-    private ModelStoreListener createDeleteListener() {
-        return new ModelStoreListener() {
+    private EventDispatcher.DolphinEventHandler createDelListener() {
+        return new EventDispatcher.DolphinEventHandler() {
+            @SuppressWarnings("unchecked")
             @Override
-            public void modelStoreChanged(ModelStoreEvent modelStoreEvent) {
-                if (modelStoreEvent.getType() == ModelStoreEvent.Type.ADDED) {
-                    PresentationModel model = null;
-                    try {
-                        model = modelStoreEvent.getPresentationModel();
-                        final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                        final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
+            public void onEvent(PresentationModel model) {
+                try {
+                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
+                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
-                        final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
-                        final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
+                    final Object bean = beanRepository.getBean(sourceId);
+                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
+                    final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
-                        final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
+                    final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                        int from = (Integer) model.findAttributeByPropertyName("from").getValue();
-                        int to = (Integer) model.findAttributeByPropertyName("to").getValue();
-                        list.internalDelete(from, to);
-                    } catch (NullPointerException | ClassCastException ex) {
-                        System.out.println("Invalid ADD_FROM_CLIENT command received: " + model);
-                    } finally {
-                        if (model != null) {
-                            dolphin.remove(model);
-                        }
+                    int from = (Integer) model.findAttributeByPropertyName("from").getValue();
+                    int to = (Integer) model.findAttributeByPropertyName("to").getValue();
+                    list.internalDelete(from, to);
+                } catch (NullPointerException | ClassCastException ex) {
+                    System.out.println("Invalid LIST_ADD command received: " + model);
+                } finally {
+                    if (model != null) {
+                        dolphin.remove(model);
                     }
                 }
             }
         };
     }
 
-    private ModelStoreListener createSetListener() {
-        return new ModelStoreListener() {
-            @Override
+    private EventDispatcher.DolphinEventHandler createSetListener() {
+        return new EventDispatcher.DolphinEventHandler() {
             @SuppressWarnings("unchecked")
-            public void modelStoreChanged(ModelStoreEvent modelStoreEvent) {
-                if (modelStoreEvent.getType() == ModelStoreEvent.Type.ADDED) {
-                    PresentationModel model = null;
-                    try {
-                        model = modelStoreEvent.getPresentationModel();
-                        final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                        final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
+            @Override
+            public void onEvent(PresentationModel model) {
+                try {
+                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
+                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
-                        final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
-                        final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
+                    final Object bean = beanRepository.getBean(sourceId);
+                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
+                    final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
-                        final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
+                    final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                        final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
-                        final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
-                        final Object value = observableListInfo.convertFromDolphin(dolphinValue);
-                        list.internalReplace(pos, value);
-                    } catch (NullPointerException | ClassCastException ex) {
-                        System.out.println("Invalid ADD_FROM_CLIENT command received: " + model);
-                    } finally {
-                        if (model != null) {
-                            dolphin.remove(model);
-                        }
+                    final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
+                    final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
+                    final Object value = observableListInfo.convertFromDolphin(dolphinValue);
+                    list.internalReplace(pos, value);
+                } catch (NullPointerException | ClassCastException ex) {
+                    System.out.println("Invalid LIST_ADD command received: " + model);
+                } finally {
+                    if (model != null) {
+                        dolphin.remove(model);
                     }
                 }
             }
@@ -169,10 +150,33 @@ public abstract class ListMapper {
         }
     }
 
+    private void sendAdd(String sourceId, String attributeName, int pos, Object element) {
+        builderFactory.createBuilder()
+                .withType(DolphinConstants.LIST_ADD)
+                .withAttribute("source", sourceId)
+                .withAttribute("attribute", attributeName)
+                .withAttribute("pos", pos)
+                .withAttribute("element", element)
+                .create();
+    }
 
-    protected abstract void sendAdd(String sourceId, String attributeName, int pos, Object element);
+    private void sendRemove(String sourceId, String attributeName, int from, int to) {
+        builderFactory.createBuilder()
+                .withType(DolphinConstants.LIST_DEL)
+                .withAttribute("source", sourceId)
+                .withAttribute("attribute", attributeName)
+                .withAttribute("from", from)
+                .withAttribute("to", to)
+                .create();
+    }
 
-    protected abstract void sendRemove(String sourceId, String attributeName, int from, int to);
-
-    protected abstract void sendReplace(String sourceId, String attributeName, int pos, Object element);
+    private void sendReplace(String sourceId, String attributeName, int pos, Object element) {
+        builderFactory.createBuilder()
+                .withType(DolphinConstants.LIST_SET)
+                .withAttribute("source", sourceId)
+                .withAttribute("attribute", attributeName)
+                .withAttribute("pos", pos)
+                .withAttribute("element", element)
+                .create();
+    }
 }

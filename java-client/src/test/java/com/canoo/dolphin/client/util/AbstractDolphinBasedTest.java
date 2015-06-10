@@ -2,7 +2,6 @@ package com.canoo.dolphin.client.util;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.impl.ClientEventDispatcher;
-import com.canoo.dolphin.client.impl.ClientListMapper;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
@@ -24,7 +23,7 @@ public abstract class AbstractDolphinBasedTest {
         final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ClientListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new BeanManagerImpl(beanRepository, beanBuilder);
     }

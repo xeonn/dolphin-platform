@@ -132,10 +132,10 @@
 //
 //        assertThat(car.getTripKilometerCounters(), contains(1,3));
 //
-//        List<ServerPresentationModel> changes = dolphin.findAllPresentationModelsByType(DolphinConstants.ADD_FROM_SERVER);
+//        List<ServerPresentationModel> changes = dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_ADD);
 //        assertThat(changes, hasSize(2));
-//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.DEL_FROM_SERVER), empty());
-//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.SET_FROM_SERVER), empty());
+//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_DEL), empty());
+//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_SET), empty());
 //    }
 //
 //    @Test
@@ -156,10 +156,10 @@
 //        List<ServerPresentationModel> colorModels = dolphin.findAllPresentationModelsByType(TestCarColor.class.getName());
 //        assertThat(colorModels, hasSize(2));
 //
-//        List < ServerPresentationModel > changes = dolphin.findAllPresentationModelsByType(DolphinConstants.ADD_FROM_SERVER);
+//        List < ServerPresentationModel > changes = dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_ADD);
 //        assertThat(changes, hasSize(2));
-//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.DEL_FROM_SERVER), empty());
-//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.SET_FROM_SERVER), empty());
+//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_DEL), empty());
+//        assertThat(dolphin.findAllPresentationModelsByType(DolphinConstants.LIST_SET), empty());
 //    }
 //
 //

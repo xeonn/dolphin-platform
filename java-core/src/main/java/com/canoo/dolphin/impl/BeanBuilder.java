@@ -31,9 +31,9 @@ public class BeanBuilder {
         this.listMapper = listMapper;
         this.builderFactory = builderFactory;
 
-        dispatcher.addAddedHandler(new EventDispatcher.ModelAddedHandler() {
+        dispatcher.addAddedHandler(new EventDispatcher.DolphinEventHandler() {
             @Override
-            public void onModelAdded(PresentationModel model) {
+            public void onEvent(PresentationModel model) {
                 final ClassInfo classInfo = classRepository.getClassInfo(model.getPresentationModelType());
                 final Class<?> beanClass = classInfo.getBeanClass();
 

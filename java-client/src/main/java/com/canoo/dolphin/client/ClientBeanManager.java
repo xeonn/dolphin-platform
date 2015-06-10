@@ -1,7 +1,6 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.client.impl.ClientEventDispatcher;
-import com.canoo.dolphin.client.impl.ClientListMapper;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilder;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.*;
@@ -14,7 +13,6 @@ import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
-import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.JsonCodec;
 
 import java.util.List;
@@ -42,18 +40,13 @@ public class ClientBeanManager extends BeanManagerImpl {
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
         final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, url);
         clientConnector.setCodec(new JsonCodec());
-        clientConnector.setUiThreadHandler(new UiThreadHandler() {
-            @Override
-            public void executeInsideUiThread(Runnable runnable) {
-                Platform.runLater(runnable);
-            }
-        });
+        clientConnector.setUiThreadHandler(Platform::runLater);
         dolphin.setClientConnector(clientConnector);
         final EventDispatcher dispatcher = new ClientEventDispatcher(dolphin);
         final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ClientListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new ClientBeanManager(beanRepository, beanBuilder, dolphin);
     }

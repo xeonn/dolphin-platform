@@ -10,35 +10,46 @@ import java.util.List;
 
 public abstract class EventDispatcher implements ModelStoreListener {
 
-    interface ModelAddedHandler {
-        void onModelAdded(PresentationModel model);
-    }
-    interface ModelRemovedHandler {
-        void onModelRemoved(PresentationModel model);
+    public interface DolphinEventHandler {
+        void onEvent(PresentationModel model);
     }
 
-    private final List<ModelAddedHandler> modelAddedHandlers = new ArrayList<>(1);
-    private final List<ModelRemovedHandler> modelRemovedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> modelAddedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> modelRemovedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> listElementsAddHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
 
     public EventDispatcher(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
     }
 
-    void addAddedHandler(ModelAddedHandler handler) {
+    public void addAddedHandler(DolphinEventHandler handler) {
         modelAddedHandlers.add(handler);
     }
-
-    void addRemovedHandler(ModelRemovedHandler handler) {
+    public void addRemovedHandler(DolphinEventHandler handler) {
         modelRemovedHandlers.add(handler);
+    }
+
+    public void addListElementAddHandler(DolphinEventHandler handler) {
+        listElementsAddHandlers.add(handler);
+    }
+    public void addListElementDelHandler(DolphinEventHandler handler) {
+        listElementsDelHandlers.add(handler);
+    }
+    public void addListElementSetHandler(DolphinEventHandler handler) {
+        listElementsSetHandlers.add(handler);
     }
 
     @Override
     public void modelStoreChanged(ModelStoreEvent event) {
         final PresentationModel model = event.getPresentationModel();
-        if (ModelStoreEvent.Type.ADDED == event.getType()) {
-            onAddedHandler(model);
-        } else if (ModelStoreEvent.Type.REMOVED == event.getType()) {
-            onRemovedHandler(model);
+        if (!isLocalChange(model)) {
+            if (ModelStoreEvent.Type.ADDED == event.getType()) {
+                onAddedHandler(model);
+            } else if (ModelStoreEvent.Type.REMOVED == event.getType()) {
+                onRemovedHandler(model);
+            }
         }
     }
 
@@ -47,20 +58,28 @@ public abstract class EventDispatcher implements ModelStoreListener {
         switch (type) {
             case DolphinConstants.DOLPHIN_BEAN:
             case DolphinConstants.DOLPHIN_PARAMETER:
-            case DolphinConstants.ADD_FROM_SERVER:
-            case DolphinConstants.DEL_FROM_SERVER:
-            case DolphinConstants.SET_FROM_SERVER:
-            case DolphinConstants.ADD_FROM_CLIENT:
-            case DolphinConstants.DEL_FROM_CLIENT:
-            case DolphinConstants.SET_FROM_CLIENT:
                 // ignore
-                return;
-            default:
-                if (!isLocalChange(model)) {
-                    for (final ModelAddedHandler handler : modelAddedHandlers) {
-                        handler.onModelAdded(model);
-                    }
+                break;
+            case DolphinConstants.LIST_ADD:
+                for (final DolphinEventHandler handler : listElementsAddHandlers) {
+                    handler.onEvent(model);
                 }
+                break;
+            case DolphinConstants.LIST_DEL:
+                for (final DolphinEventHandler handler : listElementsDelHandlers) {
+                    handler.onEvent(model);
+                }
+                break;
+            case DolphinConstants.LIST_SET:
+                for (final DolphinEventHandler handler : listElementsSetHandlers) {
+                    handler.onEvent(model);
+                }
+                break;
+            default:
+                for (final DolphinEventHandler handler : modelAddedHandlers) {
+                    handler.onEvent(model);
+                }
+                break;
         }
     }
 
@@ -69,20 +88,16 @@ public abstract class EventDispatcher implements ModelStoreListener {
         switch (type) {
             case DolphinConstants.DOLPHIN_BEAN:
             case DolphinConstants.DOLPHIN_PARAMETER:
-            case DolphinConstants.ADD_FROM_SERVER:
-            case DolphinConstants.DEL_FROM_SERVER:
-            case DolphinConstants.SET_FROM_SERVER:
-            case DolphinConstants.ADD_FROM_CLIENT:
-            case DolphinConstants.DEL_FROM_CLIENT:
-            case DolphinConstants.SET_FROM_CLIENT:
+            case DolphinConstants.LIST_ADD:
+            case DolphinConstants.LIST_DEL:
+            case DolphinConstants.LIST_SET:
                 // ignore
-                return;
+                break;
             default:
-                if (!isLocalChange(model)) {
-                    for (final ModelRemovedHandler handler : modelRemovedHandlers) {
-                        handler.onModelRemoved(model);
-                    }
+                for (final DolphinEventHandler handler : modelRemovedHandlers) {
+                    handler.onEvent(model);
                 }
+                break;
         }
     }
 
