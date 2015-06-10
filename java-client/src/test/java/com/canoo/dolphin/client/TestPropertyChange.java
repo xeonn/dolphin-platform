@@ -1,23 +1,11 @@
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
-import com.canoo.dolphin.client.util.ChildModel;
-import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
-import com.canoo.dolphin.client.util.SimpleTestModel;
-import com.canoo.dolphin.client.util.SingleReferenceModel;
+import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.client.util.*;
 import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
-import com.canoo.dolphin.impl.BeanBuilder;
-import com.canoo.dolphin.impl.BeanManagerImpl;
-import com.canoo.dolphin.impl.BeanRepository;
-import com.canoo.dolphin.impl.ClassRepository;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.collections.ListMapper;
-import com.canoo.dolphin.mapping.Property;
 import mockit.Mocked;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.testng.annotations.Test;
 
@@ -25,32 +13,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-public class TestPropertyChange {
+public class TestPropertyChange extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        dolphin.setClientConnector(connector);
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
 
         final SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
         final ListerResults<String> results = new ListerResults<>();
-        ValueChangeListener<String> myListener = new ValueChangeListener<String>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends String> evt) {
-                assertThat((Property<String>)evt.getSource(), is(model.getTextProperty()));
-                results.newValue = evt.getNewValue();
-                results.oldValue = evt.getOldValue();
-                results.listenerCalls++;
-            }
+        ValueChangeListener<String> myListener = evt -> {
+            assertThat(evt.getSource(), is(model.getTextProperty()));
+            results.newValue = evt.getNewValue();
+            results.oldValue = evt.getOldValue();
+            results.listenerCalls++;
         };
 
         final Subscription subscription = model.getTextProperty().onChanged(myListener);
@@ -79,28 +56,17 @@ public class TestPropertyChange {
 
     @Test
     public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        dolphin.setClientConnector(connector);
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
 
         final SimpleTestModel model = manager.create(SimpleTestModel.class);
 
         final ListerResults<String> results = new ListerResults<>();
-        ValueChangeListener<String> myListener = new ValueChangeListener<String>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends String> evt) {
-                assertThat((Property<String>) evt.getSource(), is(model.getTextProperty()));
-                results.newValue = evt.getNewValue();
-                results.oldValue = evt.getOldValue();
-                results.listenerCalls++;
-            }
+        ValueChangeListener<String> myListener = evt -> {
+            assertThat(evt.getSource(), is(model.getTextProperty()));
+            results.newValue = evt.getNewValue();
+            results.oldValue = evt.getOldValue();
+            results.listenerCalls++;
         };
 
         final Subscription subscription = model.getTextProperty().onChanged(myListener);
@@ -130,15 +96,8 @@ public class TestPropertyChange {
 
     @Test
     public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        dolphin.setClientConnector(connector);
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);
@@ -147,15 +106,11 @@ public class TestPropertyChange {
         final SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
         final ListerResults<SimpleTestModel> results = new ListerResults<>();
-        final ValueChangeListener<SimpleTestModel> myListener = new ValueChangeListener<SimpleTestModel>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends SimpleTestModel> evt) {
-                assertThat((Property<SimpleTestModel>) evt.getSource(), is(model.getReferenceProperty()));
-                results.newValue = evt.getNewValue();
-                results.oldValue = evt.getOldValue();
-                results.listenerCalls++;
-            }
+        final ValueChangeListener<SimpleTestModel> myListener = evt -> {
+            assertThat(evt.getSource(), is(model.getReferenceProperty()));
+            results.newValue = evt.getNewValue();
+            results.oldValue = evt.getOldValue();
+            results.listenerCalls++;
         };
 
         final Subscription subscription = model.getReferenceProperty().onChanged(myListener);
@@ -184,39 +139,24 @@ public class TestPropertyChange {
 
     @Test
     public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        dolphin.setClientConnector(connector);
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
 
         final ChildModel model = manager.create(ChildModel.class);
 
         final ListerResults<String> childResults = new ListerResults<>();
-        ValueChangeListener<String> childListener = new ValueChangeListener<String>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends String> evt) {
-                assertThat((Property<String>) evt.getSource(), is(model.getChildProperty()));
-                childResults.newValue = evt.getNewValue();
-                childResults.oldValue = evt.getOldValue();
-                childResults.listenerCalls++;
-            }
+        ValueChangeListener<String> childListener = evt -> {
+            assertThat(evt.getSource(), is(model.getChildProperty()));
+            childResults.newValue = evt.getNewValue();
+            childResults.oldValue = evt.getOldValue();
+            childResults.listenerCalls++;
         };
         final ListerResults<String> parentResults = new ListerResults<>();
-        ValueChangeListener<String> parentListener = new ValueChangeListener<String>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChanged(ValueChangeEvent<? extends String> evt) {
-                assertThat((Property<String>) evt.getSource(), is(model.getParentProperty()));
-                parentResults.newValue = evt.getNewValue();
-                parentResults.oldValue = evt.getOldValue();
-                parentResults.listenerCalls++;
-            }
+        ValueChangeListener<String> parentListener = evt -> {
+            assertThat(evt.getSource(), is(model.getParentProperty()));
+            parentResults.newValue = evt.getNewValue();
+            parentResults.oldValue = evt.getOldValue();
+            parentResults.listenerCalls++;
         };
 
         model.getChildProperty().onChanged(childListener);

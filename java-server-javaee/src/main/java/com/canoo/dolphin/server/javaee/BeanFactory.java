@@ -1,14 +1,12 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.BeanManagerImpl;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.impl.BeanBuilder;
-import com.canoo.dolphin.impl.BeanRepository;
-import com.canoo.dolphin.impl.ClassRepository;
 import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerEventDispatcher;
+import com.canoo.dolphin.server.impl.ServerListMapper;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.server.ServerDolphin;
@@ -22,13 +20,14 @@ public class BeanFactory {
     @Produces
     @SessionScoped
     public BeanManager createManager() {
-        ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
+        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
         DefaultDolphinServlet.addToSession(beanRepository);
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final ListMapper listMapper = new ServerListMapper(dolphin, classRepository, beanRepository, builderFactory);
+        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new BeanManagerImpl(beanRepository, beanBuilder);
     }
 

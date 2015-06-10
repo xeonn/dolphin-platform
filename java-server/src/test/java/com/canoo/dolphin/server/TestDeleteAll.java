@@ -1,12 +1,6 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.impl.BeanManagerImpl;
-import com.canoo.dolphin.impl.BeanBuilder;
-import com.canoo.dolphin.impl.BeanRepository;
-import com.canoo.dolphin.impl.ClassRepository;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.collections.ListMapper;
-import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
@@ -25,13 +19,7 @@ public class TestDeleteAll extends AbstractDolphinBasedTest {
     @Test
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
-        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
-
+        final BeanManager manager = createBeanManager(dolphin);
 
         SimpleTestModel model1 = manager.create(SimpleTestModel.class);
         SimpleTestModel model2 = manager.create(SimpleTestModel.class);

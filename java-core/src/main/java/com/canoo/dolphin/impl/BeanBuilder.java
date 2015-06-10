@@ -7,9 +7,9 @@ import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import com.canoo.dolphin.impl.info.ClassInfo;
 import com.canoo.dolphin.impl.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
-import org.opendolphin.core.Attribute;
-import org.opendolphin.core.Dolphin;
-import org.opendolphin.core.PresentationModel;
+import org.opendolphin.core.*;
+
+import static com.canoo.dolphin.impl.BeanRepository.UpdateSource.*;
 
 /**
  * A {@code BeanBuilder} is responsible for building a Dolphin Bean that is specified as a class. The main
@@ -20,41 +20,43 @@ import org.opendolphin.core.PresentationModel;
  */
 public class BeanBuilder {
 
-    private final Dolphin dolphin;
     private final ClassRepository classRepository;
     private final BeanRepository beanRepository;
     private final ListMapper listMapper;
     private final PresentationModelBuilderFactory builderFactory;
 
-    public BeanBuilder(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory) {
-        this.dolphin = dolphin;
+    public BeanBuilder(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
         this.classRepository = classRepository;
         this.beanRepository = beanRepository;
         this.listMapper = listMapper;
         this.builderFactory = builderFactory;
+
+        dispatcher.addAddedHandler(new EventDispatcher.ModelAddedHandler() {
+            @Override
+            public void onModelAdded(PresentationModel model) {
+                final ClassInfo classInfo = classRepository.getClassInfo(model.getPresentationModelType());
+                final Class<?> beanClass = classInfo.getBeanClass();
+
+                createInstanceForClass(classInfo, beanClass, model, OTHER);
+            }
+        });
     }
 
     public <T> T create(Class<T> beanClass) {
-        if (beanClass.isInterface()) {
-            throw new UnsupportedOperationException("Not implemented yet");
-        }
-        return createInstanceForClass(beanClass);
-//        return beanClass.isInterface()?
-//                new DolphinModelInvocationHander<T>(beanClass, dolphin, classRepository, beanRepository, listMapper).getInstance()
-//                : createInstanceForClass(beanClass);
+        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(beanClass);
+        final PresentationModel model = buildPresentationModel(classInfo);
+
+        return createInstanceForClass(classInfo, beanClass, model, SELF);
     }
 
-    private <T> T createInstanceForClass(Class<T> beanClass) {
+    private <T> T createInstanceForClass(ClassInfo classInfo, Class<T> beanClass, PresentationModel model, BeanRepository.UpdateSource source) {
         try {
-            final ClassInfo classInfo = classRepository.getClassInfo(beanClass);
-
             final T bean = beanClass.newInstance();
-            final PresentationModel model = buildPresentationModel(classInfo);
 
             setupProperties(classInfo, bean, model);
             setupObservableLists(classInfo, bean, model);
 
-            beanRepository.registerBean(bean, model);
+            beanRepository.registerBean(bean, model, source);
             return bean;
 
         } catch (InstantiationException | IllegalAccessException e) {

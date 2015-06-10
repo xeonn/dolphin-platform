@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClassInfo {
+    private final Class<?> beanClass;
     private final String modelType;
     private final Map<String, PropertyInfo> propertyInfoMap;
     private final Map<String, PropertyInfo> observableListInfoMap;
 
     public ClassInfo(Class<?> beanClass, Collection<PropertyInfo> propertyInfos, Collection<PropertyInfo> observableListInfos) {
+        this.beanClass = beanClass;
         modelType = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
 
         final Map<String, PropertyInfo> localPropertyInfoMap = new HashMap<>();
@@ -26,6 +28,10 @@ public class ClassInfo {
             localObservableListInfoMap.put(observableListInfo.getAttributeName(), observableListInfo);
         }
         observableListInfoMap = Collections.unmodifiableMap(localObservableListInfoMap);
+    }
+
+    public Class<?> getBeanClass() {
+        return beanClass;
     }
 
     public String getModelType() {

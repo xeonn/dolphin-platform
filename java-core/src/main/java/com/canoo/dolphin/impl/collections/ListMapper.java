@@ -3,7 +3,6 @@ package com.canoo.dolphin.impl.collections;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.impl.BeanRepository;
 import com.canoo.dolphin.impl.ClassRepository;
-import com.canoo.dolphin.impl.DolphinConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.info.ClassInfo;
 import com.canoo.dolphin.impl.info.PropertyInfo;
@@ -14,12 +13,12 @@ import org.opendolphin.core.PresentationModel;
 
 import java.util.List;
 
-public class ListMapper {
+public abstract class ListMapper {
 
     private final Dolphin dolphin;
     private final BeanRepository beanRepository;
     private final ClassRepository classRepository;
-    private final PresentationModelBuilderFactory builderFactory;
+    protected final PresentationModelBuilderFactory builderFactory;
 
     public ListMapper(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
         this.dolphin = dolphin;
@@ -27,10 +26,14 @@ public class ListMapper {
         this.classRepository = classRepository;
         this.builderFactory = builderFactory;
 
-        dolphin.addModelStoreListener(DolphinConstants.ADD_FROM_CLIENT, createAddListener());
-        dolphin.addModelStoreListener(DolphinConstants.DEL_FROM_CLIENT, createDeleteListener());
-        dolphin.addModelStoreListener(DolphinConstants.SET_FROM_CLIENT, createSetListener());
+        dolphin.addModelStoreListener(getAddEntryKey(), createAddListener());
+        dolphin.addModelStoreListener(getDelEntryKey(), createDeleteListener());
+        dolphin.addModelStoreListener(getSetEntryKey(), createSetListener());
     }
+
+    protected abstract String getAddEntryKey();
+    protected abstract String getDelEntryKey();
+    protected abstract String getSetEntryKey();
 
     private ModelStoreListener createAddListener() {
         return new ModelStoreListener() {
@@ -45,7 +48,7 @@ public class ListMapper {
                         final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
                         final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getClassInfo(bean.getClass());
+                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
                         final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
                         final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
@@ -79,7 +82,7 @@ public class ListMapper {
                         final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
                         final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getClassInfo(bean.getClass());
+                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
                         final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
                         final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
@@ -112,7 +115,7 @@ public class ListMapper {
                         final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
                         final Object bean = beanRepository.getBean(sourceId);
-                        final ClassInfo classInfo = classRepository.getClassInfo(bean.getClass());
+                        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
                         final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
                         final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
@@ -166,33 +169,10 @@ public class ListMapper {
         }
     }
 
-    private void sendAdd(String sourceId, String attributeName, int pos, Object element) {
-        builderFactory.createBuilder()
-                .withType(DolphinConstants.ADD_FROM_SERVER)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("pos", pos)
-                .withAttribute("element", element)
-                .create();
-    }
 
-    private void sendRemove(String sourceId, String attributeName, int from, int to) {
-        builderFactory.createBuilder()
-                .withType(DolphinConstants.DEL_FROM_SERVER)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("from", from)
-                .withAttribute("to", to)
-                .create();
-    }
+    protected abstract void sendAdd(String sourceId, String attributeName, int pos, Object element);
 
-    private void sendReplace(String sourceId, String attributeName, int pos, Object element) {
-        builderFactory.createBuilder()
-                .withType(DolphinConstants.SET_FROM_SERVER)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("pos", pos)
-                .withAttribute("element", element)
-                .create();
-    }
+    protected abstract void sendRemove(String sourceId, String attributeName, int from, int to);
+
+    protected abstract void sendReplace(String sourceId, String attributeName, int pos, Object element);
 }

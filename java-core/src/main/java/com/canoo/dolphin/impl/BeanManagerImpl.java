@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BeanManagerImpl implements Serializable, BeanManager {
 
-    private final BeanRepository beanRepository;
+    protected final BeanRepository beanRepository;
     private final BeanBuilder beanBuilder;
 
     public BeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder) {
@@ -53,20 +53,20 @@ public class BeanManagerImpl implements Serializable, BeanManager {
         return beanRepository.findAll(beanClass);
     }
 
-    public <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Subscription onAdded(Class<?> beanClass, BeanAddedListener listener) {
+        return beanRepository.addOnAddedListener(beanClass, listener);
     }
 
-    public Subscription onAdded(BeanAddedListener<Object> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Subscription onAdded(BeanAddedListener listener) {
+        return beanRepository.addOnAddedListener(listener);
     }
 
-    public <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Subscription onRemoved(Class<?> beanClass, BeanRemovedListener listener) {
+        return beanRepository.addOnRemovedListener(beanClass, listener);
     }
 
-    public Subscription onRemoved(BeanRemovedListener<Object> listener) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Subscription onRemoved(BeanRemovedListener listener) {
+        return beanRepository.addOnRemovedListener(listener);
     }
 
 }
