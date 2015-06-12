@@ -53,19 +53,19 @@ public class BeanManagerImpl implements Serializable, BeanManager {
         return beanRepository.findAll(beanClass);
     }
 
-    public Subscription onAdded(Class<?> beanClass, BeanAddedListener listener) {
+    public <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<T> listener) {
         return beanRepository.addOnAddedListener(beanClass, listener);
     }
 
-    public Subscription onAdded(BeanAddedListener listener) {
+    public Subscription onAdded(BeanAddedListener<?> listener) {
         return beanRepository.addOnAddedListener(listener);
     }
 
-    public Subscription onRemoved(Class<?> beanClass, BeanRemovedListener listener) {
+    public <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<T> listener) {
         return beanRepository.addOnRemovedListener(beanClass, listener);
     }
 
-    public Subscription onRemoved(BeanRemovedListener listener) {
+    public Subscription onRemoved(BeanRemovedListener<?> listener) {
         return beanRepository.addOnRemovedListener(listener);
     }
 

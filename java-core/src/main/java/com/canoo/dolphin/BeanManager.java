@@ -47,7 +47,7 @@ public interface BeanManager extends Serializable {
     void removeAll(Class<?> beanClass);
 
     /**
-     * Remove all beans of the given type.
+     * Remove all given beans.
      *
      * @param beans the beans that should be removed.
      */
@@ -77,7 +77,7 @@ public interface BeanManager extends Serializable {
      * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription onAdded(Class<?> beanClass, BeanAddedListener listener);
+    <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<T> listener);
 
     /**
      * Subscribe a listener to all bean creation events.
@@ -85,17 +85,16 @@ public interface BeanManager extends Serializable {
      * @param listener the listener which receives the creation events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription onAdded(BeanAddedListener listener);
+    Subscription onAdded(BeanAddedListener<?> listener);
 
     /**
      * Subscribe a listener to all bean destruction events for a specific class.
      *
      * @param beanClass the class for which destruction events should be received
      * @param listener the listener which receives the destruction events
-     * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription onRemoved(Class<?> beanClass, BeanRemovedListener listener);
+    <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<T> listener);
 
     /**
      * Subscribe a listener to all bean destruction events.
@@ -103,6 +102,6 @@ public interface BeanManager extends Serializable {
      * @param listener the listener which receives the destruction events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    Subscription onRemoved(BeanRemovedListener listener);
+    Subscription onRemoved(BeanRemovedListener<?> listener);
 
 }
