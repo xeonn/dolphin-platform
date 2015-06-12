@@ -28,15 +28,16 @@ public class BeanRepository {
     private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
     private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
     private final Dolphin dolphin;
-    private final Multimap<Class<?>, BeanAddedListener> beanAddedListenerMap = ArrayListMultimap.create();
-    private List<BeanAddedListener> anyBeanAddedListeners = new ArrayList<>();
-    private final Multimap<Class<?>, BeanRemovedListener> beanRemovedListenerMap = ArrayListMultimap.create();
-    private List<BeanRemovedListener> anyBeanRemovedListeners = new ArrayList<>();
+    private final Multimap<Class<?>, BeanAddedListener<?>> beanAddedListenerMap = ArrayListMultimap.create();
+    private List<BeanAddedListener<Object>> anyBeanAddedListeners = new ArrayList<>();
+    private final Multimap<Class<?>, BeanRemovedListener<?>> beanRemovedListenerMap = ArrayListMultimap.create();
+    private List<BeanRemovedListener<Object>> anyBeanRemovedListeners = new ArrayList<>();
 
     public BeanRepository(Dolphin dolphin, EventDispatcher dispatcher) {
         this.dolphin = dolphin;
 
         dispatcher.addRemovedHandler(new EventDispatcher.DolphinEventHandler() {
+            @SuppressWarnings("unchecked")
             @Override
             public void onEvent(PresentationModel model) {
                 final Object bean = dolphinIdToObjectPm.remove(model.getId());
@@ -53,7 +54,7 @@ public class BeanRepository {
         });
     }
 
-    Subscription addOnAddedListener(final Class<?> clazz, final BeanAddedListener listener) {
+    <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener) {
         beanAddedListenerMap.put(clazz, listener);
         return new Subscription() {
             @Override
@@ -63,7 +64,7 @@ public class BeanRepository {
         };
     }
 
-    Subscription addOnAddedListener(final BeanAddedListener listener) {
+    Subscription addOnAddedListener(final BeanAddedListener<Object> listener) {
         anyBeanAddedListeners.add(listener);
         return new Subscription() {
             @Override
@@ -73,7 +74,7 @@ public class BeanRepository {
         };
     }
 
-    Subscription addOnRemovedListener(final Class<?> clazz, final BeanRemovedListener listener) {
+    <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener) {
         beanRemovedListenerMap.put(clazz, listener);
         return new Subscription() {
             @Override
@@ -83,7 +84,7 @@ public class BeanRepository {
         };
     }
 
-    Subscription addOnRemovedListener(final BeanRemovedListener listener) {
+    Subscription addOnRemovedListener(final BeanRemovedListener<Object> listener) {
         anyBeanRemovedListeners.add(listener);
         return new Subscription() {
             @Override
@@ -131,6 +132,7 @@ public class BeanRepository {
         return fieldType == ClassRepository.FieldType.DOLPHIN_BEAN? dolphinIdToObjectPm.get(value) : value;
     }
 
+    @SuppressWarnings("unchecked")
     void registerBean(Object bean, PresentationModel model, UpdateSource source) {
         objectPmToDolphinPm.put(bean, model);
         dolphinIdToObjectPm.put(model.getId(), bean);

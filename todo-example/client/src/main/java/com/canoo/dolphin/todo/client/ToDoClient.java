@@ -29,7 +29,7 @@ public class ToDoClient extends Application {
         final HBox createComponent = new HBox(10, createField, createButton);
 
         final ListView<ToDoItem> itemList = new ListView<>();
-        beanManager.onAdded(ToDoList.class, list -> ((ToDoList)list).getItems().onChanged(event -> {
+        beanManager.onAdded(ToDoList.class, list -> list.getItems().onChanged(event -> {
             for (final ListChangeEvent.Change change : event.getChanges()) {
                 final int start = change.getFrom();
                 final int end = start + change.getRemovedElements().size();
