@@ -48,7 +48,7 @@
 //
 //        instance =  (T) Proxy.newProxyInstance(modelClass.getClassLoader(), new Class[]{modelClass}, this);
 //
-//        final ClassInfo classInfo = classRepository.getClassInfo(modelClass);
+//        final ClassInfo classInfo = classRepository.getOrCreateClassInfo(modelClass);
 //        try {
 //            BeanInfo beanInfo = DolphinUtils.getBeanInfo(modelClass);
 //

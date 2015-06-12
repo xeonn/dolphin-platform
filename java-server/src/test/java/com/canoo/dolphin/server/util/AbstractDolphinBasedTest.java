@@ -1,15 +1,16 @@
 package com.canoo.dolphin.server.util;
 
-import com.canoo.dolphin.impl.ReflectionHelper;
+import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerEventDispatcher;
+import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 
 import java.util.ArrayList;
 
-/**
- * Created by hendrikebbers on 30.03.15.
- */
 public abstract class AbstractDolphinBasedTest {
 
     protected ServerDolphin createServerDolphin() {
@@ -24,5 +25,15 @@ public abstract class AbstractDolphinBasedTest {
         }
 
         return config.getServerDolphin();
+    }
+
+    protected BeanManager createBeanManager(ServerDolphin dolphin) {
+        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        return new BeanManagerImpl(beanRepository, beanBuilder);
     }
 }

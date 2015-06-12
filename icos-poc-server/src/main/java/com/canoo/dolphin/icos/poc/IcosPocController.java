@@ -1,6 +1,5 @@
 package com.canoo.dolphin.icos.poc;
 
-import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.icos.poc.model.Option;
@@ -9,11 +8,9 @@ import com.canoo.dolphin.icos.poc.model.Questionnaire;
 import com.canoo.dolphin.icos.poc.model.Section;
 import com.canoo.dolphin.icos.poc.platform.AbstractDolphinCommand;
 import com.canoo.dolphin.icos.poc.platform.DolphinCommand;
-import com.canoo.dolphin.impl.BeanBuilder;
-import com.canoo.dolphin.impl.BeanRepository;
-import com.canoo.dolphin.impl.ClassRepository;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -22,11 +19,12 @@ public class IcosPocController extends AbstractDolphinCommand {
 
     public void action() {
         final ServerDolphin dolphin = getDolphin();
-        final BeanRepository beanRepository = new BeanRepository(dolphin);
+        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory);
-        final BeanBuilder beanBuilder = new BeanBuilder(dolphin, classRepository, beanRepository, listMapper, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final Questionnaire questionnaire = manager.create(Questionnaire.class);

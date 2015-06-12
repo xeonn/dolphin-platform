@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.impl.DolphinConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilder;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.DTO;
@@ -12,13 +13,12 @@ import java.util.List;
 
 public class ServerPresentationModelBuilder extends PresentationModelBuilder {
 
-    private List<Slot> slots;
-
-    private ServerDolphin dolphin;
+    private final List<Slot> slots = new ArrayList<>();
+    private final ServerDolphin dolphin;
 
     public ServerPresentationModelBuilder(ServerDolphin dolphin) {
-        slots = new ArrayList<>();
         this.dolphin = dolphin;
+        this.slots.add(new Slot(DolphinConstants.SOURCE_SYSTEM, DolphinConstants.SOURCE_SYSTEM_SERVER));
     }
 
     @Override

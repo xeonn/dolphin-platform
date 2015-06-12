@@ -47,7 +47,7 @@ public interface BeanManager extends Serializable {
     void removeAll(Class<?> beanClass);
 
     /**
-     * Remove all beans of the given type.
+     * Remove all given beans.
      *
      * @param beans the beans that should be removed.
      */
@@ -92,10 +92,9 @@ public interface BeanManager extends Serializable {
      *
      * @param beanClass the class for which destruction events should be received
      * @param listener the listener which receives the destruction events
-     * @param <T> the bean type
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
      */
-    <T>Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener);
+    <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener);
 
     /**
      * Subscribe a listener to all bean destruction events.

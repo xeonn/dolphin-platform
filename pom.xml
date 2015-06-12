@@ -21,6 +21,9 @@
         <module>icos-poc-server</module>
         <module>workflow-server</module>
         <module>performance-test</module>
+        <module>todo-example/common</module>
+        <module>todo-example/server</module>
+        <module>todo-example/client</module>
 
     </modules>
 
