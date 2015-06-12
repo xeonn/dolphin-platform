@@ -1,7 +1,9 @@
 package com.canoo.dolphin.todo.pm;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
+@DolphinBean
 public class ToDoItem {
 
     private Property<Long> entityId;
