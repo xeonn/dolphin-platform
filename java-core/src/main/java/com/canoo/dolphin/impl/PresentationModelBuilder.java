@@ -5,7 +5,7 @@ import org.opendolphin.core.Tag;
 
 import java.util.UUID;
 
-public abstract class PresentationModelBuilder {
+public abstract class PresentationModelBuilder<T extends PresentationModel> {
 
     protected String type;
 
@@ -35,6 +35,6 @@ public abstract class PresentationModelBuilder {
 
     public abstract PresentationModelBuilder withAttribute(String name, Object value, String qualifier, Tag tag);
 
-    public abstract PresentationModel create();
+    public abstract T create();
 
 }

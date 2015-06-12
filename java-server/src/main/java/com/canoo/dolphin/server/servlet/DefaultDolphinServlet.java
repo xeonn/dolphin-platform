@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.container.DolphinCommandManager;
 import com.canoo.dolphin.server.container.DolphinCommandRegistration;
+import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.server.adapter.DolphinServlet;
@@ -77,7 +78,7 @@ public class DefaultDolphinServlet extends DolphinServlet {
     }
 
     @Override
-    protected void registerApplicationActions(ServerDolphin serverDolphin) {
+    protected void registerApplicationActions(DefaultServerDolphin serverDolphin) {
         //this is done by DolphinServlet after! calling this method.
         getSession().setAttribute(DOLPHIN_ATTRIBUTE_ID, serverDolphin);
         dolphinCommandRepository.initCommandsForSession(getServletContext(), serverDolphin, dolphinManagedClasses);
@@ -102,12 +103,12 @@ public class DefaultDolphinServlet extends DolphinServlet {
     }
 
     private static ServerModelStore getModelStore(HttpSession session) {
-        ServerDolphin serverDolphin = getServerDolphin(session);
+        DefaultServerDolphin serverDolphin = getServerDolphin(session);
         return serverDolphin != null ? (ServerModelStore) serverDolphin.getModelStore() : null;
     }
 
-    private static ServerDolphin getServerDolphin(HttpSession session) {
-        return (ServerDolphin) session.getAttribute(DOLPHIN_ATTRIBUTE_ID);
+    private static DefaultServerDolphin getServerDolphin(HttpSession session) {
+        return (DefaultServerDolphin) session.getAttribute(DOLPHIN_ATTRIBUTE_ID);
     }
 
 }

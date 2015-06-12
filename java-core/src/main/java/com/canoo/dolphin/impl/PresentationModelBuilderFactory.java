@@ -1,7 +1,9 @@
 package com.canoo.dolphin.impl;
 
-public interface PresentationModelBuilderFactory {
+import org.opendolphin.core.PresentationModel;
 
-    PresentationModelBuilder createBuilder();
+public interface PresentationModelBuilderFactory<T extends PresentationModel> {
+
+    PresentationModelBuilder<T> createBuilder();
 
 }

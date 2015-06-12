@@ -6,6 +6,7 @@ import mockit.Mocked;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.testng.annotations.Test;
 
@@ -115,7 +116,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         ref1.getTextProperty().set("ref1_text");
         final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);
         ref2.getTextProperty().set("ref2_text");
-        final List<PresentationModel> refPMs = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
+        final List<ClientPresentationModel> refPMs = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
         final PresentationModel ref1PM = "ref1_text".equals(refPMs.get(0).findAttributeByPropertyName("text").getValue())? refPMs.get(0) : refPMs.get(1);
         final PresentationModel ref2PM = "ref2_text".equals(refPMs.get(0).findAttributeByPropertyName("text").getValue())? refPMs.get(0) : refPMs.get(1);
 

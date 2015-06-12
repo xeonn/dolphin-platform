@@ -8,6 +8,7 @@ import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
+import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
@@ -36,7 +37,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(
@@ -100,7 +101,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(
@@ -165,7 +166,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
         assertThat(attributes, hasSize(9));
 
         for(Attribute attribute : attributes) {
@@ -222,7 +223,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(
@@ -285,7 +286,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
         assertThat(attributes, contains(
                 allOf(
@@ -351,7 +352,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(

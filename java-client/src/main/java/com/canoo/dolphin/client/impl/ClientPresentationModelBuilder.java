@@ -10,7 +10,7 @@ import org.opendolphin.core.client.ClientPresentationModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientPresentationModelBuilder extends PresentationModelBuilder {
+public class ClientPresentationModelBuilder extends PresentationModelBuilder<ClientPresentationModel> {
 
     private final List<ClientAttribute> attributes = new ArrayList<>();
     private final ClientDolphin dolphin;

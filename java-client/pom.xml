@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-client</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
         </dependency>
     </dependencies>
 
