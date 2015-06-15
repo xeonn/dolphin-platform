@@ -17,6 +17,8 @@
         <module>java-client-javafx</module>
         <module>todo-example/common</module>
         <module>todo-example/server</module>
+        <module>todo-example/server-spring</module>
+        <module>todo-example/server-javaee</module>
         <module>todo-example/client</module>
     </modules>
 
