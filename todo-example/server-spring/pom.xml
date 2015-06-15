@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <parent>
         <artifactId>dolphin-platform</artifactId>
         <groupId>com.canoo.dolphin-platform</groupId>
@@ -11,22 +12,17 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>todo-example-client</artifactId>
-
-    <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-    </properties>
+    <artifactId>todo-example-server-spring</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.canoo.dolphin-platform</groupId>
-            <artifactId>todo-example-common</artifactId>
+            <artifactId>todo-example-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.canoo.dolphin-platform</groupId>
-            <artifactId>dolphin-platform-client-javafx</artifactId>
+            <artifactId>dolphin-platform-server-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

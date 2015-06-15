@@ -6,17 +6,8 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean
 public class ToDoItem {
 
-    private Property<Long> entityId;
     private Property<String> text;
     private Property<Boolean> completed;
-
-    public long getEntityId() {
-        final Long value = entityId.get();
-        return value == null? 0L : value;
-    }
-    public void setEntityId(long entityId) {
-        this.entityId.set(entityId);
-    }
 
     public String getText() {
         return text.get();
