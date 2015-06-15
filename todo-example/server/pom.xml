@@ -22,23 +22,8 @@
         </dependency>
         <dependency>
             <groupId>com.canoo.dolphin-platform</groupId>
-            <artifactId>dolphin-platform-server-spring</artifactId>
+            <artifactId>dolphin-platform-server</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>1.2.2.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.8.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.181</version>
         </dependency>
     </dependencies>
 
