@@ -11,7 +11,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>todo-example-client</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
