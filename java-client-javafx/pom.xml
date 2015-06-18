@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.canoo.dolphin-platform</groupId>
         <artifactId>dolphin-platform</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.0.3</version>
         <relativePath>../</relativePath>
     </parent>
 
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-client-javafx</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.0.3</version>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
