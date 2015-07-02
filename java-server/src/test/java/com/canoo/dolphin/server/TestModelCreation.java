@@ -1,17 +1,14 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
-import com.canoo.dolphin.server.util.EnumDataTypesModel;
-import com.canoo.dolphin.server.util.ListReferenceModel;
-import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
-import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
-import com.canoo.dolphin.server.util.SimpleTestModel;
-import com.canoo.dolphin.server.util.SingleReferenceModel;
+import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.ClassRepository;
+import com.canoo.dolphin.impl.DolphinConstants;
+import com.canoo.dolphin.server.util.*;
+import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
+import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
+import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
@@ -19,20 +16,14 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 public class TestModelCreation extends AbstractDolphinBasedTest {
 
     @Test
     public void testWithAnnotatedSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -46,23 +37,57 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, hasSize(1));
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
-        Attribute textAttribute = attributes.get(0);
-        assertThat(textAttribute.getPropertyName(), is("text_property"));
-        assertThat(textAttribute.getValue(), nullValue());
-        assertThat(textAttribute.getBaseValue(), nullValue());
-        assertThat(textAttribute.getQualifier(), nullValue());
-        assertThat(textAttribute.getTag(), is(Tag.VALUE));
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("text_property")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.JAVA_CLASS)),
+                                hasProperty("value", is(SimpleAnnotatedTestModel.class.getName())),
+                                hasProperty("baseValue", is(SimpleAnnotatedTestModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("text_property")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
     }
 
     @Test
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -76,24 +101,58 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, hasSize(1));
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
-        Attribute textAttribute = attributes.get(0);
-        assertThat(textAttribute.getPropertyName(), is("text"));
-        assertThat(textAttribute.getValue(), nullValue());
-        assertThat(textAttribute.getBaseValue(), nullValue());
-        assertThat(textAttribute.getQualifier(), nullValue());
-        assertThat(textAttribute.getTag(), is(Tag.VALUE));
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("text")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.JAVA_CLASS)),
+                                hasProperty("value", is(SimpleTestModel.class.getName())),
+                                hasProperty("baseValue", is(SimpleTestModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("text")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
     }
 
 
     @Test
     public void testWithAllPrimitiveDatatypes() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
 
@@ -107,12 +166,40 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, hasSize(8));
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
+        assertThat(attributes, hasSize(9));
 
         for(Attribute attribute : attributes) {
-            assertThat(attribute.getValue(), nullValue());
-            assertThat(attribute.getBaseValue(), nullValue());
+            if (DolphinConstants.SOURCE_SYSTEM.equals(attribute.getPropertyName())) {
+                assertThat(attribute.getValue(), Matchers.<Object>is(DolphinConstants.SOURCE_SYSTEM_SERVER));
+                assertThat(attribute.getBaseValue(), Matchers.<Object>is(DolphinConstants.SOURCE_SYSTEM_SERVER));
+            } else {
+                assertThat(attribute.getValue(), nullValue());
+                assertThat(attribute.getBaseValue(), nullValue());
+            }
+            assertThat(attribute.getQualifier(), nullValue());
+            assertThat(attribute.getTag(), is(Tag.VALUE));
+        }
+
+        final List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, hasSize(1));
+
+        final PresentationModel classModel = classModels.get(0);
+
+        final List<Attribute> classAttributes = classModel.getAttributes();
+        assertThat(classAttributes, hasSize(10));
+
+        for(Attribute attribute : classAttributes) {
+            if (DolphinConstants.JAVA_CLASS.equals(attribute.getPropertyName())) {
+                assertThat(attribute.getValue(), Matchers.<Object>is(PrimitiveDataTypesModel.class.getName()));
+                assertThat(attribute.getBaseValue(), Matchers.<Object>is(PrimitiveDataTypesModel.class.getName()));
+            } else if (DolphinConstants.SOURCE_SYSTEM.equals(attribute.getPropertyName())) {
+                assertThat(attribute.getValue(), Matchers.<Object>is(DolphinConstants.SOURCE_SYSTEM_SERVER));
+                assertThat(attribute.getBaseValue(), Matchers.<Object>is(DolphinConstants.SOURCE_SYSTEM_SERVER));
+            } else {
+                assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepository.FieldType.UNKNOWN.ordinal()));
+                assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepository.FieldType.UNKNOWN.ordinal()));
+            }
             assertThat(attribute.getQualifier(), nullValue());
             assertThat(attribute.getTag(), is(Tag.VALUE));
         }
@@ -120,42 +207,9 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithEnumDataTypesModel() {
-        final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
-
-        EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
-
-        assertThat(model, notNullValue());
-        assertThat(model.getEnumProperty(), notNullValue());
-        assertThat(model.getEnumProperty().get(), nullValue());
-        assertThat(manager.isManaged(model), is(true));
-
-        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName());
-        assertThat(dolphinModels, hasSize(1));
-
-        ServerPresentationModel dolphinModel = dolphinModels.get(0);
-
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, hasSize(1));
-
-
-        Attribute textAttribute = attributes.get(0);
-        assertThat(textAttribute.getPropertyName(), is("enumProperty"));
-        assertThat(textAttribute.getValue(), nullValue());
-        assertThat(textAttribute.getBaseValue(), nullValue());
-        assertThat(textAttribute.getQualifier(), nullValue());
-        assertThat(textAttribute.getTag(), is(Tag.VALUE));
-    }
-
-    @Test
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
@@ -169,39 +223,195 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, hasSize(1));
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
 
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("referenceProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
 
-        Attribute referenceAttribute = attributes.get(0);
-        assertThat(referenceAttribute.getPropertyName(), is("referenceProperty"));
-        assertThat(referenceAttribute.getValue(), nullValue());
-        assertThat(referenceAttribute.getBaseValue(), nullValue());
-        assertThat(referenceAttribute.getQualifier(), nullValue());
-        assertThat(referenceAttribute.getTag(), is(Tag.VALUE));
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.JAVA_CLASS)),
+                                hasProperty("value", is(SingleReferenceModel.class.getName())),
+                                hasProperty("baseValue", is(SingleReferenceModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("referenceProperty")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
     }
 
     @Test
     public void testWithListReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         ListReferenceModel model = manager.create(ListReferenceModel.class);
 
         assertThat(model, notNullValue());
         assertThat(model.getObjectList(), empty());
         assertThat(model.getPrimitiveList(), empty());
-        assertThat(model.getEnumList(), empty());
 
         List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ListReferenceModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
 
-        List<Attribute> attributes = dolphinModel.getAttributes();
-        assertThat(attributes, empty());
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
+
+        assertThat(attributes, contains(
+                allOf(
+                        hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.JAVA_CLASS)),
+                                hasProperty("value", is(ListReferenceModel.class.getName())),
+                                hasProperty("baseValue", is(ListReferenceModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("objectList")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("primitiveList")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
+    }
+
+    @Test
+    public void testWithInheritedModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ChildModel model = manager.create(ChildModel.class);
+
+        assertThat(model, notNullValue());
+        assertThat(model.getParentProperty(), notNullValue());
+        assertThat(model.getParentProperty().get(), nullValue());
+        assertThat(model.getChildProperty(), notNullValue());
+        assertThat(model.getChildProperty().get(), nullValue());
+        assertThat(manager.isManaged(model), is(true));
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ChildModel.class.getName());
+        assertThat(dolphinModels, hasSize(1));
+
+        ServerPresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<ServerAttribute> attributes = dolphinModel.getAttributes();
+
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("childProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is("parentProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_BEAN);
+        assertThat(classModels, hasSize(1));
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.JAVA_CLASS)),
+                                hasProperty("value", is(ChildModel.class.getName())),
+                                hasProperty("baseValue", is(ChildModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("childProperty")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("parentProperty")),
+                                hasProperty("value", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepository.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(DolphinConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(DolphinConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
     }
 
 }

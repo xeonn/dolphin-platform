@@ -2,6 +2,6 @@ package com.canoo.dolphin.event;
 
 public interface BeanAddedListener<T> {
 
-    void beanCreated(T model);
+    void beanCreated(T bean);
 
 }

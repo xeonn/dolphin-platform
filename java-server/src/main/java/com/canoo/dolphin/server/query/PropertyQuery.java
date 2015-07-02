@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.query;
 
-import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.impl.DolphinUtils;
+import com.canoo.dolphin.impl.BeanManagerImpl;
+import com.canoo.dolphin.impl.DolphinUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,9 @@ public class PropertyQuery<T> {
 
     private final List<PropertyQueryParam<?>> queryParams;
 
-    private final BeanManager manager;
+    private final BeanManagerImpl manager;
 
-    public PropertyQuery(Class<T> beanClass, BeanManager manager) {
+    public PropertyQuery(Class<T> beanClass, BeanManagerImpl manager) {
         this.beanClass = beanClass;
         this.manager = manager;
         queryParams = new ArrayList<>();

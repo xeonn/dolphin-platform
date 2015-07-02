@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+// TODO Remove this class
+@Deprecated
 public class BetterBeanInfo implements BeanInfo {
 
     private final Set<PropertyDescriptor> propertyDescriptors = new HashSet<>();

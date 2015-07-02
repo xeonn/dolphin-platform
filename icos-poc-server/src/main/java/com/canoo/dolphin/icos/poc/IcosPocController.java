@@ -1,29 +1,31 @@
 package com.canoo.dolphin.icos.poc;
 
+import com.canoo.dolphin.event.ValueChangeEvent;
+import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.icos.poc.model.Option;
 import com.canoo.dolphin.icos.poc.model.Question;
 import com.canoo.dolphin.icos.poc.model.Questionnaire;
 import com.canoo.dolphin.icos.poc.model.Section;
 import com.canoo.dolphin.icos.poc.platform.AbstractDolphinCommand;
 import com.canoo.dolphin.icos.poc.platform.DolphinCommand;
-import com.canoo.dolphin.event.ValueChangeEvent;
-import com.canoo.dolphin.event.ValueChangeListener;
-import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
-import com.canoo.dolphin.server.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.impl.ServerEventDispatcher;
+import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.server.ServerDolphin;
 
 @DolphinCommand("COMMAND_INIT")
 public class IcosPocController extends AbstractDolphinCommand {
 
     public void action() {
-        final ServerDolphin serverDolphin = getDolphin();
-        final ClassRepository classRepository = new ClassRepository(serverDolphin);
-        final BeanRepository beanRepository = new BeanRepository(serverDolphin, classRepository);
-        beanRepository.setListMapper(new ListMapper(serverDolphin, classRepository, beanRepository));
-        final BeanManager manager = new BeanManagerImpl(beanRepository);
+        final ServerDolphin dolphin = getDolphin();
+        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
+        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
+        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         final Questionnaire questionnaire = manager.create(Questionnaire.class);
 
@@ -33,7 +35,7 @@ public class IcosPocController extends AbstractDolphinCommand {
 
         final Question legalEntity = manager.create(Question.class);
         legalEntity.setLabel("Legal Entity");
-        legalEntity.setType(Question.Type.RADIO_GROUP);
+        legalEntity.setType(Question.Type.RADIO_GROUP.name());
         legalEntity.setVisible(true);
         section.getQuestions().add(legalEntity);
 
@@ -49,7 +51,7 @@ public class IcosPocController extends AbstractDolphinCommand {
 
         final Question typeOfRelation = manager.create(Question.class);
         typeOfRelation.setLabel("Type of Relation");
-        typeOfRelation.setType(Question.Type.RADIO_GROUP);
+        typeOfRelation.setType(Question.Type.RADIO_GROUP.name());
         typeOfRelation.setVisible(true);
         section.getQuestions().add(typeOfRelation);
 

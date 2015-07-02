@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.canoo</groupId>
+    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform</artifactId>
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
@@ -14,41 +15,69 @@
         <module>java-server-javaee</module>
         <module>java-server-spring</module>
         <module>java-client-javafx</module>
-        <module>spring-boot-example</module>
-        <module>wildfly-example</module>
-        <module>hello-world-example</module>
-        <module>icos-poc-server</module>
-        <module>workflow-server</module>
-        <module>performance-test</module>
-
+        <module>todo-example/common</module>
+        <module>todo-example/server</module>
+        <module>todo-example/server-spring</module>
+        <module>todo-example/server-javaee</module>
+        <module>todo-example/client</module>
     </modules>
 
 
-      <properties>
-          <maven.compiler.target>1.7</maven.compiler.target>
-          <maven.compiler.source>1.7</maven.compiler.source>
-          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      </properties>
+    <properties>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <open-dolphin.version>1.0-RC1</open-dolphin.version>
+    </properties>
 
-      <dependencies>
-          <dependency>
-              <groupId>org.testng</groupId>
-              <artifactId>testng</artifactId>
-              <version>6.8.21</version>
-              <scope>test</scope>
-          </dependency>
-          <dependency>
-              <groupId>org.hamcrest</groupId>
-              <artifactId>java-hamcrest</artifactId>
-              <version>2.0.0.0</version>
-              <scope>test</scope>
-          </dependency>
-          <dependency>
-              <groupId>org.jmockit</groupId>
-              <artifactId>jmockit</artifactId>
-              <version>1.16</version>
-              <scope>test</scope>
-          </dependency>
-      </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.21</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>java-hamcrest</artifactId>
+            <version>2.0.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>1.16</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-  </project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Canoo's Internal Repository</name>
+            <url>https://ci.canoo.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Canoo's Internal Snapshot Repository</name>
+            <url>https://ci.canoo.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project>

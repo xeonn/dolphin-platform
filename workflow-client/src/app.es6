@@ -8,7 +8,7 @@ try {
 
 const SERVER_URL = 'http://localhost:8080/dolphin';
 
-var connector = require('../../javascript-client/dist/dolphin.min.js');
+var connector = require('../bower_components/dolphin-js/dist/dolphin.min.js');
 
 var dolphin = global.dolphin = connector.connect(SERVER_URL, {serverPush: false});
 

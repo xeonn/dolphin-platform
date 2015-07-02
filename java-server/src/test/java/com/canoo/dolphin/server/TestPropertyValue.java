@@ -1,8 +1,6 @@
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.impl.BeanRepository;
-import com.canoo.dolphin.server.impl.ClassRepository;
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.util.*;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.server.ServerDolphin;
@@ -13,7 +11,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 public class TestPropertyValue extends AbstractDolphinBasedTest {
@@ -21,9 +18,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     @Test
     public void testWithAnnotatedSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
@@ -44,9 +39,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     @Test
     public void testWithSimpleModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         SimpleTestModel model = manager.create(SimpleTestModel.class);
 
@@ -67,9 +60,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     @Test
     public void testWithAllPrimitiveDataTypesModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         PrimitiveDataTypesModel model = manager.create(PrimitiveDataTypesModel.class);
 
@@ -114,38 +105,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithEnumDataTypeModel() {
-        final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
-
-        EnumDataTypesModel model = manager.create(EnumDataTypesModel.class);
-
-        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(EnumDataTypesModel.class.getName()).get(0);
-
-        Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
-        assertThat(enumAttribute.getValue(), nullValue());
-
-        model.getEnumProperty().set(DataType.TEST_VALUE_1);
-        assertThat(enumAttribute.getValue(), is((Object) DataType.TEST_VALUE_1.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(DataType.TEST_VALUE_1));
-
-        ServerPresentationModel enumModels = dolphin.findPresentationModelById(DataType.class.getName());
-        assertThat(enumModels, notNullValue());
-
-        enumAttribute.setValue(DataType.TEST_VALUE_2.ordinal());
-        assertThat(enumAttribute.getValue(), is((Object) DataType.TEST_VALUE_2.ordinal()));
-        assertThat(model.getEnumProperty().get(), is(DataType.TEST_VALUE_2));
-    }
-
-
-    @Test
     public void testWithSingleReferenceModel() {
         final ServerDolphin dolphin = createServerDolphin();
-        final ClassRepository classRepository = new ClassRepository(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, classRepository);
-        final BeanManagerImpl manager = new BeanManagerImpl(beanRepository);
+        final BeanManager manager = createBeanManager(dolphin);
 
         final SimpleTestModel ref1 = manager.create(SimpleTestModel.class);
         ref1.getTextProperty().set("ref1_text");
@@ -170,4 +132,33 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(referenceAttribute.getValue(), is((Object) ref2PM.getId()));
         assertThat(model.getReferenceProperty().get(), is(ref2));
     }
+
+    @Test
+    public void testWithInheritedModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ChildModel model = manager.create(ChildModel.class);
+
+        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ChildModel.class.getName()).get(0);
+
+        Attribute childAttribute = dolphinModel.findAttributeByPropertyName("childProperty");
+        assertThat(childAttribute.getValue(), nullValue());
+        Attribute parentAttribute = dolphinModel.findAttributeByPropertyName("parentProperty");
+        assertThat(parentAttribute.getValue(), nullValue());
+
+        model.getChildProperty().set("Hallo Platform");
+        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getChildProperty().get(), is("Hallo Platform"));
+        assertThat(parentAttribute.getValue(), nullValue());
+        assertThat(model.getParentProperty().get(), nullValue());
+
+        parentAttribute.setValue("Hallo Dolphin");
+        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat(model.getChildProperty().get(), is("Hallo Platform"));
+        assertThat(parentAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat(model.getParentProperty().get(), is("Hallo Dolphin"));
+    }
+
+
 }

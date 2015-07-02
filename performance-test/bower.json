@@ -1,0 +1,20 @@
+{
+  "name": "dolphin-performance-suite",
+  "version": "0.1.0",
+  "authors": [
+    "Michael Heinrichs <michael.heinrichs@canoo.com>"
+  ],
+  "description": "Performance tests for the Dolphin Platform",
+  "main": "./client/index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "dolphin-js": "~0.2.0"
+  }
+}

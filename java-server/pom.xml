@@ -4,26 +4,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.canoo</groupId>
+        <groupId>com.canoo.dolphin-platform</groupId>
         <artifactId>dolphin-platform</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
-    <groupId>com.canoo</groupId>
     <artifactId>dolphin-platform-server</artifactId>
-    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
-            <groupId>com.canoo</groupId>
+            <groupId>com.canoo.dolphin-platform</groupId>
             <artifactId>dolphin-platform-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-server</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -39,7 +37,7 @@
         <dependency>
             <groupId>org.open-dolphin</groupId>
             <artifactId>dolphin-combined</artifactId>
-            <version>0.11</version>
+            <version>${open-dolphin.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
