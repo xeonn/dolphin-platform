@@ -10,9 +10,7 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-server-javaee</artifactId>
-    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

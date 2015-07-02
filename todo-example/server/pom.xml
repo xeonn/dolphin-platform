@@ -12,9 +12,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>todo-example-server</artifactId>
-    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
