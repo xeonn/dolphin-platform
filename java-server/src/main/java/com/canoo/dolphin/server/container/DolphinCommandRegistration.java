@@ -128,7 +128,7 @@ public class DolphinCommandRegistration {
 
     public static synchronized Set<Class<?>> findAllDolphinBeanClasses() {
         if(cachedDolphinBeanClasses == null) {
-            Reflections reflections = new Reflections("");
+            Reflections reflections = new Reflections();
             cachedDolphinBeanClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
         }
         return cachedDolphinBeanClasses;

@@ -23,6 +23,10 @@ import static com.canoo.dolphin.impl.ClassRepository.FieldType.DOLPHIN_BEAN;
 
 public class ClientBeanManager extends BeanManagerImpl {
 
+    private static final String POLL_ACTION = "ServerPushController:longPoll";
+
+    private static final String RELEASE_ACTION = "ServerPushController:release";
+
     private final ClientDolphin dolphin;
 
     public static class Param {
@@ -48,6 +52,7 @@ public class ClientBeanManager extends BeanManagerImpl {
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        dolphin.startPushListening(POLL_ACTION, RELEASE_ACTION);
         return new ClientBeanManager(beanRepository, beanBuilder, dolphin);
     }
 
