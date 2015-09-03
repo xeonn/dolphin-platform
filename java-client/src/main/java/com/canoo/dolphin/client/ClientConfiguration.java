@@ -1,5 +1,7 @@
 package com.canoo.dolphin.client;
 
+import org.opendolphin.StringUtil;
+
 public class ClientConfiguration {
 
     private String serverEndpoint;
@@ -11,11 +13,8 @@ public class ClientConfiguration {
     }
 
     public ClientConfiguration(String serverEndpoint, boolean usePush) {
-        if(serverEndpoint == null) {
-            throw new IllegalArgumentException("serverEndpoint can't be null");
-        }
-        if(serverEndpoint.length() == 0) {
-            throw new IllegalArgumentException("serverEndpoint can't be empty");
+        if(StringUtil.isBlank(serverEndpoint)) {
+            throw new IllegalArgumentException("serverEndpoint mustn't be null");
         }
         this.serverEndpoint = serverEndpoint;
         this.usePush = usePush;

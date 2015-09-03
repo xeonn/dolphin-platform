@@ -4,6 +4,7 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import groovyx.gpars.dataflow.DataflowQueue;
+import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Receiver {
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
-        if(topic == null || topic.length() == 0) {
+        if(StringUtil.isBlank(topic)) {
             throw new IllegalArgumentException("topic mustn't be empty!");
         }
         if(handler == null) {

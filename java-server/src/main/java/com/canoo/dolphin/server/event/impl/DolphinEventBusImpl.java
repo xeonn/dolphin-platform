@@ -6,6 +6,7 @@ import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
+import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
 
 import java.util.Map;
@@ -35,7 +36,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void publish(final String topic, final Object data) {
-        if(topic == null || topic.length() == 0) {
+        if(StringUtil.isBlank(topic)) {
             throw new IllegalArgumentException("topic mustn't be empty!");
         }
         final long timestamp = System.currentTimeMillis();
@@ -43,7 +44,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
-        if(topic == null || topic.length() == 0) {
+        if(StringUtil.isBlank(topic)) {
             throw new IllegalArgumentException("topic mustn't be empty!");
         }
         if(handler == null) {
@@ -61,7 +62,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void unsubscribeSession(final String dolphinId) {
-        if(dolphinId == null || dolphinId.length() == 0) {
+        if(StringUtil.isBlank(dolphinId)) {
             throw new IllegalArgumentException("dolphinId mustn't be empty!");
         }
         Receiver receiver = receiverPerSession.remove(dolphinId);
@@ -71,7 +72,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     private Receiver getOrCreateReceiverInSession(String dolphinId) {
-        if(dolphinId == null || dolphinId.length() == 0) {
+        if(StringUtil.isBlank(dolphinId)) {
             throw new IllegalArgumentException("dolphinId mustn't be empty!");
         }
         Receiver receiver = receiverPerSession.get(dolphinId);
@@ -158,11 +159,11 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private final static class MessageImpl implements Message {
 
-        private String topic;
+        private final String topic;
 
-        private Object data;
+        private final Object data;
 
-        private long timestamp;
+        private final long timestamp;
 
         private MessageImpl(String topic, Object data) {
             this.topic = topic;
