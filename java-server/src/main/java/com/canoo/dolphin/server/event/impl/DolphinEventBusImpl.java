@@ -35,26 +35,20 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void publish(final String topic, final Object data) {
+        if(topic == null || topic.length() == 0) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
         final long timestamp = System.currentTimeMillis();
-        eventBus.publish(sender, new Message() {
-            @Override
-            public String getTopic() {
-                return topic;
-            }
-
-            @Override
-            public Object getData() {
-                return data;
-            }
-
-            @Override
-            public long getSendTimestamp() {
-                return timestamp;
-            }
-        });
+        eventBus.publish(sender, new MessageImpl(topic, data));
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
+        if(topic == null || topic.length() == 0) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
+        if(handler == null) {
+            throw new IllegalArgumentException("handler mustn't be empty!");
+        }
         String dolphinId = getDolphinId();
         if (dolphinId == null) {
             throw new IllegalStateException("subscribe was called outside a dolphin session");
@@ -67,6 +61,9 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void unsubscribeSession(final String dolphinId) {
+        if(dolphinId == null || dolphinId.length() == 0) {
+            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+        }
         Receiver receiver = receiverPerSession.remove(dolphinId);
         if (receiver != null) {
             receiver.unregister(eventBus);
@@ -74,6 +71,9 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     private Receiver getOrCreateReceiverInSession(String dolphinId) {
+        if(dolphinId == null || dolphinId.length() == 0) {
+            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+        }
         Receiver receiver = receiverPerSession.get(dolphinId);
         if (receiver == null) {
             receiver = new Receiver();
@@ -153,6 +153,36 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             if (receiver.isListeningToEventBus()) {
                 receiver.getReceiverQueue().leftShift(releaseVal);
             }
+        }
+    }
+
+    private final static class MessageImpl implements Message {
+
+        private String topic;
+
+        private Object data;
+
+        private long timestamp;
+
+        private MessageImpl(String topic, Object data) {
+            this.topic = topic;
+            this.data = data;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        @Override
+        public String getTopic() {
+            return topic;
+        }
+
+        @Override
+        public Object getData() {
+            return data;
+        }
+
+        @Override
+        public long getSendTimestamp() {
+            return timestamp;
         }
     }
 }

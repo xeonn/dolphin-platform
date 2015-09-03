@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * represents one listener to the queue. It need not to be thread safe, because it is related to one dolphin session.
@@ -25,9 +26,15 @@ public class Receiver {
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
+        if(topic == null || topic.length() == 0) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
+        if(handler == null) {
+            throw new IllegalArgumentException("handler mustn't be empty!");
+        }
         List<MessageListener> messageListeners = listenersPerTopic.get(topic);
         if (messageListeners == null) {
-            messageListeners = new ArrayList<>();
+            messageListeners = new CopyOnWriteArrayList<>();
             listenersPerTopic.put(topic, messageListeners);
         }
         messageListeners.add(handler);
@@ -52,7 +59,7 @@ public class Receiver {
             return false;
         }
         // iterate over copy, because the list could be changed in an onMessage method
-        for (MessageListener messageListener : new ArrayList<>(messageListeners)) {
+        for (MessageListener messageListener : messageListeners) {
             messageListener.onMessage(event);
         }
         return true;
@@ -63,6 +70,9 @@ public class Receiver {
     }
 
     public void unregister(EventBus eventBus) {
+        if(eventBus == null) {
+            throw new IllegalArgumentException("eventBus mustn't be empty!");
+        }
         if (isListeningToEventBus()) {
             eventBus.unSubscribe(receiverQueue);
             receiverQueue = null;
@@ -71,6 +81,9 @@ public class Receiver {
     }
 
     public void register(EventBus eventBus) {
+        if(eventBus == null) {
+            throw new IllegalArgumentException("eventBus mustn't be empty!");
+        }
         if (isListeningToEventBus()) {
             return;
         }

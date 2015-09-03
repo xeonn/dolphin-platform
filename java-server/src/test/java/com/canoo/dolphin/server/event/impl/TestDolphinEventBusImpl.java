@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import org.testng.annotations.Test;
@@ -18,7 +19,7 @@ public class TestDolphinEventBusImpl {
 
     @Test(expectedExceptions = {IllegalStateException.class})
     public void testSubscribeWithoutDolphinSession() {
-        DolphinEventBusImpl dolphinEventBus = createBus(null);
+        DolphinEventBus dolphinEventBus = createBus(null);
         dolphinEventBus.subscribe("noMatter", new MessageListener() {
             @Override
             public void onMessage(Message message) {
@@ -35,7 +36,7 @@ public class TestDolphinEventBusImpl {
 
     @Test
     public void testPublishEvent() throws InterruptedException {
-        final DolphinEventBusImpl horst = createAndStartLongPoll("session1");
+        final DolphinEventBus horst = createAndStartLongPoll("session1");
 
         final CountDownLatch latch = new CountDownLatch(2);
         final Set<Object> messsages = new HashSet<>();
@@ -67,7 +68,7 @@ public class TestDolphinEventBusImpl {
 
     @Test
     public void testUnsubscribe() throws InterruptedException {
-        final DolphinEventBusImpl horst = createAndStartLongPoll("session1");
+        final DolphinEventBus horst = createAndStartLongPoll("session1");
 
         final AtomicInteger atomicInteger = new AtomicInteger();
         Subscription subscription = horst.subscribe("chatAboutDolphin", new MessageListener() {

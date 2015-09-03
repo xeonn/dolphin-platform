@@ -11,6 +11,12 @@ public class ClientConfiguration {
     }
 
     public ClientConfiguration(String serverEndpoint, boolean usePush) {
+        if(serverEndpoint == null) {
+            throw new IllegalArgumentException("serverEndpoint can't be null");
+        }
+        if(serverEndpoint.length() == 0) {
+            throw new IllegalArgumentException("serverEndpoint can't be empty");
+        }
         this.serverEndpoint = serverEndpoint;
         this.usePush = usePush;
     }
