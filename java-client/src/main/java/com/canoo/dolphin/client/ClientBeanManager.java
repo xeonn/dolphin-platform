@@ -39,10 +39,10 @@ public class ClientBeanManager extends BeanManagerImpl {
         }
     }
 
-    public static ClientBeanManager create(String url) {
+    public static ClientBeanManager create(ClientConfiguration clientConfiguration) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, url);
+        final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
         clientConnector.setCodec(new JsonCodec());
         clientConnector.setUiThreadHandler(Platform::runLater);
         dolphin.setClientConnector(clientConnector);
@@ -52,8 +52,14 @@ public class ClientBeanManager extends BeanManagerImpl {
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        dolphin.startPushListening(POLL_ACTION, RELEASE_ACTION);
+        if(clientConfiguration.isUsePush()) {
+            dolphin.startPushListening(POLL_ACTION, RELEASE_ACTION);
+        }
         return new ClientBeanManager(beanRepository, beanBuilder, dolphin);
+    }
+
+    public static ClientBeanManager create(String url) {
+        return create(new ClientConfiguration(url));
     }
 
 
