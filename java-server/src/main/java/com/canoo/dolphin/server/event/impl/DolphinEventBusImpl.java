@@ -6,15 +6,18 @@ import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
+import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class DolphinEventBusImpl implements DolphinEventBus {
 
     private static final DolphinEventBusImpl instance = new DolphinEventBusImpl();
+    private static final int MAX_POLL_DURATION = 100;
 
     public static DolphinEventBusImpl getInstance() {
         return instance;
@@ -26,42 +29,54 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private final Object releaseVal = new Object();
 
+    //access is only concurrent for different keys. This sync strategy should be sufficient
     private Map<String, Receiver> receiverPerSession = new ConcurrentHashMap<>();
 
-    private DolphinEventBusImpl() {
+    protected DolphinEventBusImpl() {
     }
 
-    public void publish(String topic, Object data) {
+    public void publish(final String topic, final Object data) {
+        if(StringUtil.isBlank(topic)) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
+        final long timestamp = System.currentTimeMillis();
         eventBus.publish(sender, new MessageImpl(topic, data));
     }
 
-    public Subscription subscribe(String topic, MessageListener handler) {
-        return getReceiverInSession(true).subscribe(this, topic, handler);
+    public Subscription subscribe(final String topic, final MessageListener handler) {
+        if(StringUtil.isBlank(topic)) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
+        if(handler == null) {
+            throw new IllegalArgumentException("handler mustn't be empty!");
+        }
+        String dolphinId = getDolphinId();
+        if (dolphinId == null) {
+            throw new IllegalStateException("subscribe was called outside a dolphin session");
+        }
+        return getOrCreateReceiverInSession(dolphinId).subscribe(topic, handler);
     }
 
     protected String getDolphinId() {
         return DefaultDolphinServlet.getDolphinId();
     }
 
-    public void unsubscribe(DolphinEventBusSubscription subscription) {
-        Receiver receiverInSession = getReceiverInSession(false);
-        if (receiverInSession != null) {
-            receiverInSession.unsubscribe(subscription.getTopic(), subscription.getHandler());
+    public void unsubscribeSession(final String dolphinId) {
+        if(StringUtil.isBlank(dolphinId)) {
+            throw new IllegalArgumentException("dolphinId mustn't be empty!");
         }
-    }
-
-    public void unsubscribeSession(String dolphinId) {
         Receiver receiver = receiverPerSession.remove(dolphinId);
         if (receiver != null) {
-            receiver.unsubscribeFromEventBus(eventBus);
-            receiver.unsubscribeAllTopics();
+            receiver.unregister(eventBus);
         }
     }
 
-    private Receiver getReceiverInSession(boolean create) {
-        String dolphinId = getDolphinId();
+    private Receiver getOrCreateReceiverInSession(String dolphinId) {
+        if(StringUtil.isBlank(dolphinId)) {
+            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+        }
         Receiver receiver = receiverPerSession.get(dolphinId);
-        if (receiver == null && create) {
+        if (receiver == null) {
             receiver = new Receiver();
             receiverPerSession.put(dolphinId, receiver);
         }
@@ -70,19 +85,22 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
 
     /**
-     * this method blocks till a release event occurs or there is something to handle in this session
-     * this is the only location where we subscribe to our eventBus.
-     * So if listenOnEventsForCurrentDolphinSession is not called from client, we will never listen to the eventBus.
-     * TODO it is not optimal to try to get events after 20 milliseconds, because if there are many events we will never return
+     * this method blocks till a release event occurs or there is something to handle in this session.
+     * This is the only location where we subscribe to our internal eventBus.
+     * So if longPoll is not called from client, we will never listen to the eventBus.
      */
-    public void listenOnEventsForCurrentDolphinSession() throws InterruptedException {
-        String dolphinId = getDolphinId();
-        System.out.println("long poll call from dolphin session " + dolphinId);
-        Receiver receiverInSession = getReceiverInSession(true);
-        if (!receiverInSession.isListeningToEventBus()) {
-            receiverInSession.subscribeToEventBus(eventBus);
+    public void longPoll() throws InterruptedException {
+        final String dolphinId = getDolphinId();
+        if (dolphinId == null) {
+            throw new IllegalStateException("longPoll was called outside a dolphin session");
         }
-        DataflowQueue receiverQueue = receiverInSession.getReceiverQueue();
+        //TODO replace by log
+        System.out.println("long poll call from dolphin session " + dolphinId);
+        final Receiver receiverInSession = getOrCreateReceiverInSession(dolphinId);
+        if (!receiverInSession.isListeningToEventBus()) {
+            receiverInSession.register(eventBus);
+        }
+        final DataflowQueue receiverQueue = receiverInSession.getReceiverQueue();
 
         boolean somethingHandled = false;
 
@@ -90,14 +108,23 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             //blocking call
             Object val = receiverQueue.getVal();
 
+            final long startTime = System.currentTimeMillis();
+
             while (val != null) {
                 if (val == releaseVal) {
                     return;
                 }
-                Message event = (Message) val;
+                final Message event = (Message) val;
+                //TODO replace by log
                 System.out.println("handle event for dolphinId: " + dolphinId);
                 somethingHandled |= receiverInSession.handle(event);
-                val = receiverQueue.getVal(20, TimeUnit.MILLISECONDS);
+
+                //if there are many events we would loop forever -> additional exit condition
+                if (System.currentTimeMillis() - startTime <= MAX_POLL_DURATION) {
+                    val = receiverQueue.getVal(20, MILLISECONDS);
+                } else {
+                    val = null;
+                }
             }
         }
     }
@@ -107,10 +134,56 @@ public class DolphinEventBusImpl implements DolphinEventBus {
      */
     @SuppressWarnings("unchecked")
     public void release() {
+//        //TODO the release should happen in the context of a dolphin session.
+//        //TODO this piece of code should be used then
+//        String dolphinId = getDolphinId();
+//        if (dolphinId == null) {
+//            //TODO replace by log
+//            System.out.println("warning: release was called outside dolphin session");
+//            //TODO warn or throw exception?
+//            return;
+//        }
+//        Receiver receiver = receiverPerSession.get(dolphinId);
+//        if (receiver != null && receiver.isListeningToEventBus()) {
+//            receiver.getReceiverQueue().leftShift(releaseVal);
+//        }
+
+
+        //TODO remove
         for (Receiver receiver : receiverPerSession.values()) {
             if (receiver.isListeningToEventBus()) {
                 receiver.getReceiverQueue().leftShift(releaseVal);
             }
+        }
+    }
+
+    private final static class MessageImpl implements Message {
+
+        private final String topic;
+
+        private final Object data;
+
+        private final long timestamp;
+
+        private MessageImpl(String topic, Object data) {
+            this.topic = topic;
+            this.data = data;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        @Override
+        public String getTopic() {
+            return topic;
+        }
+
+        @Override
+        public Object getData() {
+            return data;
+        }
+
+        @Override
+        public long getSendTimestamp() {
+            return timestamp;
         }
     }
 }

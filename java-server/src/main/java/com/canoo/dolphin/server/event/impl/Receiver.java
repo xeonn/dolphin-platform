@@ -4,13 +4,18 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import groovyx.gpars.dataflow.DataflowQueue;
+import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * represents one listener to the queue. It need not to be thread safe, because it is related to one dolphin session.
+ */
 public class Receiver {
 
     DataflowQueue receiverQueue;
@@ -21,29 +26,32 @@ public class Receiver {
         return receiverQueue;
     }
 
-    public Subscription subscribe(DolphinEventBusImpl eventBus, String topic, MessageListener handler) {
+    public Subscription subscribe(final String topic, final MessageListener handler) {
+        if(StringUtil.isBlank(topic)) {
+            throw new IllegalArgumentException("topic mustn't be empty!");
+        }
+        if(handler == null) {
+            throw new IllegalArgumentException("handler mustn't be empty!");
+        }
         List<MessageListener> messageListeners = listenersPerTopic.get(topic);
         if (messageListeners == null) {
-            messageListeners = new ArrayList<>();
+            messageListeners = new CopyOnWriteArrayList<>();
             listenersPerTopic.put(topic, messageListeners);
         }
         messageListeners.add(handler);
-        return new DolphinEventBusSubscription(eventBus, topic, handler);
-    }
-
-    public void unsubscribe(String topic, MessageListener handler) {
-        List<MessageListener> messageListeners = listenersPerTopic.get(topic);
-        if (messageListeners == null) {
-            return;
-        }
-        messageListeners.remove(handler);
-        if (messageListeners.isEmpty()) {
-            listenersPerTopic.remove(topic);
-        }
-    }
-
-    public void unsubscribeAllTopics() {
-        listenersPerTopic.clear();
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+                List<MessageListener> messageListeners = listenersPerTopic.get(topic);
+                if (messageListeners == null) {
+                    return;
+                }
+                messageListeners.remove(handler);
+                if (messageListeners.isEmpty()) {
+                    listenersPerTopic.remove(topic);
+                }
+            }
+        };
     }
 
     public boolean handle(Message event) {
@@ -51,6 +59,7 @@ public class Receiver {
         if (messageListeners == null || messageListeners.isEmpty()) {
             return false;
         }
+        // iterate over copy, because the list could be changed in an onMessage method
         for (MessageListener messageListener : messageListeners) {
             messageListener.onMessage(event);
         }
@@ -61,14 +70,21 @@ public class Receiver {
         return receiverQueue != null;
     }
 
-    public void unsubscribeFromEventBus(EventBus eventBus) {
+    public void unregister(EventBus eventBus) {
+        if(eventBus == null) {
+            throw new IllegalArgumentException("eventBus mustn't be empty!");
+        }
         if (isListeningToEventBus()) {
             eventBus.unSubscribe(receiverQueue);
             receiverQueue = null;
         }
+        listenersPerTopic.clear();
     }
 
-    public void subscribeToEventBus(EventBus eventBus) {
+    public void register(EventBus eventBus) {
+        if(eventBus == null) {
+            throw new IllegalArgumentException("eventBus mustn't be empty!");
+        }
         if (isListeningToEventBus()) {
             return;
         }
