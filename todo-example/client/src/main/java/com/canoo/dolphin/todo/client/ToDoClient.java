@@ -1,6 +1,6 @@
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.ClientBeanManager;
+import com.canoo.dolphin.client.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.javafx.FXBinder;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 
 public class ToDoClient extends Application {
 
-    private final ClientBeanManager beanManager = ClientBeanManager.create("http://localhost:8080/todo-app/dolphin");
+    private final ClientBeanManagerImpl beanManager = ClientBeanManagerImpl.create("http://localhost:8080/todo-app/dolphin");
 
     @Override
     public void start(Stage primaryStage) throws Exception {

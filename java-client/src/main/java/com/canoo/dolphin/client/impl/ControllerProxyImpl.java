@@ -1,0 +1,44 @@
+package com.canoo.dolphin.client.impl;
+
+import com.canoo.dolphin.Constants;
+import com.canoo.dolphin.client.v2.ClientContext;
+import com.canoo.dolphin.client.v2.ControllerProxy;
+import com.canoo.dolphin.v2.ControllerActionCallBean;
+import com.canoo.dolphin.v2.ControllerDestroyBean;
+
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * Created by hendrikebbers on 14.09.15.
+ */
+public class ControllerProxyImpl<T> implements ControllerProxy<T> {
+
+    private String controllerId;
+
+    private ClientContext context;
+
+    public ControllerProxyImpl(String controllerId, ClientContext context) {
+        this.controllerId = controllerId;
+        this.context = context;
+    }
+
+    @Override
+    public T getModel() {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> call(String actionName) {
+        ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
+        bean.getControllerid().set(controllerId);
+        bean.getActionName().set(actionName);
+        return context.getBeanManager().send(Constants.CALL_CONTROLLER_ACTION_COMMAND_NAME);
+    }
+
+    @Override
+    public CompletableFuture<Void> destroy() {
+        ControllerDestroyBean bean = context.getBeanManager().findAll(ControllerDestroyBean.class).get(0);
+        bean.controlleridProperty().set(controllerId);
+        return context.getBeanManager().send(Constants.DESTROY_CONTROLLER_COMMAND_NAME);
+    }
+}

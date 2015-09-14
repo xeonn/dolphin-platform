@@ -3,6 +3,8 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.client.impl.ClientEventDispatcher;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilder;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
+import com.canoo.dolphin.client.v2.ClientBeanManager;
+import com.canoo.dolphin.client.v2.Param;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.ClassRepository.FieldType;
 import com.canoo.dolphin.impl.collections.ListMapper;
@@ -21,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.canoo.dolphin.impl.ClassRepository.FieldType.DOLPHIN_BEAN;
 
-public class ClientBeanManager extends BeanManagerImpl {
+public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBeanManager {
 
     private static final String POLL_ACTION = "ServerPushController:longPoll";
 
@@ -29,17 +31,7 @@ public class ClientBeanManager extends BeanManagerImpl {
 
     private final ClientDolphin dolphin;
 
-    public static class Param {
-        private final String name;
-        private final Object value;
-
-        public Param(String name, Object value) {
-            this.name = name;
-            this.value = value;
-        }
-    }
-
-    public static ClientBeanManager create(ClientConfiguration clientConfiguration) {
+    public static ClientBeanManagerImpl create(ClientConfiguration clientConfiguration) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
         final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
@@ -52,18 +44,17 @@ public class ClientBeanManager extends BeanManagerImpl {
         final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        if(clientConfiguration.isUsePush()) {
+        if (clientConfiguration.isUsePush()) {
             dolphin.startPushListening(POLL_ACTION, RELEASE_ACTION);
         }
-        return new ClientBeanManager(beanRepository, beanBuilder, dolphin);
+        return new ClientBeanManagerImpl(beanRepository, beanBuilder, dolphin);
     }
 
-    public static ClientBeanManager create(String url) {
+    public static ClientBeanManagerImpl create(String url) {
         return create(new ClientConfiguration(url));
     }
 
-
-    private ClientBeanManager(BeanRepository beanRepository, BeanBuilder beanBuilder, ClientDolphin dolphin) {
+    public ClientBeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder, ClientDolphin dolphin) {
         super(beanRepository, beanBuilder);
         this.dolphin = dolphin;
     }
@@ -73,10 +64,10 @@ public class ClientBeanManager extends BeanManagerImpl {
             final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin)
                     .withType(DolphinConstants.DOLPHIN_PARAMETER);
             for (final Param param : params) {
-                final FieldType type = DolphinUtils.getFieldType(param.value);
-                final Object value = type == DOLPHIN_BEAN? beanRepository.getDolphinId(param.value) : param.value;
-                builder.withAttribute(param.name, value, Tag.VALUE)
-                        .withAttribute(param.name, DolphinUtils.mapFieldTypeToDolphin(type), Tag.VALUE_TYPE);
+                final FieldType type = DolphinUtils.getFieldType(param.getValue());
+                final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
+                builder.withAttribute(param.getName(), value, Tag.VALUE)
+                        .withAttribute(param.getName(), DolphinUtils.mapFieldTypeToDolphin(type), Tag.VALUE_TYPE);
             }
             builder.create();
         }

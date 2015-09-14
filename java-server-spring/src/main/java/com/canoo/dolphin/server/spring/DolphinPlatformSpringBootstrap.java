@@ -3,6 +3,7 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
@@ -36,16 +37,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @Scope("session")
     protected BeanManager createManager() {
-        final ServerDolphin dolphin = DefaultDolphinServlet.getServerDolphin();
-        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
-        DefaultDolphinServlet.addToSession(beanRepository);
-        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        return new BeanManagerImpl(beanRepository, beanBuilder);
-
+        return DolphinContext.getCurrentContext().getBeanManager();
     }
 
     /**
@@ -55,13 +47,13 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @Scope("session")
     protected ServerDolphin createDolphin() {
-        return DefaultDolphinServlet.getServerDolphin();
+        return DolphinContext.getCurrentContext().getDolphin();
     }
 
     @Bean
     @Scope("singleton")
     protected DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        return DolphinContext.getCurrentContext().getEventBus();
     }
 
 }

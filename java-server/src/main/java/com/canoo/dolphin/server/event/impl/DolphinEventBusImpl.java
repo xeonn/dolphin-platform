@@ -1,10 +1,10 @@
 package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
-import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
@@ -58,7 +58,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     protected String getDolphinId() {
-        return DefaultDolphinServlet.getDolphinId();
+        return DolphinContext.getCurrentContext().getId();
     }
 
     public void unsubscribeSession(final String dolphinId) {
@@ -136,7 +136,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     public void release() {
 //        //TODO the release should happen in the context of a dolphin session.
 //        //TODO this piece of code should be used then
-//        String dolphinId = getDolphinId();
+//        String dolphinId = getId();
 //        if (dolphinId == null) {
 //            //TODO replace by log
 //            System.out.println("warning: release was called outside dolphin session");

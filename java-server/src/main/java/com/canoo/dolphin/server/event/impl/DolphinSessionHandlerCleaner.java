@@ -1,5 +1,7 @@
 package com.canoo.dolphin.server.event.impl;
 
+import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 
 import javax.servlet.http.HttpSessionEvent;
@@ -13,9 +15,9 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        String dolphinId = DefaultDolphinServlet.getDolphinId(se.getSession());
-        if (dolphinId != null) {
-            DolphinEventBusImpl.getInstance().unsubscribeSession(dolphinId);
+        DolphinContext dolphinContext = DolphinContextHandler.getContext(se.getSession());
+        if (dolphinContext != null) {
+            DolphinEventBusImpl.getInstance().unsubscribeSession(dolphinContext.getId());
         }
     }
 }
