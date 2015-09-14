@@ -37,5 +37,4 @@ public class DolphinPlatformBootstrap {
         servletContext.addListener(DolphinSessionHandlerCleaner.class);
     }
 
-
 }

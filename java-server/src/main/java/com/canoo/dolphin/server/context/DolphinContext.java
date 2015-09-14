@@ -21,6 +21,7 @@ import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +45,11 @@ public class DolphinContext {
 
     private String id;
 
-    public DolphinContext(ContainerManager containerManager) {
+    private ServletContext servletContext;
+
+    public DolphinContext(ContainerManager containerManager, ServletContext servletContext) {
+        this.containerManager = containerManager;
+        this.servletContext = servletContext;
 
         //ID
         id = UUID.randomUUID().toString();
@@ -172,6 +177,10 @@ public class DolphinContext {
 
     public BeanRepository getBeanRepository() {
         return beanRepository;
+    }
+
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     public String getId() {

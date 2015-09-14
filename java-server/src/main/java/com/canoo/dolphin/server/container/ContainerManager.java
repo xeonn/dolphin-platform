@@ -7,8 +7,8 @@ import javax.servlet.ServletContext;
  */
 public interface ContainerManager {
 
-    <T> T createManagedController(ServletContext sc, Class<T> controllerClass);
+    <T> T createManagedController(Class<T> controllerClass);
 
-    void destroyController(ServletContext sc, Object instance);
+    void destroyController(Object instance);
 
 }

@@ -18,7 +18,7 @@ public class DefaultDolphinServlet extends HttpServlet {
     private DolphinContextHandler dolphinContextHandler;
 
     public DefaultDolphinServlet() {
-        dolphinContextHandler = new DolphinContextHandler();
+        dolphinContextHandler = new DolphinContextHandler(getServletContext());
     }
 
     @Override

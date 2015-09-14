@@ -3,6 +3,7 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -17,7 +18,10 @@ public class DolphinContextHandler {
 
     private final ContainerManager containerManager;
 
-    public DolphinContextHandler() {
+    private ServletContext servletContext;
+
+    public DolphinContextHandler(ServletContext servletContext) {
+        this.servletContext = servletContext;
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
         if (serviceIterator.hasNext()) {
@@ -40,11 +44,11 @@ public class DolphinContextHandler {
         DolphinContext currentContext;
 
         Object context = request.getSession().getAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME);
-        if(context == null) {
-            DolphinContext dolphinContext = new DolphinContext(containerManager);
+        if (context == null) {
+            DolphinContext dolphinContext = new DolphinContext(containerManager, servletContext);
             request.getSession().setAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME, dolphinContext);
             currentContext = dolphinContext;
-        } else if(context instanceof DolphinContext) {
+        } else if (context instanceof DolphinContext) {
             currentContext = (DolphinContext) context;
         } else {
             throw new RuntimeException("ERROR");
@@ -56,7 +60,7 @@ public class DolphinContextHandler {
     @Deprecated
     public static DolphinContext getContext(HttpSession session) {
         Object context = session.getAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME);
-        if(context instanceof DolphinContext) {
+        if (context instanceof DolphinContext) {
             return (DolphinContext) context;
         }
         return null;
