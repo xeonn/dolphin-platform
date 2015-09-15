@@ -39,8 +39,11 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         if(StringUtil.isBlank(topic)) {
             throw new IllegalArgumentException("topic mustn't be empty!");
         }
-        final long timestamp = System.currentTimeMillis();
         eventBus.publish(sender, new MessageImpl(topic, data));
+    }
+
+    public void triggerTaskExecution() {
+        eventBus.publish(sender, new TaskTrigger());
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
@@ -114,10 +117,14 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                 if (val == releaseVal) {
                     return;
                 }
-                final Message event = (Message) val;
-                //TODO replace by log
-                System.out.println("handle event for dolphinId: " + dolphinId);
-                somethingHandled |= receiverInSession.handle(event);
+                if(val instanceof  Message) {
+                    final Message event = (Message) val;
+                    //TODO replace by log
+                    System.out.println("handle event for dolphinId: " + dolphinId);
+                    somethingHandled |= receiverInSession.handle(event);
+                } else if(val instanceof TaskTrigger) {
+                    somethingHandled |= DolphinContext.getCurrentContext().getTaskExecutor().execute();
+                }
 
                 //if there are many events we would loop forever -> additional exit condition
                 if (System.currentTimeMillis() - startTime <= MAX_POLL_DURATION) {

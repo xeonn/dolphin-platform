@@ -213,6 +213,16 @@ public class ControllerHandler {
         });
     }
 
+    public <T> List<? extends T> getAllControllersThatImplement(Class<T> cls) {
+        List ret = new ArrayList<>();
+        for(Object controller : controllers.values()) {
+            if(cls.isAssignableFrom(controller.getClass())) {
+                ret.add(controller);
+            }
+        }
+        return ret;
+    }
+
     private static Map<String, Class> controllersClasses;
 
     private static boolean initialized = false;

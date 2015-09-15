@@ -7,12 +7,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DolphinContextHandler {
 
-    private final static String DOLPHIN_SESSION_ATTRIBUTE_NAME = "DolphinContext";
+    private final static Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
+
+    private final static Lock globalContextMapLock = new ReentrantLock();
 
     private final static ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
 
@@ -38,32 +41,45 @@ public class DolphinContextHandler {
 
     public DolphinContext getCurrentDolphinContext(HttpServletRequest request, HttpServletResponse response) {
         //This will refactored later to support a client scope (tab based in browser)
-
         currentContextThreadLocal.remove();
-
         DolphinContext currentContext;
-
-        Object context = request.getSession().getAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME);
-        if (context == null) {
-            DolphinContext dolphinContext = new DolphinContext(containerManager, servletContext);
-            request.getSession().setAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME, dolphinContext);
-            currentContext = dolphinContext;
-        } else if (context instanceof DolphinContext) {
-            currentContext = (DolphinContext) context;
-        } else {
-            throw new RuntimeException("ERROR");
+        globalContextMapLock.lock();
+        try {
+            List<DolphinContext> contextList = globalContextMap.get(request.getSession().getId());
+            if (contextList == null) {
+                contextList = new ArrayList<>();
+                globalContextMap.put(request.getSession().getId(), contextList);
+            }
+            if (contextList.isEmpty()) {
+                currentContext = new DolphinContext(containerManager, servletContext);
+                contextList.add(currentContext);
+            } else {
+                currentContext = contextList.get(0);
+            }
+        } finally {
+            globalContextMapLock.unlock();
         }
         currentContextThreadLocal.set(currentContext);
         return currentContext;
     }
 
+    /**
+     * Deprecated because of the client scope that will iontroduced in the next version
+     * @param session
+     * @return
+     */
     @Deprecated
     public static DolphinContext getContext(HttpSession session) {
-        Object context = session.getAttribute(DOLPHIN_SESSION_ATTRIBUTE_NAME);
-        if (context instanceof DolphinContext) {
-            return (DolphinContext) context;
+        globalContextMapLock.lock();
+        try {
+            List<DolphinContext> contextList = globalContextMap.get(session.getId());
+            if (contextList != null && !contextList.isEmpty()) {
+                return contextList.get(0);
+            }
+            return null;
+        } finally {
+            globalContextMapLock.unlock();
         }
-        return null;
     }
 
     public static DolphinContext getCurrentContext() {
@@ -72,5 +88,22 @@ public class DolphinContextHandler {
 
     public void resetCurrentContextThreadLocal() {
         currentContextThreadLocal.remove();
+    }
+
+    public static List<DolphinContext> getAllContexts() {
+        globalContextMapLock.lock();
+        try {
+            List<DolphinContext> ret = new ArrayList<>();
+            for (List<DolphinContext> sessionList : globalContextMap.values()) {
+                ret.addAll(sessionList);
+            }
+            return ret;
+        } finally {
+            globalContextMapLock.unlock();
+        }
+    }
+
+    public static List<DolphinContext> getAllContextsInSession() {
+        return Arrays.asList(getCurrentContext());
     }
 }

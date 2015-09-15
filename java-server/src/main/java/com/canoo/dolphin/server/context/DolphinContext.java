@@ -6,6 +6,7 @@ import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.v2.ControllerActionCallBean;
@@ -48,6 +49,8 @@ public class DolphinContext {
 
     private ServletContext servletContext;
 
+    private TaskExecutorImpl taskExecutor;
+
     public DolphinContext(ContainerManager containerManager, ServletContext servletContext) {
         this.containerManager = containerManager;
         this.servletContext = servletContext;
@@ -80,6 +83,9 @@ public class DolphinContext {
 
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(dolphin, containerManager, beanRepository, beanManager);
+
+        //Init TaskExecutor
+        taskExecutor = new TaskExecutorImpl();
 
         //Register Commands
         registerDolphinPlatformDefaultCommands();
@@ -189,6 +195,10 @@ public class DolphinContext {
 
     public ServletContext getServletContext() {
         return servletContext;
+    }
+
+    public TaskExecutorImpl getTaskExecutor() {
+        return taskExecutor;
     }
 
     public String getId() {

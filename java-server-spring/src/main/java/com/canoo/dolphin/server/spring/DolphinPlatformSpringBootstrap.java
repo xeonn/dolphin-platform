@@ -5,6 +5,7 @@ import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
@@ -48,6 +49,12 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Scope("session")
     protected ServerDolphin createDolphin() {
         return DolphinContext.getCurrentContext().getDolphin();
+    }
+
+    @Bean
+    @Scope("session")
+    protected TaskExecutor createTaskExecutor() {
+        return DolphinContext.getCurrentContext().getTaskExecutor();
     }
 
     @Bean
