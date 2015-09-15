@@ -29,7 +29,7 @@ public class ClientContextFactory {
                 dolphin.setClientConnector(clientConnector);
                 ClientContext clientContext = new ClientContextImpl(dolphin);
                 dolphin.startPushListening(Constants.POLL_COMMAND_NAME, Constants.RELEASE_COMMAND_NAME);
-                result.complete(clientContext);
+                clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

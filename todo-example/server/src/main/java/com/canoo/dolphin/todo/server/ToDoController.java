@@ -4,6 +4,7 @@ import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
+import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 
@@ -16,6 +17,9 @@ public class ToDoController {
 
     @Inject
     private BeanManager beanManager;
+
+    @Inject
+    private TaskExecutor taskExecutor;
 
     @DolphinModel
     private ToDoList toDoList;
@@ -32,9 +36,15 @@ public class ToDoController {
 
     @DolphinAction
     public void add() {
-        final ToDoItem toDoItem = beanManager.create(ToDoItem.class);
-        toDoItem.setText(toDoList.getNewItemText().get());
-        toDoList.getItems().add(toDoItem);
+        final String newItemText = toDoList.getNewItemText().get();
         toDoList.getNewItemText().set("");
+
+        taskExecutor.execute(ToDoController.class, c -> c.onAdded(newItemText));
+    }
+
+    public void onAdded(String text) {
+        final ToDoItem toDoItem = beanManager.create(ToDoItem.class);
+        toDoItem.setText(text);
+        toDoList.getItems().add(toDoItem);
     }
 }

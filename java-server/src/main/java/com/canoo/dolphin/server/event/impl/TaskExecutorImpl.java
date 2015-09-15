@@ -53,7 +53,7 @@ public class TaskExecutorImpl implements TaskExecutor {
         tasksMapLock.lock();
         try {
             for(Class controllerClass : tasks.keySet()) {
-                List<ControllerTask> taskList = tasks.get(controllerClass);
+                List<ControllerTask> taskList = tasks.remove(controllerClass);
                 if(taskList != null && !taskList.isEmpty()) {
                     List<?> controllers = getAllControllersForClass(controllerClass);
                     for(Object controller : controllers) {
