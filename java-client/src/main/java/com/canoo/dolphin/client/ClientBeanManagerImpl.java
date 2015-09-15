@@ -1,5 +1,6 @@
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.Constants;
 import com.canoo.dolphin.client.impl.ClientEventDispatcher;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilder;
 import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
@@ -30,29 +31,6 @@ public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBean
     private static final String RELEASE_ACTION = "ServerPushController:release";
 
     private final ClientDolphin dolphin;
-
-    public static ClientBeanManagerImpl create(ClientConfiguration clientConfiguration) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
-        clientConnector.setCodec(new JsonCodec());
-        clientConnector.setUiThreadHandler(Platform::runLater);
-        dolphin.setClientConnector(clientConnector);
-        final EventDispatcher dispatcher = new ClientEventDispatcher(dolphin);
-        final BeanRepository beanRepository = new BeanRepository(dolphin, dispatcher);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        if (clientConfiguration.isUsePush()) {
-            dolphin.startPushListening(POLL_ACTION, RELEASE_ACTION);
-        }
-        return new ClientBeanManagerImpl(beanRepository, beanBuilder, dolphin);
-    }
-
-    public static ClientBeanManagerImpl create(String url) {
-        return create(new ClientConfiguration(url));
-    }
 
     public ClientBeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder, ClientDolphin dolphin) {
         super(beanRepository, beanBuilder);

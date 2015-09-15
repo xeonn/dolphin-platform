@@ -31,12 +31,12 @@ public class DolphinPlatformBootstrap {
     }
 
     public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, DefaultDolphinServlet.class).addMapping(dolphinServletMapping);
-        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, InvalidationServlet.class).addMapping(dolphinInvalidationServletMapping);
-        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, CrossSiteOriginFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet(servletContext)).addMapping(dolphinServletMapping);
+        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
+        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(DolphinSessionHandlerCleaner.class);
-        servletContext.addListener(DolphinContextCleaner.class);
+        servletContext.addListener(new DolphinSessionHandlerCleaner());
+        servletContext.addListener(new DolphinContextCleaner());
     }
 
 }

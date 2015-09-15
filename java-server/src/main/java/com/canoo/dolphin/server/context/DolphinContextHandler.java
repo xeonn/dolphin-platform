@@ -18,6 +18,7 @@ public class DolphinContextHandler {
     private final static Lock globalContextMapLock = new ReentrantLock();
 
     private final static ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
+    private final static ThreadLocal<String> sessionIdThreadLocal = new ThreadLocal<>();
 
     private final ContainerManager containerManager;
 
@@ -39,7 +40,7 @@ public class DolphinContextHandler {
         ControllerHandler.init();
     }
 
-    public DolphinContext getCurrentDolphinContext(HttpServletRequest request, HttpServletResponse response) {
+    public void handle(HttpServletRequest request, HttpServletResponse response) {
         //This will refactored later to support a client scope (tab based in browser)
         currentContextThreadLocal.remove();
         DolphinContext currentContext;
@@ -60,7 +61,16 @@ public class DolphinContextHandler {
             globalContextMapLock.unlock();
         }
         currentContextThreadLocal.set(currentContext);
-        return currentContext;
+        sessionIdThreadLocal.set(request.getSession().getId());
+
+        try {
+            currentContext.handleRequest(request, response);
+        } catch (Exception e) {
+            throw new RuntimeException("Error in Dolphin command handling", e);
+        }finally {
+            currentContextThreadLocal.remove();
+            sessionIdThreadLocal.remove();
+        }
     }
 
     /**
@@ -87,10 +97,6 @@ public class DolphinContextHandler {
         return currentContextThreadLocal.get();
     }
 
-    public void resetCurrentContextThreadLocal() {
-        currentContextThreadLocal.remove();
-    }
-
     public static List<DolphinContext> getAllContexts() {
         globalContextMapLock.lock();
         try {
@@ -105,7 +111,12 @@ public class DolphinContextHandler {
     }
 
     public static List<DolphinContext> getAllContextsInSession() {
-        return Arrays.asList(getCurrentContext());
+        globalContextMapLock.lock();
+        try {
+            return globalContextMap.get(sessionIdThreadLocal.get());
+        } finally {
+            globalContextMapLock.unlock();
+        }
     }
 
     public static void removeAllContextsInSession(HttpSession session) {
@@ -115,6 +126,5 @@ public class DolphinContextHandler {
         } finally {
             globalContextMapLock.unlock();
         }
-
     }
 }

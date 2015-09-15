@@ -11,6 +11,7 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
+        System.out.println("");
     }
 
     @Override

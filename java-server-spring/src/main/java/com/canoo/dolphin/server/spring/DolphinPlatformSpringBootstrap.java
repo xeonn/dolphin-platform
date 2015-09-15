@@ -58,7 +58,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     @Bean
-    @Scope("singleton")
+    @Scope("session")
     protected DolphinEventBus createEventBus() {
         return DolphinContext.getCurrentContext().getEventBus();
     }

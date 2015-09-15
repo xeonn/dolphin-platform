@@ -15,5 +15,7 @@ public class Constants {
 
     public static final String CALL_CONTROLLER_ACTION_COMMAND_NAME = "callControllerAction";
 
+    public static final String INIT_COMMAND_NAME = "initClientContext";
+
 
 }

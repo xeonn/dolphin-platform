@@ -3,6 +3,7 @@ package com.canoo.dolphin.todo.server;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
+import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 
@@ -14,17 +15,8 @@ public class ToDoController {
     @Inject
     private BeanManager beanManager;
 
+    @DolphinModel
     private ToDoList toDoList;
-
-    @DolphinAction
-    public void init() {
-        toDoList = beanManager.create(ToDoList.class);
-    }
-
-    @DolphinAction
-    public void destroy() {
-        beanManager.remove(toDoList);
-    }
 
     @DolphinAction
     public void add() {

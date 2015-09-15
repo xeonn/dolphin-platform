@@ -13,24 +13,22 @@ import org.opendolphin.core.comm.JsonCodec;
  */
 public class ClientContextFactory {
 
-    public static ClientContext connect(String url) {
-        return connect(new ClientConfiguration(url));
-    }
-
     public static ClientContext connect(ClientConfiguration clientConfiguration) {
-        final ClientDolphin dolphin = new ClientDolphin();
-        dolphin.setClientModelStore(new ClientModelStore(dolphin));
-        final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
-        clientConnector.setCodec(new JsonCodec());
-        clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
-        dolphin.setClientConnector(clientConnector);
+        try {
+            final ClientDolphin dolphin = new ClientDolphin();
+            dolphin.setClientModelStore(new ClientModelStore(dolphin));
+            final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
+            clientConnector.setCodec(new JsonCodec());
+            clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
+            dolphin.setClientConnector(clientConnector);
 
-        ClientContext clientContext = new ClientContextImpl(dolphin);
+            ClientContext clientContext = new ClientContextImpl(dolphin);
 
-        if (clientConfiguration.isUsePush()) {
             dolphin.startPushListening(Constants.POLL_COMMAND_NAME, Constants.RELEASE_COMMAND_NAME);
+            return clientContext;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return clientContext;
     }
 
 }

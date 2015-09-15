@@ -8,21 +8,18 @@ public class ClientConfiguration {
 
     private String serverEndpoint;
 
-    private boolean usePush;
-
     private UiThreadHandler uiThreadHandler;
 
-    public ClientConfiguration(String serverEndpoint) {
-        this(serverEndpoint, true);
-    }
-
-    public ClientConfiguration(String serverEndpoint, boolean usePush) {
+    public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
         if (StringUtil.isBlank(serverEndpoint)) {
             throw new IllegalArgumentException("serverEndpoint mustn't be null");
         }
+        if(uiThreadHandler == null) {
+            throw new IllegalArgumentException("uiThreadHandler mustn't be null");
+        }
         this.serverEndpoint = serverEndpoint;
-        this.usePush = usePush;
-        this.uiThreadHandler = r -> Platform.runLater(r);
+
+        this.uiThreadHandler = uiThreadHandler;
     }
 
     public UiThreadHandler getUiThreadHandler() {
@@ -31,9 +28,5 @@ public class ClientConfiguration {
 
     public String getServerEndpoint() {
         return serverEndpoint;
-    }
-
-    public boolean isUsePush() {
-        return usePush;
     }
 }

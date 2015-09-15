@@ -1,7 +1,10 @@
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.javafx.FXBinder;
+import com.canoo.dolphin.client.javafx.JavaFXConfiguration;
+import com.canoo.dolphin.client.v2.ClientContext;
+import com.canoo.dolphin.client.v2.ClientContextFactory;
+import com.canoo.dolphin.client.v2.ControllerProxy;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.application.Application;
@@ -16,9 +19,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ToDoClient extends Application {
 
-    private final ClientBeanManagerImpl beanManager = ClientBeanManagerImpl.create("http://localhost:8080/todo-app/dolphin");
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -26,25 +30,21 @@ public class ToDoClient extends Application {
         final Button createButton = new Button("Create");
         final HBox createComponent = new HBox(10, createField, createButton);
         final ListView<ToDoItem> itemList = new ListView<>();
-         itemList.setCellFactory(c -> new ToDoItemCell());
+        itemList.setCellFactory(c -> new ToDoItemCell());
         final VBox vBox = new VBox(10, createComponent, itemList);
         final StackPane root = new StackPane(vBox);
 
+        ClientContext context = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/dolphin"));
 
-        beanManager.onAdded(ToDoList.class, list -> {
-
-            StringProperty newItemTextProperty = FXBinder.wrapStringProperty(list.getNewItemText());
+        CompletableFuture<ControllerProxy<ToDoList>> promise = context.createController("ToDoController");
+        promise.thenAccept(c -> {
+            ToDoList model = c.getModel();
+            StringProperty newItemTextProperty = FXBinder.wrapStringProperty(model.getNewItemText());
             createField.textProperty().bindBidirectional(newItemTextProperty);
-
-
-            ObservableList<ToDoItem> items = FXBinder.wrapList(list.getItems());
+            ObservableList<ToDoItem> items = FXBinder.wrapList(model.getItems());
             itemList.setItems(items);
-
-
-            createButton.setOnAction(event -> beanManager.send("ToDoController:add"));
+            createButton.setOnAction(event -> c.call("add"));
         });
-        beanManager.send("ToDoController:init");
-
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

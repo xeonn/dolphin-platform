@@ -11,6 +11,7 @@ import com.canoo.dolphin.v2.ControllerRegistryBean;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by hendrikebbers on 14.09.15.
@@ -21,7 +22,7 @@ public class ClientContextImpl implements ClientContext {
 
     private ClientBeanManagerImpl clientBeanManager;
 
-    public ClientContextImpl(ClientDolphin clientDolphin) {
+    public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
         this.clientDolphin = clientDolphin;
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
         final BeanRepository beanRepository = new BeanRepository(clientDolphin, dispatcher);
@@ -30,6 +31,7 @@ public class ClientContextImpl implements ClientContext {
         final ListMapper listMapper = new ListMapper(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+        clientBeanManager.send(Constants.INIT_COMMAND_NAME).get();
     }
 
     @Override

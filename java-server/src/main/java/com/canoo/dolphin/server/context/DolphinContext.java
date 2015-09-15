@@ -23,8 +23,11 @@ import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,8 +90,17 @@ public class DolphinContext {
         //Init TaskExecutor
         taskExecutor = new TaskExecutorImpl();
 
-        //Register Commands
+        //Register commands
         registerDolphinPlatformDefaultCommands();
+
+        //Create internal models
+        createInternalModels();
+    }
+
+    private void createInternalModels() {
+        beanManager.create(ControllerRegistryBean.class);
+        beanManager.create(ControllerDestroyBean.class);
+        beanManager.create(ControllerActionCallBean.class);
     }
 
     private void registerDolphinPlatformDefaultCommands() {
@@ -135,6 +147,13 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onReleaseEventBus();
+                    }
+                });
+
+                registry.register(Constants.INIT_COMMAND_NAME, new CommandHandler() {
+                    @Override
+                    public void handleCommand(Command command, List response) {
+                        //New Client
                     }
                 });
             }
@@ -213,4 +232,20 @@ public class DolphinContext {
         return DolphinContextHandler.getCurrentContext();
     }
 
+    public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception{
+        //copied from DolphinServlet
+        StringBuffer requestJson = new StringBuffer();
+        String line = null;
+        while((line =req.getReader().readLine())!=null){
+            requestJson.append(line).append("\n");
+        }
+        List<Command> commands = dolphin.getServerConnector().getCodec().decode(requestJson.toString());
+        List<Command> results = new LinkedList<>();
+        for (Command command : commands) { // a subclass could override this for less defensive exception handling
+            results.addAll(dolphin.getServerConnector().receive(command));
+        }
+        String jsonResponse = dolphin.getServerConnector().getCodec().encode(results);
+        resp.getOutputStream().print(jsonResponse);
+        resp.getOutputStream().close();
+    }
 }
