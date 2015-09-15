@@ -22,10 +22,9 @@ public class DolphinContextHandler {
 
     private final ContainerManager containerManager;
 
-    private ServletContext servletContext;
+    private final static DolphinContextHandler INSTANCE = new DolphinContextHandler();
 
-    public DolphinContextHandler(ServletContext servletContext) {
-        this.servletContext = servletContext;
+    private DolphinContextHandler() {
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
         if (serviceIterator.hasNext()) {
@@ -37,6 +36,9 @@ public class DolphinContextHandler {
             throw new RuntimeException("No " + ContainerManager.class + " found!");
         }
 
+    }
+
+    public void init() {
         ControllerHandler.init();
     }
 
@@ -52,7 +54,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager, servletContext);
+                currentContext = new DolphinContext(containerManager, request.getServletContext());
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);
@@ -126,5 +128,9 @@ public class DolphinContextHandler {
         } finally {
             globalContextMapLock.unlock();
         }
+    }
+
+    public static DolphinContextHandler getInstance() {
+        return INSTANCE;
     }
 }

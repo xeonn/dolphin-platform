@@ -18,9 +18,6 @@ public class DefaultDolphinServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-        if (dolphinContextHandler == null) {
-            dolphinContextHandler = new DolphinContextHandler(getServletContext());
-        }
-        dolphinContextHandler.handle(req, resp);
+        DolphinContextHandler.getInstance().handle(req, resp);
     }
 }

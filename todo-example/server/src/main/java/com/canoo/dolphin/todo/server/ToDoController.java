@@ -42,7 +42,7 @@ public class ToDoController {
         taskExecutor.execute(ToDoController.class, c -> c.onAdded(newItemText));
     }
 
-    public void onAdded(String text) {
+    private void onAdded(String text) {
         final ToDoItem toDoItem = beanManager.create(ToDoItem.class);
         toDoItem.setText(text);
         toDoList.getItems().add(toDoItem);

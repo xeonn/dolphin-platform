@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
@@ -32,11 +33,13 @@ public class DolphinPlatformBootstrap {
 
     public void onStartup(ServletContext servletContext) {
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet()).addMapping(dolphinServletMapping);
-  //      servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
+        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-//        servletContext.addListener(new DolphinSessionHandlerCleaner());
-//        servletContext.addListener(new DolphinContextCleaner());
+        servletContext.addListener(new DolphinSessionHandlerCleaner());
+        servletContext.addListener(new DolphinContextCleaner());
+
+        DolphinContextHandler.getInstance().init();
     }
 
 }
