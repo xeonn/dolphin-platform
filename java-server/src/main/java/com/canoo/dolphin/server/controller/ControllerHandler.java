@@ -7,7 +7,6 @@ import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
@@ -108,15 +107,15 @@ public class ControllerHandler {
     private Method getActionMethod(Object controller, String actionName) {
         List<Method> allMethods = getInheritedDeclaredMethods(controller.getClass());
         Method foundMethod = null;
-        for(Method method : allMethods) {
-            if(method.isAnnotationPresent(DolphinAction.class)) {
+        for (Method method : allMethods) {
+            if (method.isAnnotationPresent(DolphinAction.class)) {
                 DolphinAction actionAnnotation = method.getAnnotation(DolphinAction.class);
                 String currentActionName = method.getName();
-                if(actionAnnotation.value() != null && !actionAnnotation.value().trim().isEmpty()) {
+                if (actionAnnotation.value() != null && !actionAnnotation.value().trim().isEmpty()) {
                     currentActionName = actionAnnotation.value();
                 }
-                if(currentActionName.equals(actionName)) {
-                    if(foundMethod != null) {
+                if (currentActionName.equals(actionName)) {
+                    if (foundMethod != null) {
                         throw new RuntimeException("More than one method for action " + actionName + " found in " + controller.getClass());
                     }
                     foundMethod = method;
@@ -195,7 +194,7 @@ public class ControllerHandler {
     }
 
     private void setPrivileged(final Field field, final Object bean,
-                                     final Object value) {
+                               final Object value) {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {
@@ -219,7 +218,7 @@ public class ControllerHandler {
     private static boolean initialized = false;
 
     public static synchronized void init() {
-        if(initialized) {
+        if (initialized) {
             throw new RuntimeException(ControllerHandler.class.getName() + " already initialized");
         }
         controllersClasses = new HashMap<>();
