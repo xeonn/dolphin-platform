@@ -30,13 +30,13 @@ public class DolphinPlatformBootstrap {
         this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
     }
 
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet(servletContext)).addMapping(dolphinServletMapping);
-        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
+    public void onStartup(ServletContext servletContext) {
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet()).addMapping(dolphinServletMapping);
+  //      servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(new DolphinSessionHandlerCleaner());
-        servletContext.addListener(new DolphinContextCleaner());
+//        servletContext.addListener(new DolphinSessionHandlerCleaner());
+//        servletContext.addListener(new DolphinContextCleaner());
     }
 
 }

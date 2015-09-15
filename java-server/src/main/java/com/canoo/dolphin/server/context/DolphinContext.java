@@ -93,14 +93,6 @@ public class DolphinContext {
         //Register commands
         registerDolphinPlatformDefaultCommands();
 
-        //Create internal models
-        createInternalModels();
-    }
-
-    private void createInternalModels() {
-        beanManager.create(ControllerRegistryBean.class);
-        beanManager.create(ControllerDestroyBean.class);
-        beanManager.create(ControllerActionCallBean.class);
     }
 
     private void registerDolphinPlatformDefaultCommands() {
@@ -154,6 +146,9 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //New Client
+                        beanManager.create(ControllerRegistryBean.class);
+                        beanManager.create(ControllerDestroyBean.class);
+                        beanManager.create(ControllerActionCallBean.class);
                     }
                 });
             }
@@ -164,6 +159,10 @@ public class DolphinContext {
         ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
         String id = controllerHandler.createController(bean.getControllerName().get());
         bean.getControllerid().set(id);
+        Object model = controllerHandler.getControllerModel(id);
+        if(model != null) {
+            bean.getModelId().set(beanRepository.getDolphinId(model));
+        }
     }
 
     private void onDestroyController() {
@@ -246,6 +245,6 @@ public class DolphinContext {
         }
         String jsonResponse = dolphin.getServerConnector().getCodec().encode(results);
         resp.getOutputStream().print(jsonResponse);
-        resp.getOutputStream().close();
+       // resp.getOutputStream().close();
     }
 }

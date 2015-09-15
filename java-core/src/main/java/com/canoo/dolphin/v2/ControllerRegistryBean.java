@@ -10,11 +10,17 @@ public class ControllerRegistryBean {
 
     private Property<String> controllerid;
 
+    private Property<String> modelId;
+
     public Property<String> getControllerName() {
         return controllerName;
     }
 
     public Property<String> getControllerid() {
         return controllerid;
+    }
+
+    public Property<String> getModelId() {
+        return modelId;
     }
 }

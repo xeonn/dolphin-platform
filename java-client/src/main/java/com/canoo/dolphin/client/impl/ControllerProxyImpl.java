@@ -17,14 +17,17 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private ClientContext context;
 
-    public ControllerProxyImpl(String controllerId, ClientContext context) {
+    private T model;
+
+    public ControllerProxyImpl(String controllerId, T model, ClientContext context) {
         this.controllerId = controllerId;
+        this.model = model;
         this.context = context;
     }
 
     @Override
     public T getModel() {
-        throw new RuntimeException("Not yet implemented");
+       return model;
     }
 
     @Override

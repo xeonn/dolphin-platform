@@ -7,12 +7,18 @@ import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.container.ModelInjector;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
+import javax.servlet.Servlet;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -47,21 +53,25 @@ public class ControllerHandler {
         this.models = new HashMap<>();
     }
 
+    public Object getController(String id) {
+        return controllers.get(id);
+    }
+
+    public Object getControllerModel(String id) {
+        return models.get(id);
+    }
+
     public String createController(String name) {
         Class<?> controllerClass = controllersClasses.get(name);
-        Object instance = containerManager.createManagedController(controllerClass);
-        String id = UUID.randomUUID().toString();
-        controllers.put(id, instance);
 
-        for (final Method method : ReflectionHelper.getInheritedDeclaredMethods(controllerClass)) {
-            if (method.isAnnotationPresent(DolphinAction.class)) {
-                final String actionName = getActionName(method);
-                final List<String> paramNames = getParamNames(method);
-                //TODO: Register action for controller by name
+        final String id = UUID.randomUUID().toString();
+        Object instance = containerManager.createManagedController(controllerClass, new ModelInjector() {
+            @Override
+            public void inject(Object controller) {
+                attachModel(id, controller);
             }
-        }
-
-        attachModel(id, instance);
+        });
+        controllers.put(id, instance);
 
         return id;
     }
@@ -82,6 +92,7 @@ public class ControllerHandler {
 
         if (modelField != null) {
             Object model = beanManager.create(modelField.getType());
+            BeanRepository r = null;
             setPrivileged(modelField, controller, model);
             models.put(controllerId, model);
         }

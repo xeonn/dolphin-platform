@@ -7,6 +7,8 @@ import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 @DolphinController("ToDoController")
@@ -17,6 +19,16 @@ public class ToDoController {
 
     @DolphinModel
     private ToDoList toDoList;
+
+    @PostConstruct
+    public void onInit() {
+        System.out.println("Init");
+    }
+
+    @PreDestroy
+    public void onDestroy() {
+        System.out.println("Destroyed");
+    }
 
     @DolphinAction
     public void add() {

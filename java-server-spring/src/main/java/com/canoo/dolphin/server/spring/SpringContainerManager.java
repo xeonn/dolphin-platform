@@ -1,18 +1,34 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.context.DolphinContext;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
+import java.util.function.Consumer;
 
 public class SpringContainerManager implements ContainerManager {
 
     @Override
-    public <T> T createManagedController(Class<T> controllerClass) {
+    public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
         ApplicationContext context = getContext();
-        return context.getAutowireCapableBeanFactory().createBean(controllerClass);
+        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
+
+        beanFactory.addBeanPostProcessor(new InstantiationAwareBeanPostProcessorAdapter() {
+            @Override
+            public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+                modelInjector.inject(bean);
+                return true;
+            }
+        });
+        return beanFactory.createBean(controllerClass);
     }
 
     @Override
