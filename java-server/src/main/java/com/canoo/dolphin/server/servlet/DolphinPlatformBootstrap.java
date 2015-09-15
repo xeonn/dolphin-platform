@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
@@ -35,6 +36,7 @@ public class DolphinPlatformBootstrap {
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, CrossSiteOriginFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         servletContext.addListener(DolphinSessionHandlerCleaner.class);
+        servletContext.addListener(DolphinContextCleaner.class);
     }
 
 }

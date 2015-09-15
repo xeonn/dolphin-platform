@@ -65,6 +65,7 @@ public class DolphinContextHandler {
 
     /**
      * Deprecated because of the client scope that will iontroduced in the next version
+     *
      * @param session
      * @return
      */
@@ -105,5 +106,15 @@ public class DolphinContextHandler {
 
     public static List<DolphinContext> getAllContextsInSession() {
         return Arrays.asList(getCurrentContext());
+    }
+
+    public static void removeAllContextsInSession(HttpSession session) {
+        globalContextMapLock.lock();
+        try {
+            globalContextMap.remove(session.getId());
+        } finally {
+            globalContextMapLock.unlock();
+        }
+
     }
 }
