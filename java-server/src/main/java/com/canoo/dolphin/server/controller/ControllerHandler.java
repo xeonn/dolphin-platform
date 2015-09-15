@@ -37,7 +37,10 @@ public class ControllerHandler {
 
     private BeanManager beanManager;
 
-    public ControllerHandler(ContainerManager containerManager, BeanRepository beanRepository, BeanManager beanManager) {
+    private ServerDolphin dolphin;
+
+    public ControllerHandler(ServerDolphin dolphin, ContainerManager containerManager, BeanRepository beanRepository, BeanManager beanManager) {
+        this.dolphin = dolphin;
         this.containerManager = containerManager;
         this.beanRepository = beanRepository;
         this.beanManager = beanManager;
@@ -85,11 +88,11 @@ public class ControllerHandler {
         }
     }
 
-    public void callAction(String controllerId, String actioName) {
+    public void callAction(String controllerId, String actionName) throws InvocationTargetException, IllegalAccessException {
         Object controller = controllers.get(controllerId);
-
-        //invokeMethodWithParams(controller, )
-        throw new RuntimeException("Not yet implemented");
+        Method actionMethod = getActionMethod(controller, actionName);
+        List<String> paramNames = getParamNames(actionMethod);
+        invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
     }
 
     public void destroyController(String id) {
@@ -102,12 +105,33 @@ public class ControllerHandler {
         }
     }
 
+    private Method getActionMethod(Object controller, String actionName) {
+        List<Method> allMethods = getInheritedDeclaredMethods(controller.getClass());
+        Method foundMethod = null;
+        for(Method method : allMethods) {
+            if(method.isAnnotationPresent(DolphinAction.class)) {
+                DolphinAction actionAnnotation = method.getAnnotation(DolphinAction.class);
+                String currentActionName = method.getName();
+                if(actionAnnotation.value() != null && !actionAnnotation.value().trim().isEmpty()) {
+                    currentActionName = actionAnnotation.value();
+                }
+                if(currentActionName.equals(actionName)) {
+                    if(foundMethod != null) {
+                        throw new RuntimeException("More than one method for action " + actionName + " found in " + controller.getClass());
+                    }
+                    foundMethod = method;
+                }
+            }
+        }
+        return foundMethod;
+    }
+
     private void invokeMethodWithParams(Object instance, Method method, List<String> paramNames, ServerDolphin dolphin) throws InvocationTargetException, IllegalAccessException {
         Object[] args = getParam(dolphin, paramNames);
         ReflectionHelper.invokePrivileged(method, instance, args);
     }
 
-    private static List<String> getParamNames(Method method) {
+    private List<String> getParamNames(Method method) {
         final List<String> paramNames = new ArrayList<String>();
 
         for (int i = 0; i < method.getParameterTypes().length; i++) {
@@ -141,7 +165,7 @@ public class ControllerHandler {
         return result.toArray(new Object[result.size()]);
     }
 
-    private static String getActionName(Method method) {
+    private String getActionName(Method method) {
         String name = method.getName();
         DolphinAction actionAnnotation = method.getAnnotation(DolphinAction.class);
         if (actionAnnotation.value() != null && !actionAnnotation.value().isEmpty()) {
@@ -150,7 +174,7 @@ public class ControllerHandler {
         return name;
     }
 
-    public static List<Field> getInheritedDeclaredFields(Class<?> type) {
+    private List<Field> getInheritedDeclaredFields(Class<?> type) {
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
@@ -160,7 +184,17 @@ public class ControllerHandler {
         return result;
     }
 
-    public static void setPrivileged(final Field field, final Object bean,
+    private List<Method> getInheritedDeclaredMethods(Class<?> type) {
+        List<Method> result = new ArrayList<>();
+        Class<?> i = type;
+        while (i != null && i != Object.class) {
+            result.addAll(Arrays.asList(i.getDeclaredMethods()));
+            i = i.getSuperclass();
+        }
+        return result;
+    }
+
+    private void setPrivileged(final Field field, final Object bean,
                                      final Object value) {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
@@ -182,7 +216,12 @@ public class ControllerHandler {
 
     private static Map<String, Class> controllersClasses;
 
-    public static void init() {
+    private static boolean initialized = false;
+
+    public static synchronized void init() {
+        if(initialized) {
+            throw new RuntimeException(ControllerHandler.class.getName() + " already initialized");
+        }
         controllersClasses = new HashMap<>();
         Reflections reflections = new Reflections();
         Set<Class<?>> foundControllerClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
@@ -193,5 +232,6 @@ public class ControllerHandler {
             }
             controllersClasses.put(name, controllerClass);
         }
+        initialized = true;
     }
 }

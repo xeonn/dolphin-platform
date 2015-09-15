@@ -23,6 +23,7 @@ import org.opendolphin.core.server.comm.CommandHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,7 +79,7 @@ public class DolphinContext {
         eventBus = DolphinEventBusImpl.getInstance();
 
         //Init ControllerHandler
-        controllerHandler = new ControllerHandler(containerManager, beanRepository, beanManager);
+        controllerHandler = new ControllerHandler(dolphin, containerManager, beanRepository, beanManager);
 
         //Register Commands
         registerDolphinPlatformDefaultCommands();
@@ -106,7 +107,14 @@ public class DolphinContext {
                 registry.register(Constants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        onCallControllerAction();
+                        try {
+                            onCallControllerAction();
+                        } catch (Exception e) {
+                            //TODO: ExceptionHandler
+                            System.out.println("ERROR");
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
 
@@ -138,7 +146,7 @@ public class DolphinContext {
         controllerHandler.destroyController(bean.controlleridProperty().get());
     }
 
-    private void onCallControllerAction() {
+    private void onCallControllerAction() throws InvocationTargetException, IllegalAccessException {
         ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
         controllerHandler.callAction(bean.getControllerid().get(), bean.getActionName().get());
     }
