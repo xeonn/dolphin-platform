@@ -13,12 +13,7 @@ import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
-import javax.servlet.Servlet;
-import java.io.OutputStream;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -62,7 +57,7 @@ public class ControllerHandler {
     }
 
     public String createController(String name) {
-        Class<?> controllerClass = controllersClasses.get(name);
+        Class<?> controllerClass = ControllerRepository.getControllerClassForName(name);
 
         final String id = UUID.randomUUID().toString();
         Object instance = containerManager.createManagedController(controllerClass, new ModelInjector() {
@@ -92,7 +87,6 @@ public class ControllerHandler {
 
         if (modelField != null) {
             Object model = beanManager.create(modelField.getType());
-            BeanRepository r = null;
             setPrivileged(modelField, controller, model);
             models.put(controllerId, model);
         }
@@ -175,15 +169,6 @@ public class ControllerHandler {
         return result.toArray(new Object[result.size()]);
     }
 
-    private String getActionName(Method method) {
-        String name = method.getName();
-        DolphinAction actionAnnotation = method.getAnnotation(DolphinAction.class);
-        if (actionAnnotation.value() != null && !actionAnnotation.value().isEmpty()) {
-            name = actionAnnotation.value();
-        }
-        return name;
-    }
-
     private List<Field> getInheritedDeclaredFields(Class<?> type) {
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
@@ -226,32 +211,13 @@ public class ControllerHandler {
 
     public <T> List<? extends T> getAllControllersThatImplement(Class<T> cls) {
         List ret = new ArrayList<>();
-        for(Object controller : controllers.values()) {
-            if(cls.isAssignableFrom(controller.getClass())) {
+        for (Object controller : controllers.values()) {
+            if (cls.isAssignableFrom(controller.getClass())) {
                 ret.add(controller);
             }
         }
         return ret;
     }
 
-    private static Map<String, Class> controllersClasses;
 
-    private static boolean initialized = false;
-
-    public static synchronized void init() {
-        if (initialized) {
-            throw new RuntimeException(ControllerHandler.class.getName() + " already initialized");
-        }
-        controllersClasses = new HashMap<>();
-        Reflections reflections = new Reflections();
-        Set<Class<?>> foundControllerClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
-        for (Class<?> controllerClass : foundControllerClasses) {
-            String name = controllerClass.getName();
-            if (controllerClass.getAnnotation(DolphinController.class).value() != null && !controllerClass.getAnnotation(DolphinController.class).value().trim().isEmpty()) {
-                name = controllerClass.getAnnotation(DolphinController.class).value();
-            }
-            controllersClasses.put(name, controllerClass);
-        }
-        initialized = true;
-    }
 }

@@ -62,15 +62,14 @@ public class DolphinContext {
         id = UUID.randomUUID().toString();
 
         //Init Open Dolphin
-        ServerModelStore modelStore = new ServerModelStore();
-        ServerConnector serverConnector = new ServerConnector();
+        final ServerModelStore modelStore = new ServerModelStore();
+        final ServerConnector serverConnector = new ServerConnector();
         serverConnector.setCodec(new JsonCodec());
         serverConnector.setServerModelStore(modelStore);
         dolphin = new DefaultServerDolphin(modelStore, serverConnector);
         dolphin.registerDefaultActions();
 
         //Init BeanRepository
-        final ServerDolphin dolphin = getDolphin();
         final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
         beanRepository = new BeanRepository(dolphin, dispatcher);
 
@@ -121,8 +120,6 @@ public class DolphinContext {
                             onCallControllerAction();
                         } catch (Exception e) {
                             //TODO: ExceptionHandler
-                            System.out.println("ERROR");
-                            e.printStackTrace();
                             throw new RuntimeException(e);
                         }
                     }
@@ -157,9 +154,9 @@ public class DolphinContext {
 
     private void onRegisterController() {
         ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
-        String id = controllerHandler.createController(bean.getControllerName().get());
-        bean.getControllerid().set(id);
-        Object model = controllerHandler.getControllerModel(id);
+        String controllerId = controllerHandler.createController(bean.getControllerName().get());
+        bean.getControllerid().set(controllerId);
+        Object model = controllerHandler.getControllerModel(controllerId);
         if(model != null) {
             bean.getModelId().set(beanRepository.getDolphinId(model));
         }
@@ -223,28 +220,23 @@ public class DolphinContext {
         return id;
     }
 
-    public String getId(HttpSession session) {
-        return id;
-    }
-
     public static DolphinContext getCurrentContext() {
         return DolphinContextHandler.getCurrentContext();
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception{
         //copied from DolphinServlet
-        StringBuffer requestJson = new StringBuffer();
+        StringBuilder requestJson = new StringBuilder();
         String line = null;
         while((line =req.getReader().readLine())!=null){
             requestJson.append(line).append("\n");
         }
         List<Command> commands = dolphin.getServerConnector().getCodec().decode(requestJson.toString());
         List<Command> results = new LinkedList<>();
-        for (Command command : commands) { // a subclass could override this for less defensive exception handling
+        for (Command command : commands) {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
         String jsonResponse = dolphin.getServerConnector().getCodec().encode(results);
         resp.getOutputStream().print(jsonResponse);
-       // resp.getOutputStream().close();
     }
 }

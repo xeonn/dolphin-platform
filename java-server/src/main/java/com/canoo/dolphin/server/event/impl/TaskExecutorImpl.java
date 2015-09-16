@@ -17,9 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TaskExecutorImpl implements TaskExecutor {
 
-    private Map<Class, List<ControllerTask>> tasks;
+    private final Map<Class, List<ControllerTask>> tasks;
 
-    private Lock tasksMapLock;
+    private final Lock tasksMapLock;
 
     public TaskExecutorImpl() {
         tasks = new HashMap<>();

@@ -18,6 +18,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private static final DolphinEventBusImpl instance = new DolphinEventBusImpl();
     private static final int MAX_POLL_DURATION = 100;
+    public static final int TIMEOUT = 20;
 
     public static DolphinEventBusImpl getInstance() {
         return instance;
@@ -128,7 +129,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
                 //if there are many events we would loop forever -> additional exit condition
                 if (System.currentTimeMillis() - startTime <= MAX_POLL_DURATION) {
-                    val = receiverQueue.getVal(20, MILLISECONDS);
+                    val = receiverQueue.getVal(TIMEOUT, MILLISECONDS);
                 } else {
                     val = null;
                 }

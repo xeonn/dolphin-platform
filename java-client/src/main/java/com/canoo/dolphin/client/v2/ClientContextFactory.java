@@ -17,6 +17,9 @@ import java.util.concurrent.Future;
  */
 public class ClientContextFactory {
 
+    private ClientContextFactory() {
+    }
+
     public static CompletableFuture<ClientContext> connect(ClientConfiguration clientConfiguration) {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
         Executors.newSingleThreadExecutor().execute(() -> {

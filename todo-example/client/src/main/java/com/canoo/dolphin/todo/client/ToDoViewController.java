@@ -31,9 +31,9 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
         createField = new TextField();
         createButton = new Button("Create");
         createButton.setDisable(true);
-        HBox createComponent = new HBox(10, createField, createButton);
+        HBox createComponent = new HBox(createField, createButton);
         itemList = new ListView<>();
-        VBox vBox = new VBox(10, createComponent, itemList);
+        VBox vBox = new VBox(createComponent, itemList);
         root = new StackPane(vBox);
         itemList.setCellFactory(c -> new ToDoItemCell());
     }

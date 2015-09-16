@@ -17,5 +17,6 @@ public class Constants {
 
     public static final String INIT_COMMAND_NAME = "initClientContext";
 
-
+    private Constants() {
+    }
 }

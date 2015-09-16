@@ -124,7 +124,7 @@ public class BeanRepository {
         try {
             return objectPmToDolphinPm.get(bean).getId();
         } catch (NullPointerException ex) {
-            throw new IllegalArgumentException("Only managed Dolphin Beans can be used.");
+            throw new IllegalArgumentException("Only managed Dolphin Beans can be used.", ex);
         }
     }
 

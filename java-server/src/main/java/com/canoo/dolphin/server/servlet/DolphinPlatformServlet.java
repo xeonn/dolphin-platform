@@ -13,8 +13,6 @@ import java.io.IOException;
  */
 public class DolphinPlatformServlet extends HttpServlet {
 
-    private DolphinContextHandler dolphinContextHandler;
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");

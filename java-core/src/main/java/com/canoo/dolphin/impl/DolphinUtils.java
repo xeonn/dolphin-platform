@@ -15,8 +15,11 @@ import static com.canoo.dolphin.impl.ClassRepository.FieldType.DOLPHIN_BEAN;
  */
 public class DolphinUtils {
 
+    private DolphinUtils() {
+    }
+
     public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
-        if(ReflectionHelper.isProperty(descriptor)){
+        if (ReflectionHelper.isProperty(descriptor)) {
             return descriptor.getName().substring(0, descriptor.getName().length() - "Property".length());
         }
         return descriptor.getName();
@@ -33,15 +36,13 @@ public class DolphinUtils {
 
     public static String getDolphinPresentationModelTypeForClass(Class<?> beanClass) {
         final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
-        return beanAnnotation == null || beanAnnotation.value().isEmpty()? beanClass.getName() : beanAnnotation.value();
+        return beanAnnotation == null || beanAnnotation.value().isEmpty() ? beanClass.getName() : beanAnnotation.value();
     }
 
     public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
         for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
-            if (Property.class.isAssignableFrom(field.getType())) {
-                if (name.equals(getDolphinAttributePropertyNameForField(field))) {
-                    return (Property<T>) ReflectionHelper.getPrivileged(field, bean);
-                }
+            if (Property.class.isAssignableFrom(field.getType()) && name.equals(getDolphinAttributePropertyNameForField(field))) {
+                return (Property<T>) ReflectionHelper.getPrivileged(field, bean);
             }
         }
         return null;
@@ -53,7 +54,7 @@ public class DolphinUtils {
 
     public static ClassRepository.FieldType mapFieldTypeFromDolphin(Object value) {
         try {
-            return ClassRepository.FieldType.values()[(Integer)value];
+            return ClassRepository.FieldType.values()[(Integer) value];
         } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
             return ClassRepository.FieldType.UNKNOWN;
         }

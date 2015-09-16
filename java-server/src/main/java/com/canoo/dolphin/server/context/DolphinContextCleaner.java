@@ -10,6 +10,7 @@ public class DolphinContextCleaner implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
+        //Nothing to do
     }
 
     @Override

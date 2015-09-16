@@ -2,8 +2,8 @@ package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,12 +13,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class DolphinContextHandler {
 
-    private final static Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
+    private static final Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
 
-    private final static Lock globalContextMapLock = new ReentrantLock();
+    private static final Lock globalContextMapLock = new ReentrantLock();
 
-    private final static ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
-    private final static ThreadLocal<String> sessionIdThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<String> sessionIdThreadLocal = new ThreadLocal<>();
 
     private final ContainerManager containerManager;
 
@@ -38,9 +38,6 @@ public class DolphinContextHandler {
 
     }
 
-    public void init() {
-        ControllerHandler.init();
-    }
 
     public void handle(HttpServletRequest request, HttpServletResponse response) {
         //This will refactored later to support a client scope (tab based in browser)
@@ -69,7 +66,7 @@ public class DolphinContextHandler {
             currentContext.handleRequest(request, response);
         } catch (Exception e) {
             throw new RuntimeException("Error in Dolphin command handling", e);
-        }finally {
+        } finally {
             currentContextThreadLocal.remove();
             sessionIdThreadLocal.remove();
         }
@@ -81,15 +78,10 @@ public class DolphinContextHandler {
      * @param session
      * @return
      */
-    @Deprecated
-    public static DolphinContext getContext(HttpSession session) {
+    public static List<DolphinContext> getContexts(HttpSession session) {
         globalContextMapLock.lock();
         try {
-            List<DolphinContext> contextList = globalContextMap.get(session.getId());
-            if (contextList != null && !contextList.isEmpty()) {
-                return contextList.get(0);
-            }
-            return null;
+            return globalContextMap.get(session.getId());
         } finally {
             globalContextMapLock.unlock();
         }

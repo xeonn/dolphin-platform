@@ -15,8 +15,7 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        DolphinContext dolphinContext = DolphinContextHandler.getContext(se.getSession());
-        if (dolphinContext != null) {
+        for(DolphinContext dolphinContext : DolphinContextHandler.getContexts(se.getSession())) {
             DolphinEventBusImpl.getInstance().unsubscribeSession(dolphinContext.getId());
         }
     }
