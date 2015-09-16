@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * The default servlet of the dolphin platform. All communication is based on this servlet.
  */
-public class DefaultDolphinServlet extends HttpServlet {
+public class DolphinPlatformServlet extends HttpServlet {
 
     private DolphinContextHandler dolphinContextHandler;
 

@@ -2,7 +2,6 @@ package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;

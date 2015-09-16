@@ -7,7 +7,6 @@ import org.opendolphin.server.adapter.InvalidationServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.util.EnumSet;
 
 public class DolphinPlatformBootstrap {
@@ -32,7 +31,7 @@ public class DolphinPlatformBootstrap {
     }
 
     public void onStartup(ServletContext servletContext) {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DefaultDolphinServlet()).addMapping(dolphinServletMapping);
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet()).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 

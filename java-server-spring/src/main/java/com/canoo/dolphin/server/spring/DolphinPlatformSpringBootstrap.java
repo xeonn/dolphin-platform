@@ -2,14 +2,9 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.TaskExecutor;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.impl.ServerEventDispatcher;
-import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
