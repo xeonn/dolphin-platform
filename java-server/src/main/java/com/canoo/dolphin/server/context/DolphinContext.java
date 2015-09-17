@@ -224,7 +224,10 @@ public class DolphinContext {
         return DolphinContextHandler.getCurrentContext();
     }
 
-    public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception{
+    public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+
+        resp.setHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME, id);
+
         //copied from DolphinServlet
         StringBuilder requestJson = new StringBuilder();
         String line = null;

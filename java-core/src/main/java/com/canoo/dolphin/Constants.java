@@ -17,6 +17,8 @@ public class Constants {
 
     public static final String INIT_COMMAND_NAME = "initClientContext";
 
+    public static final String CLIENT_ID_HTTP_HEADER_NAME = "dolphin-client-id";
+
     private Constants() {
     }
 }
