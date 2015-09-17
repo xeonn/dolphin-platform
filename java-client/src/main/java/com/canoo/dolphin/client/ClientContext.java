@@ -1,6 +1,5 @@
-package com.canoo.dolphin.client.v2;
+package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.client.ClientBeanManagerImpl;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;

@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client.v2;
+package com.canoo.dolphin.client;
 
 import java.util.concurrent.CompletableFuture;
 

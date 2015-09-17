@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client.v2;
+package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
 

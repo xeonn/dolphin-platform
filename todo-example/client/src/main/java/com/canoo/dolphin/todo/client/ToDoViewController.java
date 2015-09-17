@@ -2,8 +2,8 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.AbstractViewController;
 import com.canoo.dolphin.client.javafx.FXBinder;
-import com.canoo.dolphin.client.v2.ClientContext;
-import com.canoo.dolphin.client.v2.ControllerProxy;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.beans.property.StringProperty;

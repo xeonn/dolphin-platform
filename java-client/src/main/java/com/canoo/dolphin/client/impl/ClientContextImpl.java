@@ -1,13 +1,12 @@
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.Constants;
-import com.canoo.dolphin.client.ClientBeanManagerImpl;
-import com.canoo.dolphin.client.v2.ClientBeanManager;
-import com.canoo.dolphin.client.v2.ClientContext;
-import com.canoo.dolphin.client.v2.ControllerProxy;
+import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.client.ClientBeanManager;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
-import com.canoo.dolphin.v2.ControllerRegistryBean;
+import com.canoo.dolphin.impl.ControllerRegistryBean;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;

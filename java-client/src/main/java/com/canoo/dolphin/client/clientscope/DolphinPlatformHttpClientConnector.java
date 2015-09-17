@@ -1,6 +1,6 @@
 package com.canoo.dolphin.client.clientscope;
 
-import com.canoo.dolphin.Constants;
+import com.canoo.dolphin.impl.Constants;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

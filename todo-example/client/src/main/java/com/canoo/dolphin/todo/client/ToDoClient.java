@@ -1,8 +1,8 @@
 package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.javafx.JavaFXConfiguration;
-import com.canoo.dolphin.client.v2.ClientContext;
-import com.canoo.dolphin.client.v2.ClientContextFactory;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ClientContextFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

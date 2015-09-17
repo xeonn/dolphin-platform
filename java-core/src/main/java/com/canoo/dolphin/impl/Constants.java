@@ -1,4 +1,4 @@
-package com.canoo.dolphin;
+package com.canoo.dolphin.impl;
 
 /**
  * Created by hendrikebbers on 14.09.15.

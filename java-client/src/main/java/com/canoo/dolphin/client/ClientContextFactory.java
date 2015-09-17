@@ -1,7 +1,6 @@
-package com.canoo.dolphin.client.v2;
+package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.Constants;
-import com.canoo.dolphin.client.ClientConfiguration;
+import com.canoo.dolphin.impl.Constants;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
@@ -10,7 +9,6 @@ import org.opendolphin.core.comm.JsonCodec;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Created by hendrikebbers on 14.09.15.

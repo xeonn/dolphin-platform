@@ -1,8 +1,7 @@
-package com.canoo.dolphin.client;
+package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.client.impl.ClientPresentationModelBuilder;
-import com.canoo.dolphin.client.v2.ClientBeanManager;
-import com.canoo.dolphin.client.v2.Param;
+import com.canoo.dolphin.client.ClientBeanManager;
+import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.ClassRepository.FieldType;
 import org.opendolphin.core.Tag;

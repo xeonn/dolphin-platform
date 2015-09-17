@@ -1,10 +1,10 @@
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.Constants;
-import com.canoo.dolphin.client.v2.ClientContext;
-import com.canoo.dolphin.client.v2.ControllerProxy;
-import com.canoo.dolphin.v2.ControllerActionCallBean;
-import com.canoo.dolphin.v2.ControllerDestroyBean;
+import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.impl.ControllerActionCallBean;
+import com.canoo.dolphin.impl.ControllerDestroyBean;
 
 import java.util.concurrent.CompletableFuture;
 

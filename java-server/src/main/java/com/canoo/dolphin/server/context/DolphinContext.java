@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.Constants;
+import com.canoo.dolphin.impl.Constants;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
@@ -9,9 +9,9 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.v2.ControllerActionCallBean;
-import com.canoo.dolphin.v2.ControllerDestroyBean;
-import com.canoo.dolphin.v2.ControllerRegistryBean;
+import com.canoo.dolphin.impl.ControllerActionCallBean;
+import com.canoo.dolphin.impl.ControllerDestroyBean;
+import com.canoo.dolphin.impl.ControllerRegistryBean;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
@@ -25,7 +25,6 @@ import org.opendolphin.core.server.comm.CommandHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;

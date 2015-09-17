@@ -1,8 +1,5 @@
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.client.v2.ClientContext;
-import com.canoo.dolphin.client.v2.ControllerProxy;
-
 import java.util.concurrent.CompletableFuture;
 
 /**
