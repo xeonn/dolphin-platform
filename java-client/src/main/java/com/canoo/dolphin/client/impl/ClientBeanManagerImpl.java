@@ -25,7 +25,7 @@ public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBean
     }
 
     @Override
-    public CompletableFuture<Void> send(String command, Param... params) {
+    public CompletableFuture<Void> invoke(String command, Param... params) {
         if (params != null && params.length > 0) {
             final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin)
                     .withType(DolphinConstants.DOLPHIN_PARAMETER);

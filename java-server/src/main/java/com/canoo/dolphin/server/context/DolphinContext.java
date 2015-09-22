@@ -1,10 +1,12 @@
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.Constants;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
+import com.canoo.dolphin.server.controller.InvokeActionException;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
@@ -116,7 +118,7 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         try {
-                            onCallControllerAction();
+                            onInvokeControllerAction();
                         } catch (Exception e) {
                             //TODO: ExceptionHandler
                             throw new RuntimeException(e);
@@ -153,22 +155,22 @@ public class DolphinContext {
 
     private void onRegisterController() {
         ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
-        String controllerId = controllerHandler.createController(bean.getControllerName().get());
-        bean.getControllerid().set(controllerId);
+        String controllerId = controllerHandler.createController(bean.getControllerName());
+        bean.setControllerid(controllerId);
         Object model = controllerHandler.getControllerModel(controllerId);
         if(model != null) {
-            bean.getModelId().set(beanRepository.getDolphinId(model));
+            bean.setModelId(beanRepository.getDolphinId(model));
         }
     }
 
     private void onDestroyController() {
         ControllerDestroyBean bean = beanManager.findAll(ControllerDestroyBean.class).get(0);
-        controllerHandler.destroyController(bean.controlleridProperty().get());
+        controllerHandler.destroyController(bean.getControllerid());
     }
 
-    private void onCallControllerAction() throws InvocationTargetException, IllegalAccessException {
+    private void onInvokeControllerAction() throws InvokeActionException {
         ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-        controllerHandler.callAction(bean.getControllerid().get(), bean.getActionName().get());
+        controllerHandler.invokeAction(bean.getControllerid(), bean.getActionName());
     }
 
     private void onPollEventBus() {
@@ -187,7 +189,7 @@ public class DolphinContext {
         return dolphin;
     }
 
-    public BeanManagerImpl getBeanManager() {
+    public BeanManager getBeanManager() {
         return beanManager;
     }
 

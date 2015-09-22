@@ -3,7 +3,6 @@ package com.canoo.dolphin.server.controller;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.server.DolphinAction;
-import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
@@ -12,7 +11,6 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
-import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -92,11 +90,15 @@ public class ControllerHandler {
         }
     }
 
-    public void callAction(String controllerId, String actionName) throws InvocationTargetException, IllegalAccessException {
-        Object controller = controllers.get(controllerId);
-        Method actionMethod = getActionMethod(controller, actionName);
-        List<String> paramNames = getParamNames(actionMethod);
-        invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
+    public void invokeAction(String controllerId, String actionName) throws InvokeActionException {
+        try {
+            Object controller = controllers.get(controllerId);
+            Method actionMethod = getActionMethod(controller, actionName);
+            List<String> paramNames = getParamNames(actionMethod);
+            invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
+        } catch (Exception e) {
+            throw new InvokeActionException(e);
+        }
     }
 
     public void destroyController(String id) {

@@ -12,15 +12,27 @@ public class ControllerRegistryBean {
 
     private Property<String> modelId;
 
-    public Property<String> getControllerName() {
-        return controllerName;
+    public String getControllerName() {
+        return controllerName.get();
     }
 
-    public Property<String> getControllerid() {
-        return controllerid;
+    public void setControllerName(String controllerName) {
+        this.controllerName.set(controllerName);
     }
 
-    public Property<String> getModelId() {
-        return modelId;
+    public String getControllerid() {
+        return controllerid.get();
+    }
+
+    public void setControllerid(String controllerid) {
+        this.controllerid.set(controllerid);
+    }
+
+    public String getModelId() {
+        return modelId.get();
+    }
+
+    public void setModelId(String modelId) {
+        this.modelId.set(modelId);
     }
 }

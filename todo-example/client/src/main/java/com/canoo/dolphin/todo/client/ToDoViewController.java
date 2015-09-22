@@ -46,7 +46,7 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
         ObservableList<ToDoItem> items = FXBinder.wrapList(model.getItems());
         itemList.setItems(items);
         createButton.setDisable(false);
-        createButton.setOnAction(event -> controller.call("add"));
+        createButton.setOnAction(event -> controller.invoke("add"));
     }
 
     public StackPane getRoot() {

@@ -71,7 +71,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
                 result = getCodec().decode(response);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error in remoting layer", e);
+            throw new DolphinRemotingException("Error in remoting layer", e);
         }
         return result;
     }
@@ -82,7 +82,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     protected void setClientId(String clientId) {
         if(this.clientId != null && !this.clientId.equals(clientId)) {
-            throw new RuntimeException("Error: client id conflict!");
+            throw new DolphinRemotingException("Error: client id conflict!");
         }
         this.clientId = clientId;
     }
@@ -105,7 +105,7 @@ class SimpleResponseHandler implements ResponseHandler<String> {
         if(response != null) {
             clientConnector.setClientId(dolphinHeader.getValue());
         } else {
-            throw new RuntimeException("No dolphin id was send from the server!");
+            throw new DolphinRemotingException("No dolphin id was send from the server!");
         }
 
         if (statusLine.getStatusCode() >= 300) {

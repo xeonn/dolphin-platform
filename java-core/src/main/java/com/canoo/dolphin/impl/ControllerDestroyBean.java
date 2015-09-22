@@ -9,7 +9,11 @@ public class ControllerDestroyBean {
 
     private Property<String> controllerid;
 
-    public Property<String> controlleridProperty() {
-        return controllerid;
+    public String getControllerid() {
+        return controllerid.get();
+    }
+
+    public void setControllerid(String controllerid) {
+        this.controllerid.set(controllerid);
     }
 }

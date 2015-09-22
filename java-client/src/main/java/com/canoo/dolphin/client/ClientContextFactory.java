@@ -32,7 +32,7 @@ public class ClientContextFactory {
                 dolphin.startPushListening(Constants.POLL_COMMAND_NAME, Constants.RELEASE_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new ClientInitializationException(e);
             }
         });
         return result;

@@ -11,10 +11,10 @@ public class ClientConfiguration {
 
     public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
         if (StringUtil.isBlank(serverEndpoint)) {
-            throw new IllegalArgumentException("serverEndpoint mustn't be null");
+            throw new IllegalArgumentException("serverEndpoint must not be null");
         }
         if (uiThreadHandler == null) {
-            throw new IllegalArgumentException("uiThreadHandler mustn't be null");
+            throw new IllegalArgumentException("uiThreadHandler must not be null");
         }
         this.serverEndpoint = serverEndpoint;
 

@@ -2,6 +2,7 @@ package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.client.ClientConfiguration;
 import javafx.application.Platform;
+import org.opendolphin.StringUtil;
 
 /**
  * Created by hendrikebbers on 15.09.15.

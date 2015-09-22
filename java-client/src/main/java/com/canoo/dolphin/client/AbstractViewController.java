@@ -19,11 +19,14 @@ public abstract class AbstractViewController<M> {
     protected abstract void init(ControllerProxy<M> controller);
 
     public CompletableFuture<Void> destroy() {
+        CompletableFuture<Void> ret;
         if (controllerProxy != null) {
-            return controllerProxy.destroy();
+            ret = controllerProxy.destroy();
+            controllerProxy = null;
+        } else {
+            ret = new CompletableFuture<>();
+            ret.complete(null);
         }
-        CompletableFuture<Void> dummy = new CompletableFuture<>();
-        dummy.complete(null);
-        return dummy;
+        return ret;
     }
 }

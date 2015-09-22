@@ -9,7 +9,7 @@ public interface ControllerProxy<T> {
 
     T getModel();
 
-    CompletableFuture<Void> call(String actionName);
+    CompletableFuture<Void> invoke(String actionName);
 
     CompletableFuture<Void> destroy();
 }

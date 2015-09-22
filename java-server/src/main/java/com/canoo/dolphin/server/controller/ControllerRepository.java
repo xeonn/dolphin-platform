@@ -21,7 +21,7 @@ public class ControllerRepository {
 
     public static synchronized void init() {
         if (initialized) {
-            throw new RuntimeException(ControllerHandler.class.getName() + " already initialized");
+            throw new RuntimeException(ControllerRepository.class.getName() + " already initialized");
         }
         controllersClasses = new HashMap<>();
         Reflections reflections = new Reflections();
@@ -37,6 +37,9 @@ public class ControllerRepository {
     }
 
     public static synchronized Class getControllerClassForName(String name) {
+        if(!initialized) {
+            throw new IllegalStateException(ControllerRepository.class.getName() + " has not been initialized!");
+        }
         return controllersClasses.get(name);
     }
 }

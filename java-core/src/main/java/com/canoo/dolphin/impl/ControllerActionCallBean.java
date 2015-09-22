@@ -11,11 +11,19 @@ public class ControllerActionCallBean {
 
     private Property<String> actionName;
 
-    public Property<String> getControllerid() {
-        return controllerid;
+    public String getControllerid() {
+        return controllerid.get();
     }
 
-    public Property<String> getActionName() {
-        return actionName;
+    public void setControllerid(String controllerid) {
+        this.controllerid.set(controllerid);
+    }
+
+    public String getActionName() {
+        return actionName.get();
+    }
+
+    public void setActionName(String actionName) {
+        this.actionName.set(actionName);
     }
 }

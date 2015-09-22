@@ -44,7 +44,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     public void triggerTaskExecution() {
-        eventBus.publish(sender, new TaskTrigger());
+        eventBus.publish(sender, new TaskTrigger(){});
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
@@ -123,7 +123,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                     //TODO replace by log
                     System.out.println("handle event for dolphinId: " + dolphinId);
                     somethingHandled |= receiverInSession.handle(event);
-                } else if(val instanceof TaskTrigger) {
+                } else if(TaskTrigger.class.isAssignableFrom(val.getClass())) {
                     somethingHandled |= DolphinContext.getCurrentContext().getTaskExecutor().execute();
                 }
 

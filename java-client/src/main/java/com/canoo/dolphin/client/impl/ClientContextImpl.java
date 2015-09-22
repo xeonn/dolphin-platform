@@ -11,7 +11,6 @@ import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 /**
  * Created by hendrikebbers on 14.09.15.
@@ -33,19 +32,19 @@ public class ClientContextImpl implements ClientContext {
         final ListMapper listMapper = new ListMapper(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
-        Executors.newSingleThreadExecutor().submit(() -> clientBeanManager.send(Constants.INIT_COMMAND_NAME).get()).get();
+        clientBeanManager.invoke(Constants.INIT_COMMAND_NAME).get();
     }
 
     @Override
     public <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
         final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
-        bean.getControllerName().set(name);
-        return getBeanManager().send(Constants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
+        bean.setControllerName(name);
+        return getBeanManager().invoke(Constants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
             if(e != null) {
                 throw new RuntimeException(e);
             }
-            Object model = beanRepository.getBean(bean.getModelId().get());
-            return new ControllerProxyImpl<T>(bean.getControllerid().get(), (T) model, this);
+            Object model = beanRepository.getBean(bean.getModelId());
+            return new ControllerProxyImpl<T>(bean.getControllerid(), (T) model, this);
         });
     }
 
@@ -57,7 +56,7 @@ public class ClientContextImpl implements ClientContext {
     @Override
     public void disconnect() {
         //How to disconnect in open dolphin?
-        throw new RuntimeException("Not yet implemented!");
+        throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override
