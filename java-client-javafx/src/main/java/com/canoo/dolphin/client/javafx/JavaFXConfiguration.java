@@ -12,8 +12,4 @@ public class JavaFXConfiguration extends ClientConfiguration {
     public JavaFXConfiguration(String serverEndpoint) {
         super(serverEndpoint, r -> Platform.runLater(r));
     }
-
-    public static JavaFXConfiguration create(String serverEndpoint) {
-        return new JavaFXConfiguration(serverEndpoint);
-    }
 }
