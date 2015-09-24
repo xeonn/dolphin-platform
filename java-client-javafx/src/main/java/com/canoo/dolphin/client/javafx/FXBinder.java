@@ -2,260 +2,424 @@ package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.mapping.Property;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
  * Method to create JavaFX property wrappers for dolphin platform properties
+ * This will be changed in the next version to a fluent API like FXBinder.bind(jfxp).to(dp);
  */
 public class FXBinder {
 
-    /**
-     * Create a JavaFX {@link javafx.beans.property.DoubleProperty} as a wrapper for a dolphin platform property
-     * @param dolphinProperty the dolphin platform property
-     * @return the JavaFX property
-     */
-    public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
-        final DoubleProperty property = new SimpleDoubleProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
+    private static final double EPSILON = 1e-6;
 
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.doubleValue());
-            } else if (dolphinProperty.get().doubleValue() != newV.doubleValue()) {
-                dolphinProperty.set(newV.doubleValue());
+    private FXBinder() {
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
+    }
 
+    @Deprecated
+    public static void bind(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (property.get() != e.getNewValue().doubleValue()) {
-                property.set(e.getNewValue().doubleValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
 
-        return property;
+    @Deprecated
+    public static void bind(final Property<Double> dolphinProperty, final ObservableDoubleValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.get());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.get());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
-     * Create a JavaFX {@link javafx.beans.property.IntegerProperty} as a wrapper for a dolphin platform property
+     * Create a JavaFX {@link javafx.beans.property.DoubleProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
-    public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
-        final IntegerProperty property = new SimpleIntegerProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.intValue());
-            } else if (dolphinProperty.get().intValue() != newV.intValue()) {
-                dolphinProperty.set(newV.intValue());
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (property.get() != e.getNewValue().intValue()) {
-                property.set(e.getNewValue().intValue());
-            }
-        });
-
+    @Deprecated
+    public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
+        final DoubleProperty property = new SimpleDoubleProperty();
+        bindBidirectional(property, dolphinProperty);
         return property;
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static void bind(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static void bind(final Property<Float> dolphinProperty, final ObservableFloatValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.get());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.get());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
      * Create a JavaFX {@link javafx.beans.property.FloatProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static FloatProperty wrapFloatProperty(final Property<Float> dolphinProperty) {
         final FloatProperty property = new SimpleFloatProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.floatValue());
-            } else if (dolphinProperty.get().floatValue() != newV.floatValue()) {
-                dolphinProperty.set(newV.floatValue());
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (property.get() != e.getNewValue().floatValue()) {
-                property.set(e.getNewValue().floatValue());
-            }
-        });
-
+        bindBidirectional(property, dolphinProperty);
         return property;
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static void bind(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static void bind(final Property<Integer> dolphinProperty, final ObservableIntegerValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.get());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
+    }
+
+    /**
+     * Create a JavaFX {@link javafx.beans.property.IntegerProperty} as a wrapper for a dolphin platform property
+     *
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
+    @Deprecated
+    public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
+        final IntegerProperty property = new SimpleIntegerProperty();
+        bindBidirectional(property, dolphinProperty);
+        return property;
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static void bind(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static void bind(final Property<Long> dolphinProperty, final ObservableLongValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.get());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
      * Create a JavaFX {@link javafx.beans.property.LongProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static LongProperty wrapLongProperty(final Property<Long> dolphinProperty) {
         final LongProperty property = new SimpleLongProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.longValue());
-            } else if (dolphinProperty.get().longValue() != newV.longValue()) {
-                dolphinProperty.set(newV.longValue());
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (property.get() != e.getNewValue().longValue()) {
-                property.set(e.getNewValue().longValue());
-            }
-        });
-
+        bindBidirectional(property, dolphinProperty);
         return property;
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static void bind(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static void bind(final Property<Boolean> dolphinProperty, final ObservableBooleanValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
      * Create a JavaFX {@link javafx.beans.property.BooleanProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static BooleanProperty wrapBooleanProperty(final Property<Boolean> dolphinProperty) {
         final BooleanProperty property = new SimpleBooleanProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.booleanValue());
-            } else if (dolphinProperty.get().booleanValue() != newV.booleanValue()) {
-                dolphinProperty.set(newV.booleanValue());
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (property.get() != e.getNewValue().booleanValue()) {
-                property.set(e.getNewValue().booleanValue());
-            }
-        });
-
+        bindBidirectional(property, dolphinProperty);
         return property;
+    }
+
+    @Deprecated
+    public static void bindBidirectional(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static void bind(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static void bind(final Property<String> dolphinProperty, final ObservableStringValue javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
      * Create a JavaFX {@link javafx.beans.property.StringProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static StringProperty wrapStringProperty(final Property<String> dolphinProperty) {
-        final StringProperty property = new SimpleStringProperty();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (!dolphinProperty.get().equals(newV)) {
-                dolphinProperty.set(newV);
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (!property.get().equals(e.getNewValue())) {
-                property.set(e.getNewValue());
-            }
-        });
-
+        StringProperty property = new SimpleStringProperty();
+        bindBidirectional(property, dolphinProperty);
         return property;
+    }
+
+    @Deprecated
+    public static <T> void bindBidirectional(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+    }
+
+    @Deprecated
+    public static <T> void bind(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    @Deprecated
+    public static <T> void bind(final Property<T> dolphinProperty, final ObservableObjectValue<T> javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
     }
 
     /**
      * Create a JavaFX {@link javafx.beans.property.ObjectProperty} as a wrapper for a dolphin platform property
+     *
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static <T> ObjectProperty<T> wrapObjectProperty(final Property<T> dolphinProperty) {
         final ObjectProperty<T> property = new SimpleObjectProperty<>();
-        if(dolphinProperty.get() != null) {
-            property.setValue(dolphinProperty.get());
-        }
-
-        property.addListener((obs, oldV, newV) -> {
-            if(dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (!dolphinProperty.get().equals(newV)) {
-                dolphinProperty.set(newV);
-            }
-        });
-
-        dolphinProperty.onChanged(e -> {
-            if(property.getValue() == null && e.getNewValue() != null) {
-                property.set(e.getNewValue());
-            } else if (!property.get().equals(e.getNewValue())) {
-                property.set(e.getNewValue());
-            }
-        });
-
+        bindBidirectional(property, dolphinProperty);
         return property;
     }
 
     /**
      * Create a JavaFX {@link javafx.collections.ObservableList} wrapper for a dolphin platform list
+     *
      * @param dolphinList the dolphin platform list
-     * @param <T> type of the list content
+     * @param <T>         type of the list content
      * @return the JavaFX list
      */
+    @Deprecated
     public static <T> ObservableList<T> wrapList(com.canoo.dolphin.collections.ObservableList<T> dolphinList) {
         final ObservableList<T> list = FXCollections.observableArrayList(dolphinList);
 
-        com.canoo.dolphin.collections.ListChangeListener<T> dolphinListener = null;
-
-        list.addListener((ListChangeListener<T>)c -> {
-            if(listenToFx) {
+        list.addListener((ListChangeListener<T>) c -> {
+            if (listenToFx) {
                 listenToDolphin = false;
                 while (c.next()) {
-                    if (c.wasPermutated()) {
-                        //TODO
-                    } else if (c.wasUpdated()) {
-                        //TODO
-                    } else {
+                    if (c.wasAdded() || c.wasRemoved() || c.wasReplaced()) {
                         for (T removed : c.getRemoved()) {
                             dolphinList.remove(removed);
                         }
@@ -278,8 +442,6 @@ public class FXBinder {
                         }
                     } else if (c.isRemoved()) {
                         list.remove(c.getFrom(), c.getTo());
-                    } else {
-                        //TODO
                     }
                 }
                 listenToFx = true;

@@ -1,11 +1,13 @@
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.context.DolphinContextCleaner;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.util.EnumSet;
 
 public class DolphinPlatformBootstrap {
@@ -29,13 +31,15 @@ public class DolphinPlatformBootstrap {
         this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
     }
 
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, DefaultDolphinServlet.class).addMapping(dolphinServletMapping);
-        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, InvalidationServlet.class).addMapping(dolphinInvalidationServletMapping);
-        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, CrossSiteOriginFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+    public void onStartup(ServletContext servletContext) {
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet()).addMapping(dolphinServletMapping);
+        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
+        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(DolphinSessionHandlerCleaner.class);
+        servletContext.addListener(new DolphinSessionHandlerCleaner());
+        servletContext.addListener(new DolphinContextCleaner());
+
+        ControllerRepository.init();
     }
-
 
 }

@@ -1,53 +1,32 @@
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.ClientBeanManager;
-import com.canoo.dolphin.client.javafx.FXBinder;
-import com.canoo.dolphin.todo.pm.ToDoItem;
-import com.canoo.dolphin.todo.pm.ToDoList;
+import com.canoo.dolphin.client.javafx.JavaFXConfiguration;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ClientContextFactory;
 import javafx.application.Application;
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ToDoClient extends Application {
 
-    private final ClientBeanManager beanManager = ClientBeanManager.create("http://localhost:8080/todo-app/dolphin");
+    private ToDoViewController viewController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        final TextField createField = new TextField();
-        final Button createButton = new Button("Create");
-        final HBox createComponent = new HBox(10, createField, createButton);
-        final ListView<ToDoItem> itemList = new ListView<>();
-         itemList.setCellFactory(c -> new ToDoItemCell());
-        final VBox vBox = new VBox(10, createComponent, itemList);
-        final StackPane root = new StackPane(vBox);
-
-
-        beanManager.onAdded(ToDoList.class, list -> {
-
-            StringProperty newItemTextProperty = FXBinder.wrapStringProperty(list.getNewItemText());
-            createField.textProperty().bindBidirectional(newItemTextProperty);
-
-
-            ObservableList<ToDoItem> items = FXBinder.wrapList(list.getItems());
-            itemList.setItems(items);
-
-
-            createButton.setOnAction(event -> beanManager.send("ToDoController:add"));
+        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/todo-app/dolphin"));
+        connectionPromise.thenAccept(context -> {
+            viewController = new ToDoViewController(context);
+            primaryStage.setScene(new Scene(viewController.getRoot()));
+            primaryStage.show();
         });
-        beanManager.send("ToDoController:init");
+    }
 
-
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        viewController.destroy().get();
     }
 
     public static void main(String[] args) {

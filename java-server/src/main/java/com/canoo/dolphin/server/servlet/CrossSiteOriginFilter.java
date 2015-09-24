@@ -8,7 +8,9 @@ import java.io.IOException;
 public class CrossSiteOriginFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        //Nothing to do here
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -26,6 +28,8 @@ public class CrossSiteOriginFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        //Nothing to do here
+    }
 
 }

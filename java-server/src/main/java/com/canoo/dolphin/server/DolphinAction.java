@@ -22,13 +22,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     public class MyController {
  *
  *         @DolphinAction("my-action")
- *         private Property<String> name;
- *
- *         public Property<String> getNameProperty() {
- *             return name;
- *         }
+ *         private void doSomeAction() { . . . };
  *     }
- *
  * </code>
  *
  */

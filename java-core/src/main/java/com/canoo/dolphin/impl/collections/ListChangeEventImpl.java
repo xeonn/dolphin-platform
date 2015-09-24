@@ -26,10 +26,12 @@ public class ListChangeEventImpl<E> implements ListChangeEvent<E> {
         this.changes = changes;
     }
 
+    @Override
     public ObservableList<E> getSource() {
         return source;
     }
 
+    @Override
     public List<Change<E>> getChanges() {
         return changes;
     }
@@ -55,26 +57,32 @@ public class ListChangeEventImpl<E> implements ListChangeEvent<E> {
             this.removedElements = removedElements;
         }
 
+        @Override
         public int getFrom() {
             return from;
         }
 
+        @Override
         public int getTo() {
             return to;
         }
 
+        @Override
         public List<S> getRemovedElements() {
             return removedElements;
         }
 
+        @Override
         public boolean isAdded() {
             return getTo() > getFrom() && getRemovedElements().isEmpty();
         }
 
+        @Override
         public boolean isRemoved() {
             return getTo() == getFrom() && !getRemovedElements().isEmpty();
         }
 
+        @Override
         public boolean isReplaced() {
             return getTo() > getFrom() && !getRemovedElements().isEmpty();
         }

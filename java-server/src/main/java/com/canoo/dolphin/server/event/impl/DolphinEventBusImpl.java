@@ -1,10 +1,10 @@
 package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
-import com.canoo.dolphin.server.servlet.DefaultDolphinServlet;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
@@ -18,6 +18,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private static final DolphinEventBusImpl instance = new DolphinEventBusImpl();
     private static final int MAX_POLL_DURATION = 100;
+    public static final int TIMEOUT = 20;
 
     public static DolphinEventBusImpl getInstance() {
         return instance;
@@ -39,8 +40,11 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         if(StringUtil.isBlank(topic)) {
             throw new IllegalArgumentException("topic mustn't be empty!");
         }
-        final long timestamp = System.currentTimeMillis();
         eventBus.publish(sender, new MessageImpl(topic, data));
+    }
+
+    public void triggerTaskExecution() {
+        eventBus.publish(sender, new TaskTrigger(){});
     }
 
     public Subscription subscribe(final String topic, final MessageListener handler) {
@@ -58,7 +62,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     protected String getDolphinId() {
-        return DefaultDolphinServlet.getDolphinId();
+        return DolphinContext.getCurrentContext().getId();
     }
 
     public void unsubscribeSession(final String dolphinId) {
@@ -95,7 +99,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             throw new IllegalStateException("longPoll was called outside a dolphin session");
         }
         //TODO replace by log
-        System.out.println("long poll call from dolphin session " + dolphinId);
+//        System.out.println("long poll call from dolphin session " + dolphinId);
         final Receiver receiverInSession = getOrCreateReceiverInSession(dolphinId);
         if (!receiverInSession.isListeningToEventBus()) {
             receiverInSession.register(eventBus);
@@ -114,14 +118,18 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                 if (val == releaseVal) {
                     return;
                 }
-                final Message event = (Message) val;
-                //TODO replace by log
-                System.out.println("handle event for dolphinId: " + dolphinId);
-                somethingHandled |= receiverInSession.handle(event);
+                if(val instanceof  Message) {
+                    final Message event = (Message) val;
+                    //TODO replace by log
+//                    System.out.println("handle event for dolphinId: " + dolphinId);
+                    somethingHandled |= receiverInSession.handle(event);
+                } else if(TaskTrigger.class.isAssignableFrom(val.getClass())) {
+                    somethingHandled |= DolphinContext.getCurrentContext().getTaskExecutor().execute();
+                }
 
                 //if there are many events we would loop forever -> additional exit condition
                 if (System.currentTimeMillis() - startTime <= MAX_POLL_DURATION) {
-                    val = receiverQueue.getVal(20, MILLISECONDS);
+                    val = receiverQueue.getVal(TIMEOUT, MILLISECONDS);
                 } else {
                     val = null;
                 }
@@ -136,7 +144,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     public void release() {
 //        //TODO the release should happen in the context of a dolphin session.
 //        //TODO this piece of code should be used then
-//        String dolphinId = getDolphinId();
+//        String dolphinId = getId();
 //        if (dolphinId == null) {
 //            //TODO replace by log
 //            System.out.println("warning: release was called outside dolphin session");

@@ -1,30 +1,31 @@
 package com.canoo.dolphin.client;
 
 import org.opendolphin.StringUtil;
+import org.opendolphin.core.client.comm.UiThreadHandler;
 
 public class ClientConfiguration {
 
-    private String serverEndpoint;
+    private final String serverEndpoint;
 
-    private boolean usePush;
+    private final UiThreadHandler uiThreadHandler;
 
-    public ClientConfiguration(String serverEndpoint) {
-        this(serverEndpoint, true);
-    }
-
-    public ClientConfiguration(String serverEndpoint, boolean usePush) {
-        if(StringUtil.isBlank(serverEndpoint)) {
-            throw new IllegalArgumentException("serverEndpoint mustn't be null");
+    public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
+        if (StringUtil.isBlank(serverEndpoint)) {
+            throw new IllegalArgumentException("serverEndpoint must not be null");
+        }
+        if (uiThreadHandler == null) {
+            throw new IllegalArgumentException("uiThreadHandler must not be null");
         }
         this.serverEndpoint = serverEndpoint;
-        this.usePush = usePush;
+
+        this.uiThreadHandler = uiThreadHandler;
+    }
+
+    public UiThreadHandler getUiThreadHandler() {
+        return uiThreadHandler;
     }
 
     public String getServerEndpoint() {
         return serverEndpoint;
-    }
-
-    public boolean isUsePush() {
-        return usePush;
     }
 }
