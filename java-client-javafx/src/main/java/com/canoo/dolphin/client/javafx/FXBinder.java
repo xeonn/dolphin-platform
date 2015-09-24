@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 
 /**
  * Method to create JavaFX property wrappers for dolphin platform properties
+ * This will be changed in the next version to a fluent API like FXBinder.bind(jfxp).to(dp);
  */
 public class FXBinder {
 
@@ -18,6 +19,7 @@ public class FXBinder {
     private FXBinder() {
     }
 
+    @Deprecated
     public static void bindBidirectional(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -31,6 +33,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -44,6 +47,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<Double> dolphinProperty, final ObservableDoubleValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -63,12 +67,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
         final DoubleProperty property = new SimpleDoubleProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
+    @Deprecated
     public static void bindBidirectional(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -82,6 +88,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -95,6 +102,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<Float> dolphinProperty, final ObservableFloatValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -114,12 +122,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static FloatProperty wrapFloatProperty(final Property<Float> dolphinProperty) {
         final FloatProperty property = new SimpleFloatProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
+    @Deprecated
     public static void bindBidirectional(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -133,6 +143,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -146,6 +157,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<Integer> dolphinProperty, final ObservableIntegerValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -165,14 +177,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
         final IntegerProperty property = new SimpleIntegerProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
-
-
+    @Deprecated
     public static void bindBidirectional(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -186,6 +198,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -199,6 +212,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<Long> dolphinProperty, final ObservableLongValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -218,12 +232,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static LongProperty wrapLongProperty(final Property<Long> dolphinProperty) {
         final LongProperty property = new SimpleLongProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
+    @Deprecated
     public static void bindBidirectional(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -237,6 +253,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -250,6 +267,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<Boolean> dolphinProperty, final ObservableBooleanValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -269,12 +287,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static BooleanProperty wrapBooleanProperty(final Property<Boolean> dolphinProperty) {
         final BooleanProperty property = new SimpleBooleanProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
+    @Deprecated
     public static void bindBidirectional(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -288,6 +308,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static void bind(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -301,6 +322,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static void bind(final Property<String> dolphinProperty, final ObservableStringValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -320,12 +342,14 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static StringProperty wrapStringProperty(final Property<String> dolphinProperty) {
         StringProperty property = new SimpleStringProperty();
         bindBidirectional(property, dolphinProperty);
         return property;
     }
 
+    @Deprecated
     public static <T> void bindBidirectional(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
@@ -339,6 +363,7 @@ public class FXBinder {
         });
     }
 
+    @Deprecated
     public static <T> void bind(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -352,6 +377,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
+    @Deprecated
     public static <T> void bind(final Property<T> dolphinProperty, final ObservableObjectValue<T> javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
@@ -371,6 +397,7 @@ public class FXBinder {
      * @param dolphinProperty the dolphin platform property
      * @return the JavaFX property
      */
+    @Deprecated
     public static <T> ObjectProperty<T> wrapObjectProperty(final Property<T> dolphinProperty) {
         final ObjectProperty<T> property = new SimpleObjectProperty<>();
         bindBidirectional(property, dolphinProperty);
@@ -384,6 +411,7 @@ public class FXBinder {
      * @param <T>         type of the list content
      * @return the JavaFX list
      */
+    @Deprecated
     public static <T> ObservableList<T> wrapList(com.canoo.dolphin.collections.ObservableList<T> dolphinList) {
         final ObservableList<T> list = FXCollections.observableArrayList(dolphinList);
 
