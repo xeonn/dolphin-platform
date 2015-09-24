@@ -99,7 +99,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
             throw new IllegalStateException("longPoll was called outside a dolphin session");
         }
         //TODO replace by log
-        System.out.println("long poll call from dolphin session " + dolphinId);
+//        System.out.println("long poll call from dolphin session " + dolphinId);
         final Receiver receiverInSession = getOrCreateReceiverInSession(dolphinId);
         if (!receiverInSession.isListeningToEventBus()) {
             receiverInSession.register(eventBus);
@@ -121,7 +121,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                 if(val instanceof  Message) {
                     final Message event = (Message) val;
                     //TODO replace by log
-                    System.out.println("handle event for dolphinId: " + dolphinId);
+//                    System.out.println("handle event for dolphinId: " + dolphinId);
                     somethingHandled |= receiverInSession.handle(event);
                 } else if(TaskTrigger.class.isAssignableFrom(val.getClass())) {
                     somethingHandled |= DolphinContext.getCurrentContext().getTaskExecutor().execute();

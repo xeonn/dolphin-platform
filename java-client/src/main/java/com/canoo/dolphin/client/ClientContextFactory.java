@@ -10,9 +10,6 @@ import org.opendolphin.core.comm.JsonCodec;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class ClientContextFactory {
 
     private ClientContextFactory() {
@@ -28,7 +25,7 @@ public class ClientContextFactory {
                 clientConnector.setCodec(new JsonCodec());
                 clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
                 dolphin.setClientConnector(clientConnector);
-                ClientContext clientContext = new ClientContextImpl(dolphin);
+                final ClientContext clientContext = new ClientContextImpl(dolphin);
                 dolphin.startPushListening(Constants.POLL_COMMAND_NAME, Constants.RELEASE_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {

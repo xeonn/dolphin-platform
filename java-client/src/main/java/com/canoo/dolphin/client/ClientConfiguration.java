@@ -5,9 +5,9 @@ import org.opendolphin.core.client.comm.UiThreadHandler;
 
 public class ClientConfiguration {
 
-    private String serverEndpoint;
+    private final String serverEndpoint;
 
-    private UiThreadHandler uiThreadHandler;
+    private final UiThreadHandler uiThreadHandler;
 
     public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
         if (StringUtil.isBlank(serverEndpoint)) {

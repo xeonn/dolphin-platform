@@ -2,18 +2,12 @@ package com.canoo.dolphin.client;
 
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Created by hendrikebbers on 16.09.15.
- */
 public abstract class AbstractViewController<M> {
 
     private ControllerProxy<M> controllerProxy;
 
     public AbstractViewController(ClientContext clientContext, String controllerName) {
-        clientContext.createController(controllerName).thenAccept(c -> {
-            controllerProxy = controllerProxy;
-            init((ControllerProxy<M>) c);
-        });
+        clientContext.<M>createController(controllerName).thenAccept(this::init);
     }
 
     protected abstract void init(ControllerProxy<M> controller);

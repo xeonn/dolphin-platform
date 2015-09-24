@@ -25,19 +25,19 @@ import java.util.List;
  */
 public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
-    private String servletUrl;
+    private static final String CHARSET = "UTF-8";
+
+    private final String servletUrl;
+
+    private final DefaultHttpClient httpClient;
+
+    private final DefaultHttpClient signalHttpClient;
+
+    private final SimpleResponseHandler responseHandler;
+
+    private final SimpleResponseHandler signalResponseHandler;
 
     private String clientId;
-
-    private String charset = "UTF-8";
-
-    private DefaultHttpClient httpClient;
-
-    private DefaultHttpClient signalHttpClient;
-
-    private SimpleResponseHandler responseHandler;
-
-    private SimpleResponseHandler signalResponseHandler;
 
     public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, String servletUrl) {
         this(clientDolphin, null, servletUrl);
@@ -59,7 +59,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
         try {
             String content = getCodec().encode(commands);
             HttpPost httpPost = new HttpPost(servletUrl);
-            StringEntity entity = new StringEntity(content, charset);
+            StringEntity entity = new StringEntity(content, CHARSET);
             httpPost.setEntity(entity);
 
             httpPost.addHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
@@ -98,23 +98,22 @@ class SimpleResponseHandler implements ResponseHandler<String> {
 
     @Override
     public String handleResponse(HttpResponse response) throws IOException {
-        StatusLine statusLine = response.getStatusLine();
-        HttpEntity entity = response.getEntity();
-
-        Header dolphinHeader = response.getFirstHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME);
-        if(response != null) {
-            clientConnector.setClientId(dolphinHeader.getValue());
-        } else {
+        if (response == null) {
             throw new DolphinRemotingException("No dolphin id was send from the server!");
         }
+
+        final StatusLine statusLine = response.getStatusLine();
+        final HttpEntity entity = response.getEntity();
+
+        final Header dolphinHeader = response.getFirstHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME);
+        clientConnector.setClientId(dolphinHeader.getValue());
 
         if (statusLine.getStatusCode() >= 300) {
             EntityUtils.consume(entity);
             throw new HttpResponseException(statusLine.getStatusCode(),
                     statusLine.getReasonPhrase());
         }
-        String result = entity == null ? null : EntityUtils.toString(entity);
-        return result;
+        return entity == null ? null : EntityUtils.toString(entity);
     }
 }
 

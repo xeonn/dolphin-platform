@@ -20,30 +20,25 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class ControllerHandler {
 
-    private Map<String, Object> controllers;
+    private final Map<String, Object> controllers = new HashMap<>();
 
-    private Map<String, Object> models;
+    private final Map<String, Object> models = new HashMap<>();
 
-    private ContainerManager containerManager;
+    private final ContainerManager containerManager;
 
-    private BeanRepository beanRepository;
+    private final BeanRepository beanRepository;
 
-    private BeanManager beanManager;
+    private final BeanManager beanManager;
 
-    private ServerDolphin dolphin;
+    private final ServerDolphin dolphin;
 
     public ControllerHandler(ServerDolphin dolphin, ContainerManager containerManager, BeanRepository beanRepository, BeanManager beanManager) {
         this.dolphin = dolphin;
         this.containerManager = containerManager;
         this.beanRepository = beanRepository;
         this.beanManager = beanManager;
-        this.controllers = new HashMap<>();
-        this.models = new HashMap<>();
     }
 
     public Object getController(String id) {
@@ -138,7 +133,7 @@ public class ControllerHandler {
     }
 
     private List<String> getParamNames(Method method) {
-        final List<String> paramNames = new ArrayList<String>();
+        final List<String> paramNames = new ArrayList<>();
 
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             String paramName = Integer.toString(i);
@@ -211,11 +206,12 @@ public class ControllerHandler {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public <T> List<? extends T> getAllControllersThatImplement(Class<T> cls) {
-        List ret = new ArrayList<>();
+        final List<T> ret = new ArrayList<>();
         for (Object controller : controllers.values()) {
             if (cls.isAssignableFrom(controller.getClass())) {
-                ret.add(controller);
+                ret.add((T)controller);
             }
         }
         return ret;
