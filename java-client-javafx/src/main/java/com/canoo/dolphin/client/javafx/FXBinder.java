@@ -3,6 +3,7 @@ package com.canoo.dolphin.client.javafx;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -43,14 +44,14 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<Double> dolphinProperty, final ReadOnlyDoubleProperty javaFxProperty) {
+    public static void bind(final Property<Double> dolphinProperty, final ObservableDoubleValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
             } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -94,14 +95,14 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<Float> dolphinProperty, final ReadOnlyFloatProperty javaFxProperty) {
+    public static void bind(final Property<Float> dolphinProperty, final ObservableFloatValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
             } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -145,14 +146,14 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<Integer> dolphinProperty, final ReadOnlyIntegerProperty javaFxProperty) {
+    public static void bind(final Property<Integer> dolphinProperty, final ObservableIntegerValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
             } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -198,14 +199,14 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<Long> dolphinProperty, final ReadOnlyLongProperty javaFxProperty) {
+    public static void bind(final Property<Long> dolphinProperty, final ObservableLongValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
             } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
-                dolphinProperty.set(javaFxProperty.getValue());
+                dolphinProperty.set(javaFxProperty.get());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -249,7 +250,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<Boolean> dolphinProperty, final ReadOnlyBooleanProperty javaFxProperty) {
+    public static void bind(final Property<Boolean> dolphinProperty, final ObservableBooleanValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
@@ -300,7 +301,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static void bind(final Property<String> dolphinProperty, final ReadOnlyStringProperty javaFxProperty) {
+    public static void bind(final Property<String> dolphinProperty, final ObservableStringValue javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
@@ -351,7 +352,7 @@ public class FXBinder {
         javaFxProperty.setValue(dolphinProperty.get());
     }
 
-    public static <T> void bind(final Property<T> dolphinProperty, final ReadOnlyObjectProperty<T> javaFxProperty) {
+    public static <T> void bind(final Property<T> dolphinProperty, final ObservableObjectValue<T> javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
             if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
                 //Do nothing
