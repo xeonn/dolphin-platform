@@ -18,22 +18,26 @@ public class FXBinder {
     }
 
     public static void bindBidirectional(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.doubleValue());
-            } else if (Math.abs(dolphinProperty.get() - newV.doubleValue()) < EPSILON) {
-                dolphinProperty.set(newV.doubleValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
-        bind(javaFxProperty, dolphinProperty);
     }
 
     public static void bind(final DoubleProperty javaFxProperty, final Property<Double> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (Math.abs(dolphinProperty.get() - e.getNewValue().doubleValue()) < EPSILON) {
-                javaFxProperty.set(e.getNewValue().doubleValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -41,10 +45,12 @@ public class FXBinder {
 
     public static void bind(final Property<Double> dolphinProperty, final ReadOnlyDoubleProperty javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.doubleValue());
-            } else if (dolphinProperty.get() != newV.doubleValue()) {
-                dolphinProperty.set(newV.doubleValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().doubleValue() - javaFxProperty.getValue().doubleValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -62,68 +68,27 @@ public class FXBinder {
         return property;
     }
 
-    public static void bindBidirectional(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
-        javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.intValue());
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV.intValue());
-            }
-        });
-        bind(javaFxProperty, dolphinProperty);
-    }
-
-    public static void bind(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
-        dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (javaFxProperty.get() != e.getNewValue().intValue()) {
-                javaFxProperty.set(e.getNewValue());
-            }
-        });
-        javaFxProperty.setValue(dolphinProperty.get());
-    }
-
-    public static void bind(final Property<Integer> dolphinProperty, final ReadOnlyIntegerProperty javaFxProperty) {
-        javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.intValue());
-            } else if (dolphinProperty.get().intValue() != newV.intValue()) {
-                dolphinProperty.set(newV.intValue());
-            }
-        });
-        dolphinProperty.set(javaFxProperty.get());
-    }
-
-    /**
-     * Create a JavaFX {@link javafx.beans.property.IntegerProperty} as a wrapper for a dolphin platform property
-     *
-     * @param dolphinProperty the dolphin platform property
-     * @return the JavaFX property
-     */
-    public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
-        final IntegerProperty property = new SimpleIntegerProperty();
-        bindBidirectional(property, dolphinProperty);
-        return property;
-    }
-
     public static void bindBidirectional(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.floatValue());
-            } else if (dolphinProperty.get() != newV.floatValue()) {
-                dolphinProperty.set(newV.floatValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
-        bind(javaFxProperty, dolphinProperty);
     }
 
     public static void bind(final FloatProperty javaFxProperty, final Property<Float> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (dolphinProperty.get() != e.getNewValue().doubleValue()) {
-                javaFxProperty.set(e.getNewValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -131,10 +96,12 @@ public class FXBinder {
 
     public static void bind(final Property<Float> dolphinProperty, final ReadOnlyFloatProperty javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.floatValue());
-            } else if (dolphinProperty.get() != newV.doubleValue()) {
-                dolphinProperty.set(newV.floatValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (Math.abs(dolphinProperty.get().floatValue() - javaFxProperty.getValue().floatValue()) > EPSILON) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -152,23 +119,80 @@ public class FXBinder {
         return property;
     }
 
-    public static void bindBidirectional(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
+    public static void bindBidirectional(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.longValue());
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV.longValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
+    }
+
+    public static void bind(final IntegerProperty javaFxProperty, final Property<Integer> dolphinProperty) {
+        dolphinProperty.onChanged(e -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
+            }
+        });
+        javaFxProperty.setValue(dolphinProperty.get());
+    }
+
+    public static void bind(final Property<Integer> dolphinProperty, final ReadOnlyIntegerProperty javaFxProperty) {
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
+        dolphinProperty.set(javaFxProperty.get());
+    }
+
+    /**
+     * Create a JavaFX {@link javafx.beans.property.IntegerProperty} as a wrapper for a dolphin platform property
+     *
+     * @param dolphinProperty the dolphin platform property
+     * @return the JavaFX property
+     */
+    public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
+        final IntegerProperty property = new SimpleIntegerProperty();
+        bindBidirectional(property, dolphinProperty);
+        return property;
+    }
+
+
+
+    public static void bindBidirectional(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
         bind(javaFxProperty, dolphinProperty);
+        javaFxProperty.addListener((obs, oldV, newV) -> {
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            }
+        });
     }
 
     public static void bind(final LongProperty javaFxProperty, final Property<Long> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (javaFxProperty.get() != e.getNewValue().longValue()) {
-                javaFxProperty.set(e.getNewValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -176,10 +200,12 @@ public class FXBinder {
 
     public static void bind(final Property<Long> dolphinProperty, final ReadOnlyLongProperty javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV.longValue());
-            } else if (dolphinProperty.get().longValue() != newV.longValue()) {
-                dolphinProperty.set(newV.longValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -198,22 +224,26 @@ public class FXBinder {
     }
 
     public static void bindBidirectional(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
-        bind(javaFxProperty, dolphinProperty);
     }
 
     public static void bind(final BooleanProperty javaFxProperty, final Property<Boolean> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (javaFxProperty.get() != e.getNewValue()) {
-                javaFxProperty.set(e.getNewValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -221,10 +251,12 @@ public class FXBinder {
 
     public static void bind(final Property<Boolean> dolphinProperty, final ReadOnlyBooleanProperty javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -243,22 +275,26 @@ public class FXBinder {
     }
 
     public static void bindBidirectional(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
-        bind(javaFxProperty, dolphinProperty);
     }
 
     public static void bind(final StringProperty javaFxProperty, final Property<String> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (javaFxProperty.get() != e.getNewValue()) {
-                javaFxProperty.set(e.getNewValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -266,10 +302,12 @@ public class FXBinder {
 
     public static void bind(final Property<String> dolphinProperty, final ReadOnlyStringProperty javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
@@ -288,22 +326,26 @@ public class FXBinder {
     }
 
     public static <T> void bindBidirectional(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
+        bind(javaFxProperty, dolphinProperty);
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
-        bind(javaFxProperty, dolphinProperty);
     }
 
     public static <T> void bind(final ObjectProperty<T> javaFxProperty, final Property<T> dolphinProperty) {
         dolphinProperty.onChanged(e -> {
-            if (javaFxProperty.getValue() == null && e.getNewValue() != null) {
-                javaFxProperty.set(e.getNewValue());
-            } else if (javaFxProperty.get() != e.getNewValue()) {
-                javaFxProperty.set(e.getNewValue());
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                javaFxProperty.set(dolphinProperty.get());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                javaFxProperty.set(dolphinProperty.get());
             }
         });
         javaFxProperty.setValue(dolphinProperty.get());
@@ -311,10 +353,12 @@ public class FXBinder {
 
     public static <T> void bind(final Property<T> dolphinProperty, final ReadOnlyObjectProperty<T> javaFxProperty) {
         javaFxProperty.addListener((obs, oldV, newV) -> {
-            if (dolphinProperty.get() == null && newV != null) {
-                dolphinProperty.set(newV);
-            } else if (dolphinProperty.get() != newV) {
-                dolphinProperty.set(newV);
+            if(dolphinProperty.get() == null && javaFxProperty.getValue() == null) {
+                //Do nothing
+            } else if(dolphinProperty.get() == null || javaFxProperty.getValue() == null) {
+                dolphinProperty.set(javaFxProperty.getValue());
+            } else if (!dolphinProperty.get().equals(javaFxProperty.getValue())) {
+                dolphinProperty.set(javaFxProperty.getValue());
             }
         });
         dolphinProperty.set(javaFxProperty.get());
