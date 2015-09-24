@@ -41,8 +41,7 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
     @Override
     protected void init(ControllerProxy<ToDoList> controller) {
         ToDoList model = controller.getModel();
-        StringProperty newItemTextProperty = FXBinder.wrapStringProperty(model.getNewItemText());
-        createField.textProperty().bindBidirectional(newItemTextProperty);
+        FXBinder.bindBidirectional(createField.textProperty(), model.getNewItemText());
         ObservableList<ToDoItem> items = FXBinder.wrapList(model.getItems());
         itemList.setItems(items);
         createButton.setDisable(false);
