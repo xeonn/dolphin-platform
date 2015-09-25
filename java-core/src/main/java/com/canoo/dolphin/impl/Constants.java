@@ -21,4 +21,6 @@ public interface Constants {
 
     public static final String CLIENT_ID_HTTP_HEADER_NAME = DOLPHIN_PLATFORM_PREFIX + "dolphin-client-id";
 
+
+    public static final String DISCONNECT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
 }

@@ -5,8 +5,11 @@ import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.TaskExecutor;
+import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,13 +52,13 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @Scope("session")
     protected TaskExecutor createTaskExecutor() {
-        return DolphinContext.getCurrentContext().getTaskExecutor();
+        return TaskExecutorImpl.getInstance();
     }
 
     @Bean
-    @Scope("session")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return DolphinContext.getCurrentContext().getEventBus();
+        return DolphinEventBusImpl.getInstance();
     }
 
 }

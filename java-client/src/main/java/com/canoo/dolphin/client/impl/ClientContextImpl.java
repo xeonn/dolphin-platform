@@ -7,6 +7,7 @@ import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.impl.ControllerRegistryBean;
+import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +24,12 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientBeanManagerImpl clientBeanManager;
 
+    private boolean killed = false;
+
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
+        if(clientDolphin == null) {
+            throw new IllegalArgumentException("clientDolphin must not be null!");
+        }
         this.clientDolphin = clientDolphin;
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
         beanRepository = new BeanRepository(clientDolphin, dispatcher);
@@ -37,6 +43,12 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
+        if(StringUtil.isBlank(name)) {
+            throw new IllegalArgumentException("name must not be null or empty!");
+        }
+        if(killed) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
         final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
         bean.setControllerName(name);
         return getBeanManager().invoke(Constants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
@@ -50,17 +62,32 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public ClientBeanManager getBeanManager() {
+        if(killed) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
         return clientBeanManager;
     }
 
     @Override
-    public void disconnect() {
-        //How to disconnect in open dolphin?
-        throw new UnsupportedOperationException("Not yet implemented!");
+    public CompletableFuture<Void> disconnect() {
+        if(killed) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
+        return getBeanManager().invoke(Constants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
+    }
+
+    public BeanRepository getBeanRepository() {
+        if(killed) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
+        return beanRepository;
     }
 
     @Override
     public ClientDolphin getDolphin() {
+        if(killed) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
         return clientDolphin;
     }
 }

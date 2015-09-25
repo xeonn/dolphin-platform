@@ -7,6 +7,7 @@ import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.InvokeActionException;
+import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
@@ -43,8 +44,6 @@ public class DolphinContext {
 
     private final BeanManagerImpl beanManager;
 
-    private final DolphinEventBusImpl eventBus;
-
     private final ControllerHandler controllerHandler;
 
     private ContainerManager containerManager;
@@ -53,7 +52,7 @@ public class DolphinContext {
 
     private ServletContext servletContext;
 
-    private TaskExecutorImpl taskExecutor;
+    private DolphinContextTaskExecutor taskExecutor;
 
     public DolphinContext(ContainerManager containerManager, ServletContext servletContext) {
         this.containerManager = containerManager;
@@ -81,14 +80,11 @@ public class DolphinContext {
         final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
-        //Init EventBus
-        eventBus = DolphinEventBusImpl.getInstance();
-
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(dolphin, containerManager, beanRepository, beanManager);
 
         //Init TaskExecutor
-        taskExecutor = new TaskExecutorImpl();
+        taskExecutor = new DolphinContextTaskExecutor();
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -149,6 +145,18 @@ public class DolphinContext {
                         beanManager.create(ControllerActionCallBean.class);
                     }
                 });
+
+                registry.register(Constants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
+                    @Override
+                    public void handleCommand(Command command, List response) {
+                        //Disconnect Client
+                        beanManager.removeAll(ControllerRegistryBean.class);
+                        beanManager.removeAll(ControllerDestroyBean.class);
+                        beanManager.removeAll(ControllerActionCallBean.class);
+
+                        //TODO: How to disconnect?
+                    }
+                });
             }
         });
     }
@@ -175,14 +183,14 @@ public class DolphinContext {
 
     private void onPollEventBus() {
         try {
-            eventBus.longPoll();
+            DolphinEventBusImpl.getInstance().longPoll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     private void onReleaseEventBus() {
-        eventBus.release();
+        DolphinEventBusImpl.getInstance().release();
     }
 
     public ServerDolphin getDolphin() {
@@ -191,10 +199,6 @@ public class DolphinContext {
 
     public BeanManager getBeanManager() {
         return beanManager;
-    }
-
-    public DolphinEventBusImpl getEventBus() {
-        return eventBus;
     }
 
     public ControllerHandler getControllerHandler() {
@@ -213,7 +217,7 @@ public class DolphinContext {
         return servletContext;
     }
 
-    public TaskExecutorImpl getTaskExecutor() {
+    public DolphinContextTaskExecutor getTaskExecutor() {
         return taskExecutor;
     }
 
