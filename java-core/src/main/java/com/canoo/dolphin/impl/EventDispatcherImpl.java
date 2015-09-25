@@ -1,18 +1,15 @@
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.internal.DolphinEventHandler;
+import com.canoo.dolphin.internal.EventDispatcher;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
-import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class EventDispatcher implements ModelStoreListener {
-
-    public interface DolphinEventHandler {
-        void onEvent(PresentationModel model);
-    }
+public abstract class EventDispatcherImpl implements EventDispatcher {
 
     private final List<DolphinEventHandler> modelAddedHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> modelRemovedHandlers = new ArrayList<>(1);
@@ -20,13 +17,14 @@ public abstract class EventDispatcher implements ModelStoreListener {
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
 
-    public EventDispatcher(Dolphin dolphin) {
+    public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
     }
 
     public void addAddedHandler(DolphinEventHandler handler) {
         modelAddedHandlers.add(handler);
     }
+
     public void addRemovedHandler(DolphinEventHandler handler) {
         modelRemovedHandlers.add(handler);
     }
@@ -34,9 +32,11 @@ public abstract class EventDispatcher implements ModelStoreListener {
     public void addListElementAddHandler(DolphinEventHandler handler) {
         listElementsAddHandlers.add(handler);
     }
+
     public void addListElementDelHandler(DolphinEventHandler handler) {
         listElementsDelHandlers.add(handler);
     }
+
     public void addListElementSetHandler(DolphinEventHandler handler) {
         listElementsSetHandlers.add(handler);
     }

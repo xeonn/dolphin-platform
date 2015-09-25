@@ -2,21 +2,23 @@ package com.canoo.dolphin.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.impl.info.ClassInfo;
-import com.canoo.dolphin.impl.info.PropertyInfo;
+import com.canoo.dolphin.internal.info.ClassInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.internal.*;
+import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 
 import java.util.List;
 
-public class ListMapper {
+public class ListMapperImpl implements ListMapper {
 
     private final Dolphin dolphin;
     private final BeanRepository beanRepository;
     private final ClassRepository classRepository;
     protected final PresentationModelBuilderFactory builderFactory;
 
-    public ListMapper(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
+    public ListMapperImpl(Dolphin dolphin, ClassRepository classRepository, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
         this.dolphin = dolphin;
         this.beanRepository = beanRepository;
         this.classRepository = classRepository;
@@ -27,8 +29,9 @@ public class ListMapper {
         dispatcher.addListElementSetHandler(createSetListener());
     }
 
-    private EventDispatcher.DolphinEventHandler createAddListener() {
-        return new EventDispatcher.DolphinEventHandler() {
+    private DolphinEventHandler createAddListener() {
+        return new DolphinEventHandler() {
+
             @SuppressWarnings("unchecked")
             @Override
             public void onEvent(PresentationModel model) {
@@ -58,8 +61,8 @@ public class ListMapper {
         };
     }
 
-    private EventDispatcher.DolphinEventHandler createDelListener() {
-        return new EventDispatcher.DolphinEventHandler() {
+    private DolphinEventHandler createDelListener() {
+        return new DolphinEventHandler() {
             @SuppressWarnings("unchecked")
             @Override
             public void onEvent(PresentationModel model) {
@@ -87,8 +90,8 @@ public class ListMapper {
         };
     }
 
-    private EventDispatcher.DolphinEventHandler createSetListener() {
-        return new EventDispatcher.DolphinEventHandler() {
+    private DolphinEventHandler createSetListener() {
+        return new DolphinEventHandler() {
             @SuppressWarnings("unchecked")
             @Override
             public void onEvent(PresentationModel model) {
@@ -117,6 +120,7 @@ public class ListMapper {
         };
     }
 
+    @Override
     public void processEvent(PropertyInfo observableListInfo, String sourceId, ListChangeEvent<?> event) {
         final String attributeName = observableListInfo.getAttributeName();
 

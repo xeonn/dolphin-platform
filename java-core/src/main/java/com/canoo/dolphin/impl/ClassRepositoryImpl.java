@@ -1,10 +1,13 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.impl.info.ClassInfo;
+import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.impl.info.ClassPropertyInfo;
-import com.canoo.dolphin.impl.info.PropertyInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
 import org.opendolphin.core.*;
 
 import java.lang.reflect.Field;
@@ -17,7 +20,7 @@ import java.util.Map;
  * A {@code ClassRepository} manages {@link ClassInfo} objects for all registered Dolphin Beans. A {@code ClassInfo}
  * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
  */
-public class ClassRepository {
+public class ClassRepositoryImpl implements ClassRepository {
 
     public enum FieldType {UNKNOWN, BASIC_TYPE, DOLPHIN_BEAN}
 
@@ -27,7 +30,7 @@ public class ClassRepository {
     private final Map<Class<?>, ClassInfo> classToClassInfoMap = new HashMap<>();
     private final Map<String, ClassInfo> modelTypeToClassInfoMap = new HashMap<>();
 
-    public ClassRepository(Dolphin dolphin, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
+    public ClassRepositoryImpl(Dolphin dolphin, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
         this.builderFactory = builderFactory;
         this.initialConverter = new Converters(beanRepository).getUnknownTypeConverter();
 

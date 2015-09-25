@@ -7,8 +7,8 @@ import com.canoo.dolphin.mapping.Property;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
-import static com.canoo.dolphin.impl.ClassRepository.FieldType.BASIC_TYPE;
-import static com.canoo.dolphin.impl.ClassRepository.FieldType.DOLPHIN_BEAN;
+import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.BASIC_TYPE;
+import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
 
 /**
  * The class {@code DolphinUtils} is a horrible class that we should get rid of asap.
@@ -48,21 +48,21 @@ public class DolphinUtils {
         return null;
     }
 
-    public static Object mapFieldTypeToDolphin(ClassRepository.FieldType fieldType) {
+    public static Object mapFieldTypeToDolphin(ClassRepositoryImpl.FieldType fieldType) {
         return fieldType.ordinal();
     }
 
-    public static ClassRepository.FieldType mapFieldTypeFromDolphin(Object value) {
+    public static ClassRepositoryImpl.FieldType mapFieldTypeFromDolphin(Object value) {
         try {
-            return ClassRepository.FieldType.values()[(Integer) value];
+            return ClassRepositoryImpl.FieldType.values()[(Integer) value];
         } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
-            return ClassRepository.FieldType.UNKNOWN;
+            return ClassRepositoryImpl.FieldType.UNKNOWN;
         }
     }
 
-    public static ClassRepository.FieldType getFieldType(Object value) {
+    public static ClassRepositoryImpl.FieldType getFieldType(Object value) {
         if (value == null) {
-            return ClassRepository.FieldType.UNKNOWN;
+            return ClassRepositoryImpl.FieldType.UNKNOWN;
         }
         return ReflectionHelper.isBasicType(value.getClass()) ? BASIC_TYPE : DOLPHIN_BEAN;
     }

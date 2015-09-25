@@ -1,7 +1,7 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.impl.DolphinConstants;
-import com.canoo.dolphin.impl.PresentationModelBuilder;
+import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
@@ -10,7 +10,7 @@ import org.opendolphin.core.client.ClientPresentationModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientPresentationModelBuilder extends PresentationModelBuilder<ClientPresentationModel> {
+public class ClientPresentationModelBuilder extends AbstractPresentationModelBuilder<ClientPresentationModel> {
 
     private final List<ClientAttribute> attributes = new ArrayList<>();
     private final ClientDolphin dolphin;

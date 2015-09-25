@@ -5,8 +5,13 @@ import com.canoo.dolphin.client.ClientBeanManager;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.impl.ControllerRegistryBean;
+import com.canoo.dolphin.internal.BeanBuilder;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 
@@ -32,11 +37,11 @@ public class ClientContextImpl implements ClientContext {
         }
         this.clientDolphin = clientDolphin;
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
-        beanRepository = new BeanRepository(clientDolphin, dispatcher);
+        beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
-        final ClassRepository classRepository = new ClassRepository(clientDolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
         clientBeanManager.invoke(Constants.INIT_COMMAND_NAME).get();
     }

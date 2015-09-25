@@ -2,6 +2,7 @@ package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
@@ -158,7 +159,7 @@ public class ControllerHandler {
             for (final String name : names) {
                 final Attribute valueAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE);
                 final Attribute typeAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE_TYPE);
-                final ClassRepository.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
+                final ClassRepositoryImpl.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
                 result.add(beanRepository.mapDolphinToObject(valueAttribute.getValue(), fieldType));
             }
             dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);

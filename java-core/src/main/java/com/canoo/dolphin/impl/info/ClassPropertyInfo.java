@@ -2,6 +2,7 @@ package com.canoo.dolphin.impl.info;
 
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.ReflectionHelper;
+import com.canoo.dolphin.internal.info.PropertyInfo;
 import org.opendolphin.core.Attribute;
 
 import java.lang.reflect.Field;

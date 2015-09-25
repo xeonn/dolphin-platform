@@ -1,7 +1,8 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.impl.PresentationModelBuilder;
+import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 
