@@ -1,7 +1,10 @@
 package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.DolphinUtils;
+import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
@@ -153,7 +156,7 @@ public class ControllerHandler {
 
     private Object[] getParam(ServerDolphin dolphin, List<String> names) {
         final List<Object> result = new ArrayList<>();
-        final List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinConstants.DOLPHIN_PARAMETER);
+        final List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_PARAMETER);
         if (!presentationModels.isEmpty()) {
             final ServerPresentationModel parameterModel = presentationModels.get(0);
             for (final String name : names) {
@@ -162,7 +165,7 @@ public class ControllerHandler {
                 final ClassRepositoryImpl.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
                 result.add(beanRepository.mapDolphinToObject(valueAttribute.getValue(), fieldType));
             }
-            dolphin.removeAllPresentationModelsOfType(DolphinConstants.DOLPHIN_PARAMETER);
+            dolphin.removeAllPresentationModelsOfType(PlatformConstants.DOLPHIN_PARAMETER);
         }
         return result.toArray(new Object[result.size()]);
     }
@@ -212,7 +215,7 @@ public class ControllerHandler {
         final List<T> ret = new ArrayList<>();
         for (Object controller : controllers.values()) {
             if (cls.isAssignableFrom(controller.getClass())) {
-                ret.add((T)controller);
+                ret.add((T) controller);
             }
         }
         return ret;

@@ -156,7 +156,7 @@ public class ListMapperImpl implements ListMapper {
 
     private void sendAdd(String sourceId, String attributeName, int pos, Object element) {
         builderFactory.createBuilder()
-                .withType(DolphinConstants.LIST_ADD)
+                .withType(PlatformConstants.LIST_ADD)
                 .withAttribute("source", sourceId)
                 .withAttribute("attribute", attributeName)
                 .withAttribute("pos", pos)
@@ -166,7 +166,7 @@ public class ListMapperImpl implements ListMapper {
 
     private void sendRemove(String sourceId, String attributeName, int from, int to) {
         builderFactory.createBuilder()
-                .withType(DolphinConstants.LIST_DEL)
+                .withType(PlatformConstants.LIST_DEL)
                 .withAttribute("source", sourceId)
                 .withAttribute("attribute", attributeName)
                 .withAttribute("from", from)
@@ -176,7 +176,7 @@ public class ListMapperImpl implements ListMapper {
 
     private void sendReplace(String sourceId, String attributeName, int pos, Object element) {
         builderFactory.createBuilder()
-                .withType(DolphinConstants.LIST_SET)
+                .withType(PlatformConstants.LIST_SET)
                 .withAttribute("source", sourceId)
                 .withAttribute("attribute", attributeName)
                 .withAttribute("pos", pos)

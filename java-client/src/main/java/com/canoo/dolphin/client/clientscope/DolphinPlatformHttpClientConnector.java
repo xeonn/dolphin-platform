@@ -1,6 +1,6 @@
 package com.canoo.dolphin.client.clientscope;
 
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -62,7 +62,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             StringEntity entity = new StringEntity(content, CHARSET);
             httpPost.setEntity(entity);
 
-            httpPost.addHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
+            httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
 
             if (commands.size() == 1 && commands.get(0) == getReleaseCommand()) {
                 signalHttpClient.execute(httpPost, signalResponseHandler);
@@ -105,7 +105,7 @@ class SimpleResponseHandler implements ResponseHandler<String> {
         final StatusLine statusLine = response.getStatusLine();
         final HttpEntity entity = response.getEntity();
 
-        final Header dolphinHeader = response.getFirstHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME);
+        final Header dolphinHeader = response.getFirstHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
         clientConnector.setClientId(dolphinHeader.getValue());
 
         if (statusLine.getStatusCode() >= 300) {

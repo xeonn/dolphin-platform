@@ -56,21 +56,21 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private void onAddedHandler(PresentationModel model) {
         final String type = model.getPresentationModelType();
         switch (type) {
-            case DolphinConstants.DOLPHIN_BEAN:
-            case DolphinConstants.DOLPHIN_PARAMETER:
+            case PlatformConstants.DOLPHIN_BEAN:
+            case PlatformConstants.DOLPHIN_PARAMETER:
                 // ignore
                 break;
-            case DolphinConstants.LIST_ADD:
+            case PlatformConstants.LIST_ADD:
                 for (final DolphinEventHandler handler : listElementsAddHandlers) {
                     handler.onEvent(model);
                 }
                 break;
-            case DolphinConstants.LIST_DEL:
+            case PlatformConstants.LIST_DEL:
                 for (final DolphinEventHandler handler : listElementsDelHandlers) {
                     handler.onEvent(model);
                 }
                 break;
-            case DolphinConstants.LIST_SET:
+            case PlatformConstants.LIST_SET:
                 for (final DolphinEventHandler handler : listElementsSetHandlers) {
                     handler.onEvent(model);
                 }
@@ -86,11 +86,11 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private void onRemovedHandler(PresentationModel model) {
         final String type = model.getPresentationModelType();
         switch (type) {
-            case DolphinConstants.DOLPHIN_BEAN:
-            case DolphinConstants.DOLPHIN_PARAMETER:
-            case DolphinConstants.LIST_ADD:
-            case DolphinConstants.LIST_DEL:
-            case DolphinConstants.LIST_SET:
+            case PlatformConstants.DOLPHIN_BEAN:
+            case PlatformConstants.DOLPHIN_PARAMETER:
+            case PlatformConstants.LIST_ADD:
+            case PlatformConstants.LIST_DEL:
+            case PlatformConstants.LIST_SET:
                 // ignore
                 break;
             default:
@@ -102,7 +102,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     private boolean isLocalChange(PresentationModel model) {
-        final Object value = model.findAttributeByPropertyName(DolphinConstants.SOURCE_SYSTEM).getValue();
+        final Object value = model.findAttributeByPropertyName(PlatformConstants.SOURCE_SYSTEM).getValue();
         return getLocalSystemIdentifier().equals(value);
     }
 

@@ -1,7 +1,7 @@
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.impl.DolphinConstants;
 import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
+import com.canoo.dolphin.impl.PlatformConstants;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
@@ -17,7 +17,7 @@ public class ClientPresentationModelBuilder extends AbstractPresentationModelBui
 
     public ClientPresentationModelBuilder(ClientDolphin dolphin) {
         this.dolphin = dolphin;
-        attributes.add(new ClientAttribute(DolphinConstants.SOURCE_SYSTEM, DolphinConstants.SOURCE_SYSTEM_CLIENT));
+        attributes.add(new ClientAttribute(PlatformConstants.SOURCE_SYSTEM, PlatformConstants.SOURCE_SYSTEM_CLIENT));
     }
 
     @Override

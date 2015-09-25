@@ -1,6 +1,6 @@
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.client.ClientBeanManager;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
@@ -43,7 +43,7 @@ public class ClientContextImpl implements ClientContext {
         final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
-        clientBeanManager.invoke(Constants.INIT_COMMAND_NAME).get();
+        clientBeanManager.invoke(PlatformConstants.INIT_COMMAND_NAME).get();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ClientContextImpl implements ClientContext {
         }
         final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
         bean.setControllerName(name);
-        return getBeanManager().invoke(Constants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
+        return getBeanManager().invoke(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
             if(e != null) {
                 throw new RuntimeException(e);
             }
@@ -78,7 +78,7 @@ public class ClientContextImpl implements ClientContext {
         if(killed) {
             throw new IllegalStateException("The client is disconnected!");
         }
-        return getBeanManager().invoke(Constants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
+        return getBeanManager().invoke(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
     }
 
     public BeanRepository getBeanRepository() {

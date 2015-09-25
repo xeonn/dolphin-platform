@@ -3,7 +3,7 @@ package com.canoo.dolphin.client.impl;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.ControllerActionCallBean;
 import com.canoo.dolphin.impl.ControllerDestroyBean;
 import org.opendolphin.StringUtil;
@@ -48,7 +48,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
         bean.setControllerid(controllerId);
         bean.setActionName(actionName);
-        return context.getBeanManager().invoke(Constants.CALL_CONTROLLER_ACTION_COMMAND_NAME, params);
+        return context.getBeanManager().invoke(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, params);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         destroyed = true;
         ControllerDestroyBean bean = context.getBeanManager().findAll(ControllerDestroyBean.class).get(0);
         bean.setControllerid(controllerId);
-        return context.getBeanManager().invoke(Constants.DESTROY_CONTROLLER_COMMAND_NAME).thenAccept(v -> {
+        return context.getBeanManager().invoke(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME).thenAccept(v -> {
             model = null;
         });
     }

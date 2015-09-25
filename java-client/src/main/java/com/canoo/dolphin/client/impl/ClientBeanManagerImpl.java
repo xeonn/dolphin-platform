@@ -31,7 +31,7 @@ public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBean
     public CompletableFuture<Void> invoke(String command, Param... params) {
         if (params != null && params.length > 0) {
             final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin)
-                    .withType(DolphinConstants.DOLPHIN_PARAMETER);
+                    .withType(PlatformConstants.DOLPHIN_PARAMETER);
             for (final Param param : params) {
                 final FieldType type = DolphinUtils.getFieldType(param.getValue());
                 final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();

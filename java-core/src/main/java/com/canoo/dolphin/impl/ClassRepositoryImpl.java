@@ -34,11 +34,11 @@ public class ClassRepositoryImpl implements ClassRepository {
         this.builderFactory = builderFactory;
         this.initialConverter = new Converters(beanRepository).getUnknownTypeConverter();
 
-        dolphin.addModelStoreListener(DolphinConstants.DOLPHIN_BEAN, new ModelStoreListener() {
+        dolphin.addModelStoreListener(PlatformConstants.DOLPHIN_BEAN, new ModelStoreListener() {
             @Override
             public void modelStoreChanged(ModelStoreEvent event) {
                 try {
-                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(DolphinConstants.JAVA_CLASS).getValue();
+                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
                     final ClassInfo classInfo = createClassInfoForClass(beanClass, event.getPresentationModel());
                     classToClassInfoMap.put(beanClass, classInfo);
@@ -71,8 +71,8 @@ public class ClassRepositoryImpl implements ClassRepository {
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = builderFactory.createBuilder()
                 .withId(id)
-                .withType(DolphinConstants.DOLPHIN_BEAN)
-                .withAttribute(DolphinConstants.JAVA_CLASS, beanClass.getName());
+                .withType(PlatformConstants.DOLPHIN_BEAN)
+                .withAttribute(PlatformConstants.JAVA_CLASS, beanClass.getName());
 
         for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {

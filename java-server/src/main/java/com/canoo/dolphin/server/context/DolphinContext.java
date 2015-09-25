@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
@@ -99,21 +99,21 @@ public class DolphinContext {
             @Override
             public void registerIn(ActionRegistry registry) {
 
-                registry.register(Constants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onRegisterController();
                     }
                 });
 
-                registry.register(Constants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onDestroyController();
                     }
                 });
 
-                registry.register(Constants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         try {
@@ -125,21 +125,21 @@ public class DolphinContext {
                     }
                 });
 
-                registry.register(Constants.POLL_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.POLL_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onPollEventBus();
                     }
                 });
 
-                registry.register(Constants.RELEASE_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.RELEASE_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onReleaseEventBus();
                     }
                 });
 
-                registry.register(Constants.INIT_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.INIT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //New Client
@@ -149,7 +149,7 @@ public class DolphinContext {
                     }
                 });
 
-                registry.register(Constants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //Disconnect Client
@@ -234,7 +234,7 @@ public class DolphinContext {
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 
-        resp.setHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME, id);
+        resp.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, id);
 
         //copied from DolphinServlet
         StringBuilder requestJson = new StringBuilder();
