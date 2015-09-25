@@ -1,5 +1,6 @@
 package com.canoo.dolphin.client.impl;
 
+import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.Constants;
@@ -16,13 +17,13 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final String controllerId;
 
-    private final ClientContextImpl context;
+    private final ClientContext context;
 
     private T model;
 
     private boolean destroyed = false;
 
-    public ControllerProxyImpl(String controllerId, T model, ClientContextImpl context) {
+    public ControllerProxyImpl(String controllerId, T model, ClientContext context) {
         if (StringUtil.isBlank(controllerId)) {
             throw new NullPointerException("controllerId must not be null");
         }
