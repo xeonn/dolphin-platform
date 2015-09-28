@@ -1,6 +1,5 @@
 package com.canoo.dolphin.client.javafx;
 
-import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 
 /**
@@ -8,13 +7,13 @@ import com.canoo.dolphin.mapping.Property;
  */
 public interface JavaFXBindable<S> {
 
-    default Subscription to(Property<? extends S> dolphinProperty) {
-        if(dolphinProperty == null) {
+    default Binding to(Property<? extends S> dolphinProperty) {
+        if (dolphinProperty == null) {
             throw new IllegalArgumentException("dolphinProperty must not be null");
         }
         return to(dolphinProperty, n -> n);
     }
 
-    <T> Subscription to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter);
+    <T> Binding to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter);
 
 }

@@ -1,6 +1,7 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.NumericDolphinBindable;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
@@ -24,7 +25,7 @@ public abstract class AbstractNumericDolphinBindable<T extends Number> extends D
     protected abstract BidirectionalConverter<Number, T> getConverter();
 
     @Override
-    public Subscription toNumeric(ObservableValue<Number> observableValue) {
+    public Binding toNumeric(ObservableValue<Number> observableValue) {
         if (observableValue == null) {
             throw new IllegalArgumentException("observableValue must not be null");
         }
@@ -41,18 +42,18 @@ public abstract class AbstractNumericDolphinBindable<T extends Number> extends D
     }
 
     @Override
-    public Subscription bidirectionalToNumeric(javafx.beans.property.Property<Number> javaFxProperty) {
+    public Binding bidirectionalToNumeric(javafx.beans.property.Property<Number> javaFxProperty) {
         if (javaFxProperty == null) {
             throw new IllegalArgumentException("javaFxProperty must not be null");
         }
-        Subscription toSubscription = toNumeric(javaFxProperty);
+        Binding unidirectionalBinding = toNumeric(javaFxProperty);
         Subscription subscription = property.onChanged(e -> {
             if (!equals(javaFxProperty.getValue(), property.get())) {
                 javaFxProperty.setValue(getConverter().convertBack(property.get()));
             }
         });
         return () -> {
-            toSubscription.unsubscribe();
+            unidirectionalBinding.unbind();
             subscription.unsubscribe();
         };
     }

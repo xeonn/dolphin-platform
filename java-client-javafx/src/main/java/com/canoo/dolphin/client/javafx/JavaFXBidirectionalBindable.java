@@ -1,6 +1,5 @@
 package com.canoo.dolphin.client.javafx;
 
-import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 
 /**
@@ -8,7 +7,7 @@ import com.canoo.dolphin.mapping.Property;
  */
 public interface JavaFXBidirectionalBindable<S> extends JavaFXBindable<S> {
 
-    default Subscription bidirectionalTo(Property<S> dolphinProperty) {
+    default Binding bidirectionalTo(Property<S> dolphinProperty) {
         return bidirectionalTo(dolphinProperty, new BidirectionalConverter<S, S>() {
             @Override
             public S convertBack(S value) {
@@ -22,6 +21,6 @@ public interface JavaFXBidirectionalBindable<S> extends JavaFXBindable<S> {
         });
     }
 
-    <T> Subscription bidirectionalTo(final Property<T> property, BidirectionalConverter<T, S> converter);
+    <T> Binding bidirectionalTo(final Property<T> property, BidirectionalConverter<T, S> converter);
 
 }

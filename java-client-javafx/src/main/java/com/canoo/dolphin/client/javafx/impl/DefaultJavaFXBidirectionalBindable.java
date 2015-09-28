@@ -1,6 +1,7 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.JavaFXBidirectionalBindable;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
@@ -19,14 +20,14 @@ public class DefaultJavaFXBidirectionalBindable<S> extends DefaultJavaFXBindable
     }
 
     @Override
-    public <T> Subscription bidirectionalTo(final Property<T> property, BidirectionalConverter<T, S> converter) {
-        final Subscription unidirectionalSubscription = to(property, converter);
+    public <T> Binding bidirectionalTo(final Property<T> property, BidirectionalConverter<T, S> converter) {
+        final Binding unidirectionalBinding = to(property, converter);
 
         final ChangeListener<S> listener = (obs, oldVal, newVal) -> property.set(converter.convertBack(newVal));
         javaFxProperty.addListener(listener);
         return () -> {
             javaFxProperty.removeListener(listener);
-            unidirectionalSubscription.unsubscribe();
+            unidirectionalBinding.unbind();
         };
     }
 

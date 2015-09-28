@@ -1,6 +1,7 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.Converter;
 import com.canoo.dolphin.client.javafx.DolphinBindable;
 import com.canoo.dolphin.event.Subscription;
@@ -23,7 +24,7 @@ public class DefaultDolphinBindable<S> implements DolphinBindable<S> {
     }
 
     @Override
-    public <T> Subscription to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter) {
+    public <T> Binding to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter) {
         if (observableValue == null) {
             throw new IllegalArgumentException("observableValue must not be null");
         }
@@ -38,17 +39,17 @@ public class DefaultDolphinBindable<S> implements DolphinBindable<S> {
 
 
     @Override
-    public <T> Subscription bidirectionalTo(javafx.beans.property.Property<T> javaFxProperty, BidirectionalConverter<T, S> converter) {
+    public <T> Binding bidirectionalTo(javafx.beans.property.Property<T> javaFxProperty, BidirectionalConverter<T, S> converter) {
         if (javaFxProperty == null) {
             throw new IllegalArgumentException("javaFxProperty must not be null");
         }
         if (converter == null) {
             throw new IllegalArgumentException("converter must not be null");
         }
-        Subscription toSubscription = to(javaFxProperty, converter);
+        Binding unidirectionalBinding = to(javaFxProperty, converter);
         Subscription subscription = property.onChanged(e -> javaFxProperty.setValue(converter.convertBack(property.get())));
         return () -> {
-            toSubscription.unsubscribe();
+            unidirectionalBinding.unbind();
             subscription.unsubscribe();
         };
     }

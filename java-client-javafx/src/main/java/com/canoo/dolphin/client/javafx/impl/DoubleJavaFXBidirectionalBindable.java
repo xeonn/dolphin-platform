@@ -1,6 +1,7 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.JavaFXBidirectionalBindable;
 import com.canoo.dolphin.client.javafx.NumericJavaFXBidirectionaBindable;
 import com.canoo.dolphin.event.Subscription;
@@ -22,14 +23,14 @@ public class DoubleJavaFXBidirectionalBindable extends DefaultJavaFXBindable<Num
     }
 
     @Override
-    public <T> Subscription bidirectionalTo(final Property<T> property, BidirectionalConverter<T, Number> converter) {
-        final Subscription unidirectionalSubscription = to(property, converter);
+    public <T> Binding bidirectionalTo(final Property<T> property, BidirectionalConverter<T, Number> converter) {
+        final Binding unidirectionalBinding = to(property, converter);
 
         final ChangeListener<Number> listener = (obs, oldVal, newVal) -> property.set(converter.convertBack(newVal));
         javaFxProperty.addListener(listener);
         return () -> {
             javaFxProperty.removeListener(listener);
-            unidirectionalSubscription.unsubscribe();
+            unidirectionalBinding.unbind();
         };
     }
 
@@ -39,14 +40,14 @@ public class DoubleJavaFXBidirectionalBindable extends DefaultJavaFXBindable<Num
     }
 
     @Override
-    public <T> Subscription bidirectionalToNumeric(Property<T> property, BidirectionalConverter<T, Double> converter) {
-        final Subscription unidirectionalSubscription = to(property, converter);
+    public <T> Binding bidirectionalToNumeric(Property<T> property, BidirectionalConverter<T, Double> converter) {
+        final Binding unidirectionalBinding = to(property, converter);
 
         final ChangeListener<Number> listener = (obs, oldVal, newVal) -> property.set(converter.convertBack(new Double(newVal.doubleValue())));
         javaFxProperty.addListener(listener);
         return () -> {
             javaFxProperty.removeListener(listener);
-            unidirectionalSubscription.unsubscribe();
+            unidirectionalBinding.unbind();
         };
     }
 }

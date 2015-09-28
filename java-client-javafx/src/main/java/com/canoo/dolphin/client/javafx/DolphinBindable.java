@@ -1,6 +1,5 @@
 package com.canoo.dolphin.client.javafx;
 
-import com.canoo.dolphin.event.Subscription;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -8,17 +7,17 @@ import javafx.beans.value.ObservableValue;
  */
 public interface DolphinBindable<S> {
 
-    default Subscription to(final ObservableValue<S> observableValue){
-        if(observableValue == null) {
+    default Binding to(final ObservableValue<S> observableValue) {
+        if (observableValue == null) {
             throw new IllegalArgumentException("observableValue must not be null");
         }
         return to(observableValue, n -> n);
     }
 
-    <T> Subscription to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter);
+    <T> Binding to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter);
 
-    default Subscription bidirectionalTo(final javafx.beans.property.Property<S> property) {
-        if(property == null) {
+    default Binding bidirectionalTo(final javafx.beans.property.Property<S> property) {
+        if (property == null) {
             throw new IllegalArgumentException("javaFxProperty must not be null");
         }
         return bidirectionalTo(property, new BidirectionalConverter<S, S>() {
@@ -34,5 +33,5 @@ public interface DolphinBindable<S> {
         });
     }
 
-    <T> Subscription bidirectionalTo(final javafx.beans.property.Property<T> property, final BidirectionalConverter<T, S> converter);
+    <T> Binding bidirectionalTo(final javafx.beans.property.Property<T> property, final BidirectionalConverter<T, S> converter);
 }

@@ -1,5 +1,6 @@
 package com.canoo.dolphin.client.javafx.impl;
 
+import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.Converter;
 import com.canoo.dolphin.client.javafx.JavaFXBindable;
 import com.canoo.dolphin.event.Subscription;
@@ -21,7 +22,7 @@ public class DefaultJavaFXBindable<S> implements JavaFXBindable<S> {
     }
 
     @Override
-    public <T> Subscription to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter) {
+    public <T> Binding to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter) {
         if (dolphinProperty == null) {
             throw new IllegalArgumentException("dolphinProperty must not be null");
         }
@@ -30,6 +31,6 @@ public class DefaultJavaFXBindable<S> implements JavaFXBindable<S> {
         }
         final Subscription subscription = dolphinProperty.onChanged(event -> javaFxValue.setValue(converter.convert(dolphinProperty.get())));
         javaFxValue.setValue(converter.convert(dolphinProperty.get()));
-        return subscription;
+        return () -> subscription.unsubscribe();
     }
 }
