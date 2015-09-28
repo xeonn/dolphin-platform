@@ -15,7 +15,7 @@ public interface DolphinBindable<S> {
         return to(observableValue, n -> n);
     }
 
-    <T> Subscription to(final ObservableValue<T> observableValue, final Converter<T, S> converter);
+    <T> Subscription to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter);
 
     default Subscription bidirectionalTo(final javafx.beans.property.Property<S> property) {
         if(property == null) {

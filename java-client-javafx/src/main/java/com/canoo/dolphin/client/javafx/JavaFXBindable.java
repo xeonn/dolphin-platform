@@ -15,6 +15,6 @@ public interface JavaFXBindable<S> {
         return to(dolphinProperty, n -> n);
     }
 
-    <T> Subscription to(Property<T> dolphinProperty, Converter<T, ? extends S> converter);
+    <T> Subscription to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter);
 
 }

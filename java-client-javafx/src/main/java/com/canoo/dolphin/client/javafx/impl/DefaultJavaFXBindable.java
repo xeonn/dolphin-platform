@@ -21,7 +21,7 @@ public class DefaultJavaFXBindable<S> implements JavaFXBindable<S> {
     }
 
     @Override
-    public <T> Subscription to(Property<T> dolphinProperty, Converter<T, ? extends S> converter) {
+    public <T> Subscription to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter) {
         if (dolphinProperty == null) {
             throw new IllegalArgumentException("dolphinProperty must not be null");
         }
