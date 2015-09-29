@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client.javafx.impl;
+package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class PropertyImpl<T> implements Property<T> {
+public class PropertyMock<T> implements Property<T> {
 
     private T value;
 
     private final List<ValueChangeListener<? super T>> listeners;
 
-    public PropertyImpl() {
+    public PropertyMock() {
         listeners = new ArrayList<>();
     }
 
@@ -29,7 +29,7 @@ public class PropertyImpl<T> implements Property<T> {
             listener.valueChanged(new ValueChangeEvent<T>() {
                 @Override
                 public Property<T> getSource() {
-                    return PropertyImpl.this;
+                    return PropertyMock.this;
                 }
 
                 @Override

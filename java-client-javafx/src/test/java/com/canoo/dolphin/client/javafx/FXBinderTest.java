@@ -1,6 +1,5 @@
 package com.canoo.dolphin.client.javafx;
 
-import com.canoo.dolphin.client.javafx.impl.PropertyImpl;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
 import javafx.beans.value.WritableBooleanValue;
@@ -19,8 +18,8 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXDoubleUnidirectional() {
-        Property<Double> doubleDolphinProperty = new PropertyImpl<>();
-        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        Property<Double> doubleDolphinProperty = new PropertyMock<>();
+        Property<Number> numberDolphinProperty = new PropertyMock<>();
         DoubleProperty doubleJavaFXProperty = new SimpleDoubleProperty();
         WritableDoubleValue writableDoubleValue = new SimpleDoubleProperty();
 
@@ -61,8 +60,8 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXDoubleBidirectional() {
-        Property<Double> doubleDolphinProperty = new PropertyImpl<>();
-        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        Property<Double> doubleDolphinProperty = new PropertyMock<>();
+        Property<Number> numberDolphinProperty = new PropertyMock<>();
         DoubleProperty doubleJavaFXProperty = new SimpleDoubleProperty();
 
         doubleDolphinProperty.set(47.0);
@@ -103,7 +102,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXDoubleUnidirectionalWithConverter() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         DoubleProperty doubleJavaFXProperty = new SimpleDoubleProperty();
         WritableDoubleValue writableDoubleValue = new SimpleDoubleProperty();
         Converter<String, Double> stringDoubleConverter = s -> s == null ? null : Double.parseDouble(s);
@@ -146,7 +145,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXDoubleBidirectionalWithConverter() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         DoubleProperty doubleJavaFXProperty = new SimpleDoubleProperty();
         Converter<String, Double> stringDoubleConverter = s -> s == null ? null : Double.parseDouble(s);
         Converter<Double, String> doubleStringConverter = d -> d == null ? null : d.toString();
@@ -174,7 +173,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXBooleanUnidirectional() {
-        Property<Boolean> booleanDolphinProperty = new PropertyImpl<>();
+        Property<Boolean> booleanDolphinProperty = new PropertyMock<>();
         BooleanProperty booleanJavaFXProperty = new SimpleBooleanProperty();
         WritableBooleanValue writableBooleanValue = new SimpleBooleanProperty();
 
@@ -205,7 +204,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXBooleanUnidirectionalWithConverter() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         BooleanProperty booleanJavaFXProperty = new SimpleBooleanProperty();
         WritableBooleanValue writableBooleanValue = new SimpleBooleanProperty();
         Converter<String, Boolean> stringBooleanConverter = s -> s == null ? null : Boolean.parseBoolean(s);
@@ -238,7 +237,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXBooleanBidirectional() {
-        Property<Boolean> booleanDolphinProperty = new PropertyImpl<>();
+        Property<Boolean> booleanDolphinProperty = new PropertyMock<>();
         BooleanProperty booleanJavaFXProperty = new SimpleBooleanProperty();
 
         booleanDolphinProperty.set(true);
@@ -265,7 +264,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXBooleanBidirectionalWithConverter() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         BooleanProperty booleanJavaFXProperty = new SimpleBooleanProperty();
         Converter<Boolean, String> booleanStringConverter = b -> b == null ? null : b.toString();
         Converter<String, Boolean> stringBooleanConverter = s -> s == null ? null : Boolean.parseBoolean(s);
@@ -296,7 +295,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXStringUnidirectional() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         StringProperty stringJavaFXProperty = new SimpleStringProperty();
         WritableStringValue writableStringValue = new SimpleStringProperty();
 
@@ -327,7 +326,7 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXStringBidirectional() {
-        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        Property<String> stringDolphinProperty = new PropertyMock<>();
         StringProperty stringJavaFXProperty = new SimpleStringProperty();
 
         stringDolphinProperty.set("Hello");
@@ -356,8 +355,8 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXIntegerUnidirectional() {
-        Property<Integer> integerDolphinProperty = new PropertyImpl<>();
-        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        Property<Integer> integerDolphinProperty = new PropertyMock<>();
+        Property<Number> numberDolphinProperty = new PropertyMock<>();
         IntegerProperty integerJavaFXProperty = new SimpleIntegerProperty();
         WritableIntegerValue writableIntegerValue = new SimpleIntegerProperty();
 
@@ -398,8 +397,8 @@ public class FXBinderTest {
 
     @Test
     public void testJavaFXIntegerBidirectional() {
-        Property<Integer> integerDolphinProperty = new PropertyImpl<>();
-        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        Property<Integer> integerDolphinProperty = new PropertyMock<>();
+        Property<Number> numberDolphinProperty = new PropertyMock<>();
         IntegerProperty integerJavaFXProperty = new SimpleIntegerProperty();
 
         integerDolphinProperty.set(47);
@@ -440,9 +439,9 @@ public class FXBinderTest {
 
     @Test
     public void testUnidirectionalChain() {
-        Property<String> stringDolphinProperty1 = new PropertyImpl<>();
+        Property<String> stringDolphinProperty1 = new PropertyMock<>();
         StringProperty stringJavaFXProperty1 = new SimpleStringProperty();
-        Property<String> stringDolphinProperty2 = new PropertyImpl<>();
+        Property<String> stringDolphinProperty2 = new PropertyMock<>();
         StringProperty stringJavaFXProperty2 = new SimpleStringProperty();
 
         Binding binding1 = FXBinder.bind(stringDolphinProperty1).to(stringJavaFXProperty1);
@@ -471,9 +470,9 @@ public class FXBinderTest {
 
     @Test
     public void testBidirectionalChain() {
-        Property<String> stringDolphinProperty1 = new PropertyImpl<>();
+        Property<String> stringDolphinProperty1 = new PropertyMock<>();
         StringProperty stringJavaFXProperty1 = new SimpleStringProperty();
-        Property<String> stringDolphinProperty2 = new PropertyImpl<>();
+        Property<String> stringDolphinProperty2 = new PropertyMock<>();
         StringProperty stringJavaFXProperty2 = new SimpleStringProperty();
 
         Binding binding1 = FXBinder.bind(stringDolphinProperty1).bidirectionalTo(stringJavaFXProperty1);
