@@ -5,6 +5,7 @@ import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
 import javafx.beans.value.WritableBooleanValue;
 import javafx.beans.value.WritableDoubleValue;
+import javafx.beans.value.WritableIntegerValue;
 import javafx.beans.value.WritableStringValue;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -349,6 +350,92 @@ public class FXBinderTest {
         binding.unbind();
         stringDolphinProperty.set("Hello Dolphin");
         Assert.assertEquals(stringJavaFXProperty.get(), null);
+    }
+
+
+
+    @Test
+    public void testJavaFXIntegerUnidirectional() {
+        Property<Integer> integerDolphinProperty = new PropertyImpl<>();
+        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        IntegerProperty integerJavaFXProperty = new SimpleIntegerProperty();
+        WritableIntegerValue writableIntegerValue = new SimpleIntegerProperty();
+
+        integerDolphinProperty.set(47);
+        Assert.assertNotEquals(integerJavaFXProperty.doubleValue(), 47);
+
+        Binding binding = FXBinder.bind(integerJavaFXProperty).to(integerDolphinProperty);
+        Assert.assertEquals(integerJavaFXProperty.get(), 47);
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 100);
+        integerDolphinProperty.set(null);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+        binding.unbind();
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+
+
+        numberDolphinProperty.set(12);
+        binding = FXBinder.bind(integerJavaFXProperty).to(numberDolphinProperty);
+        Assert.assertEquals(integerJavaFXProperty.get(), 12);
+        numberDolphinProperty.set(null);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+        binding.unbind();
+        numberDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+
+        integerDolphinProperty.set(47);
+        binding = FXBinder.bind(writableIntegerValue).to(integerDolphinProperty);
+        Assert.assertEquals(writableIntegerValue.get(), 47);
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(writableIntegerValue.get(), 100);
+        integerDolphinProperty.set(null);
+        Assert.assertEquals(writableIntegerValue.get(), 0);
+        binding.unbind();
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(writableIntegerValue.get(), 0);
+    }
+
+    @Test
+    public void testJavaFXIntegerBidirectional() {
+        Property<Integer> integerDolphinProperty = new PropertyImpl<>();
+        Property<Number> numberDolphinProperty = new PropertyImpl<>();
+        IntegerProperty integerJavaFXProperty = new SimpleIntegerProperty();
+
+        integerDolphinProperty.set(47);
+        Assert.assertNotEquals(integerJavaFXProperty.get(), 47);
+
+        Binding binding = FXBinder.bind(integerJavaFXProperty).bidirectionalToNumeric(integerDolphinProperty);
+        Assert.assertEquals(integerJavaFXProperty.get(), 47);
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 100);
+        integerDolphinProperty.set(null);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+
+        integerJavaFXProperty.set(12);
+        Assert.assertEquals(integerDolphinProperty.get().intValue(), 12);
+        integerJavaFXProperty.setValue(null);
+        Assert.assertEquals(integerDolphinProperty.get().intValue(), 0);
+
+        binding.unbind();
+        integerDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+
+
+        numberDolphinProperty.set(12);
+        binding = FXBinder.bind(integerJavaFXProperty).bidirectionalTo(numberDolphinProperty);
+        Assert.assertEquals(integerJavaFXProperty.get(), 12);
+        numberDolphinProperty.set(null);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
+
+        integerJavaFXProperty.set(12);
+        Assert.assertEquals(numberDolphinProperty.get().intValue(), 12);
+        integerJavaFXProperty.setValue(null);
+        Assert.assertEquals(numberDolphinProperty.get().intValue(), 0);
+
+        binding.unbind();
+        numberDolphinProperty.set(100);
+        Assert.assertEquals(integerJavaFXProperty.get(), 0);
     }
 
     @Test
