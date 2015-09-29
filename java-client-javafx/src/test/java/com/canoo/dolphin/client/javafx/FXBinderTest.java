@@ -2,12 +2,10 @@ package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.client.javafx.impl.PropertyImpl;
 import com.canoo.dolphin.mapping.Property;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.WritableBooleanValue;
 import javafx.beans.value.WritableDoubleValue;
+import javafx.beans.value.WritableStringValue;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -295,4 +293,139 @@ public class FXBinderTest {
         Assert.assertEquals(booleanJavaFXProperty.get(), false);
     }
 
+    @Test
+    public void testJavaFXStringUnidirectional() {
+        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty = new SimpleStringProperty();
+        WritableStringValue writableStringValue = new SimpleStringProperty();
+
+        stringDolphinProperty.set("Hello");
+        Assert.assertNotEquals(stringJavaFXProperty.get(), "Hello");
+
+        Binding binding = FXBinder.bind(stringJavaFXProperty).to(stringDolphinProperty);
+        Assert.assertEquals(stringJavaFXProperty.get(), "Hello");
+        stringDolphinProperty.set("Hello JavaFX");
+        Assert.assertEquals(stringJavaFXProperty.get(), "Hello JavaFX");
+        stringDolphinProperty.set(null);
+        Assert.assertEquals(stringJavaFXProperty.get(), null);
+        binding.unbind();
+        stringDolphinProperty.set("Hello JavaFX");
+        Assert.assertEquals(stringJavaFXProperty.get(), null);
+
+
+        binding = FXBinder.bind(writableStringValue).to(stringDolphinProperty);
+        Assert.assertEquals(writableStringValue.get(), "Hello JavaFX");
+        stringDolphinProperty.set("Dolphin Platform");
+        Assert.assertEquals(writableStringValue.get(), "Dolphin Platform");
+        stringDolphinProperty.set(null);
+        Assert.assertEquals(writableStringValue.get(), null);
+        binding.unbind();
+        stringDolphinProperty.set("Dolphin Platform");
+        Assert.assertEquals(writableStringValue.get(), null);
+    }
+
+    @Test
+    public void testJavaFXStringBidirectional() {
+        Property<String> stringDolphinProperty = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty = new SimpleStringProperty();
+
+        stringDolphinProperty.set("Hello");
+        Assert.assertNotEquals(stringJavaFXProperty.get(), "Hello");
+
+        Binding binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(stringDolphinProperty);
+        Assert.assertEquals(stringJavaFXProperty.get(), "Hello");
+        stringDolphinProperty.set("Hello World");
+        Assert.assertEquals(stringJavaFXProperty.get(), "Hello World");
+        stringDolphinProperty.set(null);
+        Assert.assertEquals(stringJavaFXProperty.get(), null);
+
+
+        stringJavaFXProperty.set("Hello from JavaFX");
+        Assert.assertEquals(stringDolphinProperty.get(), "Hello from JavaFX");
+
+        stringJavaFXProperty.setValue(null);
+        Assert.assertEquals(stringDolphinProperty.get(), null);
+
+        binding.unbind();
+        stringDolphinProperty.set("Hello Dolphin");
+        Assert.assertEquals(stringJavaFXProperty.get(), null);
+    }
+
+    @Test
+    public void testUnidirectionalChain() {
+        Property<String> stringDolphinProperty1 = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty1 = new SimpleStringProperty();
+        Property<String> stringDolphinProperty2 = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty2 = new SimpleStringProperty();
+
+        Binding binding1 = FXBinder.bind(stringDolphinProperty1).to(stringJavaFXProperty1);
+        Binding binding2 = FXBinder.bind(stringJavaFXProperty2).to(stringDolphinProperty1);
+        Binding binding3 = FXBinder.bind(stringDolphinProperty2).to(stringJavaFXProperty2);
+
+        stringJavaFXProperty1.setValue("Hello");
+
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello");
+
+        binding2.unbind();
+
+        stringJavaFXProperty1.setValue("Hello World");
+
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello World");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello");
+
+        binding1.unbind();
+        binding3.unbind();
+    }
+
+    @Test
+    public void testBidirectionalChain() {
+        Property<String> stringDolphinProperty1 = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty1 = new SimpleStringProperty();
+        Property<String> stringDolphinProperty2 = new PropertyImpl<>();
+        StringProperty stringJavaFXProperty2 = new SimpleStringProperty();
+
+        Binding binding1 = FXBinder.bind(stringDolphinProperty1).bidirectionalTo(stringJavaFXProperty1);
+        Binding binding2 = FXBinder.bind(stringJavaFXProperty2).bidirectionalTo(stringDolphinProperty1);
+        Binding binding3 = FXBinder.bind(stringDolphinProperty2).bidirectionalTo(stringJavaFXProperty2);
+
+        stringJavaFXProperty1.setValue("Hello");
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello");
+
+        stringDolphinProperty1.set("Hello World");
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello World");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello World");
+
+        stringJavaFXProperty2.setValue("Hello");
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello");
+
+        stringDolphinProperty2.set("Hello World");
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello World");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello World");
+
+        binding2.unbind();
+
+        stringJavaFXProperty1.setValue("Hello");
+        Assert.assertEquals(stringDolphinProperty1.get(), "Hello");
+        Assert.assertEquals(stringDolphinProperty2.get(), "Hello World");
+        Assert.assertEquals(stringJavaFXProperty1.get(), "Hello");
+        Assert.assertEquals(stringJavaFXProperty2.get(), "Hello World");
+
+        binding1.unbind();
+        binding3.unbind();
+    }
 }

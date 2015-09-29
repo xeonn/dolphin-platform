@@ -1,8 +1,9 @@
-package com.canoo.dolphin.client.javafx.impl;
+package com.canoo.dolphin.client.javafx.impl.numeric;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
 import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.NumericDolphinBindable;
+import com.canoo.dolphin.client.javafx.impl.DefaultDolphinBindable;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;
