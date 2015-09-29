@@ -36,7 +36,10 @@ public class DoubleJavaFXBidirectionalBindable extends DefaultJavaFXBindable<Num
 
     @Override
     public Double convertNumber(Number value) {
-        return null;
+        if(value == null) {
+            return null;
+        }
+        return value.doubleValue();
     }
 
     @Override

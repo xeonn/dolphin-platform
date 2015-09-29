@@ -11,7 +11,7 @@ import javafx.beans.value.ObservableValue;
  */
 public class DoubleDolphinBindable extends AbstractNumericDolphinBindable<Double> {
 
-    private final static double EPSILON = 1e10;
+    private final static double EPSILON = 1e-10;
 
     public DoubleDolphinBindable(final Property<Double> property) {
         super(property);

@@ -41,7 +41,7 @@ public class FXBinder {
         return new DoubleDolphinBindable(property);
     }
 
-    public void demo() {
+    public static void main(String... args) {
         Property<Double> doubleDolphinProperty = new PropertyImpl<Double>();
         Property<Number> numberDolphinProperty = new PropertyImpl<Number>();
         Property<Boolean> booleanDolphinProperty = new PropertyImpl<Boolean>();
@@ -66,66 +66,116 @@ public class FXBinder {
         BidirectionalConverter<Double, String> doubleStringBidirectionalConverter = new DefaultBidirectionalConverter<>(doubleStringConverter, stringDoubleConverter);
         BidirectionalConverter<Boolean, String> booleanStringBidirectionalConverter = new DefaultBidirectionalConverter<>(booleanStringConverter, stringBooleanConverter);
 
-        FXBinder.bind(doubleJavaFXProperty).to(doubleDolphinProperty);
-        FXBinder.bind(doubleJavaFXProperty).to(numberDolphinProperty);
-        FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, stringDoubleConverter);
-        FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
-        FXBinder.bind(writableDoubleValue).to(doubleDolphinProperty);
-        FXBinder.bind(writableDoubleValue).to(stringDolphinProperty, stringDoubleConverter);
-        FXBinder.bind(writableDoubleValue).to(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
+        Binding binding = null;
+        binding = FXBinder.bind(doubleJavaFXProperty).to(doubleDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(doubleJavaFXProperty).to(numberDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, stringDoubleConverter);
+        binding.unbind();
+        binding = FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bind(writableDoubleValue).to(doubleDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(writableDoubleValue).to(stringDolphinProperty, stringDoubleConverter);
+        binding.unbind();
+        binding = FXBinder.bind(writableDoubleValue).to(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bind(doubleJavaFXProperty).bidirectionalToNumeric(doubleDolphinProperty);
-        FXBinder.bind(doubleJavaFXProperty).bidirectionalToNumeric(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
+        binding = FXBinder.bind(doubleJavaFXProperty).bidirectionalToNumeric(doubleDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(doubleJavaFXProperty).bidirectionalToNumeric(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bindNumeric(doubleDolphinProperty).toNumeric(doubleJavaFXProperty);
-        FXBinder.bindNumeric(doubleDolphinProperty).toNumeric(readOnlyDoubleProperty);
-        FXBinder.bind(doubleDolphinProperty).to(stringJavaFXProperty, stringDoubleConverter);
-        FXBinder.bind(doubleDolphinProperty).to(readOnlyStringProperty, stringDoubleConverter);
-        FXBinder.bind(doubleDolphinProperty).to(stringJavaFXProperty, doubleStringBidirectionalConverter.invert());
-        FXBinder.bind(doubleDolphinProperty).to(readOnlyStringProperty, doubleStringBidirectionalConverter.invert());
+        binding = FXBinder.bindNumeric(doubleDolphinProperty).toNumeric(doubleJavaFXProperty);
+        binding.unbind();
+        binding = FXBinder.bindNumeric(doubleDolphinProperty).toNumeric(readOnlyDoubleProperty);
+        binding.unbind();
+        binding = FXBinder.bind(doubleDolphinProperty).to(stringJavaFXProperty, stringDoubleConverter);
+        binding.unbind();
+        binding = FXBinder.bind(doubleDolphinProperty).to(readOnlyStringProperty, stringDoubleConverter);
+        binding.unbind();
+        binding = FXBinder.bind(doubleDolphinProperty).to(stringJavaFXProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bind(doubleDolphinProperty).to(readOnlyStringProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bind(doubleDolphinProperty).bidirectionalTo(stringJavaFXProperty, doubleStringBidirectionalConverter.invert());
-        FXBinder.bindNumeric(doubleDolphinProperty).bidirectionalToNumeric(doubleJavaFXProperty);
+        binding = FXBinder.bind(doubleDolphinProperty).bidirectionalTo(stringJavaFXProperty, doubleStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bindNumeric(doubleDolphinProperty).bidirectionalToNumeric(doubleJavaFXProperty);
+        binding.unbind();
 
-        FXBinder.bind(booleanJavaFXProperty).to(booleanDolphinProperty);
-        FXBinder.bind(booleanJavaFXProperty).to(stringDolphinProperty, stringBooleanConverter);
-        FXBinder.bind(booleanJavaFXProperty).to(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
-        FXBinder.bind(writableBooleanValue).to(booleanDolphinProperty);
-        FXBinder.bind(writableBooleanValue).to(stringDolphinProperty, stringBooleanConverter);
-        FXBinder.bind(writableBooleanValue).to(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
+        binding = FXBinder.bind(booleanJavaFXProperty).to(booleanDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(booleanJavaFXProperty).to(stringDolphinProperty, stringBooleanConverter);
+        binding.unbind();
+        binding = FXBinder.bind(booleanJavaFXProperty).to(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bind(writableBooleanValue).to(booleanDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(writableBooleanValue).to(stringDolphinProperty, stringBooleanConverter);
+        binding.unbind();
+        binding = FXBinder.bind(writableBooleanValue).to(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bind(booleanJavaFXProperty).bidirectionalTo(booleanDolphinProperty);
-        FXBinder.bind(booleanJavaFXProperty).bidirectionalTo(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
+        binding = FXBinder.bind(booleanJavaFXProperty).bidirectionalTo(booleanDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(booleanJavaFXProperty).bidirectionalTo(stringDolphinProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bind(booleanDolphinProperty).to(booleanJavaFXProperty);
-        FXBinder.bind(booleanDolphinProperty).to(readOnlyBooleanProperty);
-        FXBinder.bind(booleanDolphinProperty).to(stringJavaFXProperty, stringBooleanConverter);
-        FXBinder.bind(booleanDolphinProperty).to(readOnlyStringProperty, stringBooleanConverter);
-        FXBinder.bind(booleanDolphinProperty).to(stringJavaFXProperty, booleanStringBidirectionalConverter.invert());
-        FXBinder.bind(booleanDolphinProperty).to(readOnlyStringProperty, booleanStringBidirectionalConverter.invert());
+        binding = FXBinder.bind(booleanDolphinProperty).to(booleanJavaFXProperty);
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).to(readOnlyBooleanProperty);
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).to(stringJavaFXProperty, stringBooleanConverter);
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).to(readOnlyStringProperty, stringBooleanConverter);
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).to(stringJavaFXProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).to(readOnlyStringProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
 
-        FXBinder.bind(booleanDolphinProperty).bidirectionalTo(stringJavaFXProperty, booleanStringBidirectionalConverter.invert());
-        FXBinder.bind(booleanDolphinProperty).bidirectionalTo(booleanJavaFXProperty);
+        binding = FXBinder.bind(booleanDolphinProperty).bidirectionalTo(stringJavaFXProperty, booleanStringBidirectionalConverter.invert());
+        binding.unbind();
+        binding = FXBinder.bind(booleanDolphinProperty).bidirectionalTo(booleanJavaFXProperty);
+        binding.unbind();
 
-        FXBinder.bind(stringJavaFXProperty).to(stringDolphinProperty);
-        FXBinder.bind(stringJavaFXProperty).to(booleanDolphinProperty, booleanStringConverter);
-        FXBinder.bind(stringJavaFXProperty).to(booleanDolphinProperty, booleanStringBidirectionalConverter);
-        FXBinder.bind(writableStringValue).to(stringDolphinProperty);
-        FXBinder.bind(writableStringValue).to(booleanDolphinProperty, booleanStringConverter);
-        FXBinder.bind(writableStringValue).to(booleanDolphinProperty, booleanStringBidirectionalConverter);
+        binding = FXBinder.bind(stringJavaFXProperty).to(stringDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(stringJavaFXProperty).to(booleanDolphinProperty, booleanStringConverter);
+        binding.unbind();
+        binding = FXBinder.bind(stringJavaFXProperty).to(booleanDolphinProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
+        binding = FXBinder.bind(writableStringValue).to(stringDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(writableStringValue).to(booleanDolphinProperty, booleanStringConverter);
+        binding.unbind();
+        binding = FXBinder.bind(writableStringValue).to(booleanDolphinProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
 
-        FXBinder.bind(stringJavaFXProperty).bidirectionalTo(stringDolphinProperty);
-        FXBinder.bind(stringJavaFXProperty).bidirectionalTo(booleanDolphinProperty, booleanStringBidirectionalConverter);
+        binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(stringDolphinProperty);
+        binding.unbind();
+        binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(booleanDolphinProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
 
-        FXBinder.bind(stringDolphinProperty).to(stringJavaFXProperty);
-        FXBinder.bind(stringDolphinProperty).to(readOnlyStringProperty);
-        FXBinder.bind(stringDolphinProperty).to(booleanJavaFXProperty, booleanStringConverter);
-        FXBinder.bind(stringDolphinProperty).to(readOnlyBooleanProperty, booleanStringConverter);
-        FXBinder.bind(stringDolphinProperty).to(booleanJavaFXProperty, booleanStringBidirectionalConverter);
-        FXBinder.bind(stringDolphinProperty).to(readOnlyBooleanProperty, booleanStringBidirectionalConverter);
+        binding = FXBinder.bind(stringDolphinProperty).to(stringJavaFXProperty);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).to(readOnlyStringProperty);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).to(booleanJavaFXProperty, booleanStringConverter);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).to(readOnlyBooleanProperty, booleanStringConverter);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).to(booleanJavaFXProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).to(readOnlyBooleanProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
 
-        FXBinder.bind(stringDolphinProperty).bidirectionalTo(booleanJavaFXProperty, booleanStringBidirectionalConverter);
-        FXBinder.bind(stringDolphinProperty).bidirectionalTo(stringJavaFXProperty);
+        binding = FXBinder.bind(stringDolphinProperty).bidirectionalTo(booleanJavaFXProperty, booleanStringBidirectionalConverter);
+        binding.unbind();
+        binding = FXBinder.bind(stringDolphinProperty).bidirectionalTo(stringJavaFXProperty);
+        binding.unbind();
     }
 
 }
