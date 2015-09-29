@@ -42,31 +42,32 @@ public class FXBinder {
     }
 
     public void demo() {
-        Property<Double> doubleDolphinProperty = null;
-        Property<Boolean> booleanDolphinProperty = null;
-        Property<String> stringDolphinProperty = null;
+        Property<Double> doubleDolphinProperty = new PropertyImpl<Double>();
+        Property<Number> numberDolphinProperty = new PropertyImpl<Number>();
+        Property<Boolean> booleanDolphinProperty = new PropertyImpl<Boolean>();
+        Property<String> stringDolphinProperty = new PropertyImpl<String>();
 
-        DoubleProperty doubleJavaFXProperty = null;
-        BooleanProperty booleanJavaFXProperty = null;
-        StringProperty stringJavaFXProperty = null;
+        DoubleProperty doubleJavaFXProperty = new SimpleDoubleProperty();
+        BooleanProperty booleanJavaFXProperty = new SimpleBooleanProperty();
+        StringProperty stringJavaFXProperty = new SimpleStringProperty();
 
-        WritableDoubleValue writableDoubleValue = null;
-        WritableBooleanValue writableBooleanValue = null;
-        WritableStringValue writableStringValue = null;
+        WritableDoubleValue writableDoubleValue = new SimpleDoubleProperty();
+        WritableBooleanValue writableBooleanValue = new SimpleBooleanProperty();
+        WritableStringValue writableStringValue = new SimpleStringProperty();
 
-        ReadOnlyDoubleProperty readOnlyDoubleProperty = null;
-        ReadOnlyBooleanProperty readOnlyBooleanProperty = null;
-        ReadOnlyStringProperty readOnlyStringProperty = null;
+        ReadOnlyDoubleProperty readOnlyDoubleProperty = new ReadOnlyDoubleWrapper().getReadOnlyProperty();
+        ReadOnlyBooleanProperty readOnlyBooleanProperty = new ReadOnlyBooleanWrapper().getReadOnlyProperty();
+        ReadOnlyStringProperty readOnlyStringProperty = new ReadOnlyStringWrapper().getReadOnlyProperty();
 
-        Converter<Double, String> doubleStringConverter = null;
-        Converter<String, Double> stringDoubleConverter = null;
-        Converter<Boolean, String> booleanStringConverter = null;
-        Converter<String, Boolean> stringBooleanConverter = null;
-        BidirectionalConverter<Double, String> doubleStringBidirectionalConverter = null;
-        BidirectionalConverter<Boolean, String> booleanStringBidirectionalConverter = null;
-
+        Converter<Double, String> doubleStringConverter = d -> d == null ? null : d.toString();
+        Converter<String, Double> stringDoubleConverter = s -> s == null ? null : Double.parseDouble(s);
+        Converter<Boolean, String> booleanStringConverter = b -> b == null ? null : b.toString();
+        Converter<String, Boolean> stringBooleanConverter = s -> s == null ? null : Boolean.parseBoolean(s);
+        BidirectionalConverter<Double, String> doubleStringBidirectionalConverter = new DefaultBidirectionalConverter<>(doubleStringConverter, stringDoubleConverter);
+        BidirectionalConverter<Boolean, String> booleanStringBidirectionalConverter = new DefaultBidirectionalConverter<>(booleanStringConverter, stringBooleanConverter);
 
         FXBinder.bind(doubleJavaFXProperty).to(doubleDolphinProperty);
+        FXBinder.bind(doubleJavaFXProperty).to(numberDolphinProperty);
         FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, stringDoubleConverter);
         FXBinder.bind(doubleJavaFXProperty).to(stringDolphinProperty, doubleStringBidirectionalConverter.invert());
         FXBinder.bind(writableDoubleValue).to(doubleDolphinProperty);

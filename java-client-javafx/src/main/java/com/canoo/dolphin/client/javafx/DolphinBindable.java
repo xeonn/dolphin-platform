@@ -7,7 +7,7 @@ import javafx.beans.value.ObservableValue;
  */
 public interface DolphinBindable<S> {
 
-    default Binding to(final ObservableValue<S> observableValue) {
+    default Binding to(final ObservableValue<? extends S> observableValue) {
         if (observableValue == null) {
             throw new IllegalArgumentException("observableValue must not be null");
         }
