@@ -80,19 +80,4 @@ public class ClientContextImpl implements ClientContext {
         }
         return getBeanManager().invoke(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
     }
-
-    public BeanRepository getBeanRepository() {
-        if(killed) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
-        return beanRepository;
-    }
-
-    @Override
-    public ClientDolphin getDolphin() {
-        if(killed) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
-        return clientDolphin;
-    }
 }
