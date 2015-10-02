@@ -1,7 +1,6 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.Constants;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
@@ -11,9 +10,6 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.ControllerActionCallBean;
-import com.canoo.dolphin.impl.ControllerDestroyBean;
-import com.canoo.dolphin.impl.ControllerRegistryBean;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
@@ -27,14 +23,10 @@ import org.opendolphin.core.server.comm.CommandHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class DolphinContext {
 
     private final DefaultServerDolphin dolphin;
@@ -156,10 +148,10 @@ public class DolphinContext {
     private void onRegisterController() {
         ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
         String controllerId = controllerHandler.createController(bean.getControllerName());
-        bean.setControllerid(controllerId);
+        bean.setControllerId(controllerId);
         Object model = controllerHandler.getControllerModel(controllerId);
         if(model != null) {
-            bean.setModelId(beanRepository.getDolphinId(model));
+            bean.setModel(model);
         }
     }
 

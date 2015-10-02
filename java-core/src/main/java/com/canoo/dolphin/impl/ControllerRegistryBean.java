@@ -8,9 +8,9 @@ public class ControllerRegistryBean {
 
     private Property<String> controllerName;
 
-    private Property<String> controllerid;
+    private Property<String> controllerId;
 
-    private Property<String> modelId;
+    private Property<Object> model;
 
     public String getControllerName() {
         return controllerName.get();
@@ -20,19 +20,19 @@ public class ControllerRegistryBean {
         this.controllerName.set(controllerName);
     }
 
-    public String getControllerid() {
-        return controllerid.get();
+    public String getControllerId() {
+        return controllerId.get();
     }
 
-    public void setControllerid(String controllerid) {
-        this.controllerid.set(controllerid);
+    public void setControllerId(String controllerId) {
+        this.controllerId.set(controllerId);
     }
 
-    public String getModelId() {
-        return modelId.get();
+    public Object getModel() {
+        return model.get();
     }
 
-    public void setModelId(String modelId) {
-        this.modelId.set(modelId);
+    public void setModel(Object model) {
+        this.model.set(model);
     }
 }

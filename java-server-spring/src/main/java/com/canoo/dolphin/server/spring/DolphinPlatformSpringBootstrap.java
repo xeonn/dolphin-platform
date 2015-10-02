@@ -16,7 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
- * Basic Bootstrap for Spring based application. The boostrap automatically starts the dolphin platform bootstrap.
+ * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
  */
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
