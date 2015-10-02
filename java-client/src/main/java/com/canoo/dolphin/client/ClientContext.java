@@ -13,8 +13,5 @@ public interface ClientContext {
 
     ClientBeanManager getBeanManager();
 
-    void disconnect();
-
-    ClientDolphin getDolphin();
-
+    CompletableFuture<Void> disconnect();
 }

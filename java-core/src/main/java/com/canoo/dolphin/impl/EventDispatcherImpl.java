@@ -1,18 +1,15 @@
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.internal.DolphinEventHandler;
+import com.canoo.dolphin.internal.EventDispatcher;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
-import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.PresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class EventDispatcher implements ModelStoreListener {
-
-    public interface DolphinEventHandler {
-        void onEvent(PresentationModel model);
-    }
+public abstract class EventDispatcherImpl implements EventDispatcher {
 
     private final List<DolphinEventHandler> modelAddedHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> modelRemovedHandlers = new ArrayList<>(1);
@@ -20,13 +17,14 @@ public abstract class EventDispatcher implements ModelStoreListener {
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
 
-    public EventDispatcher(Dolphin dolphin) {
+    public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
     }
 
     public void addAddedHandler(DolphinEventHandler handler) {
         modelAddedHandlers.add(handler);
     }
+
     public void addRemovedHandler(DolphinEventHandler handler) {
         modelRemovedHandlers.add(handler);
     }
@@ -34,9 +32,11 @@ public abstract class EventDispatcher implements ModelStoreListener {
     public void addListElementAddHandler(DolphinEventHandler handler) {
         listElementsAddHandlers.add(handler);
     }
+
     public void addListElementDelHandler(DolphinEventHandler handler) {
         listElementsDelHandlers.add(handler);
     }
+
     public void addListElementSetHandler(DolphinEventHandler handler) {
         listElementsSetHandlers.add(handler);
     }
@@ -56,21 +56,21 @@ public abstract class EventDispatcher implements ModelStoreListener {
     private void onAddedHandler(PresentationModel model) {
         final String type = model.getPresentationModelType();
         switch (type) {
-            case DolphinConstants.DOLPHIN_BEAN:
-            case DolphinConstants.DOLPHIN_PARAMETER:
+            case PlatformConstants.DOLPHIN_BEAN:
+            case PlatformConstants.DOLPHIN_PARAMETER:
                 // ignore
                 break;
-            case DolphinConstants.LIST_ADD:
+            case PlatformConstants.LIST_ADD:
                 for (final DolphinEventHandler handler : listElementsAddHandlers) {
                     handler.onEvent(model);
                 }
                 break;
-            case DolphinConstants.LIST_DEL:
+            case PlatformConstants.LIST_DEL:
                 for (final DolphinEventHandler handler : listElementsDelHandlers) {
                     handler.onEvent(model);
                 }
                 break;
-            case DolphinConstants.LIST_SET:
+            case PlatformConstants.LIST_SET:
                 for (final DolphinEventHandler handler : listElementsSetHandlers) {
                     handler.onEvent(model);
                 }
@@ -86,11 +86,11 @@ public abstract class EventDispatcher implements ModelStoreListener {
     private void onRemovedHandler(PresentationModel model) {
         final String type = model.getPresentationModelType();
         switch (type) {
-            case DolphinConstants.DOLPHIN_BEAN:
-            case DolphinConstants.DOLPHIN_PARAMETER:
-            case DolphinConstants.LIST_ADD:
-            case DolphinConstants.LIST_DEL:
-            case DolphinConstants.LIST_SET:
+            case PlatformConstants.DOLPHIN_BEAN:
+            case PlatformConstants.DOLPHIN_PARAMETER:
+            case PlatformConstants.LIST_ADD:
+            case PlatformConstants.LIST_DEL:
+            case PlatformConstants.LIST_SET:
                 // ignore
                 break;
             default:
@@ -102,7 +102,7 @@ public abstract class EventDispatcher implements ModelStoreListener {
     }
 
     private boolean isLocalChange(PresentationModel model) {
-        final Object value = model.findAttributeByPropertyName(DolphinConstants.SOURCE_SYSTEM).getValue();
+        final Object value = model.findAttributeByPropertyName(PlatformConstants.SOURCE_SYSTEM).getValue();
         return getLocalSystemIdentifier().equals(value);
     }
 

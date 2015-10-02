@@ -1,4 +1,4 @@
-package com.canoo.dolphin.impl.info;
+package com.canoo.dolphin.internal.info;
 
 import com.canoo.dolphin.impl.DolphinUtils;
 

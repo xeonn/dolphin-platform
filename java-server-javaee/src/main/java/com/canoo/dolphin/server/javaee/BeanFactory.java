@@ -5,6 +5,7 @@ import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
@@ -19,9 +20,9 @@ public class BeanFactory {
     }
 
     @Produces
-    @SessionScoped
+    @ApplicationScoped
     public TaskExecutor createTaskExecutor() {
-        return DolphinContext.getCurrentContext().getTaskExecutor();
+        return TaskExecutorImpl.getInstance();
     }
 
     @Produces

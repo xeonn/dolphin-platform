@@ -1,6 +1,6 @@
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
@@ -26,7 +26,7 @@ public class ClientContextFactory {
                 clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
                 dolphin.setClientConnector(clientConnector);
                 final ClientContext clientContext = new ClientContextImpl(dolphin);
-                dolphin.startPushListening(Constants.POLL_COMMAND_NAME, Constants.RELEASE_COMMAND_NAME);
+                dolphin.startPushListening(PlatformConstants.POLL_COMMAND_NAME, PlatformConstants.RELEASE_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
                 throw new ClientInitializationException(e);

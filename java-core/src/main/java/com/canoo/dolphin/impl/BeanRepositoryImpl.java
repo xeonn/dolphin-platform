@@ -3,6 +3,10 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.event.BeanAddedListener;
 import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.DolphinEventHandler;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.UpdateSource;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.opendolphin.core.Dolphin;
@@ -21,9 +25,7 @@ import java.util.Map;
  * with the {@link #delete(Object)} method.
  */
 // TODO mapDolphinToObject() does not really fit here, we should probably move it to Converters, but first we need to fix scopes
-public class BeanRepository {
-
-    enum UpdateSource {SELF, OTHER}
+public class BeanRepositoryImpl implements BeanRepository{
 
     private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
     private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
@@ -33,10 +35,10 @@ public class BeanRepository {
     private final Multimap<Class<?>, BeanRemovedListener<?>> beanRemovedListenerMap = ArrayListMultimap.create();
     private List<BeanRemovedListener<Object>> anyBeanRemovedListeners = new ArrayList<>();
 
-    public BeanRepository(Dolphin dolphin, EventDispatcher dispatcher) {
+    public BeanRepositoryImpl(Dolphin dolphin, EventDispatcher dispatcher) {
         this.dolphin = dolphin;
 
-        dispatcher.addRemovedHandler(new EventDispatcher.DolphinEventHandler() {
+        dispatcher.addRemovedHandler(new DolphinEventHandler() {
             @SuppressWarnings("unchecked")
             @Override
             public void onEvent(PresentationModel model) {
@@ -54,7 +56,7 @@ public class BeanRepository {
         });
     }
 
-    <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener) {
+    public <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener) {
         beanAddedListenerMap.put(clazz, listener);
         return new Subscription() {
             @Override
@@ -64,7 +66,7 @@ public class BeanRepository {
         };
     }
 
-    Subscription addOnAddedListener(final BeanAddedListener<Object> listener) {
+    public Subscription addOnAddedListener(final BeanAddedListener<Object> listener) {
         anyBeanAddedListeners.add(listener);
         return new Subscription() {
             @Override
@@ -74,7 +76,7 @@ public class BeanRepository {
         };
     }
 
-    <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener) {
+    public <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener) {
         beanRemovedListenerMap.put(clazz, listener);
         return new Subscription() {
             @Override
@@ -84,7 +86,7 @@ public class BeanRepository {
         };
     }
 
-    Subscription addOnRemovedListener(final BeanRemovedListener<Object> listener) {
+    public Subscription addOnRemovedListener(final BeanRemovedListener<Object> listener) {
         anyBeanRemovedListeners.add(listener);
         return new Subscription() {
             @Override
@@ -128,12 +130,12 @@ public class BeanRepository {
         }
     }
 
-    public Object mapDolphinToObject(Object value, ClassRepository.FieldType fieldType) {
-        return fieldType == ClassRepository.FieldType.DOLPHIN_BEAN? dolphinIdToObjectPm.get(value) : value;
+    public Object mapDolphinToObject(Object value, ClassRepositoryImpl.FieldType fieldType) {
+        return fieldType == ClassRepositoryImpl.FieldType.DOLPHIN_BEAN? dolphinIdToObjectPm.get(value) : value;
     }
 
     @SuppressWarnings("unchecked")
-    void registerBean(Object bean, PresentationModel model, UpdateSource source) {
+    public void registerBean(Object bean, PresentationModel model, UpdateSource source) {
         objectPmToDolphinPm.put(bean, model);
         dolphinIdToObjectPm.put(model.getId(), bean);
 

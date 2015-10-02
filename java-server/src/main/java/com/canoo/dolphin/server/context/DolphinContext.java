@@ -1,14 +1,19 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.Constants;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.collections.ListMapperImpl;
+import com.canoo.dolphin.internal.BeanBuilder;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.InvokeActionException;
+import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.ControllerActionCallBean;
@@ -27,7 +32,6 @@ import org.opendolphin.core.server.comm.CommandHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -41,9 +45,7 @@ public class DolphinContext {
 
     private final BeanRepository beanRepository;
 
-    private final BeanManagerImpl beanManager;
-
-    private final DolphinEventBusImpl eventBus;
+    private final BeanManager beanManager;
 
     private final ControllerHandler controllerHandler;
 
@@ -53,7 +55,7 @@ public class DolphinContext {
 
     private ServletContext servletContext;
 
-    private TaskExecutorImpl taskExecutor;
+    private DolphinContextTaskExecutor taskExecutor;
 
     public DolphinContext(ContainerManager containerManager, ServletContext servletContext) {
         this.containerManager = containerManager;
@@ -72,23 +74,20 @@ public class DolphinContext {
 
         //Init BeanRepository
         final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
-        beanRepository = new BeanRepository(dolphin, dispatcher);
+        beanRepository = new BeanRepositoryImpl(dolphin, dispatcher);
 
         //Init BeanManager
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepository(dolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapper(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final BeanBuilder beanBuilder = new BeanBuilder(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, beanRepository, builderFactory);
+        final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
-
-        //Init EventBus
-        eventBus = DolphinEventBusImpl.getInstance();
 
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(dolphin, containerManager, beanRepository, beanManager);
 
         //Init TaskExecutor
-        taskExecutor = new TaskExecutorImpl();
+        taskExecutor = new DolphinContextTaskExecutor();
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -100,21 +99,21 @@ public class DolphinContext {
             @Override
             public void registerIn(ActionRegistry registry) {
 
-                registry.register(Constants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onRegisterController();
                     }
                 });
 
-                registry.register(Constants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onDestroyController();
                     }
                 });
 
-                registry.register(Constants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         try {
@@ -126,27 +125,39 @@ public class DolphinContext {
                     }
                 });
 
-                registry.register(Constants.POLL_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.POLL_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onPollEventBus();
                     }
                 });
 
-                registry.register(Constants.RELEASE_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.RELEASE_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         onReleaseEventBus();
                     }
                 });
 
-                registry.register(Constants.INIT_COMMAND_NAME, new CommandHandler() {
+                registry.register(PlatformConstants.INIT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //New Client
                         beanManager.create(ControllerRegistryBean.class);
                         beanManager.create(ControllerDestroyBean.class);
                         beanManager.create(ControllerActionCallBean.class);
+                    }
+                });
+
+                registry.register(PlatformConstants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
+                    @Override
+                    public void handleCommand(Command command, List response) {
+                        //Disconnect Client
+                        beanManager.removeAll(ControllerRegistryBean.class);
+                        beanManager.removeAll(ControllerDestroyBean.class);
+                        beanManager.removeAll(ControllerActionCallBean.class);
+
+                        //TODO: How to disconnect?
                     }
                 });
             }
@@ -175,14 +186,14 @@ public class DolphinContext {
 
     private void onPollEventBus() {
         try {
-            eventBus.longPoll();
+            DolphinEventBusImpl.getInstance().longPoll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     private void onReleaseEventBus() {
-        eventBus.release();
+        DolphinEventBusImpl.getInstance().release();
     }
 
     public ServerDolphin getDolphin() {
@@ -191,10 +202,6 @@ public class DolphinContext {
 
     public BeanManager getBeanManager() {
         return beanManager;
-    }
-
-    public DolphinEventBusImpl getEventBus() {
-        return eventBus;
     }
 
     public ControllerHandler getControllerHandler() {
@@ -213,7 +220,7 @@ public class DolphinContext {
         return servletContext;
     }
 
-    public TaskExecutorImpl getTaskExecutor() {
+    public DolphinContextTaskExecutor getTaskExecutor() {
         return taskExecutor;
     }
 
@@ -227,7 +234,7 @@ public class DolphinContext {
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 
-        resp.setHeader(Constants.CLIENT_ID_HTTP_HEADER_NAME, id);
+        resp.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, id);
 
         //copied from DolphinServlet
         StringBuilder requestJson = new StringBuilder();

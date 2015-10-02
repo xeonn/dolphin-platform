@@ -1,7 +1,7 @@
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.impl.DolphinConstants;
-import com.canoo.dolphin.impl.PresentationModelBuilder;
+import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
+import com.canoo.dolphin.impl.PlatformConstants;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
@@ -10,14 +10,14 @@ import org.opendolphin.core.client.ClientPresentationModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientPresentationModelBuilder extends PresentationModelBuilder<ClientPresentationModel> {
+public class ClientPresentationModelBuilder extends AbstractPresentationModelBuilder<ClientPresentationModel> {
 
     private final List<ClientAttribute> attributes = new ArrayList<>();
     private final ClientDolphin dolphin;
 
     public ClientPresentationModelBuilder(ClientDolphin dolphin) {
         this.dolphin = dolphin;
-        attributes.add(new ClientAttribute(DolphinConstants.SOURCE_SYSTEM, DolphinConstants.SOURCE_SYSTEM_CLIENT));
+        attributes.add(new ClientAttribute(PlatformConstants.SOURCE_SYSTEM, PlatformConstants.SOURCE_SYSTEM_CLIENT));
     }
 
     @Override

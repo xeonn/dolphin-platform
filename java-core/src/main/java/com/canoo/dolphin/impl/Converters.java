@@ -1,8 +1,9 @@
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.impl.ClassRepository.FieldType;
+import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
+import com.canoo.dolphin.internal.BeanRepository;
 
-import static com.canoo.dolphin.impl.ClassRepository.FieldType.*;
+import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.*;
 
 /**
  * The class {@code Converters} contains all {@link Converters.Converter} that are
@@ -44,7 +45,7 @@ public class Converters {
 
     private final Converter unknownTypeConverter = new Converter() {
         @Override
-        public Converter updateConverter(ClassRepository.FieldType fieldType) {
+        public Converter updateConverter(ClassRepositoryImpl.FieldType fieldType) {
             return fieldType == DOLPHIN_BEAN ? dolphinBeanTypeConverter : basicTypeConverter;
         }
 
