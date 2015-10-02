@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.event;
 
 /**
- * An message of the dolphin platform event bus.
+ * An message of the dolphin platform event bus (see {@link com.canoo.dolphin.server.event.DolphinEventBus}).
  */
 public interface Message {
 

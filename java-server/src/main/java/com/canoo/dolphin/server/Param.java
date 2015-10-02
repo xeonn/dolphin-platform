@@ -8,7 +8,26 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by hendrikebbers on 31.03.15.
+ * <p>
+ * When defining a controller method by using {@link com.canoo.dolphin.server.DolphinAction} the
+ * Dolphin Platform supports methods parameters. The parameters can be set on the client when calling
+ * the action method. To define parameters o the server controller method each paramter must be annotated
+ * with the {@link com.canoo.dolphin.server.Param} annotation.
+ *</p>
+ * <p>
+ * Example:
+ *
+ * <blockquote>
+ * <pre>
+ *     {@literal @}DolphinController("my-controller")
+ *     public class MyController {
+ *
+ *         {@literal @}DolphinAction("my-action")
+ *         private void showById(@Param("id") id) { . . . };
+ *     }
+ * </pre>
+ * </blockquote>
+ *</p>
  */
 @Documented
 @Retention(RUNTIME)

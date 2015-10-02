@@ -7,6 +7,48 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * <p>Annotation to define a Dolphin controller. A Dolphin Controller is the server side controller of a MVC group / widget.
+ * When using Dolphin Plaftorm your application is seperated in a hirarchie of several MVC groups. Each MVC group defines
+ * a client side view, a server side controller and a model that is automatically shared between the client and server.
+ * <br>
+ * <center><img src="doc-files/model-sync.png" alt="model is synchronized between client and server"></center>
+ * </p>
+ * <p>
+ * Each dolphin controller must be annotated with {@link com.canoo.dolphin.server.DolphinController}.
+ * A dolphin controller will automatically managed by the container (spring or JavaEE) and the lifecycle
+ * of the controller is bound to the view lifecycle. A server site controller will be automatically created
+ * when a macthing controller proxy is created at the client. This means that you can have several instances of
+ * a dolphin controller on the server, one for each matching view instance. This will happen if several clients use the
+ * same view or a view is shown several times in a client.
+ * </p>
+ * <p>
+ * Since the controller instances are managed by the platform you can use all teh default annotations and APIs
+ * that are supported by the Platform like {@link javax.annotation.PostConstruct} or {@link javax.inject.Inject}.
+ * In addition Dolphin Platform supports some custom annotations that can be used in a controller:
+ * <ul>
+ * <li>{@link com.canoo.dolphin.server.DolphinModel}</li>
+ * <li>{@link com.canoo.dolphin.server.DolphinAction}</li>
+ * <li>{@link com.canoo.dolphin.server.Param}</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Example:
+ * <blockquote>
+ * <pre>
+ *     {@literal @}DolphinController("my-controller")
+ *     public class MyController {
+ *
+ *          {@literal @}DolphinModel
+ *          private MyModel model;
+ *
+ *         {@literal @}DolphinAction()
+ *         private void onAction() { . . . };
+ *     }
+ * </pre>
+ * </blockquote>
+ * </p>
+ */
 @Documented
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
