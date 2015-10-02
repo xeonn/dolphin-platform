@@ -4,7 +4,7 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.impl.info.PropertyInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
 import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;

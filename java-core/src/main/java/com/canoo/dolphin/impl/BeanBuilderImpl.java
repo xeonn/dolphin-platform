@@ -2,42 +2,43 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
-import com.canoo.dolphin.impl.collections.ListMapper;
+import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;
-import com.canoo.dolphin.impl.info.ClassInfo;
-import com.canoo.dolphin.impl.info.PropertyInfo;
+import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.internal.info.ClassInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.internal.*;
 import com.canoo.dolphin.mapping.Property;
 import org.opendolphin.core.*;
 
-import static com.canoo.dolphin.impl.BeanRepository.UpdateSource.*;
 
 /**
  * A {@code BeanBuilder} is responsible for building a Dolphin Bean that is specified as a class. The main
  * (and only public) method is {@link #create(Class)}, which expects the {@code Class} of the Dolphin Bean and
  * returns the generated Bean.
  *
- * The generated Dolphin Bean will be registered in the {@link BeanRepository}.
+ * The generated Dolphin Bean will be registered in the {@link BeanRepositoryImpl}.
  */
-public class BeanBuilder {
+public class BeanBuilderImpl implements BeanBuilder {
 
     private final ClassRepository classRepository;
     private final BeanRepository beanRepository;
     private final ListMapper listMapper;
     private final PresentationModelBuilderFactory builderFactory;
 
-    public BeanBuilder(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
+    public BeanBuilderImpl(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
         this.classRepository = classRepository;
         this.beanRepository = beanRepository;
         this.listMapper = listMapper;
         this.builderFactory = builderFactory;
 
-        dispatcher.addAddedHandler(new EventDispatcher.DolphinEventHandler() {
+        dispatcher.addAddedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {
                 final ClassInfo classInfo = classRepository.getClassInfo(model.getPresentationModelType());
                 final Class<?> beanClass = classInfo.getBeanClass();
 
-                createInstanceForClass(classInfo, beanClass, model, OTHER);
+                createInstanceForClass(classInfo, beanClass, model, UpdateSource.OTHER);
             }
         });
     }
@@ -46,10 +47,10 @@ public class BeanBuilder {
         final ClassInfo classInfo = classRepository.getOrCreateClassInfo(beanClass);
         final PresentationModel model = buildPresentationModel(classInfo);
 
-        return createInstanceForClass(classInfo, beanClass, model, SELF);
+        return createInstanceForClass(classInfo, beanClass, model, UpdateSource.SELF);
     }
 
-    private <T> T createInstanceForClass(ClassInfo classInfo, Class<T> beanClass, PresentationModel model, BeanRepository.UpdateSource source) {
+    private <T> T createInstanceForClass(ClassInfo classInfo, Class<T> beanClass, PresentationModel model, UpdateSource source) {
         try {
             final T bean = beanClass.newInstance();
 

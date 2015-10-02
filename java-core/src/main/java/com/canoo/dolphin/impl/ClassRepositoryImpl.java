@@ -1,10 +1,13 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.impl.info.ClassInfo;
+import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.impl.info.ClassPropertyInfo;
-import com.canoo.dolphin.impl.info.PropertyInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
 import org.opendolphin.core.*;
 
 import java.lang.reflect.Field;
@@ -17,7 +20,7 @@ import java.util.Map;
  * A {@code ClassRepository} manages {@link ClassInfo} objects for all registered Dolphin Beans. A {@code ClassInfo}
  * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
  */
-public class ClassRepository {
+public class ClassRepositoryImpl implements ClassRepository {
 
     public enum FieldType {UNKNOWN, BASIC_TYPE, DOLPHIN_BEAN}
 
@@ -27,15 +30,15 @@ public class ClassRepository {
     private final Map<Class<?>, ClassInfo> classToClassInfoMap = new HashMap<>();
     private final Map<String, ClassInfo> modelTypeToClassInfoMap = new HashMap<>();
 
-    public ClassRepository(Dolphin dolphin, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
+    public ClassRepositoryImpl(Dolphin dolphin, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
         this.builderFactory = builderFactory;
         this.initialConverter = new Converters(beanRepository).getUnknownTypeConverter();
 
-        dolphin.addModelStoreListener(DolphinConstants.DOLPHIN_BEAN, new ModelStoreListener() {
+        dolphin.addModelStoreListener(PlatformConstants.DOLPHIN_BEAN, new ModelStoreListener() {
             @Override
             public void modelStoreChanged(ModelStoreEvent event) {
                 try {
-                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(DolphinConstants.JAVA_CLASS).getValue();
+                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
                     final ClassInfo classInfo = createClassInfoForClass(beanClass, event.getPresentationModel());
                     classToClassInfoMap.put(beanClass, classInfo);
@@ -68,8 +71,8 @@ public class ClassRepository {
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = builderFactory.createBuilder()
                 .withId(id)
-                .withType(DolphinConstants.DOLPHIN_BEAN)
-                .withAttribute(DolphinConstants.JAVA_CLASS, beanClass.getName());
+                .withType(PlatformConstants.DOLPHIN_BEAN)
+                .withAttribute(PlatformConstants.JAVA_CLASS, beanClass.getName());
 
         for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
