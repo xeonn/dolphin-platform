@@ -1,5 +1,8 @@
-package com.canoo.dolphin.client;
+package com.canoo.dolphin.client.javafx;
 
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.Param;
 import javafx.beans.property.*;
 
 import java.util.concurrent.CompletableFuture;
