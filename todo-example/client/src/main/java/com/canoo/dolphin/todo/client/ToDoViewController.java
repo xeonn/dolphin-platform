@@ -38,17 +38,17 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
         itemList.setCellFactory(c -> new ToDoItemCell());
     }
 
-    @Override
-    protected void init(ControllerProxy<ToDoList> controller) {
-        ToDoList model = controller.getModel();
-        FXBinder.bindBidirectional(createField.textProperty(), model.getNewItemText());
-        ObservableList<ToDoItem> items = FXBinder.wrapList(model.getItems());
-        itemList.setItems(items);
-        createButton.setDisable(false);
-        createButton.setOnAction(event -> controller.invoke("add"));
-    }
 
     public StackPane getRoot() {
         return root;
+    }
+
+    @Override
+    protected void init() {
+        FXBinder.bindBidirectional(createField.textProperty(), getModel().getNewItemText());
+        ObservableList<ToDoItem> items = FXBinder.wrapList(getModel().getItems());
+        itemList.setItems(items);
+        createButton.setDisable(false);
+        createButton.setOnAction(event -> invoke("add"));
     }
 }
