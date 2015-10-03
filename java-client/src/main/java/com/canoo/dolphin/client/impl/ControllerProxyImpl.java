@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final String controllerId;
@@ -68,6 +65,8 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             throw new IllegalStateException("The controller was already destroyed");
         }
 
+        final String actionId = UUID.randomUUID().toString();
+
         if (params != null && params.length > 0) {
             for (final Param param : params) {
                 ControllerActionCallParamBean paramBean = context.getBeanManager().create(ControllerActionCallParamBean.class);
@@ -75,14 +74,14 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
                 final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
                 paramBean.setValue(value);
                 paramBean.setValueType(DolphinUtils.mapFieldTypeToDolphin(type));
+                paramBean.setActionId(actionId);
             }
         }
 
-        final String callUUID = UUID.randomUUID().toString();
         ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
         bean.setControllerid(controllerId);
         bean.setActionName(actionName);
-        bean.setId(callUUID);
+        bean.setId(actionId);
 
 
         final CompletableFuture<Void> result = new CompletableFuture<>();

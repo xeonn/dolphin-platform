@@ -3,7 +3,7 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
-@DolphinBean(PlatformConstants.INVOCATION_ERROR_NAME_BEAN)
+@DolphinBean(PlatformConstants.CONTROLLER_ACTION_CALL_ERROR_BEAN_NAME)
 public class ControllerActionCallErrorBean {
 
     private Property<String> controllerid;

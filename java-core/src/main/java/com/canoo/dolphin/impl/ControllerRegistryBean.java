@@ -3,7 +3,7 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
-@DolphinBean
+@DolphinBean(PlatformConstants.CONTROLLER_REGISTRY_BEAN_NAME)
 public class ControllerRegistryBean {
 
     private Property<String> controllerName;

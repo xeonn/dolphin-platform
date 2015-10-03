@@ -52,8 +52,4 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
         createButton.setOnAction(event -> invoke("add"));
     }
 
-    @Override
-    protected void onInvocationException(Throwable t) {
-        createField.setText("ERROR!!!!!!!!!");
-    }
 }
