@@ -2,9 +2,6 @@ package com.canoo.dolphin.client;
 
 import org.opendolphin.StringUtil;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class Param {
 
     private final String name;
@@ -12,7 +9,7 @@ public class Param {
     private final Object value;
 
     public Param(String name, Object value) {
-        if(StringUtil.isBlank(name)) {
+        if (StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null");
         }
         this.name = name;
