@@ -38,7 +38,6 @@ public class ToDoController {
     public void add() {
         final String newItemText = toDoList.getNewItemText().get();
         toDoList.getNewItemText().set("");
-
         taskExecutor.execute(ToDoController.class, c -> c.onAdded(newItemText));
     }
 

@@ -12,12 +12,18 @@ public abstract class AbstractViewController<M> {
 
     private ReadOnlyObjectWrapper<M> model;
 
+    private ReadOnlyObjectWrapper<Throwable> initializationException;
+
+    private ReadOnlyObjectWrapper<Throwable> invocationException;
+
     public AbstractViewController(ClientContext clientContext, String controllerName) {
         model = new ReadOnlyObjectWrapper<>();
         actionCallRunning = new ReadOnlyBooleanWrapper(false);
+        initializationException = new ReadOnlyObjectWrapper<>();
+        invocationException = new ReadOnlyObjectWrapper<>();
         clientContext.<M>createController(controllerName).whenComplete((c, e) -> {
             if (e != null) {
-                onInitializationException(e);
+                initializationException.set(e);
             } else {
                 controllerProxy = c;
                 model.set(c.getModel());
@@ -27,14 +33,6 @@ public abstract class AbstractViewController<M> {
     }
 
     protected abstract void init();
-
-    protected void onInvocationException(Throwable t) {
-        t.printStackTrace();
-    }
-
-    protected void onInitializationException(Throwable t) {
-        t.printStackTrace();
-    }
 
     public CompletableFuture<Void> destroy() {
         CompletableFuture<Void> ret;
@@ -53,7 +51,7 @@ public abstract class AbstractViewController<M> {
         controllerProxy.invoke(actionName, params).whenComplete((v, e) -> {
             try {
                 if (e != null) {
-                    onInvocationException(e);
+                    invocationException.set(e);
                 }
             } finally {
                 actionCallRunning.set(false);
@@ -75,5 +73,21 @@ public abstract class AbstractViewController<M> {
 
     public ReadOnlyObjectProperty<M> modelProperty() {
         return model.getReadOnlyProperty();
+    }
+
+    public Throwable getInvocationException() {
+        return invocationException.get();
+    }
+
+    public ReadOnlyObjectProperty<Throwable> invocationExceptionProperty() {
+        return invocationException.getReadOnlyProperty();
+    }
+
+    public Throwable getInitializationException() {
+        return initializationException.get();
+    }
+
+    public ReadOnlyObjectProperty<Throwable> initializationExceptionProperty() {
+        return initializationException.getReadOnlyProperty();
     }
 }
