@@ -112,8 +112,20 @@ public class DolphinContext {
                         try {
                             onInvokeControllerAction();
                         } catch (Exception e) {
-                            //TODO: ExceptionHandler
-                            throw new RuntimeException(e);
+                            ControllerActionCallErrorBean errorBean = beanManager.create(ControllerActionCallErrorBean.class);
+                            String controllerId = null;
+                            String actionName = null;
+                            String actionid = null;
+                            try {
+                                ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
+                                controllerId = bean.getControllerid();
+                                actionName = bean.getActionName();
+                                actionid = bean.getId();
+                            } finally {
+                                errorBean.setControllerid(controllerId);
+                                errorBean.setActionName(actionName);
+                                errorBean.setActionId(actionid);
+                            }
                         }
                     }
                 });

@@ -35,4 +35,6 @@ public interface PlatformConstants {
     public static final String LIST_SET = "@@@ LIST_SET @@@";
 
     public static final String DOLPHIN_PARAMETER = "@@@ DOLPHIN_PARAMETER @@@";
+
+    public static final String INVOCATION_ERROR_NAME_BEAN = "@@@ INVOCATION_ERROR_BEAN @@@";
 }

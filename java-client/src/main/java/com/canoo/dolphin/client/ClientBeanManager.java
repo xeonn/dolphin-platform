@@ -9,5 +9,4 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ClientBeanManager extends BeanManager {
 
-    CompletableFuture<Void> invoke(String command, Param... params);
 }

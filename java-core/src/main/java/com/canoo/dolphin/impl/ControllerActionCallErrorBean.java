@@ -3,14 +3,14 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
-@DolphinBean
-public class ControllerActionCallBean {
+@DolphinBean(PlatformConstants.INVOCATION_ERROR_NAME_BEAN)
+public class ControllerActionCallErrorBean {
 
     private Property<String> controllerid;
 
     private Property<String> actionName;
 
-    private Property<String> id;
+    private Property<String> actionId;
 
     public String getControllerid() {
         return controllerid.get();
@@ -28,11 +28,11 @@ public class ControllerActionCallBean {
         this.actionName.set(actionName);
     }
 
-    public String getId() {
-        return id.get();
+    public void setActionId(String actionId) {
+        this.actionId.set(actionId);
     }
 
-    public void setId(String id) {
-        this.id.set(id);
+    public String getActionId() {
+        return actionId.get();
     }
 }

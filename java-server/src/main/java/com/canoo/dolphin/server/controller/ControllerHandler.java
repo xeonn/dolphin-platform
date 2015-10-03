@@ -1,10 +1,7 @@
 package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.impl.DolphinUtils;
-import com.canoo.dolphin.impl.ReflectionHelper;
+import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
@@ -97,6 +94,8 @@ public class ControllerHandler {
             invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
         } catch (Exception e) {
             throw new InvokeActionException(e);
+        } finally {
+            beanManager.removeAll(ControllerActionCallParamBean.class);
         }
     }
 
