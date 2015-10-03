@@ -9,7 +9,49 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Basic Manager to work with beans that are synced with the client.
+ * <p>The {@link BeanManager} defined the low level API of the Dolphin Platform to create synchronized models. A model
+ * instance that is created by using the bean manager will automatically synchronized between the client and server.
+ * <br>
+ * <center><img src="doc-files/sync.png" alt="model is synchronized between client and server"></center>
+ * </p>
+ * <p>In the Dolphin Platform architecture an application is normally defined by several MVC groups with a server side
+ * controller, a client side view and a synchronized presentation model. The {@link com.canoo.dolphin.BeanManager}
+ * defines the basic mechanism to handle synchronized models and can be used in the MVC group to mutate the defined model
+ * or as a standalone API to create any kind of synchronized model.
+ * <br>
+ * <center><img src="doc-files/mvc-sync.png" alt="model is synchronized between client view and server controller"></center>
+ * </p>
+ * <p>When using the MVC API of Dolphin Platform the lifecycle of the model is defined by the MVC group and the model
+ * will automatically be removed when the MVC group is removed. If the {@link com.canoo.dolphin.BeanManager} is used as
+ * standalone API the developer must handle the lifecycle of the models and remove them by using the {@link com.canoo.dolphin.BeanManager}</p>
+ * <p>All synchronized models must follow some specific rules that are described in the {@link com.canoo.dolphin.mapping.DolphinBean} annotation</p>
+ *
+ * <p>By using the default Spring or JavaEE implementation of the Dolphin platform the {@link com.canoo.dolphin.BeanManager}
+ * will be provided as a managed bean and can be injected wherever the container allows injection.</p>
+ *
+ * <p>To create a new model the {@link com.canoo.dolphin.BeanManager} provides the {@link #create(Class)} method that is
+ * defined as a factory method for any kind of model. A model should never be instantiated by hand because in that case
+ * the model won't be synchronized between client and server. Here is an example how a model can be created:
+ * <blockquote>
+ * <pre>
+ *     MyModel model = beanManager.create(MyModel.class);
+ * </pre>
+ * </blockquote>
+ * </p>
+ * <p>The {@link com.canoo.dolphin.BeanManager} provides several methods to observe the creation and deletion of models.
+ * One example is the {@link #onAdded(Class, com.canoo.dolphin.event.BeanAddedListener)} method. All the methods are
+ * for using lambdas and therefore a handler can be easily added with only one line if code:
+ * <blockquote>
+ * <pre>
+ *     beanManager.onAdded(MyModel.class, model -> System.out.println("Model of type MyModel added"));
+ * </pre>
+ * </blockquote>
+ * There are no method to remove registered handler from the {@link com.canoo.dolphin.BeanManager}. Here Dolphin Platform
+ * implement an approach by using the Subscription Pattern: Each hander registration returns a {@link com.canoo.dolphin.event.Subscription}
+ * instance that provides the {@link com.canoo.dolphin.event.Subscription#unsubscribe()} method to remove the handler.
+ * </p>
+ * <p>To deleta a synchronized model the {@link com.canoo.dolphin.BeanManager} provides several methods. Here a developer can
+ * for example choose to delete a specific instance (see {@link #remove(Object)}) or all instances for a given type (see {@link #removeAll(Class)}).</p>
  */
 public interface BeanManager extends Serializable {
 

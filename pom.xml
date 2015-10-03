@@ -77,7 +77,7 @@
                         <configuration>
                             <docfilessubdirs>true</docfilessubdirs>
                             <additionalparam>-Xdoclint:none</additionalparam>
-                            <excludePackageNames>com.canoo.dolphin.server.impl:com.canoo.dolphin.server.context:com.canoo.dolphin.server.controller:com.canoo.dolphin.server.event.impl:com.canoo.dolphin.server.servlet</excludePackageNames>
+                            <excludePackageNames>com.canoo.dolphin.server.impl:com.canoo.dolphin.server.context:com.canoo.dolphin.server.controller:com.canoo.dolphin.server.event.impl:com.canoo.dolphin.server.servlet:com.canoo.dolphin.internal:com.canoo.dolphin.impl</excludePackageNames>
                         </configuration>
                     </execution>
                 </executions>
