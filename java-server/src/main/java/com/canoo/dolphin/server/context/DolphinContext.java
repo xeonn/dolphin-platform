@@ -169,12 +169,12 @@ public class DolphinContext {
 
     private void onDestroyController() {
         ControllerDestroyBean bean = beanManager.findAll(ControllerDestroyBean.class).get(0);
-        controllerHandler.destroyController(bean.getControllerid());
+        controllerHandler.destroyController(bean.getControllerId());
     }
 
     private void onInvokeControllerAction() throws InvokeActionException {
         ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-        controllerHandler.invokeAction(bean.getControllerid(), bean.getActionName());
+        controllerHandler.invokeAction(bean.getControllerId(), bean.getActionName());
     }
 
     private void onPollEventBus() {

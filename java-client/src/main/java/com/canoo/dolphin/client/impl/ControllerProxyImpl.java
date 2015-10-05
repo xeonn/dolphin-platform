@@ -46,7 +46,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             throw new IllegalStateException("The controller was already destroyed");
         }
         ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
-        bean.setControllerid(controllerId);
+        bean.setControllerId(controllerId);
         bean.setActionName(actionName);
         return context.getBeanManager().invoke(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, params);
     }
@@ -58,7 +58,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         }
         destroyed = true;
         ControllerDestroyBean bean = context.getBeanManager().findAll(ControllerDestroyBean.class).get(0);
-        bean.setControllerid(controllerId);
+        bean.setControllerId(controllerId);
         return context.getBeanManager().invoke(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME).thenAccept(v -> {
             model = null;
         });
