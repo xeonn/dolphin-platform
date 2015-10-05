@@ -8,24 +8,25 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * <p>
  * A method of a Dolphin controller (see {@link com.canoo.dolphin.server.DolphinController}) that is annotated by this
- * annotation defines a Dolphin action that can be called on the client.
- * Each dolpin action is defined by a unique id that is created by the controller name and the action name. Let's say
- * the controller is defined by the name "my-controller" and the action is defined by "my-action". In this case the
- * unique command name of the action is "my-controller:my-action". The : char is allways used as a separator between the
- * controller name and the action name.
- *
+ * annotation defines a Dolphin action that can be called on the client by using the controller proxy.
+ * <br>
+ * <center><img src="doc-files/invoke-action.png" alt="server controller action is invoked by a client view"></center>
+ *</p>
+ * <p>
  * Example:
- *
- *  <code>
- *     @DolphinController("my-controller")
+ *<blockquote>
+ * <pre>
+ *     {@literal @}DolphinController("my-controller")
  *     public class MyController {
  *
- *         @DolphinAction("my-action")
+ *         {@literal @}DolphinAction("my-action")
  *         private void doSomeAction() { . . . };
  *     }
- * </code>
- *
+ * </pre>
+ * </blockquote>
+ *</p>
  */
 @Documented
 @Retention(RUNTIME)

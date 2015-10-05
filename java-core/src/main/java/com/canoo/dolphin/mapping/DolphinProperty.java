@@ -12,20 +12,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * of a dolphin bean see {@link com.canoo.dolphin.mapping.DolphinBean}. By default this annotation isn't needed but it
  * can be used to specify the name of the underlying Open Dolphin presentation model by hand.
  *
- * Example:
- * <code>
- *     public class MyModel {
+ * <strong>This feature was never used and will be removed in the next version of the Dolphin Platform</strong>
  *
- *         @DolphinProperty("model-name")
- *         private Property<String> name;
- *
- *         public Property<String> getNameProperty() {
- *             return name;
- *         }
- *     }
- *
- * </code>
- *
+ *@Deprecated
  */
 @Documented
 @Retention(RUNTIME)

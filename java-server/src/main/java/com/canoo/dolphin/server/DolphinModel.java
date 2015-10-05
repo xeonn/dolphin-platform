@@ -8,7 +8,42 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by hendrikebbers on 14.09.15.
+ * <p>
+ * Can be used in a dolphin controller (see {@link com.canoo.dolphin.server.DolphinController}) to
+ * define and inject the model of the controller (MVC group). In each dolphin controller only one field can
+ * be annoted by {@link com.canoo.dolphin.server.DolphinModel} and the field type must match the model
+ * definition of the Dolphin Platform (see {@link com.canoo.dolphin.mapping.DolphinBean} for a detailed definition).
+ *</p>
+ * <p>
+ * As defined by the Dolphin Platform all models will be automatically synchronized between client and server. See
+ * {@link com.canoo.dolphin.mapping.DolphinBean} for more details.
+ * <br>
+ * <center><img src="doc-files/model-sync.png" alt="model is synchronized between client and server"></center>
+ *</p>
+ * <p>
+ * A model that is injected by using {@link com.canoo.dolphin.server.DolphinModel} will automatically be create when the
+ * server controller is created and will be destroyed with the controller. By doing so the complete MVC group (shared
+ * model, controller on server side and the view on client side) will have the same lifecycle and the model can easily
+ * be accessed from client and server.
+ *</p>
+ * <p>
+ * Example:
+ *<blockquote>
+ * <pre>
+ *     {@literal @}DolphinController("my-controller")
+ *     public class MyController {
+ *
+ *          {@literal @}DolphinModel
+ *          private MyModel model;
+ *
+ *         {@literal @}PostContruct()
+ *         private void init() {
+ *             model.setViewTitle("My View");
+ *         };
+ *     }
+ * </pre>
+ * </blockquote>
+ *</p>
  */
 @Documented
 @Retention(RUNTIME)

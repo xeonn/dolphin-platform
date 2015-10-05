@@ -162,7 +162,7 @@ public class DolphinContext {
         String controllerId = controllerHandler.createController(bean.getControllerName());
         bean.setControllerId(controllerId);
         Object model = controllerHandler.getControllerModel(controllerId);
-        if(model != null) {
+        if (model != null) {
             bean.setModel(model);
         }
     }
@@ -232,7 +232,7 @@ public class DolphinContext {
         //copied from DolphinServlet
         StringBuilder requestJson = new StringBuilder();
         String line = null;
-        while((line =req.getReader().readLine())!=null){
+        while ((line = req.getReader().readLine()) != null) {
             requestJson.append(line).append("\n");
         }
         List<Command> commands = dolphin.getServerConnector().getCodec().decode(requestJson.toString());
