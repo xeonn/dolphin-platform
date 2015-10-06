@@ -112,7 +112,9 @@ public interface BeanManager extends Serializable {
     <T> List<T> findAll(Class<T> beanClass);
 
     /**
-     * Subscribe a listener to all bean creation events for a specific class.
+     * Subscribe a listener to all bean creation events for a specific class. A listener that is added to a client side
+     * {@link BeanManager} will only fire events for beans that where created on the server side and vice versa. This means that the listener
+     * isn't fired for a bean that was created by the same {@link BeanManager}.
      *
      * @param beanClass the class for which creation events should be received
      * @param listener the listener which receives the creation-events
@@ -122,7 +124,9 @@ public interface BeanManager extends Serializable {
     <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener);
 
     /**
-     * Subscribe a listener to all bean creation events.
+     * Subscribe a listener to all bean creation events. A listener that is added to a client side
+     * {@link BeanManager} will only fire events for beans that where created on the server side and vice versa. This means that the listener
+     * isn't fired for a bean that was created by the same {@link BeanManager}.
      *
      * @param listener the listener which receives the creation events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
@@ -130,7 +134,9 @@ public interface BeanManager extends Serializable {
     Subscription onAdded(BeanAddedListener<Object> listener);
 
     /**
-     * Subscribe a listener to all bean destruction events for a specific class.
+     * Subscribe a listener to all bean destruction events for a specific class. A listener that is added to a client side
+     * {@link BeanManager} will only fire events for beans that where removed on the server side and vice versa. This means that the listener
+     * isn't fired for a bean that was removed by the same {@link BeanManager}.
      *
      * @param beanClass the class for which destruction events should be received
      * @param listener the listener which receives the destruction events
@@ -139,7 +145,9 @@ public interface BeanManager extends Serializable {
     <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener);
 
     /**
-     * Subscribe a listener to all bean destruction events.
+     * Subscribe a listener to all bean destruction events. A listener that is added to a client side
+     * {@link BeanManager} will only fire events for beans that where removed on the server side and vice versa. This means that the listener
+     * isn't fired for a bean that was removed by the same {@link BeanManager}.
      *
      * @param listener the listener which receives the destruction events
      * @return the (@link com.canoo.dolphin.event.Subscription} that can be used to unsubscribe the listener
