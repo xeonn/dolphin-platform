@@ -1,6 +1,6 @@
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.javafx.AbstractViewController;
+import com.canoo.dolphin.client.javafx.AbstractViewBinder;
 import com.canoo.dolphin.client.javafx.FXBinder;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.todo.pm.ToDoItem;
@@ -16,14 +16,14 @@ import javafx.scene.layout.VBox;
 /**
  * Created by hendrikebbers on 16.09.15.
  */
-public class ToDoViewController extends AbstractViewController<ToDoList> {
+public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
 
     private final TextField createField;
     private final Button createButton;
     private final ListView<ToDoItem> itemList;
     private final StackPane root;
 
-    public ToDoViewController(ClientContext clientContext) {
+    public ToDoViewBinder(ClientContext clientContext) {
         super(clientContext, "ToDoController");
 
         createField = new TextField();

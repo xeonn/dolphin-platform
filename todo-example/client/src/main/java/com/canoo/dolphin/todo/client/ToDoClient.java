@@ -13,14 +13,14 @@ public class ToDoClient extends Application {
 
     private ClientContext clientContext;
 
-    private ToDoViewController viewController;
+    private ToDoViewBinder viewController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/todo-app/dolphin"));
         connectionPromise.thenAccept(context -> {
             clientContext = clientContext;
-            viewController = new ToDoViewController(context);
+            viewController = new ToDoViewBinder(context);
             primaryStage.setScene(new Scene(viewController.getRoot()));
             primaryStage.show();
         });

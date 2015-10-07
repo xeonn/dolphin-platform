@@ -7,7 +7,7 @@ import javafx.beans.property.*;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractViewController<M> {
+public abstract class AbstractViewBinder<M> {
 
     private ControllerProxy<M> controllerProxy;
 
@@ -19,7 +19,7 @@ public abstract class AbstractViewController<M> {
 
     private ReadOnlyObjectWrapper<Throwable> invocationException;
 
-    public AbstractViewController(ClientContext clientContext, String controllerName) {
+    public AbstractViewBinder(ClientContext clientContext, String controllerName) {
         model = new ReadOnlyObjectWrapper<>();
         actionCallRunning = new ReadOnlyBooleanWrapper(false);
         initializationException = new ReadOnlyObjectWrapper<>();
