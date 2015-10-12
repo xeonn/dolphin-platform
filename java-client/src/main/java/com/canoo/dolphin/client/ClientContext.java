@@ -1,7 +1,5 @@
 package com.canoo.dolphin.client;
 
-import org.opendolphin.core.client.ClientDolphin;
-
 import java.util.concurrent.CompletableFuture;
 
 /**
