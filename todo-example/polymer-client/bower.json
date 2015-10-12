@@ -1,0 +1,21 @@
+{
+  "name": "polymer-client",
+  "version": "0.5.0",
+  "authors": [
+    "Hendrik Ebbers <hendrik.ebbers@web.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-image": "PolymerElements/iron-image#~1.0.2",
+    "jquery-ui": "~1.11.4",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.5",
+    "polymer": "Polymer/polymer#^1.0.0"
+  }
+}

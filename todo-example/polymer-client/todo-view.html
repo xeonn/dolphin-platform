@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="import" href="bower_components/paper-input/paper-input.html">
+    <link rel="import" href="bower_components/paper-button/paper-button.html">
+    <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+    <link rel="import" href="bower_components/paper-item/paper-item.html">
+    <link rel="import" href="bower_components/paper-item/paper-item-body.html">
+</head>
+<dom-module id="todo-view">
+    <style>
+        paper-button {
+            display: block;
+            margin-bottom: 24px;
+        }
+        paper-button.colorful {
+            color: #4285f4;
+        }
+        paper-button[raised].colorful {
+            background: #4285f4;
+            color: #fff;
+        }
+    </style>
+    <template>
+        <div class="layout center-justified">
+
+            <paper-input label="Task name"></paper-input>
+            <paper-button raised class="colorful">add</paper-button>
+
+            <paper-item>
+                <paper-item-body>Task name</paper-item-body>
+                <paper-checkbox></paper-checkbox>
+            </paper-item>
+            <paper-item>
+                <paper-item-body>Task name</paper-item-body>
+                <paper-checkbox></paper-checkbox>
+            </paper-item>
+            <paper-item>
+                <paper-item-body>Task name</paper-item-body>
+                <paper-checkbox></paper-checkbox>
+            </paper-item>
+            <paper-item>
+                <paper-item-body>Task name</paper-item-body>
+                <paper-checkbox></paper-checkbox>
+            </paper-item>
+
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "todo-view",
+        properties: {
+            clientContext: Object
+        }
+    });
+</script>
