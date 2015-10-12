@@ -24,25 +24,15 @@
     <template>
         <div class="layout center-justified">
 
-            <paper-input label="Task name"></paper-input>
-            <paper-button raised class="colorful">add</paper-button>
+            <paper-input label="Task name" value="{{model.newItemText}}"></paper-input>
+            <paper-button raised class="colorful" on-tap="_onAddClicked">add</paper-button>
 
-            <paper-item>
-                <paper-item-body>Task name</paper-item-body>
-                <paper-checkbox></paper-checkbox>
-            </paper-item>
-            <paper-item>
-                <paper-item-body>Task name</paper-item-body>
-                <paper-checkbox></paper-checkbox>
-            </paper-item>
-            <paper-item>
-                <paper-item-body>Task name</paper-item-body>
-                <paper-checkbox></paper-checkbox>
-            </paper-item>
-            <paper-item>
-                <paper-item-body>Task name</paper-item-body>
-                <paper-checkbox></paper-checkbox>
-            </paper-item>
+            <template is='dom-repeat' items='{{model.items}}'>
+                <paper-item>
+                    <paper-item-body>[[item.text]]</paper-item-body>
+                    <paper-checkbox checked="{{item.completed}}"></paper-checkbox>
+                </paper-item>
+            </template>
 
         </div>
     </template>
@@ -51,8 +41,15 @@
 <script>
     Polymer({
         is: "todo-view",
+
+        behaviors: [clientContext.createBehavior('ToDoController')],
+
         properties: {
             clientContext: Object
+        },
+
+        _onAddClicked: function() {
+            this.invoke('add');
         }
     });
 </script>
