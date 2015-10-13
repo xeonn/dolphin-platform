@@ -441,7 +441,8 @@ public class FXBinder {
                             list.add(i, dolphinList.get(i));
                         }
                     } else if (c.isRemoved()) {
-                        list.remove(c.getFrom(), c.getTo());
+                        final int index = c.getFrom();
+                        list.remove(index, index + c.getRemovedElements().size());
                     }
                 }
                 listenToFx = true;
