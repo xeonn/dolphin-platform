@@ -162,6 +162,9 @@ public class ControllerHandler {
             for (final String name : names) {
                 final Attribute valueAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE);
                 final Attribute typeAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE_TYPE);
+                if (valueAttribute == null || typeAttribute == null) {
+                    throw new IllegalArgumentException(String.format("Invoking DolphinAction requires parameter '%s', but it was not send", name));
+                }
                 final ClassRepositoryImpl.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
                 result.add(beanRepository.mapDolphinToObject(valueAttribute.getValue(), fieldType));
             }
