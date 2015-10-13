@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -30,7 +31,7 @@ public class DolphinContextTaskExecutor {
         try {
             List<ControllerTask> taskList = tasks.get(controllerClass);
             if (taskList == null) {
-                taskList = new ArrayList<>();
+                taskList = new CopyOnWriteArrayList<>();
                 tasks.put(controllerClass, taskList);
             }
             taskList.add(task);
@@ -43,12 +44,13 @@ public class DolphinContextTaskExecutor {
         boolean executedTask = false;
         tasksMapLock.lock();
         try {
-            for (Class controllerClass : tasks.keySet()) {
-                List<ControllerTask> taskList = tasks.remove(controllerClass);
+            List<Class> allClasses = new ArrayList<>(tasks.keySet());
+            for (Class controllerClass : allClasses) {
+                List<ControllerTask> taskList = tasks.get(controllerClass);
                 if (taskList != null && !taskList.isEmpty()) {
                     List<?> controllers = getAllControllersForClass(controllerClass);
-                    for (Object controller : controllers) {
-                        for (ControllerTask task : taskList) {
+                    for (ControllerTask task : taskList) {
+                        for (Object controller : controllers) {
                             try {
                                 executedTask = true;
                                 task.run(controller);
@@ -58,6 +60,7 @@ public class DolphinContextTaskExecutor {
                                 e.printStackTrace();
                             }
                         }
+                        taskList.remove(task);
                     }
                 }
             }

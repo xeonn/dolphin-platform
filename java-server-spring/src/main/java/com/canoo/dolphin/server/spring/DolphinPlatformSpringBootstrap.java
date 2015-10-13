@@ -50,7 +50,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     @Bean
-    @Scope("session")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected TaskExecutor createTaskExecutor() {
         return TaskExecutorImpl.getInstance();
     }
