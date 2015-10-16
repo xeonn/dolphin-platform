@@ -19,7 +19,7 @@ public class Param {
      * @param value value of the param
      */
     public Param(String name, Object value) {
-        if(StringUtil.isBlank(name)) {
+        if (StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null");
         }
         this.name = name;
