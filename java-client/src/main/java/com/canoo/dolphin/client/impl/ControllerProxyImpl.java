@@ -6,9 +6,7 @@ import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.internal.BeanRepository;
-import com.canoo.dolphin.internal.PresentationModelBuilder;
 import org.opendolphin.StringUtil;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
@@ -32,7 +30,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private T model;
 
-    private boolean destroyed = false;
+    private volatile boolean destroyed = false;
 
     public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, BeanRepository beanRepository) {
         if (StringUtil.isBlank(controllerId)) {
@@ -112,7 +110,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         }
         destroyed = true;
         ControllerDestroyBean bean = context.getBeanManager().findAll(ControllerDestroyBean.class).get(0);
-        bean.setControllerid(controllerId);
+        bean.setControllerId(controllerId);
 
         final CompletableFuture<Void> ret = new CompletableFuture<>();
 

@@ -1,9 +1,11 @@
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import javafx.beans.property.*;
+import org.opendolphin.StringUtil;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -11,17 +13,23 @@ public abstract class AbstractViewBinder<M> {
 
     private ControllerProxy<M> controllerProxy;
 
-    private ReadOnlyBooleanWrapper actionCallRunning;
+    private ReadOnlyBooleanWrapper actionInProcess;
 
     private ReadOnlyObjectWrapper<M> model;
 
     private ReadOnlyObjectWrapper<Throwable> initializationException;
 
-    private ReadOnlyObjectWrapper<Throwable> invocationException;
+    private ReadOnlyObjectWrapper<ControllerActionException> invocationException;
 
     public AbstractViewBinder(ClientContext clientContext, String controllerName) {
+        if(clientContext == null) {
+            throw new IllegalArgumentException("clientContext must not be null");
+        }
+        if(StringUtil.isBlank(controllerName)) {
+            throw new IllegalArgumentException("controllerName must not be null");
+        }
         model = new ReadOnlyObjectWrapper<>();
-        actionCallRunning = new ReadOnlyBooleanWrapper(false);
+        actionInProcess = new ReadOnlyBooleanWrapper(false);
         initializationException = new ReadOnlyObjectWrapper<>();
         invocationException = new ReadOnlyObjectWrapper<>();
         clientContext.<M>createController(controllerName).whenComplete((c, e) -> {
@@ -50,24 +58,27 @@ public abstract class AbstractViewBinder<M> {
     }
 
     protected void invoke(String actionName, Param... params) {
-        actionCallRunning.set(true);
+        if(StringUtil.isBlank(actionName)) {
+            throw new IllegalArgumentException("actionName must not be null");
+        }
+        actionInProcess.set(true);
         controllerProxy.invoke(actionName, params).whenComplete((v, e) -> {
             try {
                 if (e != null) {
-                    invocationException.set(e);
+                    invocationException.set(new ControllerActionException(e));
                 }
             } finally {
-                actionCallRunning.set(false);
+                actionInProcess.set(false);
             }
         });
     }
 
-    public boolean isActionCallRunning() {
-        return actionCallRunning.get();
+    public boolean isActionInProcess() {
+        return actionInProcess.get();
     }
 
-    public ReadOnlyBooleanProperty actionCallRunningProperty() {
-        return actionCallRunning.getReadOnlyProperty();
+    public ReadOnlyBooleanProperty actionInProcessProperty() {
+        return actionInProcess.getReadOnlyProperty();
     }
 
     public M getModel() {
@@ -78,11 +89,11 @@ public abstract class AbstractViewBinder<M> {
         return model.getReadOnlyProperty();
     }
 
-    public Throwable getInvocationException() {
+    public ControllerActionException getInvocationException() {
         return invocationException.get();
     }
 
-    public ReadOnlyObjectProperty<Throwable> invocationExceptionProperty() {
+    public ReadOnlyObjectProperty<ControllerActionException> invocationExceptionProperty() {
         return invocationException.getReadOnlyProperty();
     }
 

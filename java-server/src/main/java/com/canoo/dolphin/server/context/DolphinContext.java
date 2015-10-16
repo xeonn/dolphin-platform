@@ -181,7 +181,7 @@ public class DolphinContext {
 
     private void onDestroyController() {
         ControllerDestroyBean bean = beanManager.findAll(ControllerDestroyBean.class).get(0);
-        controllerHandler.destroyController(bean.getControllerid());
+        controllerHandler.destroyController(bean.getControllerId());
     }
 
     private void onInvokeControllerAction() throws InvokeActionException {

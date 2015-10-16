@@ -30,7 +30,7 @@ public class ClientContextImpl implements ClientContext {
 
     private final BeanRepository beanRepository;
 
-    private boolean killed = false;
+    private volatile boolean destroyed = false;
 
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
         if(clientDolphin == null) {
@@ -52,7 +52,7 @@ public class ClientContextImpl implements ClientContext {
         if(StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null or empty!");
         }
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
         final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
@@ -69,7 +69,7 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public ClientBeanManager getBeanManager() {
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
         return clientBeanManager;
@@ -77,10 +77,10 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public CompletableFuture<Void> disconnect() {
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
-        return invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
+        return invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> destroyed = true);
     }
 
 
