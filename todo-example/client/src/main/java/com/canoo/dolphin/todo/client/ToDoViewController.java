@@ -4,6 +4,7 @@ import com.canoo.dolphin.client.AbstractViewController;
 import com.canoo.dolphin.client.javafx.FXBinder;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.javafx.FXWrapper;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.beans.property.StringProperty;
@@ -41,8 +42,8 @@ public class ToDoViewController extends AbstractViewController<ToDoList> {
     @Override
     protected void init(ControllerProxy<ToDoList> controller) {
         ToDoList model = controller.getModel();
-        FXBinder.bindBidirectional(createField.textProperty(), model.getNewItemText());
-        ObservableList<ToDoItem> items = FXBinder.wrapList(model.getItems());
+        FXBinder.bind(createField.textProperty()).bidirectionalTo(model.getNewItemText());
+        ObservableList<ToDoItem> items = FXWrapper.wrapList(model.getItems());
         itemList.setItems(items);
         createButton.setDisable(false);
         createButton.setOnAction(event -> controller.invoke("add"));

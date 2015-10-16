@@ -5,7 +5,7 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public interface DolphinBindable<S> {
+public interface DolphinBinder<S> {
 
     default Binding to(final ObservableValue<? extends S> observableValue) {
         if (observableValue == null) {

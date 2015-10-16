@@ -10,6 +10,12 @@ public class DefaultBidirectionalConverter<T, U> implements BidirectionalConvert
     private Converter<U, T> backConverter;
 
     public DefaultBidirectionalConverter(Converter<T, U> converter, Converter<U, T> backConverter) {
+        if(converter == null) {
+            throw new IllegalArgumentException("converter must not be null");
+        }
+        if(backConverter == null) {
+            throw new IllegalArgumentException("backConverter must not be null");
+        }
         this.converter = converter;
         this.backConverter = backConverter;
     }

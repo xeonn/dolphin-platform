@@ -5,9 +5,9 @@ import javafx.beans.property.FloatProperty;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class FloatJavaFXBidirectionalBindable extends AbstractNumericJavaFXBidirectionalBindable<Float> {
+public class FloatJavaFXBidirectionalBinder extends AbstractNumericJavaFXBidirectionalBinder<Float> {
 
-    public FloatJavaFXBidirectionalBindable(final FloatProperty javaFxProperty) {
+    public FloatJavaFXBidirectionalBinder(final FloatProperty javaFxProperty) {
         super(javaFxProperty);
     }
 

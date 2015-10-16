@@ -6,9 +6,9 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class IntegerDolphinBindable extends AbstractNumericDolphinBindable<Integer> {
+public class IntegerDolphinBinder extends AbstractNumericDolphinBinder<Integer> {
 
-    public IntegerDolphinBindable(final Property<Integer> property) {
+    public IntegerDolphinBinder(final Property<Integer> property) {
         super(property);
     }
 

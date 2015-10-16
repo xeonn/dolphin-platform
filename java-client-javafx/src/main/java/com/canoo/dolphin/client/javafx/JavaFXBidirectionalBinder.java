@@ -5,7 +5,7 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public interface JavaFXBidirectionalBindable<S> extends JavaFXBindable<S> {
+public interface JavaFXBidirectionalBinder<S> extends JavaFXBinder<S> {
 
     default Binding bidirectionalTo(Property<S> dolphinProperty) {
         return bidirectionalTo(dolphinProperty, new BidirectionalConverter<S, S>() {

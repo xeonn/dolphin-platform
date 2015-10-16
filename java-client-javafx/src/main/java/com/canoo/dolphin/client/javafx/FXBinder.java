@@ -15,63 +15,63 @@ public class FXBinder {
     private FXBinder() {
     }
 
-    public static JavaFXBindable<Double> bind(WritableDoubleValue writableDoubleValue) {
-        return new DefaultJavaFXBindable(writableDoubleValue);
+    public static JavaFXBinder<Double> bind(WritableDoubleValue writableDoubleValue) {
+        return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
-    public static JavaFXBindable<Float> bind(WritableFloatValue writableDoubleValue) {
-        return new DefaultJavaFXBindable(writableDoubleValue);
+    public static JavaFXBinder<Float> bind(WritableFloatValue writableDoubleValue) {
+        return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
-    public static JavaFXBindable<Integer> bind(WritableIntegerValue writableDoubleValue) {
-        return new DefaultJavaFXBindable(writableDoubleValue);
+    public static JavaFXBinder<Integer> bind(WritableIntegerValue writableDoubleValue) {
+        return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
-    public static JavaFXBindable<Long> bind(WritableLongValue writableDoubleValue) {
-        return new DefaultJavaFXBindable(writableDoubleValue);
+    public static JavaFXBinder<Long> bind(WritableLongValue writableDoubleValue) {
+        return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
-    public static NumericJavaFXBidirectionaBindable<Double> bind(DoubleProperty property) {
-        return new DoubleJavaFXBidirectionalBindable(property);
+    public static NumericJavaFXBidirectionaBinder<Double> bind(DoubleProperty property) {
+        return new DoubleJavaFXBidirectionalBinder(property);
     }
 
-    public static NumericJavaFXBidirectionaBindable<Float> bind(FloatProperty property) {
-        return new FloatJavaFXBidirectionalBindable(property);
+    public static NumericJavaFXBidirectionaBinder<Float> bind(FloatProperty property) {
+        return new FloatJavaFXBidirectionalBinder(property);
     }
 
-    public static NumericJavaFXBidirectionaBindable<Integer> bind(IntegerProperty property) {
-        return new IntegerJavaFXBidirectionalBindable(property);
+    public static NumericJavaFXBidirectionaBinder<Integer> bind(IntegerProperty property) {
+        return new IntegerJavaFXBidirectionalBinder(property);
     }
 
-    public static NumericJavaFXBidirectionaBindable<Long> bind(LongProperty property) {
-        return new LongJavaFXBidirectionalBindable(property);
+    public static NumericJavaFXBidirectionaBinder<Long> bind(LongProperty property) {
+        return new LongJavaFXBidirectionalBinder(property);
     }
 
-    public static <T> JavaFXBindable<T> bind(WritableValue<T> writableDoubleValue) {
-        return new DefaultJavaFXBindable(writableDoubleValue);
+    public static <T> JavaFXBinder<T> bind(WritableValue<T> writableDoubleValue) {
+        return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
-    public static <T> JavaFXBidirectionalBindable<T> bind(javafx.beans.property.Property<T> property) {
-        return new DefaultJavaFXBidirectionalBindable<>(property);
+    public static <T> JavaFXBidirectionalBinder<T> bind(javafx.beans.property.Property<T> property) {
+        return new DefaultJavaFXBidirectionalBinder<>(property);
     }
 
-    public static <T> DolphinBindable<T> bind(Property<T> property) {
-        return new DefaultDolphinBindable<>(property);
+    public static <T> DolphinBinder<T> bind(Property<T> property) {
+        return new DefaultDolphinBinder<>(property);
     }
 
-    public static NumericDolphinBindable<Double> bindDouble(Property<Double> property) {
-        return new DoubleDolphinBindable(property);
+    public static NumericDolphinBinder<Double> bindDouble(Property<Double> property) {
+        return new DoubleDolphinBinder(property);
     }
 
-    public static NumericDolphinBindable<Float> bindFloat(Property<Float> property) {
-        return new FloatDolphinBindable(property);
+    public static NumericDolphinBinder<Float> bindFloat(Property<Float> property) {
+        return new FloatDolphinBinder(property);
     }
 
-    public static NumericDolphinBindable<Integer> bindInteger(Property<Integer> property) {
-        return new IntegerDolphinBindable(property);
+    public static NumericDolphinBinder<Integer> bindInteger(Property<Integer> property) {
+        return new IntegerDolphinBinder(property);
     }
 
-    public static NumericDolphinBindable<Long> bindLong(Property<Long> property) {
-        return new LongDolphinBindable(property);
+    public static NumericDolphinBinder<Long> bindLong(Property<Long> property) {
+        return new LongDolphinBinder(property);
     }
 }

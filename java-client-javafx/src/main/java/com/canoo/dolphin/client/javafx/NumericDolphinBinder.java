@@ -5,7 +5,7 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by hendrikebbers on 28.09.15.
  */
-public interface NumericDolphinBindable<T extends Number> extends DolphinBindable<T> {
+public interface NumericDolphinBinder<T extends Number> extends DolphinBinder<T> {
 
     Binding toNumeric(final ObservableValue<Number> observableValue);
 

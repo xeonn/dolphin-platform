@@ -6,11 +6,11 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public class DoubleDolphinBindable extends AbstractNumericDolphinBindable<Double> {
+public class DoubleDolphinBinder extends AbstractNumericDolphinBinder<Double> {
 
     private final static double EPSILON = 1e-10;
 
-    public DoubleDolphinBindable(final Property<Double> property) {
+    public DoubleDolphinBinder(final Property<Double> property) {
         super(property);
     }
 

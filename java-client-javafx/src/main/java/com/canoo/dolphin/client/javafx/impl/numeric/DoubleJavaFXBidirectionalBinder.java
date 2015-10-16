@@ -5,9 +5,9 @@ import javafx.beans.property.DoubleProperty;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public class DoubleJavaFXBidirectionalBindable extends AbstractNumericJavaFXBidirectionalBindable<Double> {
+public class DoubleJavaFXBidirectionalBinder extends AbstractNumericJavaFXBidirectionalBinder<Double> {
 
-    public DoubleJavaFXBidirectionalBindable(final DoubleProperty javaFxProperty) {
+    public DoubleJavaFXBidirectionalBinder(final DoubleProperty javaFxProperty) {
         super(javaFxProperty);
     }
 

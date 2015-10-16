@@ -3,7 +3,7 @@ package com.canoo.dolphin.client.javafx.impl;
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
 import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.Converter;
-import com.canoo.dolphin.client.javafx.DolphinBindable;
+import com.canoo.dolphin.client.javafx.DolphinBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;
@@ -12,11 +12,11 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by hendrikebbers on 28.09.15.
  */
-public class DefaultDolphinBindable<S> implements DolphinBindable<S> {
+public class DefaultDolphinBinder<S> implements DolphinBinder<S> {
 
     private final Property<S> property;
 
-    public DefaultDolphinBindable(final Property<S> property) {
+    public DefaultDolphinBinder(final Property<S> property) {
         if (property == null) {
             throw new IllegalArgumentException("property must not be null");
         }

@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class PropertyMock<T> implements Property<T> {
+public class MockedProperty<T> implements Property<T> {
 
     private T value;
 
     private final List<ValueChangeListener<? super T>> listeners;
 
-    public PropertyMock() {
+    public MockedProperty() {
         listeners = new ArrayList<>();
     }
 
@@ -29,7 +29,7 @@ public class PropertyMock<T> implements Property<T> {
             listener.valueChanged(new ValueChangeEvent<T>() {
                 @Override
                 public Property<T> getSource() {
-                    return PropertyMock.this;
+                    return MockedProperty.this;
                 }
 
                 @Override

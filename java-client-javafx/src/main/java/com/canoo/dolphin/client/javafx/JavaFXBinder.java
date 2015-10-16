@@ -5,7 +5,7 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public interface JavaFXBindable<S> {
+public interface JavaFXBinder<S> {
 
     default Binding to(Property<? extends S> dolphinProperty) {
         if (dolphinProperty == null) {

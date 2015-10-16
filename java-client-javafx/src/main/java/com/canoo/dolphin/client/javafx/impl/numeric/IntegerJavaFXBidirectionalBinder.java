@@ -5,9 +5,9 @@ import javafx.beans.property.IntegerProperty;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class IntegerJavaFXBidirectionalBindable extends AbstractNumericJavaFXBidirectionalBindable<Integer> {
+public class IntegerJavaFXBidirectionalBinder extends AbstractNumericJavaFXBidirectionalBinder<Integer> {
 
-    public IntegerJavaFXBidirectionalBindable(final IntegerProperty javaFxProperty) {
+    public IntegerJavaFXBidirectionalBinder(final IntegerProperty javaFxProperty) {
         super(javaFxProperty);
     }
 

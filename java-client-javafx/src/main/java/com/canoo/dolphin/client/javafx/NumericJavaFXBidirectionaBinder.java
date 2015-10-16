@@ -5,7 +5,7 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 28.09.15.
  */
-public interface NumericJavaFXBidirectionaBindable<S extends Number> extends JavaFXBidirectionalBindable<Number> {
+public interface NumericJavaFXBidirectionaBinder<S extends Number> extends JavaFXBidirectionalBinder<Number> {
 
     default Binding bidirectionalToNumeric(Property<S> dolphinProperty) {
         return bidirectionalTo(dolphinProperty, new BidirectionalConverter<S, Number>() {

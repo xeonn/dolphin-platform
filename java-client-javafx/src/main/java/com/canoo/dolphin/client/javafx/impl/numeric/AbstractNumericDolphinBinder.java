@@ -2,8 +2,8 @@ package com.canoo.dolphin.client.javafx.impl.numeric;
 
 import com.canoo.dolphin.client.javafx.BidirectionalConverter;
 import com.canoo.dolphin.client.javafx.Binding;
-import com.canoo.dolphin.client.javafx.NumericDolphinBindable;
-import com.canoo.dolphin.client.javafx.impl.DefaultDolphinBindable;
+import com.canoo.dolphin.client.javafx.NumericDolphinBinder;
+import com.canoo.dolphin.client.javafx.impl.DefaultDolphinBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;
@@ -12,11 +12,11 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by hendrikebbers on 28.09.15.
  */
-public abstract class AbstractNumericDolphinBindable<T extends Number> extends DefaultDolphinBindable<T> implements NumericDolphinBindable<T> {
+public abstract class AbstractNumericDolphinBinder<T extends Number> extends DefaultDolphinBinder<T> implements NumericDolphinBinder<T> {
 
     private final Property<T> property;
 
-    public AbstractNumericDolphinBindable(final Property<T> property) {
+    public AbstractNumericDolphinBinder(final Property<T> property) {
         super(property);
         this.property = property;
     }

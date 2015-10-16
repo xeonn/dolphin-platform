@@ -5,9 +5,9 @@ import javafx.beans.property.LongProperty;
 /**
  * Created by hendrikebbers on 29.09.15.
  */
-public class LongJavaFXBidirectionalBindable extends AbstractNumericJavaFXBidirectionalBindable<Long> {
+public class LongJavaFXBidirectionalBinder extends AbstractNumericJavaFXBidirectionalBinder<Long> {
 
-    public LongJavaFXBidirectionalBindable(final LongProperty javaFxProperty) {
+    public LongJavaFXBidirectionalBinder(final LongProperty javaFxProperty) {
         super(javaFxProperty);
     }
 

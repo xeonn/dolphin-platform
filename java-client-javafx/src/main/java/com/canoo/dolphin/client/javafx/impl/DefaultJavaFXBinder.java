@@ -2,7 +2,7 @@ package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.Binding;
 import com.canoo.dolphin.client.javafx.Converter;
-import com.canoo.dolphin.client.javafx.JavaFXBindable;
+import com.canoo.dolphin.client.javafx.JavaFXBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.WritableValue;
@@ -10,11 +10,11 @@ import javafx.beans.value.WritableValue;
 /**
  * Created by hendrikebbers on 27.09.15.
  */
-public class DefaultJavaFXBindable<S> implements JavaFXBindable<S> {
+public class DefaultJavaFXBinder<S> implements JavaFXBinder<S> {
 
     private final WritableValue<S> javaFxValue;
 
-    public DefaultJavaFXBindable(final WritableValue<S> javaFxValue) {
+    public DefaultJavaFXBinder(final WritableValue<S> javaFxValue) {
         if (javaFxValue == null) {
             throw new IllegalArgumentException("javaFxValue must not be null");
         }
