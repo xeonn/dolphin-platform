@@ -132,11 +132,12 @@ public class FXWrapper {
                 listenToFx = false;
                 for (ListChangeEvent.Change<? extends T> c : e.getChanges()) {
                     if (c.isAdded()) {
-                        for (int i = c.getFrom(); i <= c.getTo() - 1; i++) {
+                        for (int i = c.getFrom(); i < c.getTo(); i++) {
                             list.add(i, dolphinList.get(i));
                         }
                     } else if (c.isRemoved()) {
-                        list.remove(c.getFrom(), c.getTo());
+                        final int index = c.getFrom();
+                        list.remove(index, index + c.getRemovedElements().size());
                     }
                 }
                 listenToFx = true;
