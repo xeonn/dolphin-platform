@@ -6,18 +6,18 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean(PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME)
 public class ControllerActionCallBean {
 
-    private Property<String> controllerid;
+    private Property<String> controllerId;
 
     private Property<String> actionName;
 
     private Property<String> id;
 
-    public String getControllerid() {
-        return controllerid.get();
+    public String getControllerId() {
+        return controllerId.get();
     }
 
-    public void setControllerid(String controllerid) {
-        this.controllerid.set(controllerid);
+    public void setControllerId(String controllerId) {
+        this.controllerId.set(controllerId);
     }
 
     public String getActionName() {

@@ -3,6 +3,8 @@ package com.canoo.dolphin.todo.client;
 import com.canoo.dolphin.client.javafx.AbstractViewBinder;
 import com.canoo.dolphin.client.javafx.FXBinder;
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.javafx.FXWrapper;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.collections.ObservableList;
@@ -43,8 +45,8 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
 
     @Override
     protected void init() {
-        FXBinder.bindBidirectional(createField.textProperty(), getModel().getNewItemText());
-        ObservableList<ToDoItem> items = FXBinder.wrapList(getModel().getItems());
+        FXBinder.bind(createField.textProperty()).bidirectionalTo(getModel().getNewItemText());
+        ObservableList<ToDoItem> items = FXWrapper.wrapList(getModel().getItems());
         itemList.setItems(items);
         createButton.setDisable(false);
         createButton.setOnAction(event -> invoke("add"));

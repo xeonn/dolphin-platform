@@ -5,6 +5,7 @@ import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.ControllerActionCallBean;
 import com.canoo.dolphin.internal.BeanRepository;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
@@ -77,7 +78,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         }
 
         ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
-        bean.setControllerid(controllerId);
+        bean.setControllerId(controllerId);
         bean.setActionName(actionName);
         bean.setId(actionId);
 

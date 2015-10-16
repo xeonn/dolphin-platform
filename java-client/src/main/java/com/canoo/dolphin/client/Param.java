@@ -2,12 +2,22 @@ package com.canoo.dolphin.client;
 
 import org.opendolphin.StringUtil;
 
+/**
+ * The class defines a param that can be used as a action param when calling a action on the server side
+ * controller. Each param is defined by a name and a value. The name must be unique for a specific action.
+ * See {@link ControllerProxy#invoke(String, Param...)} for more details.
+ */
 public class Param {
 
     private final String name;
 
     private final Object value;
 
+    /**
+     * Default constructor
+     * @param name name of the param
+     * @param value value of the param
+     */
     public Param(String name, Object value) {
         if (StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null");
@@ -16,10 +26,18 @@ public class Param {
         this.value = value;
     }
 
+    /**
+     * Returns the param name
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the param value
+     * @return the value
+     */
     public Object getValue() {
         return value;
     }

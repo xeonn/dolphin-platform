@@ -118,7 +118,7 @@ public class DolphinContext {
                             String actionid = null;
                             try {
                                 ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-                                controllerId = bean.getControllerid();
+                                controllerId = bean.getControllerId();
                                 actionName = bean.getActionName();
                                 actionid = bean.getId();
                             } finally {
@@ -186,7 +186,7 @@ public class DolphinContext {
 
     private void onInvokeControllerAction() throws InvokeActionException {
         ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-        controllerHandler.invokeAction(bean.getControllerid(), bean.getActionName());
+        controllerHandler.invokeAction(bean.getControllerId(), bean.getActionName());
     }
 
     private void onPollEventBus() {

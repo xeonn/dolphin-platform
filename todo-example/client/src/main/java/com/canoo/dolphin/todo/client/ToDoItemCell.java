@@ -19,8 +19,8 @@ public class ToDoItemCell extends ListCell<ToDoItem> {
     protected void updateItem(ToDoItem item, boolean empty) {
         super.updateItem(item, empty);
         if(item != null) {
-            textProperty().bind(FXBinder.wrapStringProperty(item.getTextProperty()));
-            doneCheckbox.selectedProperty().bindBidirectional(FXBinder.wrapBooleanProperty(item.getCompletedProperty()));
+            FXBinder.bind(textProperty()).to(item.getTextProperty());
+            FXBinder.bind(doneCheckbox.selectedProperty()).bidirectionalTo(item.getCompletedProperty());
         }
     }
 }

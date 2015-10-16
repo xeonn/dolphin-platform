@@ -10,11 +10,23 @@ import org.opendolphin.core.comm.JsonCodec;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
+/**
+ * Factory to create a {@link ClientContext}. Normally you will create a {@link ClientContext} at the bootstrap of your
+ * client by using the {@link #connect(ClientConfiguration)} method and use this context as a singleton in your client.
+ * The {@link ClientContext} defines the connection between the client and the Dolphin Platform server endpoint.
+ */
 public class ClientContextFactory {
 
     private ClientContextFactory() {
     }
 
+    /**
+     * Create a {@link ClientContext} based on the given configuration. This method doesn't block and returns a
+     * {@link CompletableFuture} to receive its result. If the {@link ClientContext} can't be created the
+     * {@link CompletableFuture#get()} will throw a {@link ClientInitializationException}.
+     * @param clientConfiguration the configuration
+     * @return the future
+     */
     public static CompletableFuture<ClientContext> connect(ClientConfiguration clientConfiguration) {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
         Executors.newSingleThreadExecutor().execute(() -> {
