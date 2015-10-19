@@ -1,6 +1,6 @@
 # Dolphin Platform
 
-This repository contains all java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories (JavaScript, AngularJS, Polymer).
+This repository contains all Java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories (JavaScript, AngularJS, Polymer).
 
 ![Dolphin Platform Logo](http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png)
 
