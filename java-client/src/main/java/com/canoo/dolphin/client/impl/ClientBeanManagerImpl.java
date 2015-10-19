@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ClientBeanManager;
@@ -14,6 +29,7 @@ import org.opendolphin.core.client.comm.OnFinishedHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
@@ -27,31 +43,4 @@ public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBean
         this.dolphin = dolphin;
     }
 
-    @Override
-    public CompletableFuture<Void> invoke(String command, Param... params) {
-        if (params != null && params.length > 0) {
-            final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin)
-                    .withType(PlatformConstants.DOLPHIN_PARAMETER);
-            for (final Param param : params) {
-                final FieldType type = DolphinUtils.getFieldType(param.getValue());
-                final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
-                builder.withAttribute(param.getName(), value, Tag.VALUE)
-                        .withAttribute(param.getName(), DolphinUtils.mapFieldTypeToDolphin(type), Tag.VALUE_TYPE);
-            }
-            builder.create();
-        }
-        final CompletableFuture<Void> result = new CompletableFuture<>();
-        dolphin.send(command, new OnFinishedHandler() {
-            @Override
-            public void onFinished(List<ClientPresentationModel> presentationModels) {
-                result.complete(null);
-            }
-
-            @Override
-            public void onFinishedData(List<Map> data) {
-                //Unused....
-            }
-        });
-        return result;
-    }
 }

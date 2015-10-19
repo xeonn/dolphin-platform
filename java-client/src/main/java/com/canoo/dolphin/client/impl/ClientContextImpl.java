@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.impl.PlatformConstants;
@@ -14,7 +29,11 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.ClientPresentationModel;
+import org.opendolphin.core.client.comm.OnFinishedHandler;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -24,7 +43,9 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientBeanManagerImpl clientBeanManager;
 
-    private boolean killed = false;
+    private final BeanRepository beanRepository;
+
+    private volatile boolean destroyed = false;
 
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
         if(clientDolphin == null) {
@@ -32,13 +53,13 @@ public class ClientContextImpl implements ClientContext {
         }
         this.clientDolphin = clientDolphin;
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
-        final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+        beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
         final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
-        clientBeanManager.invoke(PlatformConstants.INIT_COMMAND_NAME).get();
+        invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).get();
     }
 
     @Override
@@ -46,24 +67,24 @@ public class ClientContextImpl implements ClientContext {
         if(StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null or empty!");
         }
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
         final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
         bean.setControllerName(name);
-        return getBeanManager().invoke(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
+        return invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
             if (e != null) {
                 throw new RuntimeException(e);
             }
             @SuppressWarnings("unchecked")
             final T model = (T) bean.getModel();
-            return new ControllerProxyImpl<>(bean.getControllerId(), model, this);
+            return new ControllerProxyImpl<>(bean.getControllerId(), model, this, clientDolphin, beanRepository);
         });
     }
 
     @Override
     public ClientBeanManager getBeanManager() {
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
         return clientBeanManager;
@@ -71,9 +92,28 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public CompletableFuture<Void> disconnect() {
-        if(killed) {
+        if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
-        return getBeanManager().invoke(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> killed = true);
+        return invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> destroyed = true);
     }
+
+
+    private CompletableFuture<Void> invokeDolphinCommand(String command) {
+        final CompletableFuture<Void> result = new CompletableFuture<>();
+        clientDolphin.send(command, new OnFinishedHandler() {
+            @Override
+            public void onFinished(List<ClientPresentationModel> presentationModels) {
+                result.complete(null);
+            }
+
+            @Override
+            public void onFinishedData(List<Map> data) {
+                //Unused....
+            }
+        });
+        return result;
+    }
+
+
 }
