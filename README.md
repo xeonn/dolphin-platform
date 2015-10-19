@@ -2,8 +2,8 @@
 
 This repository contains all java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories (JavaScript, AngularJS, Polymer).
 
-
 ![Dolphin Platform Logo](http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png)
+
 The Dolphin Platform is a framework that implements the presentation model pattern and provides a modern way to create enterprise applications. The Platform provides several client implementations that all can be used in combination with a general sever API. By doing so you can create enterprise application with a single server and several desktop, web and mobile client implementations. Here the Dolphin Platforms define a mechanism to automatically snchronize models between the server and the client.
 
 ![Several clients](http://i2.wp.com/www.guigarage.com/wordpress/wp-content/uploads/2015/09/clients.png)
