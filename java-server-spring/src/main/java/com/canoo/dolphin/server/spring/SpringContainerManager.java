@@ -24,20 +24,50 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class SpringContainerManager implements ContainerManager {
+
+    private ThreadLocal<ModelInjector> currentModelInjector = new ThreadLocal<>();
+
+    private ThreadLocal<Class> currentControllerClass = new ThreadLocal<>();
+
+    private boolean initialized = false;
+
+    private Lock initLock = new ReentrantLock();
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
         ApplicationContext context = getContext();
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
 
-        beanFactory.addBeanPostProcessor(new InstantiationAwareBeanPostProcessorAdapter() {
-            @Override
-            public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-                modelInjector.inject(bean);
-                return true;
+        if (!initialized) {
+            initLock.lock();
+            try {
+                if (!initialized) {
+                    beanFactory.addBeanPostProcessor(new InstantiationAwareBeanPostProcessorAdapter() {
+                        @Override
+                        public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+                            Class controllerClass = currentControllerClass.get();
+                            if(controllerClass != null && controllerClass.isAssignableFrom(bean.getClass())) {
+                                ModelInjector modelInjector = currentModelInjector.get();
+                                if (modelInjector != null) {
+                                    modelInjector.inject(bean);
+                                }
+                            }
+                            return true;
+                        }
+                    });
+                    initialized = true;
+                }
+            } finally {
+                initLock.unlock();
             }
-        });
+        }
+
+        currentModelInjector.set(modelInjector);
+        currentControllerClass.set(controllerClass);
         return beanFactory.createBean(controllerClass);
     }
 
