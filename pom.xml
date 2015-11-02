@@ -77,12 +77,28 @@
                         <configuration>
                             <docfilessubdirs>true</docfilessubdirs>
                             <additionalparam>-Xdoclint:none</additionalparam>
-                            <excludePackageNames>com.canoo.dolphin.server.impl:com.canoo.dolphin.server.context:com.canoo.dolphin.server.controller:com.canoo.dolphin.server.event.impl:com.canoo.dolphin.server.servlet:com.canoo.dolphin.internal:com.canoo.dolphin.impl:com.canoo.dolphin.client.impl:com.canoo.dolphin.client.clientscope</excludePackageNames>
+                            <excludePackageNames>
+                                com.canoo.dolphin.server.impl:com.canoo.dolphin.server.context:com.canoo.dolphin.server.controller:com.canoo.dolphin.server.event.impl:com.canoo.dolphin.server.servlet:com.canoo.dolphin.internal:com.canoo.dolphin.impl:com.canoo.dolphin.client.impl:com.canoo.dolphin.client.clientscope
+                            </excludePackageNames>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <scm>
+        <connection>scm:git:https://github.com/canoo/dolphin-platform.git</connection>
+        <developerConnection>scm:git:git@github.com:canoo/dolphin-platform.git</developerConnection>
+        <url>https://github.com/canoo/dolphin-platform</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <url>https://api.bintray.com/maven/canoo/dolphin-platform/dolphin-platform</url>
+        </repository>
+    </distributionManagement>
 
 </project>
