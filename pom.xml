@@ -6,7 +6,7 @@
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform</artifactId>
     <packaging>pom</packaging>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
 
     <modules>
         <module>java-core</module>
@@ -85,16 +85,4 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>nexus</id>
-            <name>Canoo's Internal Repository</name>
-            <url>https://ci.canoo.com/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus</id>
-            <name>Canoo's Internal Snapshot Repository</name>
-            <url>https://ci.canoo.com/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
