@@ -7,7 +7,7 @@ after_success:
       - mvn clean test jacoco:report coveralls:report
 deploy:
   provider: releases
-    api_key: "$github_api_token_upload_release"
+  api_key: "$github_api_token_upload_release"
   file: 'release.zip'
   skip_cleanup: true
   on:
