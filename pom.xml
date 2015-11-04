@@ -8,6 +8,42 @@
     <packaging>pom</packaging>
     <version>0.7.0-SNAPSHOT</version>
 
+    <name>Dolphin Platform</name>
+    <description>The Dolphin Platform is a framework that implements the presentation model pattern and provides a
+        modern way to create enterprise applications. The Platform provides several client implementations that all can
+        be used in combination with a general sever API.
+    </description>
+    <url>http://www.dolphin-platform.io</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Hendrik Ebbers</name>
+            <email>hendrik.ebbers@canoo.com</email>
+            <organization>Canoo Engineering AG</organization>
+            <organizationUrl>http://www.canoo.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Michael Heinrichs</name>
+            <email>michael.heinrichs@canoo.com</email>
+            <organization>Canoo Engineering AG</organization>
+            <organizationUrl>http://www.canoo.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/canoo/dolphin-platform.git</connection>
+        <developerConnection>scm:git:git@github.com:canoo/dolphin-platform.git</developerConnection>
+        <url>https://github.com/canoo/dolphin-platform</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <modules>
         <module>java-core</module>
         <module>java-client</module>
@@ -107,19 +143,13 @@
             </plugin>
         </plugins>
     </build>
-
-    <scm>
-        <connection>scm:git:https://github.com/canoo/dolphin-platform.git</connection>
-        <developerConnection>scm:git:git@github.com:canoo/dolphin-platform.git</developerConnection>
-        <url>https://github.com/canoo/dolphin-platform</url>
-        <tag>HEAD</tag>
-    </scm>
-
+    
     <distributionManagement>
         <repository>
             <id>bintray</id>
             <url>https://api.bintray.com/maven/canoo/dolphin-platform/dolphin-platform</url>
         </repository>
+        <snapshotRepository></snapshotRepository>
     </distributionManagement>
 
 </project>
