@@ -1,4 +1,5 @@
 # Dolphin Platform
+[![Travis Build](https://travis-ci.org/canoo/dolphin-platform.svg?branch=master)](https://travis-ci.org/canoo/dolphin-platform)
 
 This repository contains all Java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories (JavaScript, AngularJS, Polymer).
 
