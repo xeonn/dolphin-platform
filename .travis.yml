@@ -3,8 +3,8 @@ sudo: false
 script: mvn clean verify
 jdk: oraclejdk8
 after_success:
-      - zip -r release . -i java-*/target/*.jar -i release/readme.txt
       - mvn clean test jacoco:report coveralls:report
+      - zip -r release . -i java-*/target/*.jar -i release/readme.txt
 deploy:
   provider: releases
   api_key: "$github_api_token_upload_release"
