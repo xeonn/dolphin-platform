@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.container;
 
+import javax.servlet.ServletContext;
+
 /**
  * <p>
  * This interface defines the platform / container specific controller management.
@@ -30,7 +32,7 @@ package com.canoo.dolphin.server.container;
  */
 public interface ContainerManager {
 
-    void init();
+    void init(ServletContext servletContext);
 
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 

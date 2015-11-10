@@ -22,25 +22,20 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.ServletContext;
 
 public class SpringContainerManager implements ContainerManager {
 
-    private boolean initialized = false;
-
-    private Lock initLock = new ReentrantLock();
-
     @Override
-    public void init() {
-        ApplicationContext context = getContext();
+    public void init(ServletContext servletContext) {
+        ApplicationContext context = getContext(servletContext);
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
     }
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        ApplicationContext context = getContext();
+        ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         SpringModelInjector.getInstance().prepair(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
@@ -48,7 +43,7 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public void destroyController(Object instance) {
-        ApplicationContext context = getContext();
+        ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }
 
@@ -57,7 +52,7 @@ public class SpringContainerManager implements ContainerManager {
      *
      * @return the spring context
      */
-    private ApplicationContext getContext() {
-        return WebApplicationContextUtils.getWebApplicationContext(DolphinContext.getCurrentContext().getServletContext());
+    private ApplicationContext getContext(ServletContext servletContext) {
+        return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }

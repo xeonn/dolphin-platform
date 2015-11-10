@@ -27,6 +27,7 @@ import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.servlet.ServletContext;
 
 /**
  * Created by hendrikebbers on 14.09.15.
@@ -34,7 +35,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 public class CdiContainerManager implements ContainerManager {
 
     @Override
-    public void init() {
+    public void init(ServletContext servletContext) {
     }
 
     @Override
