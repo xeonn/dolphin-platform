@@ -16,8 +16,6 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.controller.ControllerHandler;
-import com.canoo.dolphin.server.controller.ControllerRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +42,7 @@ public class DolphinContextHandler {
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
         if (serviceIterator.hasNext()) {
             this.containerManager = serviceIterator.next();
+            this.containerManager.init();
             if (serviceIterator.hasNext()) {
                 throw new RuntimeException("More than 1 " + ContainerManager.class + " found!");
             }

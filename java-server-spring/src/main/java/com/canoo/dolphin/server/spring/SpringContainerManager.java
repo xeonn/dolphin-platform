@@ -18,8 +18,6 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.context.DolphinContext;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -29,45 +27,22 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SpringContainerManager implements ContainerManager {
 
-    private ThreadLocal<ModelInjector> currentModelInjector = new ThreadLocal<>();
-
-    private ThreadLocal<Class> currentControllerClass = new ThreadLocal<>();
-
     private boolean initialized = false;
 
     private Lock initLock = new ReentrantLock();
 
     @Override
+    public void init() {
+        ApplicationContext context = getContext();
+        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
+        beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
+    }
+
+    @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
         ApplicationContext context = getContext();
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
-
-        if (!initialized) {
-            initLock.lock();
-            try {
-                if (!initialized) {
-                    beanFactory.addBeanPostProcessor(new InstantiationAwareBeanPostProcessorAdapter() {
-                        @Override
-                        public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-                            Class controllerClass = currentControllerClass.get();
-                            if(controllerClass != null && controllerClass.isAssignableFrom(bean.getClass())) {
-                                ModelInjector modelInjector = currentModelInjector.get();
-                                if (modelInjector != null) {
-                                    modelInjector.inject(bean);
-                                }
-                            }
-                            return true;
-                        }
-                    });
-                    initialized = true;
-                }
-            } finally {
-                initLock.unlock();
-            }
-        }
-
-        currentModelInjector.set(modelInjector);
-        currentControllerClass.set(controllerClass);
+        SpringModelInjector.getInstance().prepair(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
     }
 

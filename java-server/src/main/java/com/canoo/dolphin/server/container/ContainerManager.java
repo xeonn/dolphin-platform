@@ -30,6 +30,8 @@ package com.canoo.dolphin.server.container;
  */
 public interface ContainerManager {
 
+    void init();
+
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 
     void destroyController(Object instance);
