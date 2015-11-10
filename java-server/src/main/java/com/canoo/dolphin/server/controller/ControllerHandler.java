@@ -40,6 +40,8 @@ public class ControllerHandler {
 
     private final Map<String, Object> controllers = new HashMap<>();
 
+    private final Map<String, Class> controllerClassMapping = new HashMap<>();
+
     private final Map<String, Object> models = new HashMap<>();
 
     private final ContainerManager containerManager;
@@ -76,6 +78,7 @@ public class ControllerHandler {
             }
         });
         controllers.put(id, instance);
+        controllerClassMapping.put(id, controllerClass);
 
         return id;
     }
@@ -104,7 +107,8 @@ public class ControllerHandler {
     public void invokeAction(String controllerId, String actionName) throws InvokeActionException {
         try {
             Object controller = controllers.get(controllerId);
-            Method actionMethod = getActionMethod(controller, actionName);
+            Class controllerClass = controllerClassMapping.get(controllerId);
+            Method actionMethod = getActionMethod(controller, controllerClass, actionName);
             List<String> paramNames = getParamNames(actionMethod);
             invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
         } catch (Exception e) {
@@ -124,8 +128,8 @@ public class ControllerHandler {
         }
     }
 
-    private Method getActionMethod(Object controller, String actionName) {
-        List<Method> allMethods = getInheritedDeclaredMethods(controller.getClass());
+    private <T> Method getActionMethod(T controller, Class<T> controllerClass, String actionName) {
+        List<Method> allMethods = getInheritedDeclaredMethods(controllerClass);
         Method foundMethod = null;
         for (Method method : allMethods) {
             if (method.isAnnotationPresent(DolphinAction.class)) {
