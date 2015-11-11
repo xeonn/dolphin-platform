@@ -19,7 +19,6 @@ import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.bean.BeanBuilder;
-import org.apache.deltaspike.core.util.metadata.builder.ContextualLifecycle;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -46,22 +45,7 @@ public class CdiContainerManager implements ContainerManager {
         final Bean<T> bean = new BeanBuilder<T>(bm)
                 .beanClass(controllerClass)
                 .scope(Dependent.class)
-                .beanLifecycle(new ContextualLifecycle<T>() {
-                    @Override
-                    public T create(Bean<T> bean, CreationalContext<T> creationalContext) {
-                        T instance = injectionTarget.produce(creationalContext);
-                        modelInjector.inject(instance);
-                        injectionTarget.inject(instance, creationalContext);
-                        injectionTarget.postConstruct(instance);
-                        return instance;
-                    }
-
-                    @Override
-                    public void destroy(Bean<T> bean, T instance, CreationalContext<T> creationalContext) {
-                        injectionTarget.preDestroy(instance);
-                        creationalContext.release();
-                    }
-                })
+                .beanLifecycle(new DolphinPlatformContextualLifecycle<T>(injectionTarget, modelInjector))
                 .create();
         Class<?> beanClass = bean.getBeanClass();
         CreationalContext<?> creationalContext = bm.createCreationalContext(bean);
