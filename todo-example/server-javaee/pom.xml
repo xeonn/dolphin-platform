@@ -13,7 +13,10 @@
     </parent>
 
     <artifactId>todo-example-server-javaee</artifactId>
-    <packaging>war</packaging>
+
+    <properties>
+        <kumuluzee.version>1.0.0</kumuluzee.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -25,6 +28,21 @@
             <groupId>com.canoo.dolphin-platform</groupId>
             <artifactId>dolphin-platform-server-javaee</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-core</artifactId>
+            <version>${kumuluzee.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-servlet-jetty</artifactId>
+            <version>${kumuluzee.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-cdi</artifactId>
+            <version>${kumuluzee.version}</version>
         </dependency>
     </dependencies>
 
