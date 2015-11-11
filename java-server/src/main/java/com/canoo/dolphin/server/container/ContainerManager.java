@@ -36,6 +36,6 @@ public interface ContainerManager {
 
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 
-    void destroyController(Object instance);
+    void destroyController(Object instance, Class controllerClass);
 
 }

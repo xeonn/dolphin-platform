@@ -27,11 +27,14 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Created by hendrikebbers on 14.09.15.
- */
 public class CdiContainerManager implements ContainerManager {
+
+    private Map<Object, CreationalContext> contextMap = new HashMap<>();
+
+    private Map<Object, Bean> beanMap = new HashMap<>();
 
     @Override
     public void init(ServletContext servletContext) {
@@ -48,13 +51,19 @@ public class CdiContainerManager implements ContainerManager {
                 .beanLifecycle(new DolphinPlatformContextualLifecycle<T>(injectionTarget, modelInjector))
                 .create();
         Class<?> beanClass = bean.getBeanClass();
-        CreationalContext<?> creationalContext = bm.createCreationalContext(bean);
+        CreationalContext<T> creationalContext = bm.createCreationalContext(bean);
         T instance = (T) bm.getReference(bean, beanClass, creationalContext);
+        contextMap.put(instance, creationalContext);
+        beanMap.put(instance, bean);
         return instance;
     }
 
+
+
     @Override
-    public void destroyController(Object instance) {
-        throw new RuntimeException("Not yet implemented");
+    public void destroyController(Object instance, Class controllerClass) {
+        Bean bean = beanMap.get(instance);
+        CreationalContext context = contextMap.get(instance);
+        bean.destroy(instance, context);
     }
 }

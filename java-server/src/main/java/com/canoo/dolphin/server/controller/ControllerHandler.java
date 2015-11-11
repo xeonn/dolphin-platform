@@ -120,7 +120,8 @@ public class ControllerHandler {
 
     public void destroyController(String id) {
         Object controller = controllers.remove(id);
-        containerManager.destroyController(controller);
+        Class controllerClass = controllerClassMapping.remove(id);
+        containerManager.destroyController(controller, controllerClass);
 
         Object model = models.get(id);
         if (model != null) {

@@ -42,7 +42,7 @@ public class SpringContainerManager implements ContainerManager {
     }
 
     @Override
-    public void destroyController(Object instance) {
+    public void destroyController(Object instance, Class controllerClass) {
         ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }
