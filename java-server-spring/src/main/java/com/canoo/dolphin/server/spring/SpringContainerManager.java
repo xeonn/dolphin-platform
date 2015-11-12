@@ -18,8 +18,10 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.context.DolphinContext;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
@@ -28,15 +30,16 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public void init(ServletContext servletContext) {
-        ApplicationContext context = getContext(servletContext);
+        WebApplicationContext context = getContext(servletContext);
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
     }
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
+        // SpringBeanAutowiringSupport kann man auch nutzen
+        WebApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
         SpringModelInjector.getInstance().prepair(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
     }
@@ -52,7 +55,7 @@ public class SpringContainerManager implements ContainerManager {
      *
      * @return the spring context
      */
-    private ApplicationContext getContext(ServletContext servletContext) {
+    private WebApplicationContext getContext(ServletContext servletContext) {
         return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }
