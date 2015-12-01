@@ -31,9 +31,9 @@ import javax.enterprise.inject.spi.InjectionTarget;
  */
 public class DolphinPlatformContextualLifecycle<T> implements ContextualLifecycle<T> {
 
-    final InjectionTarget<T> injectionTarget;
+    private final InjectionTarget<T> injectionTarget;
 
-    final ModelInjector modelInjector;
+    private final ModelInjector modelInjector;
 
     public DolphinPlatformContextualLifecycle(InjectionTarget<T> injectionTarget, ModelInjector modelInjector) {
         this.injectionTarget = injectionTarget;
