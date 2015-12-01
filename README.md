@@ -1,5 +1,5 @@
-# Dolphin Platform
-[![Travis Build](https://travis-ci.org/canoo/dolphin-platform.svg?branch=master)](https://travis-ci.org/canoo/dolphin-platform)
+# Dolphin Platform [![Travis Build](https://travis-ci.org/canoo/dolphin-platform.svg?branch=master)](https://travis-ci.org/canoo/dolphin-platform) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.canoo.dolphin-platform/dolphin-platform-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.canoo.dolphin-platform/dolphin-platform-core)
+                                                                                                                               
 
 This repository contains all Java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories ([JavaScript](https://github.com/canoo/dolphin-platform-js), AngularJS, [Polymer](https://github.com/canoo/dolphin-platform-polymer)).
 
