@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 /**
  * Implements a CDI Lifecylce for Dolphin Platform Controllers
  *
- * @param <T>
+ * @param <T> the class of the bean instance
  *
  * @author Hendrik Ebbers
  */
