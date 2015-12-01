@@ -30,6 +30,11 @@ import javax.servlet.ServletContext;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * JavaEE / CDI based implementation of the {@link ContainerManager}
+ *
+ * @author Hendrik Ebbers
+ */
 public class CdiContainerManager implements ContainerManager {
 
     private Map<Object, CreationalContext> contextMap = new HashMap<>();
