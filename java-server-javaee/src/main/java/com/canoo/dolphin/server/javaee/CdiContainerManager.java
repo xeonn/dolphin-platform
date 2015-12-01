@@ -47,6 +47,12 @@ public class CdiContainerManager implements ContainerManager {
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
+        if(controllerClass == null) {
+            throw new IllegalArgumentException("controllerClass must not be null!");
+        }
+        if(modelInjector == null) {
+            throw new IllegalArgumentException("modelInjector must not be null!");
+        }
         BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
         AnnotatedType annotatedType = bm.createAnnotatedType(controllerClass);
         final InjectionTarget<T> injectionTarget = bm.createInjectionTarget(annotatedType);
@@ -67,6 +73,9 @@ public class CdiContainerManager implements ContainerManager {
 
     @Override
     public void destroyController(Object instance, Class controllerClass) {
+        if(instance == null) {
+            throw new IllegalArgumentException("instance must not be null!");
+        }
         Bean bean = beanMap.get(instance);
         CreationalContext context = contextMap.get(instance);
         bean.destroy(instance, context);

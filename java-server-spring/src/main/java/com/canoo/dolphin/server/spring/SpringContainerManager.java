@@ -35,6 +35,9 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public void init(ServletContext servletContext) {
+        if(servletContext == null) {
+            throw new IllegalArgumentException("servletContext must not be null!");
+        }
         WebApplicationContext context = getContext(servletContext);
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
@@ -42,6 +45,12 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
+        if(controllerClass == null) {
+            throw new IllegalArgumentException("controllerClass must not be null!");
+        }
+        if(modelInjector == null) {
+            throw new IllegalArgumentException("modelInjector must not be null!");
+        }
         // SpringBeanAutowiringSupport kann man auch nutzen
         WebApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
@@ -51,6 +60,9 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public void destroyController(Object instance, Class controllerClass) {
+        if(instance == null) {
+            throw new IllegalArgumentException("instance must not be null!");
+        }
         ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }
@@ -61,6 +73,9 @@ public class SpringContainerManager implements ContainerManager {
      * @return the spring context
      */
     private WebApplicationContext getContext(ServletContext servletContext) {
+        if(servletContext == null) {
+            throw new IllegalArgumentException("servletContext must not be null!");
+        }
         return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }
