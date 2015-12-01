@@ -35,12 +35,21 @@ public class SpringModelInjector extends InstantiationAwareBeanPostProcessorAdap
     private static SpringModelInjector instance = new SpringModelInjector();
 
     public void prepair(Class controllerClass, ModelInjector injector) {
+        if(controllerClass == null) {
+            throw new IllegalArgumentException("controllerClass must not be null!");
+        }
+        if(injector == null) {
+            throw new IllegalArgumentException("injector must not be null!");
+        }
         currentControllerClass.set(controllerClass);
         currentModelInjector.set(injector);
     }
 
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        if(bean == null) {
+            throw new IllegalArgumentException("bean must not be null!");
+        }
         Class controllerClass = currentControllerClass.get();
         if (controllerClass != null && controllerClass.isAssignableFrom(bean.getClass())) {
             ModelInjector modelInjector = currentModelInjector.get();
