@@ -54,7 +54,7 @@ public class SpringContainerManager implements ContainerManager {
         // SpringBeanAutowiringSupport kann man auch nutzen
         WebApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-        SpringModelInjector.getInstance().prepair(controllerClass, modelInjector);
+        SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
     }
 

@@ -34,7 +34,7 @@ public class SpringModelInjector extends InstantiationAwareBeanPostProcessorAdap
 
     private static SpringModelInjector instance = new SpringModelInjector();
 
-    public void prepair(Class controllerClass, ModelInjector injector) {
+    public void prepare(Class controllerClass, ModelInjector injector) {
         if(controllerClass == null) {
             throw new IllegalArgumentException("controllerClass must not be null!");
         }
