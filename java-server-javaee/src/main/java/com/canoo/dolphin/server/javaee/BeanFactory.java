@@ -26,6 +26,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 
+/**
+ * Factory that provides all needed Dolphin Platform extensions as CDI beans.
+ *
+ * @author Hendrik Ebbers
+ */
 public class BeanFactory {
 
     @Produces

@@ -23,7 +23,9 @@ import javax.servlet.ServletException;
 import java.util.Set;
 
 /**
- * Created by hendrikebbers on 16.04.15.
+ * The Dolphin Platform Boostrap for a JavaEE based application.
+ *
+ * @author Hendrik Ebbers
  */
 public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializer {
 

@@ -20,40 +20,64 @@ import com.canoo.dolphin.server.container.ModelInjector;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.bean.BeanBuilder;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import java.util.Set;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by hendrikebbers on 14.09.15.
+ * JavaEE / CDI based implementation of the {@link ContainerManager}
+ *
+ * @author Hendrik Ebbers
  */
 public class CdiContainerManager implements ContainerManager {
 
+    private Map<Object, CreationalContext> contextMap = new HashMap<>();
+
+    private Map<Object, Bean> beanMap = new HashMap<>();
+
     @Override
-    public <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector) {
-        try {
-            controllerClass = (Class<T>) Class.forName("com.canoo.dolphin.todo.server.ToDoController");
-            BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
-            //see https://github.com/rmannibucau/cdi-light-config/blob/77603cb364667bad493ad8bd115e3da1564335c0/src/main/java/com/github/rmannibucau/cdi/configuration/LightConfigurationExtension.java
-            final Bean<Object> bean = new BeanBuilder<Object>(bm)
-                    .passivationCapable(true) // you can add some logic it to check it or configure it
-                    .beanClass(controllerClass)
-                    .scope(SessionScoped.class) // can be configurable
-            .create();
-            Class<?> beanClass = bean.getBeanClass();
-            CreationalContext<?> creationalContext = bm.createCreationalContext(bean);
-            return (T) bm.getReference(bean, beanClass, creationalContext);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public void init(ServletContext servletContext) {
     }
 
     @Override
-    public void destroyController(Object instance) {
-        throw new RuntimeException("Not yet implemented");
+    public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
+        if(controllerClass == null) {
+            throw new IllegalArgumentException("controllerClass must not be null!");
+        }
+        if(modelInjector == null) {
+            throw new IllegalArgumentException("modelInjector must not be null!");
+        }
+        BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
+        AnnotatedType annotatedType = bm.createAnnotatedType(controllerClass);
+        final InjectionTarget<T> injectionTarget = bm.createInjectionTarget(annotatedType);
+        final Bean<T> bean = new BeanBuilder<T>(bm)
+                .beanClass(controllerClass)
+                .scope(Dependent.class)
+                .beanLifecycle(new DolphinPlatformContextualLifecycle<T>(injectionTarget, modelInjector))
+                .create();
+        Class<?> beanClass = bean.getBeanClass();
+        CreationalContext<T> creationalContext = bm.createCreationalContext(bean);
+        T instance = (T) bm.getReference(bean, beanClass, creationalContext);
+        contextMap.put(instance, creationalContext);
+        beanMap.put(instance, bean);
+        return instance;
+    }
+
+
+
+    @Override
+    public void destroyController(Object instance, Class controllerClass) {
+        if(instance == null) {
+            throw new IllegalArgumentException("instance must not be null!");
+        }
+        Bean bean = beanMap.get(instance);
+        CreationalContext context = contextMap.get(instance);
+        bean.destroy(instance, context);
     }
 }

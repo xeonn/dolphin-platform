@@ -55,6 +55,8 @@ public class DolphinPlatformBootstrap {
         servletContext.addListener(new DolphinContextCleaner());
 
         ControllerRepository.init();
+
+        DolphinContextHandler.getInstance().init(servletContext);
     }
 
 }

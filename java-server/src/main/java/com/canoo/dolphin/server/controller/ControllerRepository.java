@@ -17,10 +17,10 @@ package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.server.DolphinController;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Created by hendrikebbers on 16.09.15.
@@ -39,7 +39,21 @@ public class ControllerRepository {
             throw new RuntimeException(ControllerRepository.class.getName() + " already initialized");
         }
         controllersClasses = new HashMap<>();
-        Reflections reflections = new Reflections();
+        ConfigurationBuilder configuration = ConfigurationBuilder.build();
+
+        //Remove native libs (will be added on Mac in a Spring Boot app)
+        Set<URL> urls = configuration.getUrls();
+        List<URL> toRemove = new ArrayList<>();
+        for(URL url : urls) {
+            if(url.toString().endsWith(".jnilib")) {
+                toRemove.add(url);
+            }
+        }
+        for(URL url : toRemove) {
+            configuration.getUrls().remove(url);
+        }
+
+        Reflections reflections = new Reflections(configuration);
         Set<Class<?>> foundControllerClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
         for (Class<?> controllerClass : foundControllerClasses) {
             String name = controllerClass.getName();

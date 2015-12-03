@@ -18,62 +18,52 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.context.DolphinContext;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.ServletContext;
 
+/**
+ * SPring specific implementation of the {@link ContainerManager} interface
+ *
+ * @author Hendrik Ebbers
+ */
 public class SpringContainerManager implements ContainerManager {
 
-    private ThreadLocal<ModelInjector> currentModelInjector = new ThreadLocal<>();
-
-    private ThreadLocal<Class> currentControllerClass = new ThreadLocal<>();
-
-    private boolean initialized = false;
-
-    private Lock initLock = new ReentrantLock();
+    @Override
+    public void init(ServletContext servletContext) {
+        if(servletContext == null) {
+            throw new IllegalArgumentException("servletContext must not be null!");
+        }
+        WebApplicationContext context = getContext(servletContext);
+        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
+        beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
+    }
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        ApplicationContext context = getContext();
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
-
-        if (!initialized) {
-            initLock.lock();
-            try {
-                if (!initialized) {
-                    beanFactory.addBeanPostProcessor(new InstantiationAwareBeanPostProcessorAdapter() {
-                        @Override
-                        public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-                            Class controllerClass = currentControllerClass.get();
-                            if(controllerClass != null && controllerClass.isAssignableFrom(bean.getClass())) {
-                                ModelInjector modelInjector = currentModelInjector.get();
-                                if (modelInjector != null) {
-                                    modelInjector.inject(bean);
-                                }
-                            }
-                            return true;
-                        }
-                    });
-                    initialized = true;
-                }
-            } finally {
-                initLock.unlock();
-            }
+        if(controllerClass == null) {
+            throw new IllegalArgumentException("controllerClass must not be null!");
         }
-
-        currentModelInjector.set(modelInjector);
-        currentControllerClass.set(controllerClass);
+        if(modelInjector == null) {
+            throw new IllegalArgumentException("modelInjector must not be null!");
+        }
+        // SpringBeanAutowiringSupport kann man auch nutzen
+        WebApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
+        SpringModelInjector.getInstance().prepair(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
     }
 
     @Override
-    public void destroyController(Object instance) {
-        ApplicationContext context = getContext();
+    public void destroyController(Object instance, Class controllerClass) {
+        if(instance == null) {
+            throw new IllegalArgumentException("instance must not be null!");
+        }
+        ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }
 
@@ -82,7 +72,10 @@ public class SpringContainerManager implements ContainerManager {
      *
      * @return the spring context
      */
-    private ApplicationContext getContext() {
-        return WebApplicationContextUtils.getWebApplicationContext(DolphinContext.getCurrentContext().getServletContext());
+    private WebApplicationContext getContext(ServletContext servletContext) {
+        if(servletContext == null) {
+            throw new IllegalArgumentException("servletContext must not be null!");
+        }
+        return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }
