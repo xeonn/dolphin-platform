@@ -36,4 +36,19 @@ For a JavaFX based client you need to add the following dependency:
 </dependency>
 ```
 
+In addition you can use [our Maven archetype](http://www.guigarage.com/2015/12/dolphin-platform-jumpstart/) to create a complete server-client-project based on Dolphin Platform.
+
 A complete "Getting started" documentation can be found [here](http://www.dolphin-platform.io/documentation/getting-started.html).
+
+## Useful links
+* [Dolphin Platform website](http://www.dolphin-platform.io)
+* [Getting started](http://www.dolphin-platform.io/documentation/getting-started.html)
+* [Tutorial](http://www.dolphin-platform.io/documentation/tutorial.html)
+* [JavaDoc](http://www.dolphin-platform.io/javadoc/index.html)
+* [Dolphin Platform @ Twitter](https://twitter.com/DolphinPlatform)
+* [StackOverflow](http://stackoverflow.com/questions/tagged/dolphin-platform)
+* [Blog Posts](http://www.guigarage.com/2015/10/dolphin-platform-a-sneak-peek/)
+* [JavaScript Github Repo](https://github.com/canoo/dolphin-platform-js)
+* [Polymer Github Repo](https://github.com/canoo/dolphin-platform-polymer)
+* [Spring Boot based Maven archetype](https://github.com/canoo/dolphin-platform-spring-boot-archetype)
+* [KumuluzEE based Maven archetype](https://github.com/canoo/dolphin-platform-kumuluz-archetype)
