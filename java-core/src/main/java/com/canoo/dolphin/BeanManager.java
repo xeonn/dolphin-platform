@@ -124,6 +124,7 @@ public interface BeanManager extends Serializable {
      * @param <T>       the bean type
      * @return a list of all managed beans of the type
      */
+    @Deprecated
     <T> List<T> findAll(Class<T> beanClass);
 
     /**

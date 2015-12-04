@@ -81,6 +81,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
                 // ignore
                 break;
             case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+            case PlatformConstants.CONTROLLER_ACTION_CALL_ERROR_BEAN_NAME:
                 for (final DolphinEventHandler handler : platformBeanAddedHandlers) {
                     handler.onEvent(model);
                 }
@@ -114,6 +115,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
             case PlatformConstants.DOLPHIN_BEAN:
             case PlatformConstants.DOLPHIN_PARAMETER:
             case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+            case PlatformConstants.CONTROLLER_ACTION_CALL_ERROR_BEAN_NAME:
             case PlatformConstants.LIST_ADD:
             case PlatformConstants.LIST_DEL:
             case PlatformConstants.LIST_SET:

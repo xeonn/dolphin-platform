@@ -19,8 +19,13 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.ControllerActionCallBean;
+import com.canoo.dolphin.impl.ControllerActionCallErrorBean;
+import com.canoo.dolphin.impl.ControllerActionCallParamBean;
+import com.canoo.dolphin.impl.ControllerDestroyBean;
+import com.canoo.dolphin.impl.DolphinUtils;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.PlatformBeanRepository;
 import org.opendolphin.StringUtil;
@@ -30,7 +35,6 @@ import org.opendolphin.core.client.comm.OnFinishedHandler;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
@@ -86,8 +90,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             throw new IllegalStateException("The controller was already destroyed");
         }
 
-        final String actionId = UUID.randomUUID().toString();
-
         if (params != null && params.length > 0) {
             for (final Param param : params) {
                 ControllerActionCallParamBean paramBean = context.getBeanManager().create(ControllerActionCallParamBean.class);
@@ -95,7 +97,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
                 final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
                 paramBean.setValue(value);
                 paramBean.setValueType(DolphinUtils.mapFieldTypeToDolphin(type));
-                paramBean.setActionId(actionId);
             }
         }
 
@@ -108,13 +109,12 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new OnFinishedHandler() {
             @Override
             public void onFinished(List<ClientPresentationModel> presentationModels) {
-                List<ControllerActionCallErrorBean> errors = context.getBeanManager().findAll(ControllerActionCallErrorBean.class);
-                if(errors.isEmpty()) {
-                    result.complete(null);
+                final ControllerActionCallErrorBean errorBean = platformBeanRepository.getControllerActionCallErrorBean();
+                if (controllerId.equals(errorBean.getControllerId()) && actionName.equals(errorBean.getActionName())) {
+                    result.completeExceptionally(new ControllerActionException());
                 } else {
-                    result.obtrudeException(new ControllerActionException());
+                    result.complete(null);
                 }
-                context.getBeanManager().removeAll(ControllerActionCallErrorBean.class);
             }
 
             @Override

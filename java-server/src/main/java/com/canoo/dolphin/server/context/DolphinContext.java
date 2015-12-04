@@ -131,7 +131,6 @@ public class DolphinContext {
                         try {
                             onInvokeControllerAction();
                         } catch (Exception e) {
-                            ControllerActionCallErrorBean errorBean = beanManager.create(ControllerActionCallErrorBean.class);
                             String controllerId = null;
                             String actionName = null;
                             try {
@@ -139,7 +138,8 @@ public class DolphinContext {
                                 controllerId = bean.getControllerId();
                                 actionName = bean.getActionName();
                             } finally {
-                                errorBean.setControllerid(controllerId);
+                                final ControllerActionCallErrorBean errorBean = platformBeanRepository.getControllerActionCallErrorBean();
+                                errorBean.setControllerId(controllerId);
                                 errorBean.setActionName(actionName);
                             }
                         }
