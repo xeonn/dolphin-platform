@@ -15,39 +15,51 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
+import org.opendolphin.StringUtil;
+import org.opendolphin.core.Attribute;
+import org.opendolphin.core.PresentationModel;
 
-@DolphinBean(PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME)
 public class ControllerActionCallBean {
 
-    private Property<String> controllerId;
+    private static final String CONTROLLER_ID = "controllerId";
+    private static final String ACTION_NAME = "actionName";
 
-    private Property<String> actionName;
+    private final Attribute controllerId;
+    private final Attribute actionName;
 
-    private Property<String> id;
+    public ControllerActionCallBean(PresentationModelBuilder builder) {
+        this(builder.withType(PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME)
+                .withAttribute(CONTROLLER_ID)
+                .withAttribute(ACTION_NAME)
+                .create()
+        );
+    }
+
+    public ControllerActionCallBean(PresentationModel pm) {
+        controllerId = pm.findAttributeByPropertyName(CONTROLLER_ID);
+        actionName   = pm.findAttributeByPropertyName(ACTION_NAME);
+    }
 
     public String getControllerId() {
-        return controllerId.get();
+        return (String) controllerId.getValue();
     }
 
     public void setControllerId(String controllerId) {
-        this.controllerId.set(controllerId);
+        if (StringUtil.isBlank(controllerId)) {
+            throw new IllegalArgumentException("ControllerId cannot be empty");
+        }
+        this.controllerId.setValue(controllerId);
     }
 
     public String getActionName() {
-        return actionName.get();
+        return (String) actionName.getValue();
     }
 
     public void setActionName(String actionName) {
-        this.actionName.set(actionName);
-    }
-
-    public String getId() {
-        return id.get();
-    }
-
-    public void setId(String id) {
-        this.id.set(id);
+        if (StringUtil.isBlank(actionName)) {
+            throw new IllegalArgumentException("ActionName cannot be empty");
+        }
+        this.actionName.setValue(actionName);
     }
 }

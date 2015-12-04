@@ -26,6 +26,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.PlatformBeanRepository;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
@@ -45,6 +46,8 @@ public class ClientContextImpl implements ClientContext {
 
     private final BeanRepository beanRepository;
 
+    private final PlatformBeanRepository platformBeanRepository;
+
     private volatile boolean destroyed = false;
 
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
@@ -59,6 +62,8 @@ public class ClientContextImpl implements ClientContext {
         final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+        platformBeanRepository = new ClientPlatformBeanRepository(dispatcher);
+
         invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).get();
     }
 
@@ -78,7 +83,7 @@ public class ClientContextImpl implements ClientContext {
             }
             @SuppressWarnings("unchecked")
             final T model = (T) bean.getModel();
-            return new ControllerProxyImpl<>(bean.getControllerId(), model, this, clientDolphin, beanRepository);
+            return new ControllerProxyImpl<>(bean.getControllerId(), model, this, clientDolphin, beanRepository, platformBeanRepository);
         });
     }
 

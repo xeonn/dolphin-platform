@@ -31,6 +31,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private final List<DolphinEventHandler> listElementsAddHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> platformBeanAddedHandlers = new ArrayList<>(1);
 
     public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
@@ -56,6 +57,10 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         listElementsSetHandlers.add(handler);
     }
 
+    public void addPlatformBeanAddedHandler(DolphinEventHandler handler) {
+        platformBeanAddedHandlers.add(handler);
+    }
+
     @Override
     public void modelStoreChanged(ModelStoreEvent event) {
         final PresentationModel model = event.getPresentationModel();
@@ -74,6 +79,11 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
             case PlatformConstants.DOLPHIN_BEAN:
             case PlatformConstants.DOLPHIN_PARAMETER:
                 // ignore
+                break;
+            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+                for (final DolphinEventHandler handler : platformBeanAddedHandlers) {
+                    handler.onEvent(model);
+                }
                 break;
             case PlatformConstants.LIST_ADD:
                 for (final DolphinEventHandler handler : listElementsAddHandlers) {
@@ -103,6 +113,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
             case PlatformConstants.DOLPHIN_PARAMETER:
+            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
             case PlatformConstants.LIST_ADD:
             case PlatformConstants.LIST_DEL:
             case PlatformConstants.LIST_SET:

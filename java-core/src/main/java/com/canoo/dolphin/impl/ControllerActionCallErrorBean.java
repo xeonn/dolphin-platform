@@ -25,8 +25,6 @@ public class ControllerActionCallErrorBean {
 
     private Property<String> actionName;
 
-    private Property<String> actionId;
-
     public String getControllerid() {
         return controllerid.get();
     }
@@ -41,13 +39,5 @@ public class ControllerActionCallErrorBean {
 
     public void setActionName(String actionName) {
         this.actionName.set(actionName);
-    }
-
-    public void setActionId(String actionId) {
-        this.actionId.set(actionId);
-    }
-
-    public String getActionId() {
-        return actionId.get();
     }
 }

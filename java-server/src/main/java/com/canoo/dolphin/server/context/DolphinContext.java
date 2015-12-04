@@ -22,6 +22,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.PlatformBeanRepository;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
@@ -29,6 +30,7 @@ import com.canoo.dolphin.server.controller.InvokeActionException;
 import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
+import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
@@ -56,6 +58,8 @@ public class DolphinContext {
     private final BeanManager beanManager;
 
     private final ControllerHandler controllerHandler;
+
+    private PlatformBeanRepository platformBeanRepository;
 
     private ContainerManager containerManager;
 
@@ -130,16 +134,13 @@ public class DolphinContext {
                             ControllerActionCallErrorBean errorBean = beanManager.create(ControllerActionCallErrorBean.class);
                             String controllerId = null;
                             String actionName = null;
-                            String actionid = null;
                             try {
-                                ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
+                                final ControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
                                 controllerId = bean.getControllerId();
                                 actionName = bean.getActionName();
-                                actionid = bean.getId();
                             } finally {
                                 errorBean.setControllerid(controllerId);
                                 errorBean.setActionName(actionName);
-                                errorBean.setActionId(actionid);
                             }
                         }
                     }
@@ -162,10 +163,11 @@ public class DolphinContext {
                 registry.register(PlatformConstants.INIT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        //New Client
+                        //Init PlatformBeanRepository
+                        final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
+                        platformBeanRepository = new ServerPlatformBeanRepository(builderFactory);
                         beanManager.create(ControllerRegistryBean.class);
                         beanManager.create(ControllerDestroyBean.class);
-                        beanManager.create(ControllerActionCallBean.class);
                     }
                 });
 
@@ -175,7 +177,6 @@ public class DolphinContext {
                         //Disconnect Client
                         beanManager.removeAll(ControllerRegistryBean.class);
                         beanManager.removeAll(ControllerDestroyBean.class);
-                        beanManager.removeAll(ControllerActionCallBean.class);
 
                         //TODO: How to disconnect?
                     }
@@ -200,7 +201,7 @@ public class DolphinContext {
     }
 
     private void onInvokeControllerAction() throws InvokeActionException {
-        ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
+        final ControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
         controllerHandler.invokeAction(bean.getControllerId(), bean.getActionName());
     }
 

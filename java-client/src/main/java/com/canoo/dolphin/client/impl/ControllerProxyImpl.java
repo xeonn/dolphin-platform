@@ -22,6 +22,7 @@ import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.ControllerActionCallBean;
 import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.PlatformBeanRepository;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
@@ -44,11 +45,13 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final ClientDolphin dolphin;
 
+    private final PlatformBeanRepository platformBeanRepository;
+
     private T model;
 
     private volatile boolean destroyed = false;
 
-    public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, BeanRepository beanRepository) {
+    public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, BeanRepository beanRepository, PlatformBeanRepository platformBeanRepository) {
         if (StringUtil.isBlank(controllerId)) {
             throw new NullPointerException("controllerId must not be null");
         }
@@ -61,11 +64,15 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         if (beanRepository == null) {
             throw new NullPointerException("beanRepository must not be null");
         }
+        if (platformBeanRepository == null) {
+            throw new NullPointerException("platformBeanRepository must not be null");
+        }
         this.beanRepository = beanRepository;
         this.dolphin = dolphin;
         this.controllerId = controllerId;
         this.model = model;
         this.context = context;
+        this.platformBeanRepository = platformBeanRepository;
     }
 
     @Override
@@ -92,10 +99,9 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             }
         }
 
-        ControllerActionCallBean bean = context.getBeanManager().findAll(ControllerActionCallBean.class).get(0);
+        final ControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
         bean.setControllerId(controllerId);
         bean.setActionName(actionName);
-        bean.setId(actionId);
 
 
         final CompletableFuture<Void> result = new CompletableFuture<>();
