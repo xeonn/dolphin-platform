@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.internal;
+package com.canoo.dolphin.impl;
 
-import org.opendolphin.core.PresentationModel;
+public abstract class AbstractControllerActionCallBean {
 
-public interface DolphinEventHandler {
+    protected static final String CONTROLLER_ID = "controllerId";
+    protected static final String ACTION_NAME = "actionName";
+    protected static final String ERROR_CODE = "errorCode";
+    protected static final String PARAM_PREFIX = "_";
 
-    void onEvent(PresentationModel model);
 }

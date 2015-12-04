@@ -30,4 +30,6 @@ public interface EventDispatcher extends ModelStoreListener {
     void addListElementSetHandler(DolphinEventHandler handler);
 
     void addPlatformBeanAddedHandler(DolphinEventHandler handler);
+
+    void addPlatformBeanRemovedHandler(DolphinEventHandler handler);
 }

@@ -16,25 +16,23 @@
 package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
-import org.opendolphin.core.Attribute;
-import org.opendolphin.core.Tag;
-import org.opendolphin.core.server.ServerDolphin;
-import org.opendolphin.core.server.ServerPresentationModel;
+import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ControllerHandler {
 
@@ -46,21 +44,11 @@ public class ControllerHandler {
 
     private final ContainerManager containerManager;
 
-    private final BeanRepository beanRepository;
-
     private final BeanManager beanManager;
 
-    private final ServerDolphin dolphin;
-
-    public ControllerHandler(ServerDolphin dolphin, ContainerManager containerManager, BeanRepository beanRepository, BeanManager beanManager) {
-        this.dolphin = dolphin;
+    public ControllerHandler(ContainerManager containerManager, BeanManager beanManager) {
         this.containerManager = containerManager;
-        this.beanRepository = beanRepository;
         this.beanManager = beanManager;
-    }
-
-    public Object getController(String id) {
-        return controllers.get(id);
     }
 
     public Object getControllerModel(String id) {
@@ -99,23 +87,30 @@ public class ControllerHandler {
 
         if (modelField != null) {
             Object model = beanManager.create(modelField.getType());
-            setPrivileged(modelField, controller, model);
+            ReflectionHelper.setPrivileged(modelField, controller, model);
             models.put(controllerId, model);
         }
     }
 
-    public void invokeAction(String controllerId, String actionName) throws InvokeActionException {
+    public void invokeAction(ServerControllerActionCallBean bean) throws InvokeActionException {
         try {
-            Object controller = controllers.get(controllerId);
-            Class controllerClass = controllerClassMapping.get(controllerId);
-            Method actionMethod = getActionMethod(controller, controllerClass, actionName);
-            List<String> paramNames = getParamNames(actionMethod);
-            invokeMethodWithParams(controller, actionMethod, paramNames, dolphin);
+            final Object controller = controllers.get(bean.getControllerId());
+            final Class controllerClass = controllerClassMapping.get(bean.getControllerId());
+            final Method actionMethod = getActionMethod(controller, controllerClass, bean.getActionName());
+            final List<String> paramNames = getParamNames(actionMethod);
+            final List<Object> args = getArgs(bean, paramNames);
+            ReflectionHelper.invokePrivileged(actionMethod, controller, args.toArray());
         } catch (Exception e) {
             throw new InvokeActionException(e);
-        } finally {
-            beanManager.removeAll(ControllerActionCallParamBean.class);
         }
+    }
+
+    private List<Object> getArgs(ServerControllerActionCallBean bean, List<String> paramNames) {
+        final List<Object> args = new ArrayList<>(paramNames.size());
+        for (final String paramName : paramNames) {
+            args.add(bean.getParam(paramName));
+        }
+        return args;
     }
 
     public void destroyController(String id) {
@@ -150,11 +145,6 @@ public class ControllerHandler {
         return foundMethod;
     }
 
-    private void invokeMethodWithParams(Object instance, Method method, List<String> paramNames, ServerDolphin dolphin) throws InvocationTargetException, IllegalAccessException {
-        Object[] args = getParam(dolphin, paramNames);
-        ReflectionHelper.invokePrivileged(method, instance, args);
-    }
-
     private List<String> getParamNames(Method method) {
         final List<String> paramNames = new ArrayList<>();
 
@@ -171,25 +161,6 @@ public class ControllerHandler {
             paramNames.add(paramName);
         }
         return paramNames;
-    }
-
-    private Object[] getParam(ServerDolphin dolphin, List<String> names) {
-        final List<Object> result = new ArrayList<>();
-        final List<ServerPresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_PARAMETER);
-        if (!presentationModels.isEmpty()) {
-            final ServerPresentationModel parameterModel = presentationModels.get(0);
-            for (final String name : names) {
-                final Attribute valueAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE);
-                final Attribute typeAttribute = parameterModel.findAttributeByPropertyNameAndTag(name, Tag.VALUE_TYPE);
-                if (valueAttribute == null || typeAttribute == null) {
-                    throw new IllegalArgumentException(String.format("Invoking DolphinAction requires parameter '%s', but it was not send", name));
-                }
-                final ClassRepositoryImpl.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(typeAttribute.getValue());
-                result.add(beanRepository.mapDolphinToObject(valueAttribute.getValue(), fieldType));
-            }
-            dolphin.removeAllPresentationModelsOfType(PlatformConstants.DOLPHIN_PARAMETER);
-        }
-        return result.toArray(new Object[result.size()]);
     }
 
     private List<Field> getInheritedDeclaredFields(Class<?> type) {
@@ -210,26 +181,6 @@ public class ControllerHandler {
             i = i.getSuperclass();
         }
         return result;
-    }
-
-    private void setPrivileged(final Field field, final Object bean,
-                               final Object value) {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            @Override
-            public Void run() {
-                boolean wasAccessible = field.isAccessible();
-                try {
-                    field.setAccessible(true);
-                    field.set(bean, value);
-                    return null; // return nothing...
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    throw new IllegalStateException("Cannot set field: "
-                            + field, ex);
-                } finally {
-                    field.setAccessible(wasAccessible);
-                }
-            }
-        });
     }
 
     @SuppressWarnings("unchecked")

@@ -32,32 +32,44 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> platformBeanAddedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> platformBeanRemovedHandlers = new ArrayList<>(1);
 
     public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
     }
 
+    @Override
     public void addAddedHandler(DolphinEventHandler handler) {
         modelAddedHandlers.add(handler);
     }
 
+    @Override
     public void addRemovedHandler(DolphinEventHandler handler) {
         modelRemovedHandlers.add(handler);
     }
 
+    @Override
     public void addListElementAddHandler(DolphinEventHandler handler) {
         listElementsAddHandlers.add(handler);
     }
 
+    @Override
     public void addListElementDelHandler(DolphinEventHandler handler) {
         listElementsDelHandlers.add(handler);
     }
 
+    @Override
     public void addListElementSetHandler(DolphinEventHandler handler) {
         listElementsSetHandlers.add(handler);
     }
 
+    @Override
     public void addPlatformBeanAddedHandler(DolphinEventHandler handler) {
+        platformBeanAddedHandlers.add(handler);
+    }
+
+    @Override
+    public void addPlatformBeanRemovedHandler(DolphinEventHandler handler) {
         platformBeanAddedHandlers.add(handler);
     }
 
@@ -77,11 +89,9 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
-            case PlatformConstants.DOLPHIN_PARAMETER:
                 // ignore
                 break;
             case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
-            case PlatformConstants.CONTROLLER_ACTION_CALL_ERROR_BEAN_NAME:
                 for (final DolphinEventHandler handler : platformBeanAddedHandlers) {
                     handler.onEvent(model);
                 }
@@ -113,13 +123,15 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
-            case PlatformConstants.DOLPHIN_PARAMETER:
-            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
-            case PlatformConstants.CONTROLLER_ACTION_CALL_ERROR_BEAN_NAME:
             case PlatformConstants.LIST_ADD:
             case PlatformConstants.LIST_DEL:
             case PlatformConstants.LIST_SET:
                 // ignore
+                break;
+            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+                for (final DolphinEventHandler handler : platformBeanRemovedHandlers) {
+                    handler.onEvent(model);
+                }
                 break;
             default:
                 for (final DolphinEventHandler handler : modelRemovedHandlers) {

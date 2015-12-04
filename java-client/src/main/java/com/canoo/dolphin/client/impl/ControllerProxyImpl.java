@@ -19,15 +19,8 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.ControllerActionCallBean;
-import com.canoo.dolphin.impl.ControllerActionCallErrorBean;
-import com.canoo.dolphin.impl.ControllerActionCallParamBean;
 import com.canoo.dolphin.impl.ControllerDestroyBean;
-import com.canoo.dolphin.impl.DolphinUtils;
 import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.internal.BeanRepository;
-import com.canoo.dolphin.internal.PlatformBeanRepository;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
@@ -37,25 +30,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
-
 public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final String controllerId;
 
     private final ClientContext context;
 
-    private final BeanRepository beanRepository;
-
     private final ClientDolphin dolphin;
 
-    private final PlatformBeanRepository platformBeanRepository;
+    private final ClientPlatformBeanRepository platformBeanRepository;
 
     private T model;
 
     private volatile boolean destroyed = false;
 
-    public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, BeanRepository beanRepository, PlatformBeanRepository platformBeanRepository) {
+    public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository) {
         if (StringUtil.isBlank(controllerId)) {
             throw new NullPointerException("controllerId must not be null");
         }
@@ -65,13 +54,9 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         if (context == null) {
             throw new NullPointerException("context must not be null");
         }
-        if (beanRepository == null) {
-            throw new NullPointerException("beanRepository must not be null");
-        }
         if (platformBeanRepository == null) {
             throw new NullPointerException("platformBeanRepository must not be null");
         }
-        this.beanRepository = beanRepository;
         this.dolphin = dolphin;
         this.controllerId = controllerId;
         this.model = model;
@@ -90,31 +75,19 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             throw new IllegalStateException("The controller was already destroyed");
         }
 
-        if (params != null && params.length > 0) {
-            for (final Param param : params) {
-                ControllerActionCallParamBean paramBean = context.getBeanManager().create(ControllerActionCallParamBean.class);
-                final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(param.getValue());
-                final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
-                paramBean.setValue(value);
-                paramBean.setValueType(DolphinUtils.mapFieldTypeToDolphin(type));
-            }
-        }
-
-        final ControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
-        bean.setControllerId(controllerId);
-        bean.setActionName(actionName);
+        final ClientControllerActionCallBean bean = platformBeanRepository.createControllerActionCallBean(controllerId, actionName, params);
 
 
         final CompletableFuture<Void> result = new CompletableFuture<>();
         dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new OnFinishedHandler() {
             @Override
             public void onFinished(List<ClientPresentationModel> presentationModels) {
-                final ControllerActionCallErrorBean errorBean = platformBeanRepository.getControllerActionCallErrorBean();
-                if (controllerId.equals(errorBean.getControllerId()) && actionName.equals(errorBean.getActionName())) {
+                if (bean.isError()) {
                     result.completeExceptionally(new ControllerActionException());
                 } else {
                     result.complete(null);
                 }
+                bean.unregister();
             }
 
             @Override
