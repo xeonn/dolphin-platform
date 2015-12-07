@@ -19,7 +19,7 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.ControllerDestroyBean;
+import com.canoo.dolphin.impl.HighlanderBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
@@ -104,7 +104,8 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             throw new IllegalStateException("The controller was already destroyed");
         }
         destroyed = true;
-        ControllerDestroyBean bean = context.getBeanManager().findAll(ControllerDestroyBean.class).get(0);
+
+        final HighlanderBean bean = platformBeanRepository.getHighlanderBean();
         bean.setControllerId(controllerId);
 
         final CompletableFuture<Void> ret = new CompletableFuture<>();

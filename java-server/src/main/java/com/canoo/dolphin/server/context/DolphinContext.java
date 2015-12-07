@@ -20,8 +20,7 @@ import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.ControllerDestroyBean;
-import com.canoo.dolphin.impl.ControllerRegistryBean;
+import com.canoo.dolphin.impl.HighlanderBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
@@ -164,9 +163,7 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //Init PlatformBeanRepository
-                        platformBeanRepository = new ServerPlatformBeanRepository(beanRepository, dispatcher);
-                        beanManager.create(ControllerRegistryBean.class);
-                        beanManager.create(ControllerDestroyBean.class);
+                        platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher);
                     }
                 });
 
@@ -174,9 +171,6 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //Disconnect Client
-                        beanManager.removeAll(ControllerRegistryBean.class);
-                        beanManager.removeAll(ControllerDestroyBean.class);
-
                         //TODO: How to disconnect?
                     }
                 });
@@ -185,7 +179,7 @@ public class DolphinContext {
     }
 
     private void onRegisterController() {
-        ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
+        final HighlanderBean bean = platformBeanRepository.getHighlanderBean();
         String controllerId = controllerHandler.createController(bean.getControllerName());
         bean.setControllerId(controllerId);
         Object model = controllerHandler.getControllerModel(controllerId);
@@ -195,7 +189,7 @@ public class DolphinContext {
     }
 
     private void onDestroyController() {
-        ControllerDestroyBean bean = beanManager.findAll(ControllerDestroyBean.class).get(0);
+        final HighlanderBean bean = platformBeanRepository.getHighlanderBean();
         controllerHandler.destroyController(bean.getControllerId());
     }
 

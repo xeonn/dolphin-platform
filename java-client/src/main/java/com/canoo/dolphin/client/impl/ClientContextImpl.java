@@ -21,7 +21,7 @@ import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.ControllerRegistryBean;
+import com.canoo.dolphin.impl.HighlanderBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
@@ -75,7 +75,7 @@ public class ClientContextImpl implements ClientContext {
         if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
-        final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
+        final HighlanderBean bean = platformBeanRepository.getHighlanderBean();
         bean.setControllerName(name);
         return invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
             if (e != null) {

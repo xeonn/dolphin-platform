@@ -29,7 +29,9 @@ public interface EventDispatcher extends ModelStoreListener {
 
     void addListElementSetHandler(DolphinEventHandler handler);
 
-    void addPlatformBeanAddedHandler(DolphinEventHandler handler);
+    void addControllerActionCallBeanAddedHandler(DolphinEventHandler handler);
 
-    void addPlatformBeanRemovedHandler(DolphinEventHandler handler);
+    void addControllerActionCallBeanRemovedHandler(DolphinEventHandler handler);
+
+    void onceHighlanderBeanAddedHandler(DolphinEventHandler handler);
 }

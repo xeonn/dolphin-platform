@@ -1,17 +1,21 @@
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.impl.HighlanderBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.DolphinEventHandler;
 import com.canoo.dolphin.internal.EventDispatcher;
 import org.opendolphin.core.PresentationModel;
+import org.opendolphin.core.server.ServerDolphin;
 
 public class ServerPlatformBeanRepository {
 
     private ServerControllerActionCallBean controllerActionCallBean;
 
-    public ServerPlatformBeanRepository(final BeanRepository beanRepository, EventDispatcher dispatcher) {
-        dispatcher.addPlatformBeanAddedHandler(new DolphinEventHandler() {
+    private final HighlanderBean highlanderBean;
+
+    public ServerPlatformBeanRepository(ServerDolphin dolphin, final BeanRepository beanRepository, EventDispatcher dispatcher) {
+        dispatcher.addControllerActionCallBeanAddedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {
                 final String type = model.getPresentationModelType();
@@ -23,7 +27,7 @@ public class ServerPlatformBeanRepository {
             }
         });
 
-        dispatcher.addPlatformBeanRemovedHandler(new DolphinEventHandler() {
+        dispatcher.addControllerActionCallBeanRemovedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {
                 final String type = model.getPresentationModelType();
@@ -34,9 +38,15 @@ public class ServerPlatformBeanRepository {
                 }
             }
         });
+
+        highlanderBean = new HighlanderBean(beanRepository, new ServerPresentationModelBuilder(dolphin));
     }
 
     public ServerControllerActionCallBean getControllerActionCallBean() {
         return controllerActionCallBean;
+    }
+
+    public HighlanderBean getHighlanderBean() {
+        return highlanderBean;
     }
 }

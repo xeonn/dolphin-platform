@@ -31,8 +31,9 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private final List<DolphinEventHandler> listElementsAddHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
-    private final List<DolphinEventHandler> platformBeanAddedHandlers = new ArrayList<>(1);
-    private final List<DolphinEventHandler> platformBeanRemovedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> controllerActionCallBeanAddedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> controllerActionCallBeanRemovedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> highlanderBeanAddedHandlers = new ArrayList<>(1);
 
     public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
@@ -64,13 +65,18 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     @Override
-    public void addPlatformBeanAddedHandler(DolphinEventHandler handler) {
-        platformBeanAddedHandlers.add(handler);
+    public void addControllerActionCallBeanAddedHandler(DolphinEventHandler handler) {
+        controllerActionCallBeanAddedHandlers.add(handler);
     }
 
     @Override
-    public void addPlatformBeanRemovedHandler(DolphinEventHandler handler) {
-        platformBeanAddedHandlers.add(handler);
+    public void addControllerActionCallBeanRemovedHandler(DolphinEventHandler handler) {
+        controllerActionCallBeanRemovedHandlers.add(handler);
+    }
+
+    @Override
+    public void onceHighlanderBeanAddedHandler(DolphinEventHandler handler) {
+        highlanderBeanAddedHandlers.add(handler);
     }
 
     @Override
@@ -92,9 +98,15 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
                 // ignore
                 break;
             case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
-                for (final DolphinEventHandler handler : platformBeanAddedHandlers) {
+                for (final DolphinEventHandler handler : controllerActionCallBeanAddedHandlers) {
                     handler.onEvent(model);
                 }
+                break;
+            case PlatformConstants.HIGHLANDER_BEAN_NAME:
+                for (final DolphinEventHandler handler : highlanderBeanAddedHandlers) {
+                    handler.onEvent(model);
+                }
+                highlanderBeanAddedHandlers.clear();
                 break;
             case PlatformConstants.LIST_ADD:
                 for (final DolphinEventHandler handler : listElementsAddHandlers) {
@@ -126,10 +138,11 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
             case PlatformConstants.LIST_ADD:
             case PlatformConstants.LIST_DEL:
             case PlatformConstants.LIST_SET:
+            case PlatformConstants.HIGHLANDER_BEAN_NAME:
                 // ignore
                 break;
             case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
-                for (final DolphinEventHandler handler : platformBeanRemovedHandlers) {
+                for (final DolphinEventHandler handler : controllerActionCallBeanRemovedHandlers) {
                     handler.onEvent(model);
                 }
                 break;
