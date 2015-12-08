@@ -83,7 +83,7 @@ public class ClientContextImpl implements ClientContext {
             }
             @SuppressWarnings("unchecked")
             final T model = (T) bean.getModel();
-            return new ControllerProxyImpl<>(bean.getControllerId(), model, this, clientDolphin, platformBeanRepository);
+            return new ControllerProxyImpl<>(bean.getControllerId(), model, clientDolphin, platformBeanRepository);
         });
     }
 

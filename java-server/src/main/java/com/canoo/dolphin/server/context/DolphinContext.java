@@ -47,6 +47,8 @@ import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +58,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class DolphinContext {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
     private final DefaultServerDolphin dolphin;
 
@@ -140,6 +144,8 @@ public class DolphinContext {
                         try {
                             onInvokeControllerAction(bean);
                         } catch (Exception e) {
+                            LOG.error("Unexpected exception while invoking action {} on controller {}",
+                                    bean.getActionName(), bean.getControllerId(), e);
                             bean.setError(true);
                         }
                     }

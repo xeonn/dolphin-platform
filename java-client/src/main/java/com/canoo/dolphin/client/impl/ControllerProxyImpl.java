@@ -15,7 +15,6 @@
  */
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
@@ -34,8 +33,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final String controllerId;
 
-    private final ClientContext context;
-
     private final ClientDolphin dolphin;
 
     private final ClientPlatformBeanRepository platformBeanRepository;
@@ -44,15 +41,12 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private volatile boolean destroyed = false;
 
-    public ControllerProxyImpl(String controllerId, T model, ClientContext context, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository) {
+    public ControllerProxyImpl(String controllerId, T model, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository) {
         if (StringUtil.isBlank(controllerId)) {
             throw new NullPointerException("controllerId must not be null");
         }
         if (dolphin == null) {
             throw new NullPointerException("dolphin must not be null");
-        }
-        if (context == null) {
-            throw new NullPointerException("context must not be null");
         }
         if (platformBeanRepository == null) {
             throw new NullPointerException("platformBeanRepository must not be null");
@@ -60,7 +54,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         this.dolphin = dolphin;
         this.controllerId = controllerId;
         this.model = model;
-        this.context = context;
         this.platformBeanRepository = platformBeanRepository;
     }
 

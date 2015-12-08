@@ -40,7 +40,8 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
         final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin);
         builder.withType(PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME)
                 .withAttribute(CONTROLLER_ID, controllerId)
-                .withAttribute(ACTION_NAME, actionName);
+                .withAttribute(ACTION_NAME, actionName)
+                .withAttribute(ERROR_CODE);
 
         for (final Param param : params) {
             final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(param.getValue());
