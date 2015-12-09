@@ -5,7 +5,7 @@ import com.canoo.dolphin.internal.PresentationModelBuilder;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
-public class HighlanderBean {
+public class InternalAttributesBean {
 
     private static final String CONTROLLER_NAME = "controllerName";
     private static final String CONTROLLER_ID = "controllerId";
@@ -16,17 +16,17 @@ public class HighlanderBean {
     private final Attribute controllerId;
     private final Attribute model;
 
-    public HighlanderBean(BeanRepository beanRepository, PresentationModel pm) {
+    public InternalAttributesBean(BeanRepository beanRepository, PresentationModel pm) {
         this.beanRepository = beanRepository;
         controllerName = pm.findAttributeByPropertyName(CONTROLLER_NAME);
         controllerId = pm.findAttributeByPropertyName(CONTROLLER_ID);
         model = pm.findAttributeByPropertyName(MODEL);
     }
 
-    public HighlanderBean(BeanRepository beanRepository, PresentationModelBuilder builder) {
+    public InternalAttributesBean(BeanRepository beanRepository, PresentationModelBuilder builder) {
         this(
             beanRepository,
-            builder.withType(PlatformConstants.HIGHLANDER_BEAN_NAME)
+            builder.withType(PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME)
                 .withAttribute(CONTROLLER_NAME)
                 .withAttribute(CONTROLLER_ID)
                 .withAttribute(MODEL)

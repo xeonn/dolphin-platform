@@ -18,7 +18,7 @@ package com.canoo.dolphin.client.impl;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.HighlanderBean;
+import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
@@ -98,7 +98,7 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         }
         destroyed = true;
 
-        final HighlanderBean bean = platformBeanRepository.getHighlanderBean();
+        final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         bean.setControllerId(controllerId);
 
         final CompletableFuture<Void> ret = new CompletableFuture<>();

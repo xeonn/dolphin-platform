@@ -1,6 +1,6 @@
 package com.canoo.dolphin.server.impl;
 
-import com.canoo.dolphin.impl.HighlanderBean;
+import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.DolphinEventHandler;
@@ -12,7 +12,7 @@ public class ServerPlatformBeanRepository {
 
     private ServerControllerActionCallBean controllerActionCallBean;
 
-    private final HighlanderBean highlanderBean;
+    private final InternalAttributesBean internalAttributesBean;
 
     public ServerPlatformBeanRepository(ServerDolphin dolphin, final BeanRepository beanRepository, EventDispatcher dispatcher) {
         dispatcher.addControllerActionCallBeanAddedHandler(new DolphinEventHandler() {
@@ -39,14 +39,14 @@ public class ServerPlatformBeanRepository {
             }
         });
 
-        highlanderBean = new HighlanderBean(beanRepository, new ServerPresentationModelBuilder(dolphin));
+        internalAttributesBean = new InternalAttributesBean(beanRepository, new ServerPresentationModelBuilder(dolphin));
     }
 
     public ServerControllerActionCallBean getControllerActionCallBean() {
         return controllerActionCallBean;
     }
 
-    public HighlanderBean getHighlanderBean() {
-        return highlanderBean;
+    public InternalAttributesBean getInternalAttributesBean() {
+        return internalAttributesBean;
     }
 }

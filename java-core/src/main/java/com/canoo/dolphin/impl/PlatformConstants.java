@@ -47,5 +47,5 @@ public interface PlatformConstants {
     String LIST_SET = "@@@ LIST_SET @@@";
 
     String CONTROLLER_ACTION_CALL_BEAN_NAME = "@@@ CONTROLLER_ACTION_CALL_BEAN @@@";
-    String HIGHLANDER_BEAN_NAME = "@@@ HIGHLANDER_BEAN @@@";
+    String INTERNAL_ATTRIBUTES_BEAN_NAME = "@@@ HIGHLANDER_BEAN @@@";
 }

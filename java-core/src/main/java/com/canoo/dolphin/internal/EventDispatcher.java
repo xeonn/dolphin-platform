@@ -33,5 +33,5 @@ public interface EventDispatcher extends ModelStoreListener {
 
     void addControllerActionCallBeanRemovedHandler(DolphinEventHandler handler);
 
-    void onceHighlanderBeanAddedHandler(DolphinEventHandler handler);
+    void onceInternalAttributesBeanAddedHandler(DolphinEventHandler handler);
 }
