@@ -31,29 +31,52 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     private final List<DolphinEventHandler> listElementsAddHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> controllerActionCallBeanAddedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> controllerActionCallBeanRemovedHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> internalAttributesBeanAddedHandlers = new ArrayList<>(1);
 
     public EventDispatcherImpl(Dolphin dolphin) {
         dolphin.addModelStoreListener(this);
     }
 
+    @Override
     public void addAddedHandler(DolphinEventHandler handler) {
         modelAddedHandlers.add(handler);
     }
 
+    @Override
     public void addRemovedHandler(DolphinEventHandler handler) {
         modelRemovedHandlers.add(handler);
     }
 
+    @Override
     public void addListElementAddHandler(DolphinEventHandler handler) {
         listElementsAddHandlers.add(handler);
     }
 
+    @Override
     public void addListElementDelHandler(DolphinEventHandler handler) {
         listElementsDelHandlers.add(handler);
     }
 
+    @Override
     public void addListElementSetHandler(DolphinEventHandler handler) {
         listElementsSetHandlers.add(handler);
+    }
+
+    @Override
+    public void addControllerActionCallBeanAddedHandler(DolphinEventHandler handler) {
+        controllerActionCallBeanAddedHandlers.add(handler);
+    }
+
+    @Override
+    public void addControllerActionCallBeanRemovedHandler(DolphinEventHandler handler) {
+        controllerActionCallBeanRemovedHandlers.add(handler);
+    }
+
+    @Override
+    public void onceInternalAttributesBeanAddedHandler(DolphinEventHandler handler) {
+        internalAttributesBeanAddedHandlers.add(handler);
     }
 
     @Override
@@ -72,8 +95,18 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
-            case PlatformConstants.DOLPHIN_PARAMETER:
                 // ignore
+                break;
+            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+                for (final DolphinEventHandler handler : controllerActionCallBeanAddedHandlers) {
+                    handler.onEvent(model);
+                }
+                break;
+            case PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME:
+                for (final DolphinEventHandler handler : internalAttributesBeanAddedHandlers) {
+                    handler.onEvent(model);
+                }
+                internalAttributesBeanAddedHandlers.clear();
                 break;
             case PlatformConstants.LIST_ADD:
                 for (final DolphinEventHandler handler : listElementsAddHandlers) {
@@ -102,11 +135,16 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
-            case PlatformConstants.DOLPHIN_PARAMETER:
             case PlatformConstants.LIST_ADD:
             case PlatformConstants.LIST_DEL:
             case PlatformConstants.LIST_SET:
+            case PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME:
                 // ignore
+                break;
+            case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
+                for (final DolphinEventHandler handler : controllerActionCallBeanRemovedHandlers) {
+                    handler.onEvent(model);
+                }
                 break;
             default:
                 for (final DolphinEventHandler handler : modelRemovedHandlers) {

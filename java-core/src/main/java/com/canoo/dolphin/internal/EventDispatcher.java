@@ -17,9 +17,6 @@ package com.canoo.dolphin.internal;
 
 import org.opendolphin.core.ModelStoreListener;
 
-/**
- * Created by hendrikebbers on 25.09.15.
- */
 public interface EventDispatcher extends ModelStoreListener {
 
     void addAddedHandler(DolphinEventHandler handler);
@@ -31,4 +28,10 @@ public interface EventDispatcher extends ModelStoreListener {
     void addListElementDelHandler(DolphinEventHandler handler);
 
     void addListElementSetHandler(DolphinEventHandler handler);
+
+    void addControllerActionCallBeanAddedHandler(DolphinEventHandler handler);
+
+    void addControllerActionCallBeanRemovedHandler(DolphinEventHandler handler);
+
+    void onceInternalAttributesBeanAddedHandler(DolphinEventHandler handler);
 }

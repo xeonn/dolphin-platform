@@ -16,7 +16,13 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.BeanBuilderImpl;
+import com.canoo.dolphin.impl.BeanManagerImpl;
+import com.canoo.dolphin.impl.BeanRepositoryImpl;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.InternalAttributesBean;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -28,7 +34,9 @@ import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.InvokeActionException;
 import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
+import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
@@ -39,6 +47,8 @@ import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +59,8 @@ import java.util.UUID;
 
 public class DolphinContext {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
+
     private final DefaultServerDolphin dolphin;
 
     private final BeanRepository beanRepository;
@@ -56,6 +68,10 @@ public class DolphinContext {
     private final BeanManager beanManager;
 
     private final ControllerHandler controllerHandler;
+
+    private final EventDispatcher dispatcher;
+
+    private ServerPlatformBeanRepository platformBeanRepository;
 
     private ContainerManager containerManager;
 
@@ -81,7 +97,7 @@ public class DolphinContext {
         dolphin.registerDefaultActions();
 
         //Init BeanRepository
-        final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
+        dispatcher = new ServerEventDispatcher(dolphin);
         beanRepository = new BeanRepositoryImpl(dolphin, dispatcher);
 
         //Init BeanManager
@@ -92,7 +108,7 @@ public class DolphinContext {
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         //Init ControllerHandler
-        controllerHandler = new ControllerHandler(dolphin, containerManager, beanRepository, beanManager);
+        controllerHandler = new ControllerHandler(containerManager, beanManager);
 
         //Init TaskExecutor
         taskExecutor = new DolphinContextTaskExecutor();
@@ -124,23 +140,16 @@ public class DolphinContext {
                 registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        if (platformBeanRepository == null) {
+                            throw new IllegalStateException("An action was called before the init-command was sent.");
+                        }
+                        final ServerControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
                         try {
-                            onInvokeControllerAction();
+                            onInvokeControllerAction(bean);
                         } catch (Exception e) {
-                            ControllerActionCallErrorBean errorBean = beanManager.create(ControllerActionCallErrorBean.class);
-                            String controllerId = null;
-                            String actionName = null;
-                            String actionid = null;
-                            try {
-                                ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-                                controllerId = bean.getControllerId();
-                                actionName = bean.getActionName();
-                                actionid = bean.getId();
-                            } finally {
-                                errorBean.setControllerid(controllerId);
-                                errorBean.setActionName(actionName);
-                                errorBean.setActionId(actionid);
-                            }
+                            LOG.error("Unexpected exception while invoking action {} on controller {}",
+                                    bean.getActionName(), bean.getControllerId(), e);
+                            bean.setError(true);
                         }
                     }
                 });
@@ -162,10 +171,8 @@ public class DolphinContext {
                 registry.register(PlatformConstants.INIT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        //New Client
-                        beanManager.create(ControllerRegistryBean.class);
-                        beanManager.create(ControllerDestroyBean.class);
-                        beanManager.create(ControllerActionCallBean.class);
+                        //Init PlatformBeanRepository
+                        platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher);
                     }
                 });
 
@@ -173,10 +180,6 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         //Disconnect Client
-                        beanManager.removeAll(ControllerRegistryBean.class);
-                        beanManager.removeAll(ControllerDestroyBean.class);
-                        beanManager.removeAll(ControllerActionCallBean.class);
-
                         //TODO: How to disconnect?
                     }
                 });
@@ -185,7 +188,7 @@ public class DolphinContext {
     }
 
     private void onRegisterController() {
-        ControllerRegistryBean bean = beanManager.findAll(ControllerRegistryBean.class).get(0);
+        final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         String controllerId = controllerHandler.createController(bean.getControllerName());
         bean.setControllerId(controllerId);
         Object model = controllerHandler.getControllerModel(controllerId);
@@ -195,13 +198,12 @@ public class DolphinContext {
     }
 
     private void onDestroyController() {
-        ControllerDestroyBean bean = beanManager.findAll(ControllerDestroyBean.class).get(0);
+        final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         controllerHandler.destroyController(bean.getControllerId());
     }
 
-    private void onInvokeControllerAction() throws InvokeActionException {
-        ControllerActionCallBean bean = beanManager.findAll(ControllerActionCallBean.class).get(0);
-        controllerHandler.invokeAction(bean.getControllerId(), bean.getActionName());
+    private void onInvokeControllerAction(ServerControllerActionCallBean bean) throws InvokeActionException {
+        controllerHandler.invokeAction(bean);
     }
 
     private void onPollEventBus() {
@@ -258,7 +260,7 @@ public class DolphinContext {
 
         //copied from DolphinServlet
         StringBuilder requestJson = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = req.getReader().readLine()) != null) {
             requestJson.append(line).append("\n");
         }

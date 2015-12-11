@@ -15,19 +15,11 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.Property;
+public abstract class AbstractControllerActionCallBean {
 
-@DolphinBean(PlatformConstants.CONTROLLER_DESTROY_BEAN_NAME)
-public class ControllerDestroyBean {
+    protected static final String CONTROLLER_ID = "controllerId";
+    protected static final String ACTION_NAME = "actionName";
+    protected static final String ERROR_CODE = "errorCode";
+    protected static final String PARAM_PREFIX = "_";
 
-    private Property<String> controllerId;
-
-    public String getControllerId() {
-        return controllerId.get();
-    }
-
-    public void setControllerId(String controllerId) {
-        this.controllerId.set(controllerId);
-    }
 }

@@ -15,13 +15,16 @@
  */
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.client.ClientBeanManager;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerProxy;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.BeanBuilderImpl;
+import com.canoo.dolphin.impl.BeanRepositoryImpl;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.InternalAttributesBean;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
-import com.canoo.dolphin.impl.ControllerRegistryBean;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
@@ -43,7 +46,7 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientBeanManagerImpl clientBeanManager;
 
-    private final BeanRepository beanRepository;
+    private final ClientPlatformBeanRepository platformBeanRepository;
 
     private volatile boolean destroyed = false;
 
@@ -53,12 +56,14 @@ public class ClientContextImpl implements ClientContext {
         }
         this.clientDolphin = clientDolphin;
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
-        beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+        final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
         final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+        platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
+
         invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).get();
     }
 
@@ -70,7 +75,7 @@ public class ClientContextImpl implements ClientContext {
         if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
-        final ControllerRegistryBean bean = getBeanManager().findAll(ControllerRegistryBean.class).get(0);
+        final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         bean.setControllerName(name);
         return invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
             if (e != null) {
@@ -78,7 +83,7 @@ public class ClientContextImpl implements ClientContext {
             }
             @SuppressWarnings("unchecked")
             final T model = (T) bean.getModel();
-            return new ControllerProxyImpl<>(bean.getControllerId(), model, this, clientDolphin, beanRepository);
+            return new ControllerProxyImpl<>(bean.getControllerId(), model, clientDolphin, platformBeanRepository);
         });
     }
 
