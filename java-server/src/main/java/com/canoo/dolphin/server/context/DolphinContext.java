@@ -140,6 +140,9 @@ public class DolphinContext {
                 registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        if (platformBeanRepository == null) {
+                            throw new IllegalStateException("An action was called before the init-command was sent.");
+                        }
                         final ServerControllerActionCallBean bean = platformBeanRepository.getControllerActionCallBean();
                         try {
                             onInvokeControllerAction(bean);

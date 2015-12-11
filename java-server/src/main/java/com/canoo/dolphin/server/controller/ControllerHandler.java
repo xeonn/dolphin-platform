@@ -97,17 +97,27 @@ public class ControllerHandler {
             final Object controller = controllers.get(bean.getControllerId());
             final Class controllerClass = controllerClassMapping.get(bean.getControllerId());
             final Method actionMethod = getActionMethod(controller, controllerClass, bean.getActionName());
-            final List<String> paramNames = getParamNames(actionMethod);
-            final List<Object> args = getArgs(bean, paramNames);
+            final List<Object> args = getArgs(actionMethod, bean);
             ReflectionHelper.invokePrivileged(actionMethod, controller, args.toArray());
         } catch (Exception e) {
             throw new InvokeActionException(e);
         }
     }
 
-    private List<Object> getArgs(ServerControllerActionCallBean bean, List<String> paramNames) {
-        final List<Object> args = new ArrayList<>(paramNames.size());
-        for (final String paramName : paramNames) {
+    private List<Object> getArgs(Method method, ServerControllerActionCallBean bean) {
+        final int n = method.getParameterTypes().length;
+        final List<Object> args = new ArrayList<>(n);
+
+        for (int i = 0; i < n; i++) {
+            String paramName = Integer.toString(i);
+            for (Annotation annotation : method.getParameterAnnotations()[i]) {
+                if (annotation.annotationType().equals(Param.class)) {
+                    final Param param = (Param) annotation;
+                    if (param.value() != null && !param.value().isEmpty()) {
+                        paramName = param.value();
+                    }
+                }
+            }
             args.add(bean.getParam(paramName));
         }
         return args;
@@ -143,24 +153,6 @@ public class ControllerHandler {
             }
         }
         return foundMethod;
-    }
-
-    private List<String> getParamNames(Method method) {
-        final List<String> paramNames = new ArrayList<>();
-
-        for (int i = 0; i < method.getParameterTypes().length; i++) {
-            String paramName = Integer.toString(i);
-            for (Annotation annotation : method.getParameterAnnotations()[i]) {
-                if (annotation.annotationType().equals(Param.class)) {
-                    Param param = (Param) annotation;
-                    if (param.value() != null && !param.value().isEmpty()) {
-                        paramName = param.value();
-                    }
-                }
-            }
-            paramNames.add(paramName);
-        }
-        return paramNames;
     }
 
     private List<Field> getInheritedDeclaredFields(Class<?> type) {
