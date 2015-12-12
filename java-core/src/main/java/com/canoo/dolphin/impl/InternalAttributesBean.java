@@ -50,8 +50,11 @@ public class InternalAttributesBean {
         this.controllerId.setValue(controllerId);
     }
 
-    public Object getModel() {
-        return model.getValue();
+    public <T> T getModel() {
+        if(model.getValue() == null) {
+            throw new RuntimeException("Dolphin Platform internal error: No model defined");
+        }
+        return (T) beanRepository.getBean(model.getValue().toString());
     }
 
     public void setModel(Object model) {
