@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.canoo.dolphin-platform</groupId>
         <artifactId>dolphin-platform</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 

@@ -7,7 +7,7 @@
     <parent>
         <artifactId>dolphin-platform</artifactId>
         <groupId>com.canoo.dolphin-platform</groupId>
-        <version>0.7.0</version>
+        <version>0.7.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
