@@ -1,13 +1,17 @@
 package com.canoo.dolphin.client.javafx;
 
+import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
 import javafx.beans.value.WritableBooleanValue;
 import javafx.beans.value.WritableDoubleValue;
 import javafx.beans.value.WritableIntegerValue;
 import javafx.beans.value.WritableStringValue;
-import static org.testng.Assert.*;
+import javafx.collections.FXCollections;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.*;
 
 /**
  * Created by hendrikebbers on 29.09.15.
@@ -351,7 +355,6 @@ public class FXBinderTest {
     }
 
 
-
     @Test
     public void testJavaFXIntegerUnidirectional() {
         Property<Integer> integerDolphinProperty = new MockedProperty<>();
@@ -512,5 +515,159 @@ public class FXBinderTest {
 
         binding1.unbind();
         binding3.unbind();
+    }
+
+    @Test
+    public void testListBinding() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+
+        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+        dolphinList.add("Hello");
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+
+        dolphinList.add("World");
+        dolphinList.add("Dolphin");
+
+        assertEquals(dolphinList.size(), 3);
+        assertEquals(javaFXList.size(), 3);
+
+        dolphinList.clear();
+
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+        dolphinList.add("Java");
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+
+        binding.unbind();
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+
+        dolphinList.add("Duke");
+
+        assertEquals(dolphinList.size(), 2);
+        assertEquals(javaFXList.size(), 1);
+    }
+
+    @Test
+    public void testErrorOnMultipleListBinding() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        ObservableList<String> dolphinList2 = new ObservableArrayList<>();
+        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+
+        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+        try {
+            FXBinder.bind(javaFXList).to(dolphinList2);
+            fail("A JavaFX list can only be bound to one Dolphin list");
+        } finally {
+        }
+    }
+
+    @Test
+    public void testCorrectUnbind() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        ObservableList<String> dolphinList2 = new ObservableArrayList<>();
+        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+
+        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+
+        dolphinList.add("Foo");
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(dolphinList2.size(), 0);
+        assertEquals(javaFXList.size(), 1);
+
+        binding.unbind();
+        FXBinder.bind(javaFXList).to(dolphinList2);
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(dolphinList2.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+        dolphinList2.add("Foo");
+        dolphinList2.add("Bar");
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(dolphinList2.size(), 2);
+        assertEquals(javaFXList.size(), 2);
+    }
+
+    @Test
+    public void testReadOnly() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+
+        javaFXList.add("Ok");
+
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 1);
+
+        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+        dolphinList.add("Foo");
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+
+        TestExceptionHandler exceptionHandler = new TestExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+
+        javaFXList.add("FAIL");
+        assertNotNull(exceptionHandler.getE());
+        assertEquals(exceptionHandler.getE().getClass(), UnsupportedOperationException.class);
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+        exceptionHandler.reset();
+
+        javaFXList.remove(0);
+        assertNotNull(exceptionHandler.getE());
+        assertEquals(exceptionHandler.getE().getClass(), UnsupportedOperationException.class);
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+        exceptionHandler.reset();
+
+        binding.unbind();
+
+        javaFXList.add("YEAH!");
+        assertNull(exceptionHandler.getE());
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 2);
+
+        javaFXList.remove(0);
+        assertNull(exceptionHandler.getE());
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+    }
+
+    private class TestExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+        private Throwable e;
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            this.e = e;
+            e.printStackTrace();
+        }
+
+        public void reset() {
+            e = null;
+        }
+
+        public Throwable getE() {
+            return e;
+        }
     }
 }

@@ -20,6 +20,7 @@ import com.canoo.dolphin.client.javafx.impl.numeric.*;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.ObservableList;
 
 /**
  * Method to create JavaFX property wrappers for dolphin platform properties
@@ -28,6 +29,10 @@ import javafx.beans.value.*;
 public class FXBinder {
 
     private FXBinder() {
+    }
+
+    public static <T> JavaFXListBinder<T> bind(ObservableList<T> list) {
+        return new DefaultJavaFXListBinder(list);
     }
 
     public static JavaFXBinder<Double> bind(WritableDoubleValue writableDoubleValue) {
@@ -89,4 +94,6 @@ public class FXBinder {
     public static NumericDolphinBinder<Long> bindLong(Property<Long> property) {
         return new LongDolphinBinder(property);
     }
+
+
 }
