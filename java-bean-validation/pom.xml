@@ -11,7 +11,7 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <artifactId>java-bean-validation</artifactId>
+    <artifactId>dolphin-platform-bean-validation</artifactId>
 
     <dependencies>
         <dependency>
