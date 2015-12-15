@@ -520,7 +520,7 @@ public class FXBinderTest {
     @Test
     public void testListBinding() {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
-        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
 
         Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
 
@@ -563,13 +563,13 @@ public class FXBinderTest {
     public void testErrorOnMultipleListBinding() {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
         ObservableList<String> dolphinList2 = new ObservableArrayList<>();
-        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
 
-        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+        FXBinder.bind(javaFXList).to(dolphinList);
         try {
             FXBinder.bind(javaFXList).to(dolphinList2);
             fail("A JavaFX list can only be bound to one Dolphin list");
-        } finally {
+        } catch (Exception e){
         }
     }
 
@@ -577,7 +577,7 @@ public class FXBinderTest {
     public void testCorrectUnbind() {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
         ObservableList<String> dolphinList2 = new ObservableArrayList<>();
-        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
 
         Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
 
@@ -600,74 +600,5 @@ public class FXBinderTest {
         assertEquals(dolphinList.size(), 1);
         assertEquals(dolphinList2.size(), 2);
         assertEquals(javaFXList.size(), 2);
-    }
-
-    @Test
-    public void testReadOnly() {
-        ObservableList<String> dolphinList = new ObservableArrayList<>();
-        javafx.collections.ObservableList javaFXList = FXCollections.observableArrayList();
-
-        javaFXList.add("Ok");
-
-        assertEquals(dolphinList.size(), 0);
-        assertEquals(javaFXList.size(), 1);
-
-        Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
-
-        assertEquals(dolphinList.size(), 0);
-        assertEquals(javaFXList.size(), 0);
-
-        dolphinList.add("Foo");
-
-        assertEquals(dolphinList.size(), 1);
-        assertEquals(javaFXList.size(), 1);
-
-        TestExceptionHandler exceptionHandler = new TestExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
-
-        javaFXList.add("FAIL");
-        assertNotNull(exceptionHandler.getE());
-        assertEquals(exceptionHandler.getE().getClass(), UnsupportedOperationException.class);
-        assertEquals(dolphinList.size(), 1);
-        assertEquals(javaFXList.size(), 1);
-        exceptionHandler.reset();
-
-        javaFXList.remove(0);
-        assertNotNull(exceptionHandler.getE());
-        assertEquals(exceptionHandler.getE().getClass(), UnsupportedOperationException.class);
-        assertEquals(dolphinList.size(), 1);
-        assertEquals(javaFXList.size(), 1);
-        exceptionHandler.reset();
-
-        binding.unbind();
-
-        javaFXList.add("YEAH!");
-        assertNull(exceptionHandler.getE());
-        assertEquals(dolphinList.size(), 1);
-        assertEquals(javaFXList.size(), 2);
-
-        javaFXList.remove(0);
-        assertNull(exceptionHandler.getE());
-        assertEquals(dolphinList.size(), 1);
-        assertEquals(javaFXList.size(), 1);
-    }
-
-    private class TestExceptionHandler implements Thread.UncaughtExceptionHandler {
-
-        private Throwable e;
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            this.e = e;
-            e.printStackTrace();
-        }
-
-        public void reset() {
-            e = null;
-        }
-
-        public Throwable getE() {
-            return e;
-        }
     }
 }
