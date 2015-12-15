@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;

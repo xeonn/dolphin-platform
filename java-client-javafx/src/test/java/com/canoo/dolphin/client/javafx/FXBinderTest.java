@@ -1,5 +1,6 @@
 package com.canoo.dolphin.client.javafx;
 
+import com.canoo.dolphin.impl.MockedProperty;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.*;
 import javafx.beans.value.WritableBooleanValue;
