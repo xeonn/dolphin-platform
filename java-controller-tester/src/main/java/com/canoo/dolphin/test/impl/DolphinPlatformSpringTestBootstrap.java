@@ -39,20 +39,13 @@ public class DolphinPlatformSpringTestBootstrap {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public ControllerFactory getControllerFactory() {
-        return new ControllerFactory() {
-            @Override
-            public <C> C create(Class<C> controllerClass) {
-                return null;
-            }
-        };
+    public ControllerFactory createControllerFactory(ClientContext clientContext, DolphinContext serverContext) {
+        return new ControllerFactoryImpl(clientContext, serverContext.getControllerHandler());
     }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public ClientContext getClientContext() throws ExecutionException, InterruptedException {
-        DefaultInMemoryConfig config = new DefaultInMemoryConfig();
-
+    public ClientContext createClientContext(DefaultInMemoryConfig config, DolphinContext serverContext) throws ExecutionException, InterruptedException {
         ControllerRepository.init();
 
         config.getServerDolphin().registerDefaultActions();
@@ -62,7 +55,18 @@ public class DolphinPlatformSpringTestBootstrap {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+        return new ClientContextImpl(config.getClientDolphin());
+    }
 
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public DefaultInMemoryConfig createInMemoryConfig() throws ExecutionException, InterruptedException {
+        return new DefaultInMemoryConfig();
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public DolphinContext createDolphinContext(DefaultInMemoryConfig config) {
         ContainerManager containerManager = new ContainerManager() {
 
             @Override
@@ -94,11 +98,7 @@ public class DolphinPlatformSpringTestBootstrap {
             }
         };
         containerManager.init(servletContext);
-        new DolphinContext(config.getServerDolphin(), containerManager, servletContext);
-
-
-
-        return new ClientContextImpl(config.getClientDolphin());
+        return new DolphinContext(config.getServerDolphin(), containerManager, servletContext);
     }
 
 }

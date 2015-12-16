@@ -186,5 +186,7 @@ public class ControllerHandler {
         return ret;
     }
 
-
+    public <T> T getControllerById(String id) {
+        return (T) controllers.get(id);
+    }
 }
