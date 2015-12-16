@@ -27,7 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletContext;
 
 /**
- * SPring specific implementation of the {@link ContainerManager} interface
+ * Spring specific implementation of the {@link ContainerManager} interface
  *
  * @author Hendrik Ebbers
  */

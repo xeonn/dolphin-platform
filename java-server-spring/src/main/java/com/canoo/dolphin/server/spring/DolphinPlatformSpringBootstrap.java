@@ -29,6 +29,7 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -41,6 +42,10 @@ import javax.servlet.ServletException;
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
 
+    private final static String SCOPE_SESSION = WebApplicationContext.SCOPE_SESSION;
+
+    private final static String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
+
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         new DolphinPlatformBootstrap().onStartup(servletContext);
@@ -51,7 +56,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @Scope(SCOPE_SESSION)
     protected BeanManager createManager() {
         return DolphinContext.getCurrentContext().getBeanManager();
     }
@@ -61,19 +66,19 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @Scope(SCOPE_SESSION)
     protected ServerDolphin createDolphin() {
         return DolphinContext.getCurrentContext().getDolphin();
     }
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Scope(SCOPE_SINGLETON)
     protected TaskExecutor createTaskExecutor() {
         return TaskExecutorImpl.getInstance();
     }
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Scope(SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
         return DolphinEventBusImpl.getInstance();
     }
