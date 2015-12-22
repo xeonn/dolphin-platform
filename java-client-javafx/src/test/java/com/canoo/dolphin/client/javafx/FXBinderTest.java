@@ -560,6 +560,51 @@ public class FXBinderTest {
     }
 
     @Test
+    public void severalBindings() {
+        ObservableList<String> dolphinList1 = new ObservableArrayList<>();
+        ObservableList<String> dolphinList2 = new ObservableArrayList<>();
+        ObservableList<String> dolphinList3 = new ObservableArrayList<>();
+        ObservableList<String> dolphinList4 = new ObservableArrayList<>();
+        javafx.collections.ObservableList<String> javaFXList1 = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList2 = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList3 = FXCollections.observableArrayList();
+        javafx.collections.ObservableList<String> javaFXList4 = FXCollections.observableArrayList();
+
+        Binding binding1 = FXBinder.bind(javaFXList1).to(dolphinList1);
+        Binding binding2 = FXBinder.bind(javaFXList2).to(dolphinList2);
+        Binding binding3 = FXBinder.bind(javaFXList3).to(dolphinList3);
+        Binding binding4 = FXBinder.bind(javaFXList4).to(dolphinList4);
+
+        binding1.unbind();
+        binding2.unbind();
+
+        binding1 = FXBinder.bind(javaFXList1).to(dolphinList2);
+        binding2 = FXBinder.bind(javaFXList2).to(dolphinList1);
+
+        binding3.unbind();
+        binding4.unbind();
+
+        binding3 = FXBinder.bind(javaFXList3).to(dolphinList4);
+        binding4 = FXBinder.bind(javaFXList4).to(dolphinList3);
+
+        binding1.unbind();
+        binding2.unbind();
+        binding3.unbind();
+        binding4.unbind();
+
+        binding1 = FXBinder.bind(javaFXList1).to(dolphinList4);
+        binding2 = FXBinder.bind(javaFXList2).to(dolphinList3);
+        binding3 = FXBinder.bind(javaFXList3).to(dolphinList2);
+        binding4 = FXBinder.bind(javaFXList4).to(dolphinList1);
+
+        binding1.unbind();
+        binding2.unbind();
+        binding3.unbind();
+        binding4.unbind();
+    }
+
+
+    @Test
     public void testErrorOnMultipleListBinding() {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
         ObservableList<String> dolphinList2 = new ObservableArrayList<>();
@@ -600,5 +645,21 @@ public class FXBinderTest {
         assertEquals(dolphinList.size(), 1);
         assertEquals(dolphinList2.size(), 2);
         assertEquals(javaFXList.size(), 2);
+    }
+
+    @Test
+    public void testConvertedListBinding() {
+        ObservableList<Boolean> dolphinList = new ObservableArrayList<>();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
+
+        Binding binding = FXBinder.bind(javaFXList).to(dolphinList, value -> value.toString());
+
+        dolphinList.add(true);
+
+        assertEquals(dolphinList.size(), 1);
+        assertEquals(javaFXList.size(), 1);
+
+        assertEquals(javaFXList.get(0), "true");
+
     }
 }

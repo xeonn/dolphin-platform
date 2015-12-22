@@ -25,9 +25,11 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     @Override
     public <T> Binding to(ObservableList<T> dolphinList, Converter<? super T, ? extends S> converter) {
-        if (boundLists.contains(list)) {
-            throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
-        }
+        boundLists.forEach(addedList -> {
+            if(addedList == list) {
+                throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
+            }
+        });
         boundLists.add(list);
         InternalListChangeListener listChangeListener = new InternalListChangeListener(list, converter);
         Subscription subscription = dolphinList.onChanged(listChangeListener);
