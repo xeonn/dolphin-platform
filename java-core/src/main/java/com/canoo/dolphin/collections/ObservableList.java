@@ -89,4 +89,11 @@ public interface ObservableList<E> extends List<E> {
      * @return <tt>true</tt> if the list changed as a result of the call
      */
     boolean removeAll(E... elements);
+
+
+    /**
+     * Removes all elements from this list and returns a new list that contains the removed elements.
+     * @return a read only list that contains the removed elements
+     */
+    List<E> clearContent();
 }
