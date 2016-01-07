@@ -60,4 +60,9 @@ public class MockedProperty<T> implements Property<T> {
             }
         };
     }
+
+    @Override
+    public String toString() {
+        return "Dolphin " + MockedProperty.class.getSimpleName() + "[value: " + value + "]";
+    }
 }

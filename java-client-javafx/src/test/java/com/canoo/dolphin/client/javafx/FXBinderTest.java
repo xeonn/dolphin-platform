@@ -366,7 +366,7 @@ public class FXBinderTest {
 
         Binding binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(doubleDolphinProperty, doubleStringBidirectionalConverter);
         assertEquals(stringJavaFXProperty.get(), "0.1");
-        
+
         doubleDolphinProperty.set(0.2);
         assertEquals(stringJavaFXProperty.get(), "0.2");
 
