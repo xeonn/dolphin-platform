@@ -7,10 +7,7 @@ import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import org.hamcrest.MatcherAssert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -337,12 +334,44 @@ public class TestObservableArrayListWriteOperations {
     }
 
     @Test
+    public void addAllVarArgsToEmptyList_shouldAddElements() {
+        final ObservableArrayList<String> list = new ObservableArrayList<>();
+        final TestListChangeListener listener = new TestListChangeListener();
+        list.onChanged(listener);
+
+        final boolean result = list.addAll("1", "2", "3");
+
+        assertThat(result, is(true));
+        assertThat(list, is(Arrays.asList("1", "2", "3")));
+
+        assertThat(listener.calls, is(1));
+        assertThat(listener.changes, hasSize(1));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
+    }
+
+    @Test
     public void addAllToNonEmptyList_shouldAddElements() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
         final boolean result = list.addAll(Arrays.asList("42", "43", "44"));
+
+        assertThat(result, is(true));
+        assertThat(list, is(Arrays.asList("1", "2", "3", "42", "43", "44")));
+
+        assertThat(listener.calls, is(1));
+        assertThat(listener.changes, hasSize(1));
+        MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
+    }
+
+    @Test
+    public void addAllVarArgsToNonEmptyList_shouldAddElements() {
+        final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
+        final TestListChangeListener listener = new TestListChangeListener();
+        list.onChanged(listener);
+
+        final boolean result = list.addAll("42", "43", "44");
 
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2", "3", "42", "43", "44")));
@@ -370,10 +399,8 @@ public class TestObservableArrayListWriteOperations {
     public void addAllWithNull_shouldThrowException() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
 
-        list.addAll(null);
+        list.addAll((Collection<? extends String>) null);
     }
-
-
 
     //////////////////////////////////////////
     // addAll(Collection)

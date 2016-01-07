@@ -97,6 +97,21 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     }
 
     @Override
+    public boolean addAll(E... elements) {
+        return addAll(Arrays.asList(elements));
+    }
+
+    @Override
+    public boolean setAll(E... elements) {
+        return setAll(Arrays.asList(elements));
+    }
+
+    @Override
+    public boolean removeAll(E... elements) {
+        return removeAll(Arrays.asList(elements));
+    }
+
+    @Override
     public int size() {
         return list.size();
     }

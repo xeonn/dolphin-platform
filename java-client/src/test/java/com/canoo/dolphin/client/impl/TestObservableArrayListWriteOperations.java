@@ -7,10 +7,7 @@ import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import org.hamcrest.MatcherAssert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -370,7 +367,7 @@ public class TestObservableArrayListWriteOperations {
     public void addAllWithNull_shouldThrowException() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
 
-        list.addAll(null);
+        list.addAll((Collection<? extends String>) null);
     }
 
 
