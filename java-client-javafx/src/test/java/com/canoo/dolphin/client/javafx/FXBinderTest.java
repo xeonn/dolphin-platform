@@ -622,18 +622,15 @@ public class FXBinderTest {
     }
 
 
-    @Test
+    @Test(expectedExceptions = UnsupportedOperationException.class)
     public void testErrorOnMultipleListBinding() {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
         ObservableList<String> dolphinList2 = new ObservableArrayList<>();
         javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
 
         FXBinder.bind(javaFXList).to(dolphinList);
-        try {
-            FXBinder.bind(javaFXList).to(dolphinList2);
-            fail("A JavaFX list can only be bound to one Dolphin list");
-        } catch (Exception e){
-        }
+        FXBinder.bind(javaFXList).to(dolphinList2);
+
     }
 
     @Test
@@ -686,13 +683,13 @@ public class FXBinderTest {
         ObservableList<String> dolphinList = new ObservableArrayList<>();
         javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
 
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
             binding.unbind();
         }
 
         dolphinList.addAll(Arrays.asList("A", "B", "C"));
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
             binding.unbind();
         }
