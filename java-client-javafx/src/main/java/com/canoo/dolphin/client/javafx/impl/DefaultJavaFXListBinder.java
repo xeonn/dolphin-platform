@@ -8,14 +8,13 @@ import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.event.Subscription;
 import javafx.collections.ListChangeListener;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.IdentityHashMap;
 
 public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     private javafx.collections.ObservableList<S> list;
 
-    private static List<javafx.collections.ObservableList> boundLists = new CopyOnWriteArrayList<>();
+    private static IdentityHashMap<javafx.collections.ObservableList, javafx.collections.ObservableList> boundLists = new IdentityHashMap<>();
 
     public DefaultJavaFXListBinder(javafx.collections.ObservableList<S> list) {
         if (list == null) {
@@ -26,12 +25,11 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     @Override
     public <T> Binding to(ObservableList<T> dolphinList, Converter<? super T, ? extends S> converter) {
-        boundLists.forEach(boundList -> {
-            if(boundList == list) {
-                throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
-            }
-        });
-        boundLists.add(list);
+        if(boundLists.containsKey(list)) {
+            throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
+        };
+
+        boundLists.put(list, list);
         InternalListChangeListener listChangeListener = new InternalListChangeListener(list, converter);
         Subscription subscription = dolphinList.onChanged(listChangeListener);
 
@@ -49,14 +47,7 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
         return () -> {
             subscription.unsubscribe();
             list.removeListener(readOnlyListener);
-
-            for(int i = 0; i < boundLists.size(); i++) {
-                List boundList = boundLists.get(i);
-                if(boundList == list) {
-                    boundLists.remove(i);
-                    break;
-                }
-            }
+            boundLists.remove(list);
         };
     }
 
@@ -86,7 +77,7 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
                         for (int i = c.getFrom(); i < c.getTo(); i++) {
                             javaFXList.add(i, converter.convert(e.getSource().get(i)));
                         }
-                    } else if(c.isReplaced()) {
+                    } else if (c.isReplaced()) {
                         for (int i = c.getFrom(); i < c.getTo(); i++) {
                             javaFXList.set(i, converter.convert(e.getSource().get(i)));
                         }

@@ -843,7 +843,7 @@ public class FXBinderTest {
         javaFXList.add("BAD");
         Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
 
-        //Sadly the new element is in the list. Thiss is done by JavaFX and we can't change it
+        //Sadly the new element is in the list. This is done by JavaFX and we can't change it
         assertEquals(javaFXList.size(), 1);
 
         assertEquals(thrownExceptions.size(), 1);
