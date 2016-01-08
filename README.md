@@ -18,25 +18,42 @@ By doing so you can create enterprise application with a single server and sever
 For more information visit [our website](http://www.dolphin-platform.io).
 
 ## How to use it
-You can simply integrate Dolphin Platform in a Spring based application (JavaEE 7 support will come the next weeks). To do so you only need to add our Spring plugin:
+You can simply integrate Dolphin Platform in a Spring based application. To do so you only need to add our Spring plugin:
 ```xml
 <dependency>
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-server-spring</artifactId>
-    <version>0.6.1</version>
+    <version>0.7.0</version>
 </dependency>
 ```
+
+Next to Spring we provide support for JavaEE. To do so you only need to add our JavaEE plugin:
+```xml
+<dependency>
+    <groupId>com.canoo.dolphin-platform</groupId>
+    <artifactId>dolphin-platform-server-javaee</artifactId>
+    <version>0.7.0</version>
+</dependency>
+```
+
 
 For a JavaFX based client you need to add the following dependency:
 ```xml
 <dependency>
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-client-javafx</artifactId>
-    <version>0.6.1</version>
+    <version>0.7.0</version>
 </dependency>
 ```
 
+Next to JavaFX you can use Dolphin Platform in any web client. You can find additonal information in the readme of the client libraries: ([JavaScript](https://github.com/canoo/dolphin-platform-js) or [Polymer](https://github.com/canoo/dolphin-platform-polymer))
+
 In addition you can use [our Maven archetype](http://www.guigarage.com/2015/12/dolphin-platform-jumpstart/) to create a complete server-client-project based on Dolphin Platform.
+If you want to create your new project from command line by using an archetype you can simply call this Maven command and select one of the shown Dolphin Platform archetypes:
+```shell
+mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:
+```
+Currently the projects contains only a JavaFX based client but it’s planned to add a Polymer based client to the archetypes with the next release.
 
 A complete "Getting started" documentation can be found [here](http://www.dolphin-platform.io/documentation/getting-started.html).
 
