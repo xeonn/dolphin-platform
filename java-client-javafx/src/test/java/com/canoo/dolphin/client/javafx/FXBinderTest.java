@@ -533,12 +533,20 @@ public class FXBinderTest {
 
         assertEquals(dolphinList.size(), 1);
         assertEquals(javaFXList.size(), 1);
+        assertTrue(dolphinList.contains("Hello"));
+        assertTrue(javaFXList.contains("Hello"));
 
         dolphinList.add("World");
         dolphinList.add("Dolphin");
 
         assertEquals(dolphinList.size(), 3);
         assertEquals(javaFXList.size(), 3);
+        assertEquals(dolphinList.indexOf("Hello"), 0);
+        assertEquals(dolphinList.indexOf("World"), 1);
+        assertEquals(dolphinList.indexOf("Dolphin"), 2);
+        assertEquals(javaFXList.indexOf("Hello"), 0);
+        assertEquals(javaFXList.indexOf("World"), 1);
+        assertEquals(javaFXList.indexOf("Dolphin"), 2);
 
         dolphinList.clear();
 
@@ -549,16 +557,24 @@ public class FXBinderTest {
 
         assertEquals(dolphinList.size(), 1);
         assertEquals(javaFXList.size(), 1);
+        assertTrue(dolphinList.contains("Java"));
+        assertTrue(javaFXList.contains("Java"));
+
 
         binding.unbind();
 
         assertEquals(dolphinList.size(), 1);
         assertEquals(javaFXList.size(), 1);
+        assertTrue(dolphinList.contains("Java"));
+        assertTrue(javaFXList.contains("Java"));
 
         dolphinList.add("Duke");
 
         assertEquals(dolphinList.size(), 2);
         assertEquals(javaFXList.size(), 1);
+        assertTrue(dolphinList.contains("Java"));
+        assertTrue(dolphinList.contains("Duke"));
+        assertTrue(javaFXList.contains("Java"));
     }
 
     @Test
