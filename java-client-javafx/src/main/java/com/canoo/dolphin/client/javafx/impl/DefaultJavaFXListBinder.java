@@ -8,14 +8,14 @@ import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.event.Subscription;
 import javafx.collections.ListChangeListener;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     private javafx.collections.ObservableList<S> list;
 
-    private static List<javafx.collections.ObservableList> boundLists = new CopyOnWriteArrayList<>();
+    private static Set<javafx.collections.ObservableList> boundLists = new CopyOnWriteArraySet<>();
 
     public DefaultJavaFXListBinder(javafx.collections.ObservableList<S> list) {
         if (list == null) {
