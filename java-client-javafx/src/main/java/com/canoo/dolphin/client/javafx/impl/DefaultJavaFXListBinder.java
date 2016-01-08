@@ -8,14 +8,14 @@ import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.event.Subscription;
 import javafx.collections.ListChangeListener;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     private javafx.collections.ObservableList<S> list;
 
-    private static Set<javafx.collections.ObservableList> boundLists = new CopyOnWriteArraySet<>();
+    private static List<javafx.collections.ObservableList> boundLists = new CopyOnWriteArrayList<>();
 
     public DefaultJavaFXListBinder(javafx.collections.ObservableList<S> list) {
         if (list == null) {
@@ -26,8 +26,8 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
     @Override
     public <T> Binding to(ObservableList<T> dolphinList, Converter<? super T, ? extends S> converter) {
-        boundLists.forEach(addedList -> {
-            if(addedList == list) {
+        boundLists.forEach(boundList -> {
+            if(boundList == list) {
                 throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
             }
         });
@@ -35,8 +35,8 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
         InternalListChangeListener listChangeListener = new InternalListChangeListener(list, converter);
         Subscription subscription = dolphinList.onChanged(listChangeListener);
 
-        dolphinList.forEach(item -> list.add(converter.convert(item)));
         list.clear();
+        dolphinList.forEach(item -> list.add(converter.convert(item)));
 
         ListChangeListener readOnlyListener = c -> {
             if (!listChangeListener.isOnChange()) {
@@ -49,7 +49,14 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
         return () -> {
             subscription.unsubscribe();
             list.removeListener(readOnlyListener);
-            boundLists.remove(list);
+
+            for(int i = 0; i < boundLists.size(); i++) {
+                List boundList = boundLists.get(i);
+                if(boundList == list) {
+                    boundLists.remove(i);
+                    break;
+                }
+            }
         };
     }
 

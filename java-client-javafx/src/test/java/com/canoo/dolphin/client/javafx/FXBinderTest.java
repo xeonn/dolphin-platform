@@ -11,6 +11,8 @@ import javafx.beans.value.WritableStringValue;
 import javafx.collections.FXCollections;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+
 import static org.testng.Assert.*;
 
 /**
@@ -661,5 +663,66 @@ public class FXBinderTest {
 
         assertEquals(javaFXList.get(0), "true");
 
+    }
+
+    @Test
+    public void testSeveralBinds() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
+
+        for(int i = 0; i < 10; i++) {
+            Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+            binding.unbind();
+        }
+
+        dolphinList.addAll(Arrays.asList("A", "B", "C"));
+        for(int i = 0; i < 10; i++) {
+            Binding binding = FXBinder.bind(javaFXList).to(dolphinList);
+            binding.unbind();
+        }
+    }
+
+    @Test
+    public void testListBindingWithNonEmptyLists() {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
+
+        dolphinList.addAll(Arrays.asList("A", "B", "C"));
+        Binding binding1 = FXBinder.bind(javaFXList).to(dolphinList);
+        assertEquals(dolphinList.size(), 3);
+        assertEquals(javaFXList.size(), 3);
+        assertTrue(dolphinList.contains("A"));
+        assertTrue(dolphinList.contains("B"));
+        assertTrue(dolphinList.contains("C"));
+        assertTrue(javaFXList.contains("A"));
+        assertTrue(javaFXList.contains("B"));
+        assertTrue(javaFXList.contains("C"));
+
+        binding1.unbind();
+
+        dolphinList.clear();
+        javaFXList.clear();
+        javaFXList.addAll("A", "B", "C");
+        Binding binding2 = FXBinder.bind(javaFXList).to(dolphinList);
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+
+        binding2.unbind();
+
+        dolphinList.clear();
+        javaFXList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C"));
+        javaFXList.addAll("D", "E", "F");
+        FXBinder.bind(javaFXList).to(dolphinList);
+        assertEquals(dolphinList.size(), 3);
+        assertEquals(javaFXList.size(), 3);
+        assertTrue(dolphinList.contains("A"));
+        assertTrue(dolphinList.contains("B"));
+        assertTrue(dolphinList.contains("C"));
+        assertTrue(javaFXList.contains("A"));
+        assertTrue(javaFXList.contains("B"));
+        assertTrue(javaFXList.contains("C"));
     }
 }
