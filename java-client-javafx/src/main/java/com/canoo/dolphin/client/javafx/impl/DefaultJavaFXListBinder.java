@@ -79,13 +79,17 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
             onChange = true;
             try {
                 for (ListChangeEvent.Change<? extends T> c : e.getChanges()) {
-                    if (c.isAdded()) {
+                    if (c.isRemoved()) {
+                        final int index = c.getFrom();
+                        javaFXList.remove(index, index + c.getRemovedElements().size());
+                    } else if (c.isAdded()) {
                         for (int i = c.getFrom(); i < c.getTo(); i++) {
                             javaFXList.add(i, converter.convert(e.getSource().get(i)));
                         }
-                    } else if (c.isRemoved()) {
-                        final int index = c.getFrom();
-                        javaFXList.remove(index, index + c.getRemovedElements().size());
+                    } else if(c.isReplaced()) {
+                        for (int i = c.getFrom(); i < c.getTo(); i++) {
+                            javaFXList.set(i, converter.convert(e.getSource().get(i)));
+                        }
                     }
                 }
             } finally {

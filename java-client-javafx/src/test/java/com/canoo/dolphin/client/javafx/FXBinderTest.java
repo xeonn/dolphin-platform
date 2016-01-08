@@ -11,7 +11,9 @@ import javafx.beans.value.WritableStringValue;
 import javafx.collections.FXCollections;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.testng.Assert.*;
 
@@ -575,6 +577,202 @@ public class FXBinderTest {
         assertTrue(dolphinList.contains("Java"));
         assertTrue(dolphinList.contains("Duke"));
         assertTrue(javaFXList.contains("Java"));
+
+        FXBinder.bind(javaFXList).to(dolphinList);
+
+        dolphinList.clear();
+        assertEquals(dolphinList.size(), 0);
+        assertEquals(javaFXList.size(), 0);
+
+        Runnable check = () -> {
+            assertEquals(dolphinList.size(), 4);
+            assertEquals(javaFXList.size(), 4);
+            assertEquals(dolphinList.indexOf("A"), 0);
+            assertEquals(dolphinList.indexOf("B"), 1);
+            assertEquals(dolphinList.indexOf("C"), 2);
+            assertEquals(dolphinList.indexOf("D"), 3);
+            assertEquals(javaFXList.indexOf("A"), 0);
+            assertEquals(javaFXList.indexOf("B"), 1);
+            assertEquals(javaFXList.indexOf("C"), 2);
+            assertEquals(javaFXList.indexOf("D"), 3);
+        };
+
+        //add first
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("B", "C", "D"));
+        dolphinList.add(0, "A");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("C", "D"));
+        dolphinList.add(0, "A");
+        dolphinList.add(1, "B");
+        check.run();
+
+        //add any
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "D"));
+        dolphinList.add(2, "C");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "D"));
+        dolphinList.add(1, "B");
+        dolphinList.add(2, "C");
+        check.run();
+
+        //add last
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C"));
+        dolphinList.add(3, "D");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B"));
+        dolphinList.add(2, "C");
+        dolphinList.add(3, "D");
+        check.run();
+
+        //remove first
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X", "A", "B", "C", "D"));
+        dolphinList.remove(0);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X", "A", "B", "C", "D"));
+        dolphinList.remove("X");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X1", "X2", "A", "B", "C", "D"));
+        dolphinList.remove(0);
+        dolphinList.remove(0);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X1", "X2","A", "B", "C", "D"));
+        dolphinList.remove("X1");
+        dolphinList.remove("X2");
+        check.run();
+
+        //remove any
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X", "C", "D"));
+        dolphinList.remove(2);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X", "C", "D"));
+        dolphinList.remove("X");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X1", "X2", "C", "D"));
+        dolphinList.remove(2);
+        dolphinList.remove(2);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X1", "X2", "C", "D"));
+        dolphinList.remove("X1");
+        dolphinList.remove("X2");
+        check.run();
+
+        //remove last
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "D", "X"));
+        dolphinList.remove(4);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "D", "X"));
+        dolphinList.remove("X");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "D", "X1", "X2"));
+        dolphinList.remove(5);
+        dolphinList.remove(4);
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "D", "X1", "X2"));
+        dolphinList.remove("X1");
+        dolphinList.remove("X2");
+        check.run();
+
+
+        //set first
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X", "B", "C", "D"));
+        dolphinList.set(0, "A");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("X1", "X2", "C", "D"));
+        dolphinList.set(0, "A");
+        dolphinList.set(1, "B");
+        check.run();
+
+        //set any
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X", "D"));
+        dolphinList.set(2, "C");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "X1", "X2", "D"));
+        dolphinList.set(1, "B");
+        dolphinList.set(2, "C");
+        check.run();
+
+        //set last
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "X"));
+        dolphinList.set(3, "D");
+        check.run();
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "X1", "X2"));
+        dolphinList.set(2, "C");
+        dolphinList.set(3, "D");
+        check.run();
+
+
+
+
+
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "C", "X1", "X2", "X3", "D"));
+        dolphinList.remove("X1");
+        dolphinList.remove("X2");
+        dolphinList.remove("X3");
+        assertEquals(dolphinList.size(), 4);
+        assertEquals(javaFXList.size(), 4);
+        assertEquals(dolphinList.indexOf("A"), 0);
+        assertEquals(dolphinList.indexOf("B"), 1);
+        assertEquals(dolphinList.indexOf("C"), 2);
+        assertEquals(dolphinList.indexOf("D"), 3);
+        assertEquals(javaFXList.indexOf("A"), 0);
+        assertEquals(javaFXList.indexOf("B"), 1);
+        assertEquals(javaFXList.indexOf("C"), 2);
+        assertEquals(javaFXList.indexOf("D"), 3);
+
+        dolphinList.clear();
+        dolphinList.addAll(Arrays.asList("A", "B", "F", "D"));
+        dolphinList.set(2, "C");
+        assertEquals(dolphinList.size(), 4);
+        assertEquals(javaFXList.size(), 4);
+        assertEquals(dolphinList.indexOf("A"), 0);
+        assertEquals(dolphinList.indexOf("B"), 1);
+        assertEquals(dolphinList.indexOf("C"), 2);
+        assertEquals(dolphinList.indexOf("D"), 3);
+        assertEquals(javaFXList.indexOf("A"), 0);
+        assertEquals(javaFXList.indexOf("B"), 1);
+        assertEquals(javaFXList.indexOf("C"), 2);
+        assertEquals(javaFXList.indexOf("D"), 3);
     }
 
     @Test
@@ -630,7 +828,26 @@ public class FXBinderTest {
 
         FXBinder.bind(javaFXList).to(dolphinList);
         FXBinder.bind(javaFXList).to(dolphinList2);
+    }
 
+    @Test(expectedExceptions = UnsupportedOperationException.class)
+    public void testModifyBoundList() throws Throwable {
+        ObservableList<String> dolphinList = new ObservableArrayList<>();
+        javafx.collections.ObservableList<String> javaFXList = FXCollections.observableArrayList();
+
+        //Sadly the JavaFX collection classes catch exceptions and pass them to the uncaught exception handler
+        Thread.UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        List<Throwable> thrownExceptions = new ArrayList<>();
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> thrownExceptions.add(e));
+        FXBinder.bind(javaFXList).to(dolphinList);
+        javaFXList.add("BAD");
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
+
+        //Sadly the new element is in the list. Thiss is done by JavaFX and we can't change it
+        assertEquals(javaFXList.size(), 1);
+
+        assertEquals(thrownExceptions.size(), 1);
+        throw thrownExceptions.get(0);
     }
 
     @Test
