@@ -31,7 +31,7 @@ public abstract class DolphinPlatformApplication extends Application {
 
     @Override
     public final void start(Stage primaryStage) throws Exception {
-        if (initializationException != null) {
+        if (initializationException == null) {
             if(clientContext != null) {
                 start(primaryStage, clientContext);
             } else {
