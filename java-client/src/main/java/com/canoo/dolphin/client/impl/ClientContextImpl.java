@@ -15,15 +15,8 @@
  */
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.client.ClientBeanManager;
-import com.canoo.dolphin.client.ClientContext;
-import com.canoo.dolphin.client.ControllerProxy;
-import com.canoo.dolphin.impl.BeanBuilderImpl;
-import com.canoo.dolphin.impl.BeanRepositoryImpl;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.InternalAttributesBean;
-import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.client.*;
+import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -35,10 +28,13 @@ import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 public class ClientContextImpl implements ClientContext {
 
@@ -48,13 +44,16 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientPlatformBeanRepository platformBeanRepository;
 
-    private volatile boolean destroyed = false;
+    private State state = State.CREATED;
+
+    private List<WeakReference<ControllerProxy>> registeredWeakControllers;
 
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
-        if(clientDolphin == null) {
+        if (clientDolphin == null) {
             throw new IllegalArgumentException("clientDolphin must not be null!");
         }
         this.clientDolphin = clientDolphin;
+        registeredWeakControllers = new CopyOnWriteArrayList<>();
         final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
         final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
@@ -64,17 +63,15 @@ public class ClientContextImpl implements ClientContext {
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
         platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
 
-        invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).get();
+        invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
     }
 
     @Override
-    public <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
-        if(StringUtil.isBlank(name)) {
+    public synchronized <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
+        if (StringUtil.isBlank(name)) {
             throw new IllegalArgumentException("name must not be null or empty!");
         }
-        if(destroyed) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
+        checkForInitializedState();
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         bean.setControllerName(name);
         return invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
@@ -83,28 +80,19 @@ public class ClientContextImpl implements ClientContext {
             }
             @SuppressWarnings("unchecked")
             final T model = (T) bean.getModel();
-            return new ControllerProxyImpl<>(bean.getControllerId(), model, clientDolphin, platformBeanRepository);
+            ControllerProxyImpl controllerProxy = new ControllerProxyImpl<>(bean.getControllerId(), model, clientDolphin, platformBeanRepository);
+            registeredWeakControllers.add(new WeakReference<>(controllerProxy));
+            return controllerProxy;
         });
     }
 
     @Override
-    public ClientBeanManager getBeanManager() {
-        if(destroyed) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
+    public synchronized ClientBeanManager getBeanManager() {
+        checkForInitializedState();
         return clientBeanManager;
     }
 
-    @Override
-    public CompletableFuture<Void> disconnect() {
-        if(destroyed) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
-        return invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> destroyed = true);
-    }
-
-
-    private CompletableFuture<Void> invokeDolphinCommand(String command) {
+    private synchronized CompletableFuture<Void> invokeDolphinCommand(String command) {
         final CompletableFuture<Void> result = new CompletableFuture<>();
         clientDolphin.send(command, new OnFinishedHandler() {
             @Override
@@ -120,5 +108,47 @@ public class ClientContextImpl implements ClientContext {
         return result;
     }
 
+    @Override
+    public synchronized CompletableFuture<Void> disconnect() {
+        checkForInitializedState();
+        state = State.DESTROYING;
 
+        final CompletableFuture<Void> result = new CompletableFuture<>();
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            for (WeakReference<ControllerProxy> destroyableRef : registeredWeakControllers) {
+                try {
+                    ControllerProxy destroyable = destroyableRef.get();
+                    if(destroyable != null) {
+                        destroyable.destroy().get();
+                    }
+                } catch (Exception e) {
+                    //TODO
+                } finally {
+                    registeredWeakControllers.remove(destroyableRef);
+                }
+            }
+            try {
+                invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).get();
+                state = State.DESTROYED;
+                result.complete(null);
+            } catch (Exception e) {
+                result.obtrudeException(e);
+            }
+        });
+
+        return result;
+    }
+
+    private void checkForInitializedState() {
+        if (state.equals(State.CREATED)) {
+            throw new IllegalStateException("The client is initialized!");
+        }
+        if (state.equals(State.DESTROYED)) {
+            throw new IllegalStateException("The client is disconnected!");
+        }
+        if (state.equals(State.DESTROYING)) {
+            throw new IllegalStateException("The client is disconnecting!");
+        }
+    }
 }
