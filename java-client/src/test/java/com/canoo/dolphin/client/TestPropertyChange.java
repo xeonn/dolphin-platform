@@ -1,7 +1,11 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.client.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.client.util.ChildModel;
+import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.client.util.SimpleTestModel;
+import com.canoo.dolphin.client.util.SingleReferenceModel;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeListener;
 import mockit.Mocked;
@@ -47,11 +51,17 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         assertThat(results.oldValue, is("Hallo Property"));
 
         results.listenerCalls = 0;
+        model.getTextProperty().set(null);
+        assertThat(results.listenerCalls, is(1));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is("Hallo Property2"));
+
+        results.listenerCalls = 0;
         subscription.unsubscribe();
         model.getTextProperty().set("Hallo Property3");
         assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, is("Hallo Property2"));
-        assertThat(results.oldValue, is("Hallo Property"));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is("Hallo Property2"));
     }
 
     @Test
@@ -86,11 +96,17 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         assertThat(results.oldValue, is("Hallo Property"));
 
         results.listenerCalls = 0;
+        model.getTextProperty().set(null);
+        assertThat(results.listenerCalls, is(1));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is("Hallo Property2"));
+
+        results.listenerCalls = 0;
         subscription.unsubscribe();
         model.getTextProperty().set("Hallo Property3");
         assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, is("Hallo Property2"));
-        assertThat(results.oldValue, is("Hallo Property"));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is("Hallo Property2"));
     }
 
 
@@ -130,11 +146,17 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         assertThat(results.oldValue, is(ref1));
 
         results.listenerCalls = 0;
+        model.getReferenceProperty().set(null);
+        assertThat(results.listenerCalls, is(1));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is(ref2));
+
+        results.listenerCalls = 0;
         subscription.unsubscribe();
         model.getReferenceProperty().set(ref3);
         assertThat(results.listenerCalls, is(0));
-        assertThat(results.newValue, is(ref2));
-        assertThat(results.oldValue, is(ref1));
+        assertThat(results.newValue, nullValue());
+        assertThat(results.oldValue, is(ref2));
     }
 
     @Test
