@@ -1055,8 +1055,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
         final PresentationModel classDescription = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_BEAN).get(0);
         classDescription.findAttributeByPropertyName("objectList").setValue(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal());
         final SimpleTestModel newObject = manager.create(SimpleTestModel.class);
-        final List<ClientPresentationModel> models = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
-        final PresentationModel newObjectModel = null == models.get(1) ? models.get(0) : models.get(1);
+        final PresentationModel newObjectModel = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName()).get(0);
 
         new ServerPresentationModelBuilder(dolphin, PlatformConstants.LIST_ADD)
                 .withAttribute("source", sourceModel.getId())
