@@ -47,7 +47,7 @@ public class GarbageCollection {
 
         IdentitySet<Property> properties = getAllProperties(bean);
         IdentitySet<ObservableList> lists = getAllLists(bean);
-        Instance instance = new Instance(bean, properties, lists);
+        Instance instance = new Instance(bean, rootBean, properties, lists);
         allInstances.put(bean, instance);
         for (Property property : properties) {
             propertyToParent.put(property, instance);
@@ -150,7 +150,7 @@ public class GarbageCollection {
             Object value = property.get();
             if (value != null && !isBasicType(value.getClass())) {
                 Instance childInstance = getInstance(value);
-                if (childInstance.getReferences().size() == 1) {
+                if (!childInstance.isReferencedByRoot()) {
                     addToGC(childInstance);
                 }
             }
@@ -159,7 +159,7 @@ public class GarbageCollection {
             for (Object value : list) {
                 if (value != null && !isBasicType(value.getClass())) {
                     Instance childInstance = getInstance(value);
-                    if (childInstance.getReferences().size() == 1) {
+                    if (!childInstance.isReferencedByRoot()) {
                         addToGC(childInstance);
                     }
                 }

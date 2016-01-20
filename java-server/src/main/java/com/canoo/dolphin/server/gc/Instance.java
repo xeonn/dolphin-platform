@@ -11,13 +11,16 @@ public class Instance {
 
     private Object bean;
 
+    private boolean rootBean;
+
     private IdentitySet<Property> properties;
     private IdentitySet<ObservableList> lists;
 
     private List<Reference> references;
 
-    public Instance(Object bean, IdentitySet<Property> properties, IdentitySet<ObservableList> lists) {
+    public Instance(Object bean, boolean rootBean, IdentitySet<Property> properties, IdentitySet<ObservableList> lists) {
         this.bean = bean;
+        this.rootBean = rootBean;
         this.properties = properties;
         this.lists = lists;
         references = new ArrayList<>();
@@ -37,5 +40,22 @@ public class Instance {
 
     public IdentitySet<ObservableList> getLists() {
         return lists;
+    }
+
+    public boolean isRootBean() {
+        return rootBean;
+    }
+
+    public boolean isReferencedByRoot() {
+        if(rootBean) {
+            return true;
+        }
+        for(Reference reference : references) {
+            Instance parent = reference.getParent();
+            if(parent.isReferencedByRoot()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
