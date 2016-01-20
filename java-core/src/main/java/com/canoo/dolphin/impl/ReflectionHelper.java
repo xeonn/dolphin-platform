@@ -31,8 +31,8 @@ import java.util.List;
 public class ReflectionHelper {
 
 
-    public static Object getPrivileged(final Field field, final Object bean) {
-        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+    public static <T> T getPrivileged(final Field field, final Object bean) {
+        return (T) AccessController.doPrivileged(new PrivilegedAction<Object>() {
             @Override
             public Object run() {
                 boolean wasAccessible = field.isAccessible();

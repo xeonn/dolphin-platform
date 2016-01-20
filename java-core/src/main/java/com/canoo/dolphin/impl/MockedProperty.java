@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by hendrikebbers on 29.09.15.
+ * THis Property implementation can be used for internal unit tests.
  */
 public class MockedProperty<T> implements Property<T> {
 
