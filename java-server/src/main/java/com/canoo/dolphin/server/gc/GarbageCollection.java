@@ -7,20 +7,24 @@ import com.canoo.dolphin.mapping.Property;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GarbageCollection {
 
     private IdentitySet<Instance> removeOnGC;
 
-    private Map<Object, Instance> allInstances;
+    private IdentityHashMap<Object, Instance> allInstances;
 
-    private Map<Property, Instance> propertyToParent;
+    private IdentityHashMap<Property, Instance> propertyToParent;
 
-    private Map<ObservableList, Instance> listToParent;
+    private IdentityHashMap<ObservableList, Instance> listToParent;
+
+    private IdentityHashMap<Class, List<Field>> propertyFieldCache;
+
+    private IdentityHashMap<Class, List<Field>> listFieldCache;
 
     private GarbageCollectionCallback onRemove;
 
@@ -32,6 +36,8 @@ public class GarbageCollection {
         allInstances = new IdentityHashMap<>();
         propertyToParent = new IdentityHashMap<>();
         listToParent = new IdentityHashMap<>();
+        propertyFieldCache = new IdentityHashMap<>();
+        listFieldCache = new IdentityHashMap<>();
     }
 
     public synchronized void onBeanCreated(Object bean, boolean rootBean) {
@@ -43,10 +49,10 @@ public class GarbageCollection {
         IdentitySet<ObservableList> lists = getAllLists(bean);
         Instance instance = new Instance(bean, properties, lists);
         allInstances.put(bean, instance);
-        for(Property property : properties) {
+        for (Property property : properties) {
             propertyToParent.put(property, instance);
         }
-        for(ObservableList list : lists) {
+        for (ObservableList list : lists) {
             listToParent.put(list, instance);
         }
 
@@ -80,7 +86,7 @@ public class GarbageCollection {
         if (newValue != null && !isBasicType(newValue.getClass())) {
             Instance instance = getInstance(newValue);
             Reference reference = new PropertyReference(propertyToParent.get(property), property, instance);
-            if(reference.hasCircularDependency()) {
+            if (reference.hasCircularDependency()) {
                 throw new CircularDependencyException("Circular dependency detected!");
             }
             instance.getReferences().add(reference);
@@ -92,7 +98,7 @@ public class GarbageCollection {
         if (value != null && !isBasicType(value.getClass())) {
             Instance instance = getInstance(value);
             Reference reference = new ListReference(listToParent.get(list), list, instance);
-            if(reference.hasCircularDependency()) {
+            if (reference.hasCircularDependency()) {
                 throw new CircularDependencyException("Circular dependency detected!");
             }
             instance.getReferences().add(reference);
@@ -125,11 +131,11 @@ public class GarbageCollection {
 
     public synchronized void gc() {
         onRemove.onRemove(removeOnGC);
-        for(Instance removedInstance : removeOnGC) {
-            for(Property property : removedInstance.getProperties()) {
+        for (Instance removedInstance : removeOnGC) {
+            for (Property property : removedInstance.getProperties()) {
                 propertyToParent.remove(property);
             }
-            for(ObservableList list : removedInstance.getLists()) {
+            for (ObservableList list : removedInstance.getLists()) {
                 listToParent.remove(list);
             }
             allInstances.remove(removedInstance);
@@ -140,22 +146,20 @@ public class GarbageCollection {
     private void addToGC(Instance instance) {
         removeOnGC.add(instance);
 
-        Object bean = instance.getBean();
-
-        for(Property property : instance.getProperties()) {
+        for (Property property : instance.getProperties()) {
             Object value = property.get();
-            if(value != null && !isBasicType(value.getClass())) {
+            if (value != null && !isBasicType(value.getClass())) {
                 Instance childInstance = getInstance(value);
-                if(childInstance.getReferences().size() == 1) {
+                if (childInstance.getReferences().size() == 1) {
                     addToGC(childInstance);
                 }
             }
         }
-        for(ObservableList list : instance.getLists()) {
-            for(Object value : list) {
+        for (ObservableList list : instance.getLists()) {
+            for (Object value : list) {
                 if (value != null && !isBasicType(value.getClass())) {
                     Instance childInstance = getInstance(value);
-                    if(childInstance.getReferences().size() == 1) {
+                    if (childInstance.getReferences().size() == 1) {
                         addToGC(childInstance);
                     }
                 }
@@ -166,17 +170,15 @@ public class GarbageCollection {
     private void removeFromGC(Instance instance) {
         boolean removed = removeOnGC.remove(instance);
 
-        if(removed) {
-            Object bean = instance.getBean();
-
-            for(Property property : instance.getProperties()) {
+        if (removed) {
+            for (Property property : instance.getProperties()) {
                 Object value = property.get();
                 if (value != null && !isBasicType(value.getClass())) {
                     Instance childInstance = getInstance(value);
                     removeFromGC(childInstance);
                 }
             }
-            for(ObservableList list : instance.getLists()) {
+            for (ObservableList list : instance.getLists()) {
                 for (Object value : list) {
                     if (value != null && !isBasicType(value.getClass())) {
                         Instance childInstance = getInstance(value);
@@ -189,22 +191,38 @@ public class GarbageCollection {
 
     private IdentitySet<Property> getAllProperties(Object bean) {
         IdentitySet<Property> ret = new IdentitySet<>();
-        List<Field> fields = ReflectionHelper.getInheritedDeclaredFields(bean.getClass());
-        for(Field field : fields) {
-            if(Property.class.isAssignableFrom(field.getType())) {
-                ret.add((Property) ReflectionHelper.getPrivileged(field, bean));
+
+        List<Field> fields = propertyFieldCache.get(bean.getClass());
+        if (fields == null) {
+            fields = new ArrayList<>();
+            for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
+                if (Property.class.isAssignableFrom(field.getType())) {
+                    fields.add(field);
+                }
             }
+            propertyFieldCache.put(bean.getClass(), fields);
+        }
+        for (Field field : fields) {
+            ret.add((Property) ReflectionHelper.getPrivileged(field, bean));
         }
         return ret;
     }
 
     private IdentitySet<ObservableList> getAllLists(Object bean) {
         IdentitySet<ObservableList> ret = new IdentitySet<>();
-        List<Field> fields = ReflectionHelper.getInheritedDeclaredFields(bean.getClass());
-        for(Field field : fields) {
-            if(ObservableList.class.isAssignableFrom(field.getType())) {
-                ret.add((ObservableList) ReflectionHelper.getPrivileged(field, bean));
+
+        List<Field> fields = listFieldCache.get(bean.getClass());
+        if (fields == null) {
+            fields = new ArrayList<>();
+            for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
+                if (ObservableList.class.isAssignableFrom(field.getType())) {
+                    fields.add(field);
+                }
             }
+            listFieldCache.put(bean.getClass(), fields);
+        }
+        for (Field field : fields) {
+                ret.add((ObservableList) ReflectionHelper.getPrivileged(field, bean));
         }
         return ret;
     }
