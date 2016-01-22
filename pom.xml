@@ -51,6 +51,7 @@
         <module>java-server-javaee</module>
         <module>java-server-spring</module>
         <module>java-client-javafx</module>
+        <module>java-bean-validation</module>
         <module>todo-example/common</module>
         <module>todo-example/server</module>
         <module>todo-example/server-spring</module>
