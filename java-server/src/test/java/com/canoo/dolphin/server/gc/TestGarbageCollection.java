@@ -478,6 +478,39 @@ public class TestGarbageCollection {
     }
 
     @Test
+    public void testLargeList() {
+        final List<Object> removedObjects = new ArrayList<>();
+        GarbageCollectionCallback gcConsumer = new GarbageCollectionCallback() {
+            @Override
+            public void onRemove(Set<Instance> instances) {
+                for (Instance instance : instances) {
+                    removedObjects.add(instance.getBean());
+                }
+            }
+        };
+        GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
+
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
+        garbageCollection.onBeanCreated(parentBean, true);
+
+        for (int i = 0; i < 1000; i++) {
+            BeanWithLists wrapperBean = new BeanWithLists(garbageCollection);
+            garbageCollection.onBeanCreated(wrapperBean, false);
+            parentBean.getBeansList().add(wrapperBean);
+        }
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(0));
+        removedObjects.clear();
+
+        parentBean.getBeansList().clear();
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(1000));
+        removedObjects.clear();
+    }
+
+    @Test
     public void testManyObjects() {
         final List<Object> removedObjects = new ArrayList<>();
         GarbageCollectionCallback gcConsumer = new GarbageCollectionCallback() {
