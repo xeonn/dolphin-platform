@@ -1,9 +1,31 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import com.canoo.dolphin.mapping.Property;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.WritableBooleanValue;
 import javafx.beans.value.WritableDoubleValue;
 import javafx.beans.value.WritableIntegerValue;
@@ -358,6 +380,37 @@ public class FXBinderTest {
         assertEquals(stringJavaFXProperty.get(), null);
     }
 
+    @Test
+    public void testJavaFXStringBidirectionalWithConverter() {
+        Property<Double> doubleDolphinProperty = new MockedProperty<>();
+        StringProperty stringJavaFXProperty = new SimpleStringProperty();
+        Converter<String, Double> doubleStringConverter = s -> s == null ? null : Double.parseDouble(s);
+        Converter<Double, String> stringDoubleConverter = d -> d == null ? null : d.toString();
+        BidirectionalConverter<Double, String> doubleStringBidirectionalConverter = new DefaultBidirectionalConverter<>(stringDoubleConverter, doubleStringConverter);
+
+
+        doubleDolphinProperty.set(0.1);
+        assertNotEquals(stringJavaFXProperty.get(), "0.1");
+
+        Binding binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(doubleDolphinProperty, doubleStringBidirectionalConverter);
+        assertEquals(stringJavaFXProperty.get(), "0.1");
+
+        doubleDolphinProperty.set(0.2);
+        assertEquals(stringJavaFXProperty.get(), "0.2");
+
+        doubleDolphinProperty.set(null);
+        assertEquals(stringJavaFXProperty.get(), null);
+
+        stringJavaFXProperty.set("0.1");
+        assertEquals(doubleDolphinProperty.get(), 0.1);
+
+        stringJavaFXProperty.setValue("0.2");
+        assertEquals(doubleDolphinProperty.get(), 0.2);
+
+        binding.unbind();
+        doubleDolphinProperty.set(0.3);
+        assertEquals(stringJavaFXProperty.get(), "0.2");
+    }
 
     @Test
     public void testJavaFXIntegerUnidirectional() {
