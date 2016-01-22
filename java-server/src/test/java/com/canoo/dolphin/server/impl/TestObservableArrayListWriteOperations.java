@@ -155,15 +155,17 @@ public class TestObservableArrayListWriteOperations {
     //////////////////////////////////////////
     @Test
     public void removeOnSingleElementList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("42");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.remove("42");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, empty());
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
@@ -171,15 +173,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void removeAtBeginningOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.remove("1");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("2", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
@@ -187,15 +191,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void removeInMiddleOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.remove("2");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
@@ -203,15 +209,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void removeAtEndOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.remove("3");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
@@ -219,15 +227,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void removeNonExistingObject_shouldBeNoOp() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.remove("42");
 
+        //then:
         assertThat(result, is(false));
         assertThat(list, is(Arrays.asList("1", "2", "3")));
-
         assertThat(listener.calls, is(0));
     }
 
@@ -238,15 +248,17 @@ public class TestObservableArrayListWriteOperations {
     //////////////////////////////////////////
     @Test
     public void indexedRemoveOnSingleElementList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("42");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final String result = list.remove(0);
 
+        //then:
         assertThat(result, is("42"));
         assertThat(list, empty());
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("42")))));
@@ -254,15 +266,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void indexedRemoveAtBeginningOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final String result = list.remove(0);
 
+        //then:
         assertThat(result, is("1"));
         assertThat(list, is(Arrays.asList("2", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(0)), hasProperty("removedElements", is(Collections.singletonList("1")))));
@@ -270,15 +284,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void indexedRemoveInMiddleOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final String result = list.remove(1);
 
+        //then:
         assertThat(result, is("2"));
         assertThat(list, is(Arrays.asList("1", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(1)), hasProperty("to", is(1)), hasProperty("removedElements", is(Collections.singletonList("2")))));
@@ -286,15 +302,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void indexedRemoveAtEndOfNonEmptyList_shouldRemoveElement() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final String result = list.remove(2);
 
+        //then:
         assertThat(result, is("3"));
         assertThat(list, is(Arrays.asList("1", "2")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(2)), hasProperty("to", is(2)), hasProperty("removedElements", is(Collections.singletonList("3")))));
@@ -319,15 +337,17 @@ public class TestObservableArrayListWriteOperations {
     //////////////////////////////////////////
     @Test
     public void addAllToEmptyList_shouldAddElements() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.addAll(Arrays.asList("1", "2", "3"));
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
@@ -335,15 +355,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void addAllVarArgsToEmptyList_shouldAddElements() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>();
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.addAll("1", "2", "3");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2", "3")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(0)), hasProperty("to", is(3)), hasProperty("removedElements", empty())));
@@ -351,15 +373,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void addAllToNonEmptyList_shouldAddElements() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.addAll(Arrays.asList("42", "43", "44"));
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2", "3", "42", "43", "44")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
@@ -367,15 +391,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void addAllVarArgsToNonEmptyList_shouldAddElements() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.addAll("42", "43", "44");
 
+        //then:
         assertThat(result, is(true));
         assertThat(list, is(Arrays.asList("1", "2", "3", "42", "43", "44")));
-
         assertThat(listener.calls, is(1));
         assertThat(listener.changes, hasSize(1));
         MatcherAssert.assertThat(listener.changes.get(0), allOf(hasProperty("from", is(3)), hasProperty("to", is(6)), hasProperty("removedElements", empty())));
@@ -383,15 +409,17 @@ public class TestObservableArrayListWriteOperations {
 
     @Test
     public void addAllEmptyList_shouldBeNoOp() {
+        //given:
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
         final TestListChangeListener listener = new TestListChangeListener();
         list.onChanged(listener);
 
+        //when:
         final boolean result = list.addAll(Collections.<String>emptyList());
 
+        //then:
         assertThat(result, is(false));
         assertThat(list, is(Arrays.asList("1", "2", "3")));
-
         assertThat(listener.calls, is(0));
     }
 
