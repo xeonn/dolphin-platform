@@ -5,7 +5,7 @@ import com.canoo.dolphin.mapping.Property;
 /**
  * Created by hendrikebbers on 20.01.16.
  */
-public class TestBeanWithProperties {
+public class BeanWithProperties {
 
     private Property<String> stringProperty;
 
@@ -13,11 +13,11 @@ public class TestBeanWithProperties {
 
     private Property<Double> doubleProperty;
 
-    private Property<TestBeanWithProperties> beanProperty;
+    private Property<BeanWithProperties> beanProperty;
 
-    private Property<TestBeanWithLists> listBeanProperty;
+    private Property<BeanWithLists> listBeanProperty;
 
-    public TestBeanWithProperties(GarbageCollection garbageCollection) {
+    public BeanWithProperties(GarbageCollection garbageCollection) {
         this.stringProperty = new PropertyWithGcSupport<>(garbageCollection);
         this.booleanProperty = new PropertyWithGcSupport<>(garbageCollection);
         this.doubleProperty = new PropertyWithGcSupport<>(garbageCollection);
@@ -37,11 +37,11 @@ public class TestBeanWithProperties {
         return doubleProperty;
     }
 
-    public Property<TestBeanWithProperties> beanProperty() {
+    public Property<BeanWithProperties> beanProperty() {
         return beanProperty;
     }
 
-    public Property<TestBeanWithLists> listBeanProperty() {
+    public Property<BeanWithLists> listBeanProperty() {
         return listBeanProperty;
     }
 }

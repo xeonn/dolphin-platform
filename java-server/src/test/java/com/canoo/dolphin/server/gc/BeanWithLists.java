@@ -5,7 +5,7 @@ import com.canoo.dolphin.collections.ObservableList;
 /**
  * Created by hendrikebbers on 20.01.16.
  */
-public class TestBeanWithLists {
+public class BeanWithLists {
 
     private ObservableList<String> stringList;
 
@@ -13,11 +13,11 @@ public class TestBeanWithLists {
 
     private ObservableList<Double> doubleList;
 
-    private ObservableList<TestBeanWithLists> beansList;
+    private ObservableList<BeanWithLists> beansList;
 
-    private ObservableList<TestBeanWithProperties> beansList2;
+    private ObservableList<BeanWithProperties> beansList2;
 
-    public TestBeanWithLists(GarbageCollection garbageCollection) {
+    public BeanWithLists(GarbageCollection garbageCollection) {
         stringList = new ObservableListWithGcSupport(garbageCollection);
         booleanList = new ObservableListWithGcSupport(garbageCollection);
         doubleList = new ObservableListWithGcSupport(garbageCollection);
@@ -37,11 +37,11 @@ public class TestBeanWithLists {
         return doubleList;
     }
 
-    public ObservableList<TestBeanWithLists> getBeansList() {
+    public ObservableList<BeanWithLists> getBeansList() {
         return beansList;
     }
 
-    public ObservableList<TestBeanWithProperties> getBeansList2() {
+    public ObservableList<BeanWithProperties> getBeansList2() {
         return beansList2;
     }
 }

@@ -5,7 +5,6 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,8 +14,6 @@ import static org.testng.Assert.assertTrue;
  * Created by hendrikebbers on 20.01.16.
  */
 public class TestGarbageCollection {
-
-    private Random random = new Random();
 
     @Test
     public void testForRootBean() {
@@ -31,7 +28,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties testBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties testBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(testBean, true);
 
         garbageCollection.gc();
@@ -51,7 +48,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties testBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties testBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(testBean, false);
 
         garbageCollection.gc();
@@ -72,7 +69,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties testBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties testBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(testBean, false);
         garbageCollection.onBeanCreated(testBean, false);
     }
@@ -90,7 +87,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties testBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties testBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(testBean, true);
 
         testBean.booleanProperty().set(false);
@@ -129,7 +126,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists testBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists testBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(testBean, true);
 
         testBean.getBooleanList().add(false);
@@ -170,10 +167,10 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties parentBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties parentBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties childBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         garbageCollection.gc();
@@ -181,7 +178,7 @@ public class TestGarbageCollection {
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
 
-        childBean = new TestBeanWithProperties(garbageCollection);
+        childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.beanProperty().set(childBean);
@@ -218,10 +215,10 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties childBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         garbageCollection.gc();
@@ -229,7 +226,7 @@ public class TestGarbageCollection {
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
 
-        childBean = new TestBeanWithProperties(garbageCollection);
+        childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.getBeansList2().add(childBean);
@@ -266,7 +263,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties bean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties bean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(bean, true);
 
         bean.beanProperty().set(bean);
@@ -285,7 +282,7 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists bean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists bean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(bean, true);
 
         bean.getBeansList().add(bean);
@@ -304,10 +301,10 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties parentBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties parentBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties childBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.beanProperty().set(childBean);
@@ -327,10 +324,10 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithLists childBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists childBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.getBeansList().add(childBean);
@@ -350,10 +347,10 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties childBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.getBeansList2().add(childBean);
@@ -373,16 +370,16 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties parentBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties parentBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties wrapperBean1 = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties wrapperBean1 = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(wrapperBean1, false);
 
-        TestBeanWithProperties wrapperBean2 = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties wrapperBean2 = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(wrapperBean2, false);
 
-        TestBeanWithProperties childBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.beanProperty().set(wrapperBean1);
@@ -404,16 +401,16 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithLists wrapperBean1 = new TestBeanWithLists(garbageCollection);
+        BeanWithLists wrapperBean1 = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(wrapperBean1, false);
 
-        TestBeanWithLists wrapperBean2 = new TestBeanWithLists(garbageCollection);
+        BeanWithLists wrapperBean2 = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(wrapperBean2, false);
 
-        TestBeanWithLists childBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists childBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(childBean, false);
 
         parentBean.getBeansList().add(wrapperBean1);
@@ -435,15 +432,15 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithProperties parentBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties parentBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithProperties lastWrapperBean = new TestBeanWithProperties(garbageCollection);
+        BeanWithProperties lastWrapperBean = new BeanWithProperties(garbageCollection);
         garbageCollection.onBeanCreated(lastWrapperBean, false);
         parentBean.beanProperty().set(lastWrapperBean);
 
         for (int i = 0; i < 1000; i++) {
-            TestBeanWithProperties wrapperBean = new TestBeanWithProperties(garbageCollection);
+            BeanWithProperties wrapperBean = new BeanWithProperties(garbageCollection);
             garbageCollection.onBeanCreated(wrapperBean, false);
             lastWrapperBean.beanProperty().set(wrapperBean);
             lastWrapperBean = wrapperBean;
@@ -464,15 +461,15 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithLists lastWrapperBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists lastWrapperBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(lastWrapperBean, false);
         parentBean.getBeansList().add(lastWrapperBean);
 
         for (int i = 0; i < 1000; i++) {
-            TestBeanWithLists wrapperBean = new TestBeanWithLists(garbageCollection);
+            BeanWithLists wrapperBean = new BeanWithLists(garbageCollection);
             garbageCollection.onBeanCreated(wrapperBean, false);
             lastWrapperBean.getBeansList().add(wrapperBean);
             lastWrapperBean = wrapperBean;
@@ -493,14 +490,14 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithLists lastWrapperBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists lastWrapperBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(lastWrapperBean, false);
         parentBean.getBeansList().add(lastWrapperBean);
 
-        int beanCount = addSomeContent(lastWrapperBean, 18, 0, garbageCollection);
+        int beanCount = addSomeContent(lastWrapperBean, 7, 0, garbageCollection);
 
         System.out.println("Added " + beanCount + " beans");
 
@@ -522,14 +519,14 @@ public class TestGarbageCollection {
         };
         GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
 
-        TestBeanWithLists parentBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists parentBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(parentBean, true);
 
-        TestBeanWithLists lastWrapperBean = new TestBeanWithLists(garbageCollection);
+        BeanWithLists lastWrapperBean = new BeanWithLists(garbageCollection);
         garbageCollection.onBeanCreated(lastWrapperBean, false);
         parentBean.getBeansList().add(lastWrapperBean);
 
-        int beanCount = addSomeContent(lastWrapperBean, 18, 0, garbageCollection);
+        int beanCount = addSomeContent(lastWrapperBean, 7, 0, garbageCollection);
 
         System.out.println("Added " + beanCount + " beans");
 
@@ -544,50 +541,139 @@ public class TestGarbageCollection {
         removedObjects.clear();
     }
 
-    private int addSomeContent(TestBeanWithLists parent, int maxDeep, int currentDeep, GarbageCollection garbageCollection) {
+    @Test
+    public void testMovingBeans() {
+        final List<Object> removedObjects = new ArrayList<>();
+        GarbageCollectionCallback gcConsumer = new GarbageCollectionCallback() {
+            @Override
+            public void onRemove(Set<Instance> instances) {
+                for (Instance instance : instances) {
+                    removedObjects.add(instance.getBean());
+                }
+            }
+        };
+        GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
+
+        BeanWithLists parentBeanA = new BeanWithLists(garbageCollection);
+        garbageCollection.onBeanCreated(parentBeanA, true);
+
+        BeanWithLists parentBeanB = new BeanWithLists(garbageCollection);
+        garbageCollection.onBeanCreated(parentBeanB, true);
+
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
+        garbageCollection.onBeanCreated(childBean, false);
+
+        parentBeanA.getBeansList2().add(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(0));
+        removedObjects.clear();
+
+        parentBeanB.getBeansList2().add(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(0));
+        removedObjects.clear();
+
+        parentBeanA.getBeansList2().remove(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(0));
+        removedObjects.clear();
+
+        parentBeanB.getBeansList2().remove(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(1));
+        assertTrue(removedObjects.get(0) == childBean);
+        removedObjects.clear();
+    }
+
+    @Test
+    public void testSubBeans() {
+        final List<Object> removedObjects = new ArrayList<>();
+        GarbageCollectionCallback gcConsumer = new GarbageCollectionCallback() {
+            @Override
+            public void onRemove(Set<Instance> instances) {
+                for (Instance instance : instances) {
+                    removedObjects.add(instance.getBean());
+                }
+            }
+        };
+        GarbageCollection garbageCollection = new GarbageCollection(gcConsumer);
+
+        BeanWithLists parentBeanA = new BeanWithLists(garbageCollection);
+        garbageCollection.onBeanCreated(parentBeanA, true);
+
+        BeanWithProperties childBean = new BeanWithProperties(garbageCollection);
+        garbageCollection.onBeanCreated(childBean, false);
+
+        BeanWithProperties childBeanB = new BeanWithProperties(garbageCollection);
+        garbageCollection.onBeanCreated(childBeanB, false);
+
+        childBean.beanProperty().set(childBeanB);
+        parentBeanA.getBeansList2().add(childBeanB);
+
+        parentBeanA.getBeansList2().add(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(0));
+        removedObjects.clear();
+
+        parentBeanA.getBeansList2().remove(childBean);
+
+        garbageCollection.gc();
+        assertThat(removedObjects, Matchers.hasSize(1));
+        assertTrue(removedObjects.get(0) == childBean);
+        removedObjects.clear();
+    }
+
+    private int addSomeContent(BeanWithLists parent, int maxDeep, int currentDeep, GarbageCollection garbageCollection) {
         int addedCount = 0;
         if (currentDeep >= maxDeep) {
             return addedCount;
         }
 
-        for (int i = 0; i < random.nextInt(maxDeep - currentDeep); i++) {
-            if (random.nextBoolean()) {
-                TestBeanWithLists child = new TestBeanWithLists(garbageCollection);
-                garbageCollection.onBeanCreated(child, false);
-                parent.getBeansList().add(child);
-                addedCount++;
-                addedCount = addedCount + addSomeContent(child, maxDeep, currentDeep + 1, garbageCollection);
-            }
-            if (random.nextBoolean()) {
-                TestBeanWithProperties child = new TestBeanWithProperties(garbageCollection);
-                garbageCollection.onBeanCreated(child, false);
-                parent.getBeansList2().add(child);
-                addedCount++;
-                addedCount = addedCount + addSomeContent(child, maxDeep, currentDeep + 1, garbageCollection);
-            }
+        for (int i = 0; i < maxDeep - currentDeep; i++) {
+            BeanWithLists listChild = new BeanWithLists(garbageCollection);
+            garbageCollection.onBeanCreated(listChild, false);
+            parent.getBeansList().add(listChild);
+            addedCount++;
+            addedCount = addedCount + addSomeContent(listChild, maxDeep, currentDeep + 1, garbageCollection);
+
+            BeanWithProperties propertyChild = new BeanWithProperties(garbageCollection);
+            garbageCollection.onBeanCreated(propertyChild, false);
+            parent.getBeansList2().add(propertyChild);
+            addedCount++;
+            addedCount = addedCount + addSomeContent(propertyChild, maxDeep, currentDeep + 1, true, garbageCollection);
+
+            BeanWithProperties propertyChild2 = new BeanWithProperties(garbageCollection);
+            garbageCollection.onBeanCreated(propertyChild2, false);
+            parent.getBeansList2().add(propertyChild2);
+            addedCount++;
+            addedCount = addedCount + addSomeContent(propertyChild2, maxDeep, currentDeep + 1, false, garbageCollection);
+
         }
         return addedCount;
     }
 
-    private int addSomeContent(TestBeanWithProperties parent, int maxDeep, int currentDeep, GarbageCollection garbageCollection) {
+    private int addSomeContent(BeanWithProperties parent, int maxDeep, int currentDeep, boolean addListBean, GarbageCollection garbageCollection) {
         int addedCount = 0;
         if (currentDeep >= maxDeep) {
             return addedCount;
         }
-        Random random = new Random();
-        if (random.nextBoolean()) {
-            TestBeanWithLists child = new TestBeanWithLists(garbageCollection);
+        if (addListBean) {
+            BeanWithLists child = new BeanWithLists(garbageCollection);
             garbageCollection.onBeanCreated(child, false);
             parent.listBeanProperty().set(child);
             addedCount++;
             addedCount = addedCount + addSomeContent(child, maxDeep, currentDeep + 1, garbageCollection);
-        }
-        if (random.nextBoolean()) {
-            TestBeanWithProperties child = new TestBeanWithProperties(garbageCollection);
+        } else {
+            BeanWithProperties child = new BeanWithProperties(garbageCollection);
             garbageCollection.onBeanCreated(child, false);
             parent.beanProperty().set(child);
             addedCount++;
-            addedCount = addedCount + addSomeContent(child, maxDeep, currentDeep + 1, garbageCollection);
+            addedCount = addedCount + addSomeContent(child, maxDeep, currentDeep + 1, !addListBean, garbageCollection);
         }
         return addedCount;
     }
