@@ -7,8 +7,10 @@ import javafx.beans.value.WritableBooleanValue;
 import javafx.beans.value.WritableDoubleValue;
 import javafx.beans.value.WritableIntegerValue;
 import javafx.beans.value.WritableStringValue;
-import static org.testng.Assert.*;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
 
 /**
  * Created by hendrikebbers on 29.09.15.
@@ -351,7 +353,37 @@ public class FXBinderTest {
         assertEquals(stringJavaFXProperty.get(), null);
     }
 
+    @Test
+    public void testJavaFXStringBidirectionalWithConverter() {
+        Property<Double> doubleDolphinProperty = new MockedProperty<>();
+        StringProperty stringJavaFXProperty = new SimpleStringProperty();
+        Converter<String, Double> doubleStringConverter = s -> s == null ? null : Double.parseDouble(s);
+        Converter<Double, String> stringDoubleConverter = d -> d == null ? null : d.toString();
+        BidirectionalConverter<Double, String> doubleStringBidirectionalConverter = new DefaultBidirectionalConverter<>(stringDoubleConverter, doubleStringConverter);
 
+
+        doubleDolphinProperty.set(0.1);
+        assertNotEquals(stringJavaFXProperty.get(), "0.1");
+
+        Binding binding = FXBinder.bind(stringJavaFXProperty).bidirectionalTo(doubleDolphinProperty, doubleStringBidirectionalConverter);
+        assertEquals(stringJavaFXProperty.get(), "0.1");
+
+        doubleDolphinProperty.set(0.2);
+        assertEquals(stringJavaFXProperty.get(), "0.2");
+
+        doubleDolphinProperty.set(null);
+        assertEquals(stringJavaFXProperty.get(), null);
+
+        stringJavaFXProperty.set("0.1");
+        assertEquals(doubleDolphinProperty.get(), 0.1);
+
+        stringJavaFXProperty.setValue("0.2");
+        assertEquals(doubleDolphinProperty.get(), 0.2);
+
+        binding.unbind();
+        doubleDolphinProperty.set(0.3);
+        assertEquals(stringJavaFXProperty.get(), "0.2");
+    }
 
     @Test
     public void testJavaFXIntegerUnidirectional() {

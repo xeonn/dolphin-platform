@@ -138,6 +138,9 @@ public class BeanRepositoryImpl implements BeanRepository{
     }
 
     public String getDolphinId(Object bean) {
+        if (bean == null) {
+            return null;
+        }
         try {
             return objectPmToDolphinPm.get(bean).getId();
         } catch (NullPointerException ex) {
