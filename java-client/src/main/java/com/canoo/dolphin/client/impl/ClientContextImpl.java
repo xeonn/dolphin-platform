@@ -15,8 +15,16 @@
  */
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.client.*;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.client.ClientBeanManager;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.State;
+import com.canoo.dolphin.impl.BeanBuilderImpl;
+import com.canoo.dolphin.impl.BeanRepositoryImpl;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.InternalAttributesBean;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -46,7 +54,7 @@ public class ClientContextImpl implements ClientContext {
 
     private State state = State.CREATED;
 
-    private List<WeakReference<ControllerProxy>> registeredWeakControllers;
+    private final List<WeakReference<ControllerProxy>> registeredWeakControllers;
 
     public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
         if (clientDolphin == null) {
@@ -142,14 +150,13 @@ public class ClientContextImpl implements ClientContext {
     }
 
     private void checkForInitializedState() {
-        if (state.equals(State.CREATED)) {
-            throw new IllegalStateException("The client is initialized!");
-        }
-        if (state.equals(State.DESTROYED)) {
-            throw new IllegalStateException("The client is disconnected!");
-        }
-        if (state.equals(State.DESTROYING)) {
-            throw new IllegalStateException("The client is disconnecting!");
+        switch (state) {
+            case CREATED:
+                throw new IllegalStateException("The client is initialized!");
+            case DESTROYED:
+                throw new IllegalStateException("The client is disconnected!");
+            case DESTROYING:
+                throw new IllegalStateException("The client is disconnecting!");
         }
     }
 }

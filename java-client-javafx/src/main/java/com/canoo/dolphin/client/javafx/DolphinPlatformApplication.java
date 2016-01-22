@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.client.ClientContext;
@@ -15,11 +30,10 @@ public abstract class DolphinPlatformApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        super.init();
         try {
             clientContext = ClientContextFactory.connect(getClientConfiguration()).get();
         } catch (Exception e) {
-            initializationException = new ClientInitializationException("Can't initialize Dolphin Platform Context", e);
+            initializationException = new ClientInitializationException("Can not initialize Dolphin Platform Context", e);
         }
     }
 
@@ -44,7 +58,7 @@ public abstract class DolphinPlatformApplication extends Application {
 
     protected abstract void start(Stage primaryStage, ClientContext clientContext) throws Exception;
 
-    public void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
+    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
         initializationException.printStackTrace();
         System.exit(-1);
     }

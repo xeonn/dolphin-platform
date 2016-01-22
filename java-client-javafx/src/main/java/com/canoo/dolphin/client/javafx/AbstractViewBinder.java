@@ -15,7 +15,10 @@
  */
 package com.canoo.dolphin.client.javafx;
 
-import com.canoo.dolphin.client.*;
+import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerActionException;
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.Param;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
