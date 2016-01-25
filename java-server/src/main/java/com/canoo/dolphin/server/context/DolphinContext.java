@@ -269,6 +269,7 @@ public class DolphinContext {
         for (Command command : commands) {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
+
         String jsonResponse = dolphin.getServerConnector().getCodec().encode(results);
         resp.getOutputStream().print(jsonResponse);
     }

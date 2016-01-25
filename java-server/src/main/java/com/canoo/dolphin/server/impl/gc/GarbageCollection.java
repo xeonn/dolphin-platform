@@ -1,4 +1,19 @@
-package com.canoo.dolphin.server.gc;
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.canoo.dolphin.server.impl.gc;
 
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.impl.IdentitySet;
@@ -12,6 +27,12 @@ import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 
+/**
+ * The garbage collection for Dolphin Platform models. Whenever a new Dolphin bean {@link com.canoo.dolphin.mapping.DolphinBean}
+ * has been created or the hierarchy in a Dolphin model changes the GC will check if the mutated models are still
+ * referenced by a root model. In this case a root model is a model as it's defined as a model for a MVG group in
+ * Dolphin Platform (see {@link com.canoo.dolphin.server.DolphinModel}).
+ */
 public class GarbageCollection {
 
     private IdentitySet<Instance> removeOnGC;
@@ -30,6 +51,10 @@ public class GarbageCollection {
 
     private static final List<Class<? extends Serializable>> BASIC_TYPES = Arrays.asList(String.class, Number.class, Boolean.class);
 
+    /**
+     * Constructor
+     * @param onRemove callback that will be called for each garbage collection call.
+     */
     public GarbageCollection(GarbageCollectionCallback onRemove) {
         this.onRemove = onRemove;
         removeOnGC = new IdentitySet<>();
@@ -40,6 +65,12 @@ public class GarbageCollection {
         listFieldCache = new IdentityHashMap<>();
     }
 
+    /**
+     * This method must be called for each new Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean}).
+     * Normally beans are created by {@link com.canoo.dolphin.BeanManager#create(Class)}
+     * @param bean the bean that was created
+     * @param rootBean if this is true the bean is handled as a root bean. This bean don't need a reference.
+     */
     public synchronized void onBeanCreated(Object bean, boolean rootBean) {
         if (allInstances.containsKey(bean)) {
             throw new RuntimeException("Bean instance is already managed!");
@@ -62,6 +93,12 @@ public class GarbageCollection {
         }
     }
 
+    /**
+     * This method must be called for each value change of a {@link Property}
+     * @param property the property
+     * @param oldValue the old value
+     * @param newValue the new value
+     */
     public synchronized void onPropertyValueChanged(Property property, Object oldValue, Object newValue) {
         if (oldValue != null && !isBasicType(oldValue.getClass())) {
             Instance instance = getInstance(oldValue);
@@ -86,7 +123,7 @@ public class GarbageCollection {
         if (newValue != null && !isBasicType(newValue.getClass())) {
             Instance instance = getInstance(newValue);
             Reference reference = new PropertyReference(propertyToParent.get(property), property, instance);
-            if (reference.hasCircularDependency()) {
+            if (reference.hasCircularReference()) {
                 throw new CircularDependencyException("Circular dependency detected!");
             }
             instance.getReferences().add(reference);
@@ -94,11 +131,16 @@ public class GarbageCollection {
         }
     }
 
+    /**
+     * This method must be called for each item that is added to a {@link ObservableList} that is part of a Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean})
+     * @param list the list
+     * @param value the added item
+     */
     public synchronized void onAddedToList(ObservableList list, Object value) {
         if (value != null && !isBasicType(value.getClass())) {
             Instance instance = getInstance(value);
             Reference reference = new ListReference(listToParent.get(list), list, instance);
-            if (reference.hasCircularDependency()) {
+            if (reference.hasCircularReference()) {
                 throw new CircularDependencyException("Circular dependency detected!");
             }
             instance.getReferences().add(reference);
@@ -106,6 +148,11 @@ public class GarbageCollection {
         }
     }
 
+    /**
+     * This method must be called for each item that is removed to a {@link ObservableList} that is part of a Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean})
+     * @param list the list
+     * @param value the removed item
+     */
     public synchronized void onRemovedFromList(ObservableList list, Object value) {
         if (value != null && !isBasicType(value.getClass())) {
             Instance instance = getInstance(value);
@@ -129,6 +176,11 @@ public class GarbageCollection {
         }
     }
 
+    /**
+     * Calling this method triggers the garbage collection. For all dolphin beans (see {@link com.canoo.dolphin.mapping.DolphinBean}) that
+     * are not referenced by a root bean (see {@link com.canoo.dolphin.server.DolphinModel}) the defined {@link GarbageCollectionCallback} (see constructor)
+     * will be called.
+     */
     public synchronized void gc() {
         onRemove.onRemove(removeOnGC);
         for (Instance removedInstance : removeOnGC) {
