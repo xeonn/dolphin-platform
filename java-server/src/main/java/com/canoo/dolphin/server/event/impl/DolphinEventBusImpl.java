@@ -54,7 +54,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     public <T> void publish(final Topic<T> topic, final T data) {
         if(topic == null) {
-            throw new IllegalArgumentException("topic mustn't be null!");
+            throw new IllegalArgumentException("topic must not be null!");
         }
         eventBus.publish(sender, new MessageImpl(topic, data));
     }
@@ -65,10 +65,10 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
         if(topic == null) {
-            throw new IllegalArgumentException("topic mustn't be null!");
+            throw new IllegalArgumentException("topic must not be null!");
         }
         if(handler == null) {
-            throw new IllegalArgumentException("handler mustn't be empty!");
+            throw new IllegalArgumentException("handler must not be empty!");
         }
         String dolphinId = getDolphinId();
         if (dolphinId == null) {
@@ -83,7 +83,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     public void unsubscribeSession(final String dolphinId) {
         if(StringUtil.isBlank(dolphinId)) {
-            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+            throw new IllegalArgumentException("dolphinId must not be empty!");
         }
         Receiver receiver = receiverPerSession.remove(dolphinId);
         if (receiver != null) {
@@ -93,7 +93,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private Receiver getOrCreateReceiverInSession(String dolphinId) {
         if(StringUtil.isBlank(dolphinId)) {
-            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+            throw new IllegalArgumentException("dolphinId must not be empty!");
         }
         Receiver receiver = receiverPerSession.get(dolphinId);
         if (receiver == null) {
