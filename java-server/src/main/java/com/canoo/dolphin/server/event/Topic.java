@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Topic<T> {
 
-    private String name;
+    private final String name;
 
     public Topic() {
         this(UUID.randomUUID().toString());
@@ -29,7 +29,7 @@ public class Topic<T> {
 
         Topic<?> topic = (Topic<?>) o;
 
-        return !(name != null ? !name.equals(topic.name) : topic.name != null);
+        return name != null ? name.equals(topic.name) : topic.name == null;
 
     }
 

@@ -43,5 +43,5 @@ public interface DolphinEventBus {
      * @param topic   the topic
      * @param handler the handler
      */
-    <T> Subscription subscribe(Topic<T> topic, MessageListener<T> handler);
+    <T> Subscription subscribe(Topic<T> topic, MessageListener<? super T> handler);
 }

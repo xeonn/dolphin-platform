@@ -63,7 +63,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         eventBus.publish(sender, new TaskTrigger(){});
     }
 
-    public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<T> handler) {
+    public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
         if(topic == null) {
             throw new IllegalArgumentException("topic mustn't be null!");
         }
