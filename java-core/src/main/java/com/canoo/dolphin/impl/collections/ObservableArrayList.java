@@ -112,13 +112,6 @@ public class ObservableArrayList<E> implements ObservableList<E> {
     }
 
     @Override
-    public List<E> clearContent() {
-        List<E> removed = new ArrayList<>(this);
-        clear();
-        return removed;
-    }
-
-    @Override
     public int size() {
         return list.size();
     }
