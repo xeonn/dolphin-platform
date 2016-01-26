@@ -100,6 +100,7 @@ public class ClientContextImpl implements ClientContext {
         if(destroyed) {
             throw new IllegalStateException("The client is disconnected!");
         }
+        clientDolphin.stopPushListening();
         return invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME).thenAccept(v -> destroyed = true);
     }
 
