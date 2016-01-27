@@ -15,7 +15,9 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.container.ContainerManager;
+import org.opendolphin.core.comm.Command;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +71,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager, request.getServletContext());
+                currentContext = new DolphinContext(containerManager);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);
@@ -81,7 +83,18 @@ public class DolphinContextHandler {
         sessionIdThreadLocal.set(request.getSession().getId());
 
         try {
-            currentContext.handleRequest(request, response);
+            response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
+
+            //copied from DolphinServlet
+            StringBuilder requestJson = new StringBuilder();
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+                requestJson.append(line).append("\n");
+            }
+            List<Command> commands = currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString());
+            List<Command> results = currentContext.handle(commands);
+            String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
+            response.getOutputStream().print(jsonResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error in Dolphin command handling", e);
         } finally {
