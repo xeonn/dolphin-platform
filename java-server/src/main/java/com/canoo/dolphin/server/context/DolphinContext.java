@@ -42,7 +42,6 @@ import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerConnector;
-import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
@@ -50,9 +49,6 @@ import org.opendolphin.core.server.comm.CommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -77,13 +73,10 @@ public class DolphinContext {
 
     private String id;
 
-    private ServletContext servletContext;
-
     private DolphinContextTaskExecutor taskExecutor;
 
-    public DolphinContext(ContainerManager containerManager, ServletContext servletContext) {
+    public DolphinContext(ContainerManager containerManager) {
         this.containerManager = containerManager;
-        this.servletContext = servletContext;
 
         //ID
         id = UUID.randomUUID().toString();
@@ -112,6 +105,7 @@ public class DolphinContext {
 
         //Init TaskExecutor
         taskExecutor = new DolphinContextTaskExecutor();
+
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -218,7 +212,7 @@ public class DolphinContext {
         DolphinEventBusImpl.getInstance().release();
     }
 
-    public ServerDolphin getDolphin() {
+    public DefaultServerDolphin getDolphin() {
         return dolphin;
     }
 
@@ -238,10 +232,7 @@ public class DolphinContext {
         return beanRepository;
     }
 
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
-
+    @Deprecated
     public DolphinContextTaskExecutor getTaskExecutor() {
         return taskExecutor;
     }
@@ -254,22 +245,12 @@ public class DolphinContext {
         return DolphinContextHandler.getCurrentContext();
     }
 
-    public void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-
-        resp.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, id);
-
-        //copied from DolphinServlet
-        StringBuilder requestJson = new StringBuilder();
-        String line;
-        while ((line = req.getReader().readLine()) != null) {
-            requestJson.append(line).append("\n");
-        }
-        List<Command> commands = dolphin.getServerConnector().getCodec().decode(requestJson.toString());
+    public List<Command> handle(List<Command> commands) {
         List<Command> results = new LinkedList<>();
         for (Command command : commands) {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
-        String jsonResponse = dolphin.getServerConnector().getCodec().encode(results);
-        resp.getOutputStream().print(jsonResponse);
+        return results;
     }
+
 }

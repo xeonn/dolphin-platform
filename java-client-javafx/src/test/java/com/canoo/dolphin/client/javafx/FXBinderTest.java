@@ -16,6 +16,7 @@
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.impl.MockedProperty;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.property.BooleanProperty;
@@ -37,7 +38,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created by hendrikebbers on 29.09.15.

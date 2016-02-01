@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.event;
+package com.canoo.dolphin.validation;
 
-/**
- * An message of the dolphin platform event bus (see {@link com.canoo.dolphin.server.event.DolphinEventBus}).
- */
-public interface Message<T> {
+import javax.validation.ConstraintValidatorContext;
+import javax.validation.constraints.AssertFalse;
 
+public final class AssertFalsePropertyValidator extends AbstractPropertyValidator<AssertFalse, Boolean> {
 
-    /**
-     * Returns the topic of the event
-     * @return the topic
-     */
-    Topic<T> getTopic();
+    public AssertFalsePropertyValidator() {
+        super(Boolean.class);
+    }
 
-    /**
-     * Returns the data of the message
-     * @return the data
-     */
-    T getData();
+    @Override
+    protected boolean checkValid(Boolean property, ConstraintValidatorContext context) {
+        return !property;
+    }
 
-    /**
-     * Returns the timestamp of the send date of this message
-     * @return the timestamp
-     */
-    long getSendTimestamp();
 }
+

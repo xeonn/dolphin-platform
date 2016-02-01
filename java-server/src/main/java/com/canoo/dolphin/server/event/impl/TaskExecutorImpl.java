@@ -20,18 +20,10 @@ import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.event.ControllerTask;
 import com.canoo.dolphin.server.event.TaskExecutor;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by hendrikebbers on 15.09.15.
- */
+@Deprecated
 public class TaskExecutorImpl implements TaskExecutor {
 
     private static TaskExecutorImpl Instance = new TaskExecutorImpl();
