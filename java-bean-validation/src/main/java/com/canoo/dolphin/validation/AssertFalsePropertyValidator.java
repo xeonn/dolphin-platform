@@ -18,8 +18,14 @@ package com.canoo.dolphin.validation;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.AssertFalse;
 
+/**
+ * Validator that adds Dolphin Platform property support for the {@link AssertFalse} annotation.
+ */
 public final class AssertFalsePropertyValidator extends AbstractPropertyValidator<AssertFalse, Boolean> {
 
+    /**
+     * constructor
+     */
     public AssertFalsePropertyValidator() {
         super(Boolean.class);
     }

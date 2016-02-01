@@ -22,10 +22,19 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import java.lang.annotation.Annotation;
 
+/**
+ * Abstract class for valdition of Dolphin Platform properties
+ * @param <T> defines the annotation of the constraints
+ * @param <U> the data type that can be validated by this class
+ */
 public abstract class AbstractPropertyValidator<T extends Annotation, U> implements ConstraintValidator<T, Property> {
 
     private Class<U> supportedValueClass;
 
+    /**
+     * Constructor
+     * @param supportedValueClass the data type that can be validated by this class
+     */
     public AbstractPropertyValidator(Class<U> supportedValueClass) {
         this.supportedValueClass = supportedValueClass;
     }
@@ -34,9 +43,19 @@ public abstract class AbstractPropertyValidator<T extends Annotation, U> impleme
     public void initialize(T constraintAnnotation) {
     }
 
+    /**
+     * Checks if the given value is valid
+     * @param value the value
+     * @param context the context
+     * @return true if the value is valid
+     */
     protected abstract boolean checkValid(U value,
                            ConstraintValidatorContext context);
 
+    /**
+     * Returns true if null should be valid
+     * @return true if null should be valid
+     */
     protected boolean onNullValue() {
         return true;
     }

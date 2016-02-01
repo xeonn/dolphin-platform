@@ -21,6 +21,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.Null;
 
+/**
+ * Validator that adds Dolphin Platform property support for the {@link Null} annotation.
+ */
 public final class NullPropertyValidator implements ConstraintValidator<Null, Property> {
 
     @Override

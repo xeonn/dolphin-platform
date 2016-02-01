@@ -18,8 +18,14 @@ package com.canoo.dolphin.validation;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.AssertTrue;
 
+/**
+ * Validator that adds Dolphin Platform property support for the {@link AssertTrue} annotation.
+ */
 public final class AssertTruePropertyValidator extends AbstractPropertyValidator<AssertTrue, Boolean> {
 
+    /**
+     * constructor
+     */
     public AssertTruePropertyValidator() {
         super(Boolean.class);
     }

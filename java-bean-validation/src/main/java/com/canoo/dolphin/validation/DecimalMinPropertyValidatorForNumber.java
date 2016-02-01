@@ -18,16 +18,23 @@ package com.canoo.dolphin.validation;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.DecimalMin;
 
+/**
+ * Validator that adds Dolphin Platform property support for the {@link DecimalMin} annotation.
+ */
 public final class DecimalMinPropertyValidatorForNumber extends AbstractPropertyValidator<DecimalMin, Number> {
 
     private double minValue;
 
     private boolean inclusive;
 
+    /**
+     * constructor
+     */
     public DecimalMinPropertyValidatorForNumber() {
         super(Number.class);
     }
 
+    @Override
     public void initialize(DecimalMin minValue) {
         try {
             this.minValue = Double.parseDouble(minValue.value());

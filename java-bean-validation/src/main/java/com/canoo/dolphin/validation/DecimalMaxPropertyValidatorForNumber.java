@@ -19,16 +19,23 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import javax.validation.constraints.DecimalMax;
 
+/**
+ * Validator that adds Dolphin Platform property support for the {@link DecimalMax} annotation.
+ */
 public final class DecimalMaxPropertyValidatorForNumber extends AbstractPropertyValidator<DecimalMax, Number> {
 
     private double maxValue;
 
     private boolean inclusive;
 
+    /**
+     * constructor
+     */
     public DecimalMaxPropertyValidatorForNumber() {
         super(Number.class);
     }
 
+    @Override
     public void initialize(DecimalMax maxValue) {
         try {
             this.maxValue = Double.parseDouble(maxValue.value());
