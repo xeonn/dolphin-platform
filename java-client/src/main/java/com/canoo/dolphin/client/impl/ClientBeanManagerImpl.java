@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,10 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ClientBeanManager;
-import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.impl.*;
-import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
-import com.canoo.dolphin.internal.PresentationModelBuilder;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.OnFinishedHandler;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
 
 public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBeanManager {
 

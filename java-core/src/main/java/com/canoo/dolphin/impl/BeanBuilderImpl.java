@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,20 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
-import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;
+import com.canoo.dolphin.internal.BeanBuilder;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.DolphinEventHandler;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.internal.UpdateSource;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
-import com.canoo.dolphin.internal.*;
 import com.canoo.dolphin.mapping.Property;
-import org.opendolphin.core.*;
+import org.opendolphin.core.Attribute;
+import org.opendolphin.core.PresentationModel;
 
 
 /**
