@@ -139,10 +139,10 @@ public class ClientContextImpl implements ClientContext {
             try {
                 //TODO: Hack - When calling the PlatformConstants.DISCONNECT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
                 state = State.DESTROYED;
-                result.complete(null);
                 invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME);
+                result.complete(null);
             } catch (Exception e) {
-                result.obtrudeException(e);
+                result.completeExceptionally(e);
             }
         });
 
