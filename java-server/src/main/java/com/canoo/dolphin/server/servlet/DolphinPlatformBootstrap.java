@@ -51,8 +51,8 @@ public class DolphinPlatformBootstrap {
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(new DolphinSessionHandlerCleaner());
         servletContext.addListener(new DolphinContextCleaner());
+        servletContext.addListener(new DolphinSessionHandlerCleaner());
 
         ControllerRepository.init();
 
