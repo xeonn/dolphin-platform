@@ -19,7 +19,10 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import org.opendolphin.StringUtil;
 
 import java.util.concurrent.CompletableFuture;

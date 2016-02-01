@@ -24,4 +24,5 @@ public interface ClientContext {
     ClientBeanManager getBeanManager();
 
     CompletableFuture<Void> disconnect();
+
 }
