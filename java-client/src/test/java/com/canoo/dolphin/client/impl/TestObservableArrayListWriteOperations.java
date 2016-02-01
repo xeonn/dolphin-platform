@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -370,7 +371,7 @@ public class TestObservableArrayListWriteOperations {
     public void addAllWithNull_shouldThrowException() {
         final ObservableArrayList<String> list = new ObservableArrayList<>("1", "2", "3");
 
-        list.addAll(null);
+        list.addAll((Collection<? extends String>) null);
     }
 
 
