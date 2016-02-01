@@ -15,16 +15,32 @@
  */
 package com.canoo.dolphin.client;
 
+/**
+ * This exception is thrown if a error occurs while creating the {@link ClientContext}
+ */
 public class ClientInitializationException extends RuntimeException {
 
+    /**
+     * constructor
+     * @param message the error message
+     */
     public ClientInitializationException(String message) {
         super(message);
     }
 
+    /**
+     * constructor
+     * @param message the error message
+     * @param cause the cause
+     */
     public ClientInitializationException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * constructor
+     * @param cause the cause
+     */
     public ClientInitializationException(Throwable cause) {
         super(cause);
     }

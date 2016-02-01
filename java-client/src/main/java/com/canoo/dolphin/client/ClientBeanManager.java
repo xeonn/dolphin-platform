@@ -17,6 +17,9 @@ package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
 
+/**
+ * This interface is deprecated and will be removed in a future version
+ */
 @Deprecated
 public interface ClientBeanManager extends BeanManager {
 

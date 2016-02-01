@@ -16,18 +16,31 @@
 package com.canoo.dolphin.client;
 
 /**
- * Created by hendrikebbers on 11.01.16.
+ * This exception is thrown when a client can't disconnect
  */
 public class ClientShutdownException extends Exception {
 
+    /**
+     * constructor
+     * @param message the error message
+     */
     public ClientShutdownException(String message) {
         super(message);
     }
 
+    /**
+     * constructor
+     * @param message the error message
+     * @param cause the cause
+     */
     public ClientShutdownException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * constructor
+     * @param cause the cause
+     */
     public ClientShutdownException(Throwable cause) {
         super(cause);
     }
