@@ -42,93 +42,174 @@ import javafx.collections.ObservableList;
 import static com.canoo.dolphin.util.Assert.requireNonNull;
 
 /**
- * Method to create JavaFX property wrappers for dolphin platform properties
- * This will be changed in the next version to a fluent API like FXBinder.bind(jfxp).to(dp);
+ * Utility class to create uniderctional and bidirectional bindings between JavaFX and Dolphin Platform properties.
  */
 public final class FXBinder {
 
+    /**
+     * private constructor.
+     */
     private FXBinder() {
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param list the JavaFX list
+     * @param <T> the data type of the list
+     * @return a binder that can be used by the fluent API to create binding.
+     */
     public static <T> JavaFXListBinder<T> bind(ObservableList<T> list) {
         requireNonNull(list, "list");
         return new DefaultJavaFXListBinder(list);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param writableDoubleValue the javafx property
+     * @return a binder that can be used by the fluent API to create binding.
+     */
     public static JavaFXBinder<Double> bind(WritableDoubleValue writableDoubleValue) {
         requireNonNull(writableDoubleValue, "writableDoubleValue");
         return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param writableDoubleValue the javafx property
+     * @return a binder that can be used by the fluent API to create binding.
+     */
     public static JavaFXBinder<Float> bind(WritableFloatValue writableDoubleValue) {
         requireNonNull(writableDoubleValue, "writableDoubleValue");
         return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param writableDoubleValue the javafx property
+     * @return a binder that can be used by the fluent API to create binding.
+     */
     public static JavaFXBinder<Integer> bind(WritableIntegerValue writableDoubleValue) {
         requireNonNull(writableDoubleValue, "writableDoubleValue");
         return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param writableDoubleValue the javafx property
+     * @return a binder that can be used by the fluent API to create binding.
+     */
     public static JavaFXBinder<Long> bind(WritableLongValue writableDoubleValue) {
         requireNonNull(writableDoubleValue, "writableDoubleValue");
         return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the javafx property
+     * @returna binder that can be used by the fluent API to create binding.
+     */
     public static NumericJavaFXBidirectionaBinder<Double> bind(DoubleProperty property) {
         requireNonNull(property, "property");
         return new DoubleJavaFXBidirectionalBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the javafx property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericJavaFXBidirectionaBinder<Float> bind(FloatProperty property) {
         requireNonNull(property, "property");
         return new FloatJavaFXBidirectionalBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the javafx property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericJavaFXBidirectionaBinder<Integer> bind(IntegerProperty property) {
         requireNonNull(property, "property");
         return new IntegerJavaFXBidirectionalBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the javafx property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericJavaFXBidirectionaBinder<Long> bind(LongProperty property) {
         requireNonNull(property, "property");
         return new LongJavaFXBidirectionalBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param writableDoubleValue the javafx property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static <T> JavaFXBinder<T> bind(WritableValue<T> writableDoubleValue) {
         requireNonNull(writableDoubleValue, "writableDoubleValue");
         return new DefaultJavaFXBinder(writableDoubleValue);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the javafx property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static <T> JavaFXBidirectionalBinder<T> bind(javafx.beans.property.Property<T> property) {
         requireNonNull(property, "property");
         return new DefaultJavaFXBidirectionalBinder<>(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the Dolphin Platform property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static <T> DolphinBinder<T> bind(Property<T> property) {
         requireNonNull(property, "property");
         return new DefaultDolphinBinder<>(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the Dolphin Platform property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericDolphinBinder<Double> bindDouble(Property<Double> property) {
         requireNonNull(property, "property");
         return new DoubleDolphinBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the Dolphin Platform property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericDolphinBinder<Float> bindFloat(Property<Float> property) {
         requireNonNull(property, "property");
         return new FloatDolphinBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the Dolphin Platform property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericDolphinBinder<Integer> bindInteger(Property<Integer> property) {
         requireNonNull(property, "property");
         return new IntegerDolphinBinder(property);
     }
 
+    /**
+     * Start point of the fluent API to create a binding.
+     * @param property the Dolphin Platform property
+     * @return binder that can be used by the fluent API to create binding.
+     */
     public static NumericDolphinBinder<Long> bindLong(Property<Long> property) {
         requireNonNull(property, "property");
         return new LongDolphinBinder(property);
     }
-
-
 }

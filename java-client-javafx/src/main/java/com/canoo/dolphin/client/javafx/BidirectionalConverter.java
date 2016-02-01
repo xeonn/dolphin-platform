@@ -16,12 +16,24 @@
 package com.canoo.dolphin.client.javafx;
 
 /**
- * Created by hendrikebbers on 27.09.15.
+ * Defines a converter for a bidirectional binding. This converter type can be used to bind a JavaFX property
+ * bidirectional to a Dolphin Platform property that defines a different data type.
+ * @param <T> data type of the first property
+ * @param <U> data type of the second property
  */
 public interface BidirectionalConverter<T, U>  extends Converter<T, U> {
 
+    /**
+     * Converts a value of the second data type to a value of the first data type.
+     * @param value the given value
+     * @return the converted value.
+     */
     T convertBack(U value);
 
+    /**
+     * Creates a new {@link BidirectionalConverter} with inverted data types.
+     * @return a new {@link BidirectionalConverter} with inverted data types.
+     */
     default BidirectionalConverter<U, T> invert() {
         final BidirectionalConverter<T, U> converter = this;
         return new BidirectionalConverter<U, T>() {

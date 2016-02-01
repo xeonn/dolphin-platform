@@ -18,10 +18,18 @@ package com.canoo.dolphin.client.javafx;
 import com.canoo.dolphin.mapping.Property;
 
 /**
- * Created by hendrikebbers on 27.09.15.
+ * This class can be used to create a unidirectional or bidirectional binding between a JavaFX property and a
+ * Dolphin Platform property. Normally a developer don't need to create new instances of this class since it's part of a
+ * fluent API. To create bindings see {@link FXBinder}
+ * @param <S> value type for the properties
  */
 public interface JavaFXBidirectionalBinder<S> extends JavaFXBinder<S> {
 
+    /**
+     * Bind the given JavaFX property bidirectional to the Dolphin Platform property
+     * @param dolphinProperty the Dolphin Platform property
+     * @return the binding
+     */
     default Binding bidirectionalTo(Property<S> dolphinProperty) {
         return bidirectionalTo(dolphinProperty, new BidirectionalConverter<S, S>() {
             @Override
@@ -36,6 +44,13 @@ public interface JavaFXBidirectionalBinder<S> extends JavaFXBinder<S> {
         });
     }
 
+    /**
+     * Bind the given JavaFX property bidirectional to the Dolphin Platform property
+     * @param property the Dolphin Platform property
+     * @param converter a converter.
+     * @param <T> converted type
+     * @return the binding.
+     */
     <T> Binding bidirectionalTo(final Property<T> property, BidirectionalConverter<T, S> converter);
 
 }

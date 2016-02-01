@@ -23,7 +23,7 @@ public interface MessageListener<T> {
 
     /**
      * Method will be called whenever a message is received
-     * @param message
+     * @param message the new message
      */
     void onMessage(Message<T> message);
 }

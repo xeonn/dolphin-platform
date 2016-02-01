@@ -7,10 +7,29 @@ import javafx.scene.Node;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Defines an abstract class that can be used to create a FXML based view that is bound to a Dolphin Platform controller
+ * on the server and shares a model with the controller.
+ *
+ * By creating new instances of classes that extend this class a JavaFX view will be automatically created by using the
+ * given FXML file. In addition the {@link javafx.fxml.FXML} annotation can be used in that classes.
+ *
+ * For information about the Dolphin Platform based behavior of this class see {@link AbstractViewBinder}.
+ *
+ * @param <M> type of the model.
+ */
 public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
 
     private Node rootNode;
 
+    /**
+     * Constructor
+     * @param clientContext the DOlphin Platform client context
+     * @param controllerName the controller name of the Dolphin Platform controller definition on the server that should
+     *                       be used with this view.
+     * @param fxmlLocation the location (url) of the FXML file that defines the layout of the view.
+     * @throws IOException if the fxml file can't be loaded.
+     */
     public AbstractFXMLViewBinder(ClientContext clientContext, String controllerName, URL fxmlLocation) throws IOException {
         super(clientContext, controllerName);
         FXMLLoader loader = new FXMLLoader(fxmlLocation);
@@ -18,6 +37,10 @@ public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
         rootNode = loader.load();
     }
 
+    /**
+     * Returns the root node of the view as it's define dby the FXML.
+     * @return the root node.
+     */
     public Node getRootNode() {
         return rootNode;
     }

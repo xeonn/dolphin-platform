@@ -72,6 +72,10 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         return TaskExecutorImpl.getInstance();
     }
 
+    /**
+     * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
+     * @return
+     */
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {

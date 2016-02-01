@@ -23,11 +23,14 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
- * Created by hendrikebbers on 29.09.15.
+ * A util class that can be used to create JavaFX properties and lists as wrapper around Dolphin Platform properties and lists.
  */
 public class FXWrapper {
 
 
+    /**
+     * private constructor
+     */
     private FXWrapper() {
     }
 

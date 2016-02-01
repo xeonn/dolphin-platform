@@ -18,10 +18,18 @@ package com.canoo.dolphin.client.javafx;
 import javafx.beans.value.ObservableValue;
 
 /**
- * Created by hendrikebbers on 27.09.15.
+ * This class can be used to create a unidirectional or bidirectional binding between a JavaFX property and a
+ * Dolphin Platform property. Normally a developer don't need to create new instances of this class since it's part of a
+ * fluent API. To create bindings see {@link FXBinder}
+ * @param <S> datatype of the JavaFX property
  */
 public interface DolphinBinder<S> {
 
+    /**
+     * Create a unidirectional binding between the given JavaFX property and the Dolphin Platform property.
+     * @param observableValue the javaFX property
+     * @return the binding
+     */
     default Binding to(final ObservableValue<? extends S> observableValue) {
         if (observableValue == null) {
             throw new IllegalArgumentException("observableValue must not be null");
@@ -29,8 +37,20 @@ public interface DolphinBinder<S> {
         return to(observableValue, n -> n);
     }
 
+    /**
+     * Create a unidirectional binding between the given JavaFX property and the Dolphin Platform property.
+     * @param observableValue the javaFX property
+     * @param converter a converter
+     * @param <T> type of the converted data
+     * @return the binding
+     */
     <T> Binding to(final ObservableValue<T> observableValue, final Converter<? super T, ? extends S> converter);
 
+    /**
+     * Create a bidirectional binding between the given JavaFX property and the Dolphin Platform property.
+     * @param property  the javaFX property
+     * @return the binding
+     */
     default Binding bidirectionalTo(final javafx.beans.property.Property<S> property) {
         if (property == null) {
             throw new IllegalArgumentException("javaFxProperty must not be null");
@@ -48,5 +68,12 @@ public interface DolphinBinder<S> {
         });
     }
 
+    /**
+     * Create a bidirectional binding between the given JavaFX property and the Dolphin Platform property.
+     * @param property the javaFX property
+     * @param converter the converter
+     * @param <T> type of the converted data
+     * @return the binding
+     */
     <T> Binding bidirectionalTo(final javafx.beans.property.Property<T> property, final BidirectionalConverter<T, S> converter);
 }

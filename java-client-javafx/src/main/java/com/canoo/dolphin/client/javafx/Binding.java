@@ -15,9 +15,15 @@
  */
 package com.canoo.dolphin.client.javafx;
 
+/**
+ * Defines a function interface that is used to handle an unbind of an binding.
+ */
 @FunctionalInterface
 public interface Binding {
 
+    /**
+     * unbindes the binding that is defined by this {@link Binding} instance.
+     */
     void unbind();
 
 }
