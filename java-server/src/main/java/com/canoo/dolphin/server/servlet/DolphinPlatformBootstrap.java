@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ public class DolphinPlatformBootstrap {
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(new DolphinSessionHandlerCleaner());
         servletContext.addListener(new DolphinContextCleaner());
+        servletContext.addListener(new DolphinSessionHandlerCleaner());
 
         ControllerRepository.init();
 

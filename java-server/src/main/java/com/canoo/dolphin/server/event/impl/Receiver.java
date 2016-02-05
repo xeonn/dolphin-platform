@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package com.canoo.dolphin.server.event.impl;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
+import com.canoo.dolphin.server.event.Topic;
 import groovyx.gpars.dataflow.DataflowQueue;
-import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,20 +34,20 @@ public class Receiver {
 
     DataflowQueue receiverQueue;
 
-    Map<String, List<MessageListener>> listenersPerTopic = new HashMap<>();
+    Map<Topic, List<MessageListener<?>>> listenersPerTopic = new HashMap<>();
 
     public DataflowQueue getReceiverQueue() {
         return receiverQueue;
     }
 
-    public Subscription subscribe(final String topic, final MessageListener handler) {
-        if(StringUtil.isBlank(topic)) {
-            throw new IllegalArgumentException("topic mustn't be empty!");
+    public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
+        if(topic == null) {
+            throw new IllegalArgumentException("topic must not be null!");
         }
         if(handler == null) {
-            throw new IllegalArgumentException("handler mustn't be empty!");
+            throw new IllegalArgumentException("handler must not be empty!");
         }
-        List<MessageListener> messageListeners = listenersPerTopic.get(topic);
+        List<MessageListener<?>> messageListeners = listenersPerTopic.get(topic);
         if (messageListeners == null) {
             messageListeners = new CopyOnWriteArrayList<>();
             listenersPerTopic.put(topic, messageListeners);
@@ -57,7 +56,7 @@ public class Receiver {
         return new Subscription() {
             @Override
             public void unsubscribe() {
-                List<MessageListener> messageListeners = listenersPerTopic.get(topic);
+                List<MessageListener<?>> messageListeners = listenersPerTopic.get(topic);
                 if (messageListeners == null) {
                     return;
                 }
@@ -69,8 +68,8 @@ public class Receiver {
         };
     }
 
-    public boolean handle(Message event) {
-        List<MessageListener> messageListeners = listenersPerTopic.get(event.getTopic());
+    public boolean handle(Message<?> event) {
+        List<MessageListener<?>> messageListeners = listenersPerTopic.get(event.getTopic());
         if (messageListeners == null || messageListeners.isEmpty()) {
             return false;
         }
@@ -87,7 +86,7 @@ public class Receiver {
 
     public void unregister(EventBus eventBus) {
         if(eventBus == null) {
-            throw new IllegalArgumentException("eventBus mustn't be empty!");
+            throw new IllegalArgumentException("eventBus must not be empty!");
         }
         if (isListeningToEventBus()) {
             eventBus.unSubscribe(receiverQueue);
@@ -98,7 +97,7 @@ public class Receiver {
 
     public void register(EventBus eventBus) {
         if(eventBus == null) {
-            throw new IllegalArgumentException("eventBus mustn't be empty!");
+            throw new IllegalArgumentException("eventBus must not be empty!");
         }
         if (isListeningToEventBus()) {
             return;

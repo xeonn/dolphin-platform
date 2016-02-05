@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,14 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
- * Created by hendrikebbers on 29.09.15.
+ * A util class that can be used to create JavaFX properties and lists as wrapper around Dolphin Platform properties and lists.
  */
 public class FXWrapper {
 
 
+    /**
+     * private constructor
+     */
     private FXWrapper() {
     }
 

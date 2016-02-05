@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,9 @@ public class BeanRepositoryImpl implements BeanRepository{
     }
 
     public String getDolphinId(Object bean) {
+        if (bean == null) {
+            return null;
+        }
         try {
             return objectPmToDolphinPm.get(bean).getId();
         } catch (NullPointerException ex) {

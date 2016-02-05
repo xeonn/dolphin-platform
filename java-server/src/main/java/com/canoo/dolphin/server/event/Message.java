@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,20 @@ package com.canoo.dolphin.server.event;
 /**
  * An message of the dolphin platform event bus (see {@link com.canoo.dolphin.server.event.DolphinEventBus}).
  */
-public interface Message {
+public interface Message<T> {
 
 
     /**
      * Returns the topic of the event
      * @return the topic
      */
-    String getTopic();
+    Topic<T> getTopic();
 
     /**
      * Returns the data of the message
      * @return the data
      */
-    Object getData();
+    T getData();
 
     /**
      * Returns the timestamp of the send date of this message

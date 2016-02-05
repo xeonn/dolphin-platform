@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,21 @@ public class ObservableArrayList<E> implements ObservableList<E> {
                 listeners.remove(listener);
             }
         };
+    }
+
+    @Override
+    public boolean addAll(E... elements) {
+        return addAll(Arrays.asList(elements));
+    }
+
+    @Override
+    public boolean setAll(E... elements) {
+        return setAll(Arrays.asList(elements));
+    }
+
+    @Override
+    public boolean removeAll(E... elements) {
+        return removeAll(Arrays.asList(elements));
     }
 
     @Override

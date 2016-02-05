@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,27 @@ import javax.servlet.ServletContext;
  */
 public interface ContainerManager {
 
+    /**
+     * This method must be called before the {@link ContainerManager} instance can be used. Some specific implementations
+     * needs access to the {@link ServletContext} that is set by calling this method.
+     * @param servletContext the servlet context
+     */
     void init(ServletContext servletContext);
 
+    /**
+     * Creates a new managed instance for the given controller class.
+     * @param controllerClass the class of the controller
+     * @param modelInjector a injector that will be called to inject the model in the controller
+     * @param <T> type of the controller
+     * @return the new controller instance
+     */
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 
+    /**
+     * Destroyes the given controller instance
+     * @param instance controller instance
+     * @param controllerClass type of controller
+     */
     void destroyController(Object instance, Class controllerClass);
 
 }

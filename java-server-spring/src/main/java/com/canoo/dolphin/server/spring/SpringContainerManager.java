@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
-import com.canoo.dolphin.server.context.DolphinContext;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,12 +32,15 @@ import javax.servlet.ServletContext;
  */
 public class SpringContainerManager implements ContainerManager {
 
+    private ServletContext servletContext;
+
     @Override
     public void init(ServletContext servletContext) {
         if(servletContext == null) {
             throw new IllegalArgumentException("servletContext must not be null!");
         }
-        WebApplicationContext context = getContext(servletContext);
+        this.servletContext = servletContext;
+        WebApplicationContext context = getContext();
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
     }
@@ -52,7 +54,7 @@ public class SpringContainerManager implements ContainerManager {
             throw new IllegalArgumentException("modelInjector must not be null!");
         }
         // SpringBeanAutowiringSupport kann man auch nutzen
-        WebApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
+        WebApplicationContext context = getContext();
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
         SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
@@ -63,7 +65,7 @@ public class SpringContainerManager implements ContainerManager {
         if(instance == null) {
             throw new IllegalArgumentException("instance must not be null!");
         }
-        ApplicationContext context = getContext(DolphinContext.getCurrentContext().getServletContext());
+        ApplicationContext context = getContext();
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }
 
@@ -72,10 +74,7 @@ public class SpringContainerManager implements ContainerManager {
      *
      * @return the spring context
      */
-    private WebApplicationContext getContext(ServletContext servletContext) {
-        if(servletContext == null) {
-            throw new IllegalArgumentException("servletContext must not be null!");
-        }
+    private WebApplicationContext getContext() {
         return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }

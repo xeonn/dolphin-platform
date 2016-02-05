@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package com.canoo.dolphin.server.event.impl;
 
-/**
- * Created by hendrikebbers on 15.09.15.
- */
+@Deprecated
 public interface TaskTrigger {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,5 +30,9 @@ package com.canoo.dolphin.server.container;
  */
 public interface ModelInjector {
 
+    /**
+     * Methgod is called for a new controller instance and can inject to model to the controller
+     * @param controller the new controller instance
+     */
     void inject(Object controller);
 }

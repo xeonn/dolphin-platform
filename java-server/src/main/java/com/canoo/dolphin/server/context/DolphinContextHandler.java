@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,14 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.container.ContainerManager;
-import org.opendolphin.core.comm.JsonCodec;
-import org.opendolphin.core.server.DefaultServerDolphin;
-import org.opendolphin.core.server.ServerConnector;
-import org.opendolphin.core.server.ServerDolphin;
-import org.opendolphin.core.server.ServerModelStore;
+import org.opendolphin.core.comm.Command;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.spi.ServiceDelegate;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -75,16 +71,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-
-                //Init Open Dolphin
-                final ServerModelStore modelStore = new ServerModelStore();
-                final ServerConnector serverConnector = new ServerConnector();
-                serverConnector.setCodec(new JsonCodec());
-                serverConnector.setServerModelStore(modelStore);
-                ServerDolphin dolphin = new DefaultServerDolphin(modelStore, serverConnector);
-                dolphin.registerDefaultActions();
-
-                currentContext = new DolphinContext(dolphin, containerManager, request.getServletContext());
+                currentContext = new DolphinContext(containerManager);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);
@@ -96,7 +83,18 @@ public class DolphinContextHandler {
         sessionIdThreadLocal.set(request.getSession().getId());
 
         try {
-            currentContext.handleRequest(request, response);
+            response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
+
+            //copied from DolphinServlet
+            StringBuilder requestJson = new StringBuilder();
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+                requestJson.append(line).append("\n");
+            }
+            List<Command> commands = currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString());
+            List<Command> results = currentContext.handle(commands);
+            String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
+            response.getOutputStream().print(jsonResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error in Dolphin command handling", e);
         } finally {

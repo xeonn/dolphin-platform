@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,4 +68,25 @@ public interface ObservableList<E> extends List<E> {
      * @return a {@link Subscription} instance that can be used to deregister the listener.
      */
     Subscription onChanged(ListChangeListener<? super E> listener);
+
+    /**
+     * Appends all elements to the end of this list
+     * @param elements the elements that should be added to the list
+     * @return <tt>true</tt> if the list changed as a result of the call
+     */
+    boolean addAll(E... elements);
+
+    /**
+     * Clears the ObservableList and add all the given elements.
+     * @param elements the elements that should be set to the list
+     * @return <tt>true</tt> if the list changed as a result of the call
+     */
+    boolean setAll(E... elements);
+
+    /**
+     * Removes all given elements from the list
+     * @param elements the elements that should be removed from the list
+     * @return <tt>true</tt> if the list changed as a result of the call
+     */
+    boolean removeAll(E... elements);
 }

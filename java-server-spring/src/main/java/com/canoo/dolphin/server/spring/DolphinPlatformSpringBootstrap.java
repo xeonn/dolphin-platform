@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,10 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         return TaskExecutorImpl.getInstance();
     }
 
+    /**
+     * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
+     * @return
+     */
     @Bean
     @Scope(SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,56 @@ package com.canoo.dolphin.collections;
 
 import java.util.List;
 
+/**
+ * An event that defines the change of an {@link ObservableList}.
+ * @param <E> generic type of the list.
+ */
 public interface ListChangeEvent<E> {
 
+    /**
+     * Returns the list that has triggered this event
+     * @return the list
+     */
     ObservableList<E> getSource();
 
+    /**
+     * Returns a list of changes of this event
+     * @return
+     */
     List<Change<E>> getChanges();
 
+    /**
+     * Defines one change in an {@link ObservableList}.
+     * @param <S> generic type of the list.
+     */
     interface Change<S> {
 
         int getFrom();
 
         int getTo();
 
+        /**
+         * Returns a list that contains all elements that were removed from the list.
+         * @return
+         */
         List<S> getRemovedElements();
 
+        /**
+         * Returns true if elements were added to the list
+         * @return true if elements were added to the list
+         */
         boolean isAdded();
 
+        /**
+         * Returns true if elements were removed from the list
+         * @return true if elements were removed from the list
+         */
         boolean isRemoved();
 
+        /**
+         * Returns true if elements were replaced in the list
+         * @return true if elements were replaced in the list
+         */
         boolean isReplaced();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
+import com.canoo.dolphin.server.event.Topic;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
@@ -51,9 +52,9 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     protected DolphinEventBusImpl() {
     }
 
-    public void publish(final String topic, final Object data) {
-        if(StringUtil.isBlank(topic)) {
-            throw new IllegalArgumentException("topic mustn't be empty!");
+    public <T> void publish(final Topic<T> topic, final T data) {
+        if(topic == null) {
+            throw new IllegalArgumentException("topic must not be null!");
         }
         eventBus.publish(sender, new MessageImpl(topic, data));
     }
@@ -62,12 +63,12 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         eventBus.publish(sender, new TaskTrigger(){});
     }
 
-    public Subscription subscribe(final String topic, final MessageListener handler) {
-        if(StringUtil.isBlank(topic)) {
-            throw new IllegalArgumentException("topic mustn't be empty!");
+    public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
+        if(topic == null) {
+            throw new IllegalArgumentException("topic must not be null!");
         }
         if(handler == null) {
-            throw new IllegalArgumentException("handler mustn't be empty!");
+            throw new IllegalArgumentException("handler must not be empty!");
         }
         String dolphinId = getDolphinId();
         if (dolphinId == null) {
@@ -82,7 +83,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     public void unsubscribeSession(final String dolphinId) {
         if(StringUtil.isBlank(dolphinId)) {
-            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+            throw new IllegalArgumentException("dolphinId must not be empty!");
         }
         Receiver receiver = receiverPerSession.remove(dolphinId);
         if (receiver != null) {
@@ -92,7 +93,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
 
     private Receiver getOrCreateReceiverInSession(String dolphinId) {
         if(StringUtil.isBlank(dolphinId)) {
-            throw new IllegalArgumentException("dolphinId mustn't be empty!");
+            throw new IllegalArgumentException("dolphinId must not be empty!");
         }
         Receiver receiver = receiverPerSession.get(dolphinId);
         if (receiver == null) {
@@ -180,27 +181,27 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         }
     }
 
-    private final static class MessageImpl implements Message {
+    private final static class MessageImpl<T> implements Message<T> {
 
-        private final String topic;
+        private final Topic<T> topic;
 
-        private final Object data;
+        private final T data;
 
         private final long timestamp;
 
-        private MessageImpl(String topic, Object data) {
+        private MessageImpl(Topic<T> topic, T data) {
             this.topic = topic;
             this.data = data;
             this.timestamp = System.currentTimeMillis();
         }
 
         @Override
-        public String getTopic() {
+        public Topic<T> getTopic() {
             return topic;
         }
 
         @Override
-        public Object getData() {
+        public T getData() {
             return data;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.io.Serializable;
  * easily be shared and edited between several clients in realtime.
  *</p>
  */
+@Deprecated
 public interface TaskExecutor extends Serializable {
 
     public <T> void execute(Class<T> controllerClass, ControllerTask<T> task);
