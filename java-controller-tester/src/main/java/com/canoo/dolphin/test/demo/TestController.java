@@ -12,6 +12,6 @@ public class TestController {
 
     @DolphinAction("action")
     public void doSomeAction() {
-        System.out.println("123");
+        model.setValue("Hello Dolphin Test");
     }
 }

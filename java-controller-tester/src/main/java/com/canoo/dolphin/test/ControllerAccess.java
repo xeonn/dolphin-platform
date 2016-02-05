@@ -1,7 +1,12 @@
 package com.canoo.dolphin.test;
 
-/**
- * Created by hendrikebbers on 05.02.16.
- */
-public class ControllerAccess {
+import com.canoo.dolphin.client.Param;
+
+public interface ControllerAccess<T> {
+
+    T getModel();
+
+    void invoke(String actionName, Param... params);
+
+    void destroy();
 }

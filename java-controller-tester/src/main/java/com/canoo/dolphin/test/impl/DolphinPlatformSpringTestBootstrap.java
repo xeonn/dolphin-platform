@@ -98,7 +98,7 @@ public class DolphinPlatformSpringTestBootstrap {
             }
         };
         containerManager.init(servletContext);
-        return new DolphinContext(config.getServerDolphin(), containerManager, servletContext);
+        return new DolphinContext(containerManager, new TestDolphinFactory(config));
     }
 
 }

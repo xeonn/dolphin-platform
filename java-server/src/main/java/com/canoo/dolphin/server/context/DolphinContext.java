@@ -38,6 +38,7 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
@@ -75,8 +76,9 @@ public class DolphinContext {
 
     private DolphinContextTaskExecutor taskExecutor;
 
-    public DolphinContext(ContainerManager containerManager) {
-        this.containerManager = containerManager;
+    public DolphinContext(ContainerManager containerManager, OpenDolphinFactory dolphinFactory) {
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        Assert.requireNonNull(dolphinFactory, "dolphinFactory");
 
         //ID
         id = UUID.randomUUID().toString();
@@ -86,8 +88,7 @@ public class DolphinContext {
         final ServerConnector serverConnector = new ServerConnector();
         serverConnector.setCodec(new JsonCodec());
         serverConnector.setServerModelStore(modelStore);
-        dolphin = new DefaultServerDolphin(modelStore, serverConnector);
-        dolphin.registerDefaultActions();
+        dolphin = dolphinFactory.create();
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
