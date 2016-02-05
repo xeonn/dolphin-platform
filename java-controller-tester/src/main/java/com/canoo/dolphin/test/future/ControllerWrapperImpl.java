@@ -1,8 +1,7 @@
-package com.canoo.dolphin.test.impl;
+package com.canoo.dolphin.test.future;
 
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.server.DolphinAction;
-import com.canoo.dolphin.test.ControllerWrapper;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

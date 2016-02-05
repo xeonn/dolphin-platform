@@ -1,11 +1,9 @@
-package com.canoo.dolphin.test.impl;
+package com.canoo.dolphin.test.future;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.impl.ControllerProxyImpl;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.controller.ControllerHandler;
-import com.canoo.dolphin.test.ControllerFactory;
-import com.canoo.dolphin.test.ControllerWrapper;
 
 public class ControllerFactoryImpl implements ControllerFactory {
 

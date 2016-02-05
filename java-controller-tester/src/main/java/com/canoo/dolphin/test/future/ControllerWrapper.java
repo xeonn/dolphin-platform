@@ -1,4 +1,4 @@
-package com.canoo.dolphin.test;
+package com.canoo.dolphin.test.future;
 
 public interface ControllerWrapper<C, M> {
 

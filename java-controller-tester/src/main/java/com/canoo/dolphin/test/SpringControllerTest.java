@@ -12,12 +12,12 @@ import javax.inject.Inject;
 
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
-public abstract class AbstractSpringTest extends AbstractTestNGSpringContextTests {
+public abstract class SpringControllerTest extends AbstractTestNGSpringContextTests implements ControllerTest {
 
     @Inject
     private ClientContext clientContext;
 
-    protected <T> ControllerAccess<T> createControllerProxy(String controllerName) {
+    public <T> ControllerAccess<T> createControllerProxy(String controllerName) {
         try {
             final ControllerProxy<T> proxy = (ControllerProxy<T>) clientContext.createController(controllerName).get();
             return new ControllerAccess<T>() {
