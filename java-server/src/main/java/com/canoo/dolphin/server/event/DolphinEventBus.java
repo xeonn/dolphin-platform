@@ -21,7 +21,7 @@ import com.canoo.dolphin.event.Subscription;
  * The dolphin event bus that can be used to send messages to dolphin sessions.
  * The {@link com.canoo.dolphin.server.event.DolphinEventBus} can be injected in any
  * managed bean and will automatically publish the given data in the dolphin session.
- * THis means that you ca subscribe your dolphin controller (see {@link com.canoo.dolphin.server.DolphinController})
+ * This means that you ca subscribe your dolphin controller (see {@link com.canoo.dolphin.server.DolphinController})
  * to the event bus and publish messages from any other bean like an REST endpoint.
  * <br>
  * <center><img src="doc-files/event-bus.png" alt="Notification MVC Widget example"></center>

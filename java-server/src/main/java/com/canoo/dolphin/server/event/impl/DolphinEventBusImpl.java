@@ -21,6 +21,7 @@ import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.event.Topic;
+import com.canoo.dolphin.util.Assert;
 import groovyx.gpars.dataflow.DataflowQueue;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.server.EventBus;
@@ -92,9 +93,8 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     private Receiver getOrCreateReceiverInSession(String dolphinId) {
-        if(StringUtil.isBlank(dolphinId)) {
-            throw new IllegalArgumentException("dolphinId must not be empty!");
-        }
+        Assert.requireNonBlank(dolphinId, "dolphinId");
+
         Receiver receiver = receiverPerSession.get(dolphinId);
         if (receiver == null) {
             receiver = new Receiver();
@@ -102,7 +102,6 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         }
         return receiver;
     }
-
 
     /**
      * this method blocks till a release event occurs or there is something to handle in this session.
