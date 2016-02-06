@@ -2,7 +2,7 @@ package com.canoo.dolphin.test;
 
 import com.canoo.dolphin.client.Param;
 
-public interface ControllerAccess<T> {
+public interface ControllerUnderTest<T> {
 
     T getModel();
 

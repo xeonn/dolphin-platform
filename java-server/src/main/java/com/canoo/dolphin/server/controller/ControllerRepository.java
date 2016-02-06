@@ -53,6 +53,10 @@ public class ControllerRepository {
             configuration.getUrls().remove(url);
         }
 
+        for(URL url : urls) {
+            System.out.println("URL: " + url);
+        }
+
         Reflections reflections = new Reflections(configuration);
         Set<Class<?>> foundControllerClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
         for (Class<?> controllerClass : foundControllerClasses) {

@@ -29,6 +29,12 @@
             <artifactId>dolphin-platform-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.canoo.dolphin-platform</groupId>
+            <artifactId>dolphin-platform-controller-tester</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

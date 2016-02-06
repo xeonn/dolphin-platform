@@ -1,4 +1,4 @@
-package com.canoo.dolphin.test.demo;
+package com.canoo.dolphin.test;
 
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;

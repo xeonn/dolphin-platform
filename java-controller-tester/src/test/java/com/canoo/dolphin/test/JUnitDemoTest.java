@@ -1,17 +1,15 @@
-package com.canoo.dolphin.test.demo;
+package com.canoo.dolphin.test;
 
-import com.canoo.dolphin.test.SpringControllerTest;
-import com.canoo.dolphin.test.ControllerAccess;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-public class DemoTest extends SpringControllerTest {
+public class JUnitDemoTest extends SpringJUnitControllerTest {
 
-    private ControllerAccess<TestModel> controller;
+    private ControllerUnderTest<TestModel> controller;
 
-    @BeforeMethod
+    @Before
     public void initController() {
         controller = createControllerProxy("TestController");
     }
@@ -23,9 +21,8 @@ public class DemoTest extends SpringControllerTest {
         Assert.assertEquals("Hello Dolphin Test", controller.getModel().getValue());
     }
 
-    @AfterMethod
+    @After
     public void destroyController() {
         controller.destroy();
     }
-
 }

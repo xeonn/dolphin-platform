@@ -1,4 +1,4 @@
-package com.canoo.dolphin.test.demo;
+package com.canoo.dolphin.test;
 
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
