@@ -19,12 +19,15 @@ import com.canoo.dolphin.server.DolphinController;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * Created by hendrikebbers on 16.09.15.
- */
 public class ControllerRepository {
 
     private static Map<String, Class> controllersClasses;
@@ -39,7 +42,20 @@ public class ControllerRepository {
             throw new RuntimeException(ControllerRepository.class.getName() + " already initialized");
         }
         controllersClasses = new HashMap<>();
-        ConfigurationBuilder configuration = ConfigurationBuilder.build();
+        ConfigurationBuilder configuration = ConfigurationBuilder.build(ControllerRepository.class.getClassLoader());
+
+        //Special case for JBOSS Application server to get all classes
+        try {
+            Enumeration<URL> res = ControllerRepository.class.getClassLoader().getResources("");
+            while(res.hasMoreElements()) {
+                URL resURL = res.nextElement();
+                if(!configuration.getUrls().contains(resURL)) {
+                    configuration.getUrls().add(resURL);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error in Dolphin Platform controller class scan", e);
+        }
 
         //Remove native libs (will be added on Mac in a Spring Boot app)
         Set<URL> urls = configuration.getUrls();
@@ -51,10 +67,6 @@ public class ControllerRepository {
         }
         for(URL url : toRemove) {
             configuration.getUrls().remove(url);
-        }
-
-        for(URL url : urls) {
-            System.out.println("URL: " + url);
         }
 
         Reflections reflections = new Reflections(configuration);

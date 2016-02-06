@@ -1,28 +1,54 @@
 package com.canoo.dolphin.test;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
-import org.testng.Assert;
 
 public class JUnitDemoTest extends SpringJUnitControllerTest {
 
-    private ControllerUnderTest<TestModel> controller;
-
-    @Before
-    public void initController() {
-        controller = createControllerProxy("TestController");
+    @Test
+    public void testCreation() {
+        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        Assert.assertNotNull(controller);
+        Assert.assertNotNull(controller.getModel());
+        controller.destroy();
     }
 
     @Test
-    public void testTest() {
+    public void testInteraction() {
+        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
         Assert.assertEquals(null, controller.getModel().getValue());
         controller.invoke("action");
         Assert.assertEquals("Hello Dolphin Test", controller.getModel().getValue());
+        controller.destroy();
     }
 
-    @After
-    public void destroyController() {
+    @Test
+    public void testDestroy() {
+        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
         controller.destroy();
+        try {
+            controller.destroy();
+            Assert.fail("Calling destroy() for a destroyed controller should throw an exception!");
+        } catch (ControllerTestException e) {}
+    }
+
+    @Test
+    public void testInvokeUnknownAction() {
+        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        try {
+            controller.invoke("unknownActionName");
+            Assert.fail("Calling an unknown action should throw an exception!");
+        } catch (ControllerTestException e) {}
+        controller.destroy();
+    }
+
+    @Test
+    public void testInvokeActionAfterDestroy() {
+        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        controller.destroy();
+        try {
+            controller.invoke("add");
+            Assert.fail("Calling an action after destroy should throw an exception!");
+        } catch (ControllerTestException e) {}
     }
 }
