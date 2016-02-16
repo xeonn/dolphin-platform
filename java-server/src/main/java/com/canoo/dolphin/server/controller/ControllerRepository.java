@@ -51,11 +51,8 @@ public class ControllerRepository {
         //Special case for JBOSS Application server to get all classes
         try {
             Enumeration<URL> res = ControllerRepository.class.getClassLoader().getResources("");
-            while(res.hasMoreElements()) {
-                URL resURL = res.nextElement();
-                if(!configuration.getUrls().contains(resURL)) {
-                    configuration.getUrls().add(resURL);
-                }
+            while (res.hasMoreElements()) {
+                configuration.getUrls().add(res.nextElement());
             }
         } catch (IOException e) {
             throw new RuntimeException("Error in Dolphin Platform controller class scan", e);
@@ -65,12 +62,12 @@ public class ControllerRepository {
         //Remove native libs (will be added on Mac in a Spring Boot app)
         Set<URL> urls = configuration.getUrls();
         List<URL> toRemove = new ArrayList<>();
-        for(URL url : urls) {
-            if(url.toString().endsWith(".jnilib")) {
+        for (URL url : urls) {
+            if (url.toString().endsWith(".jnilib")) {
                 toRemove.add(url);
             }
         }
-        for(URL url : toRemove) {
+        for (URL url : toRemove) {
             configuration.getUrls().remove(url);
         }
 
@@ -87,7 +84,7 @@ public class ControllerRepository {
     }
 
     public static synchronized Class getControllerClassForName(String name) {
-        if(!initialized) {
+        if (!initialized) {
             throw new IllegalStateException(ControllerRepository.class.getName() + " has not been initialized!");
         }
         return controllersClasses.get(name);
