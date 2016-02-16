@@ -19,8 +19,15 @@ import com.canoo.dolphin.server.DolphinController;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by hendrikebbers on 16.09.15.
@@ -39,17 +46,27 @@ public class ControllerRepository {
             throw new RuntimeException(ControllerRepository.class.getName() + " already initialized");
         }
         controllersClasses = new HashMap<>();
-        ConfigurationBuilder configuration = ConfigurationBuilder.build();
+
+        ConfigurationBuilder configuration = ConfigurationBuilder.build(ControllerRepository.class.getClassLoader());
+
+        //Special case for JBOSS Application server to get all classes
+        try {
+            Enumeration<URL> res = ControllerRepository.class.getClassLoader().getResources("");
+            configuration.getUrls().addAll(Collections.list(res));
+        } catch (IOException e) {
+            throw new RuntimeException("Error in Dolphin Platform controller class scan", e);
+        }
+
 
         //Remove native libs (will be added on Mac in a Spring Boot app)
         Set<URL> urls = configuration.getUrls();
         List<URL> toRemove = new ArrayList<>();
-        for(URL url : urls) {
-            if(url.toString().endsWith(".jnilib")) {
+        for (URL url : urls) {
+            if (url.toString().endsWith(".jnilib")) {
                 toRemove.add(url);
             }
         }
-        for(URL url : toRemove) {
+        for (URL url : toRemove) {
             configuration.getUrls().remove(url);
         }
 
@@ -66,7 +83,7 @@ public class ControllerRepository {
     }
 
     public static synchronized Class getControllerClassForName(String name) {
-        if(!initialized) {
+        if (!initialized) {
             throw new IllegalStateException(ControllerRepository.class.getName() + " has not been initialized!");
         }
         return controllersClasses.get(name);
