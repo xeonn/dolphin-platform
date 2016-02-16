@@ -22,6 +22,7 @@ import org.reflections.util.ConfigurationBuilder;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +52,7 @@ public class ControllerRepository {
         //Special case for JBOSS Application server to get all classes
         try {
             Enumeration<URL> res = ControllerRepository.class.getClassLoader().getResources("");
-            while (res.hasMoreElements()) {
-                configuration.getUrls().add(res.nextElement());
-            }
+            configuration.getUrls().addAll(Collections.list(res));
         } catch (IOException e) {
             throw new RuntimeException("Error in Dolphin Platform controller class scan", e);
         }
