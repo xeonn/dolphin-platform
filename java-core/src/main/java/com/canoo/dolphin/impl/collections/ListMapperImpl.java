@@ -16,11 +16,16 @@
 package com.canoo.dolphin.impl.collections;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.DolphinEventHandler;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
-import com.canoo.dolphin.internal.*;
-import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 
@@ -141,61 +146,26 @@ public class ListMapperImpl implements ListMapper {
 
         for (final ListChangeEvent.Change<?> change : event.getChanges()) {
 
-            final int to = change.getTo();
-            int from = change.getFrom();
-            int removedCount = change.getRemovedElements().size();
-
-            if (change.isReplaced()) {
-                final int n = Math.min(to - from, removedCount);
-                final List<?> newElements = event.getSource().subList(from, from + n);
-                int pos = from;
-                for (final Object element : newElements) {
-                    final Object value = observableListInfo.convertToDolphin(element);
-                    sendReplace(sourceId, attributeName, pos++, value);
-                }
-                from += n;
-                removedCount -= n;
-            }
-            if (to > from) {
-                final List<?> newElements = event.getSource().subList(from, to);
-                int pos = from;
-                for (final Object element : newElements) {
-                    final Object value = observableListInfo.convertToDolphin(element);
-                    sendAdd(sourceId, attributeName, pos++, value);
-                }
-            } else if (removedCount > 0) {
-                sendRemove(sourceId, attributeName, from, from + removedCount);
-            }
+            final int from = change.getFrom();
+            final int to = from + change.getRemovedElements().size();
+            final List<?> newElements = event.getSource().subList(from, change.getTo());
+            sendSplice(observableListInfo, sourceId, attributeName, from, to, newElements);
         }
     }
 
-    private void sendAdd(String sourceId, String attributeName, int pos, Object element) {
-        builderFactory.createBuilder()
-                .withType(PlatformConstants.LIST_ADD)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("pos", pos)
-                .withAttribute("element", element)
-                .create();
-    }
-
-    private void sendRemove(String sourceId, String attributeName, int from, int to) {
-        builderFactory.createBuilder()
-                .withType(PlatformConstants.LIST_DEL)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("from", from)
-                .withAttribute("to", to)
-                .create();
-    }
-
-    private void sendReplace(String sourceId, String attributeName, int pos, Object element) {
-        builderFactory.createBuilder()
-                .withType(PlatformConstants.LIST_SET)
-                .withAttribute("source", sourceId)
-                .withAttribute("attribute", attributeName)
-                .withAttribute("pos", pos)
-                .withAttribute("element", element)
-                .create();
+    private void sendSplice(PropertyInfo observableListInfo, String sourceId, String attributeName, int from, int to, List<?> newElements) {
+        final int count = newElements.size();
+        final PresentationModelBuilder builder = builderFactory.createBuilder();
+        builder.withType(PlatformConstants.LIST_SPLICE)
+               .withAttribute("source", sourceId)
+               .withAttribute("attribute", attributeName)
+               .withAttribute("from", from)
+               .withAttribute("to", to)
+               .withAttribute("count", count);
+        int i = 0;
+        for (final Object current : newElements) {
+            builder.withAttribute(Integer.toString(i++), observableListInfo.convertToDolphin(current));
+        }
+        builder.create();
     }
 }
