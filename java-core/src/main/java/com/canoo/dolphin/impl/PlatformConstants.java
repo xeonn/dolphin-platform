@@ -42,9 +42,6 @@ public interface PlatformConstants {
     String SOURCE_SYSTEM_SERVER = "server";
     String JAVA_CLASS = "@@@ JAVA_CLASS @@@";
 
-    String LIST_ADD = "@@@ LIST_ADD @@@";
-    String LIST_DEL = "@@@ LIST_DEL @@@";
-    String LIST_SET = "@@@ LIST_SET @@@";
     String LIST_SPLICE = "@@@ LIST_SPLICE @@@";
 
     String CONTROLLER_ACTION_CALL_BEAN_NAME = "@@@ CONTROLLER_ACTION_CALL_BEAN @@@";

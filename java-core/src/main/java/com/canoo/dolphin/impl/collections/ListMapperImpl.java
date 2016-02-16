@@ -29,6 +29,7 @@ import com.canoo.dolphin.internal.info.PropertyInfo;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListMapperImpl implements ListMapper {
@@ -44,100 +45,42 @@ public class ListMapperImpl implements ListMapper {
         this.classRepository = classRepository;
         this.builderFactory = builderFactory;
 
-        dispatcher.addListElementAddHandler(createAddListener());
-        dispatcher.addListElementDelHandler(createDelListener());
-        dispatcher.addListElementSetHandler(createSetListener());
-    }
-
-    private DolphinEventHandler createAddListener() {
-        return new DolphinEventHandler() {
-
-            @SuppressWarnings("unchecked")
+        dispatcher.addListSpliceHandler(new DolphinEventHandler() {
             @Override
+            @SuppressWarnings("unchecked")
             public void onEvent(PresentationModel model) {
                 try {
                     final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
                     final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
 
-                    final Object bean = beanRepository.getBean(sourceId);
-                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
+                    final Object bean = ListMapperImpl.this.beanRepository.getBean(sourceId);
+                    final ClassInfo classInfo = ListMapperImpl.this.classRepository.getOrCreateClassInfo(bean.getClass());
                     final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
 
                     final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                    final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
-                    final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
+                    final int from = (Integer) model.findAttributeByPropertyName("from").getValue();
+                    final int to = (Integer) model.findAttributeByPropertyName("to").getValue();
+                    final int count = (Integer) model.findAttributeByPropertyName("count").getValue();
 
-                    final Object value = observableListInfo.convertFromDolphin(dolphinValue);
-                    list.internalAdd(pos, value);
+                    final List<Object> newElements = new ArrayList<Object>(count);
+                    for (int i = 0; i < count; i++) {
+                        final Object dolphinValue = model.findAttributeByPropertyName(Integer.toString(i)).getValue();
+                        final Object value = observableListInfo.convertFromDolphin(dolphinValue);
+                        newElements.add(value);
+                    }
+
+                    list.internalSplice(from, to, newElements);
                 } catch (NullPointerException | ClassCastException ex) {
                     System.out.println("Invalid LIST_ADD command received: " + model);
                 } finally {
                     if (model != null) {
-                        dolphin.remove(model);
+                        ListMapperImpl.this.dolphin.remove(model);
                     }
                 }
+
             }
-        };
-    }
-
-    private DolphinEventHandler createDelListener() {
-        return new DolphinEventHandler() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void onEvent(PresentationModel model) {
-                try {
-                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
-
-                    final Object bean = beanRepository.getBean(sourceId);
-                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
-                    final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
-
-                    final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
-
-                    int from = (Integer) model.findAttributeByPropertyName("from").getValue();
-                    int to = (Integer) model.findAttributeByPropertyName("to").getValue();
-                    list.internalDelete(from, to);
-                } catch (NullPointerException | ClassCastException ex) {
-                    System.out.println("Invalid LIST_ADD command received: " + model);
-                } finally {
-                    if (model != null) {
-                        dolphin.remove(model);
-                    }
-                }
-            }
-        };
-    }
-
-    private DolphinEventHandler createSetListener() {
-        return new DolphinEventHandler() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void onEvent(PresentationModel model) {
-                try {
-                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
-
-                    final Object bean = beanRepository.getBean(sourceId);
-                    final ClassInfo classInfo = classRepository.getOrCreateClassInfo(bean.getClass());
-                    final PropertyInfo observableListInfo = classInfo.getObservableListInfo(attributeName);
-
-                    final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
-
-                    final int pos = (Integer) model.findAttributeByPropertyName("pos").getValue();
-                    final Object dolphinValue = model.findAttributeByPropertyName("element").getValue();
-                    final Object value = observableListInfo.convertFromDolphin(dolphinValue);
-                    list.internalReplace(pos, value);
-                } catch (NullPointerException | ClassCastException ex) {
-                    System.out.println("Invalid LIST_ADD command received: " + model);
-                } finally {
-                    if (model != null) {
-                        dolphin.remove(model);
-                    }
-                }
-            }
-        };
+        });
     }
 
     @Override
