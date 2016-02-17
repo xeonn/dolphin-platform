@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import org.opendolphin.core.comm.Command;
 
 import javax.servlet.ServletContext;
@@ -40,6 +41,8 @@ public class DolphinContextHandler {
 
     private final static DolphinContextHandler INSTANCE = new DolphinContextHandler();
 
+    private ControllerRepository controllerRepository;
+
     private DolphinContextHandler() {
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
@@ -52,7 +55,7 @@ public class DolphinContextHandler {
         } else {
             throw new RuntimeException("No " + ContainerManager.class + " found!");
         }
-
+        controllerRepository = new ControllerRepository();
     }
 
     public void init(ServletContext servletContext) {
@@ -71,7 +74,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager);
+                currentContext = new DolphinContext(containerManager, controllerRepository);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);

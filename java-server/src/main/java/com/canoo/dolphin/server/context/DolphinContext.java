@@ -31,6 +31,7 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.controller.InvokeActionException;
 import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
@@ -67,6 +68,8 @@ public class DolphinContext {
 
     private final EventDispatcher dispatcher;
 
+    private final DolphinContextLifecycle lifecycle;
+
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private ContainerManager containerManager;
@@ -75,8 +78,11 @@ public class DolphinContext {
 
     private DolphinContextTaskExecutor taskExecutor;
 
-    public DolphinContext(ContainerManager containerManager) {
+    private final ControllerRepository controllerRepository;
+
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository) {
         this.containerManager = containerManager;
+        this.controllerRepository = controllerRepository;
 
         //ID
         id = UUID.randomUUID().toString();
@@ -101,11 +107,12 @@ public class DolphinContext {
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         //Init ControllerHandler
-        controllerHandler = new ControllerHandler(containerManager, beanManager);
+        controllerHandler = new ControllerHandler(containerManager, beanManager, controllerRepository);
 
         //Init TaskExecutor
         taskExecutor = new DolphinContextTaskExecutor();
 
+        lifecycle = new DolphinContextLifecycle(containerManager);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -127,7 +134,7 @@ public class DolphinContext {
                 registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        onDestroyController();
+                            onDestroyController();
                     }
                 });
 
@@ -165,16 +172,16 @@ public class DolphinContext {
                 registry.register(PlatformConstants.INIT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        //Init PlatformBeanRepository
                         platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher);
+                        lifecycle.onCreate();
                     }
                 });
 
                 registry.register(PlatformConstants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        //Disconnect Client
-                        //TODO: How to disconnect?
+                        lifecycle.onDestroy();
+                        //TODO: destroy all controller and model instances....
                     }
                 });
             }
@@ -252,5 +259,6 @@ public class DolphinContext {
         }
         return results;
     }
+
 
 }

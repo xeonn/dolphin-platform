@@ -17,6 +17,8 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.server.context.DolphinContextListener;
+import com.canoo.dolphin.util.Assert;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +28,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletContext;
 
 /**
- * SPring specific implementation of the {@link ContainerManager} interface
+ * Spring specific implementation of the {@link ContainerManager} interface
  *
  * @author Hendrik Ebbers
  */
@@ -47,12 +49,8 @@ public class SpringContainerManager implements ContainerManager {
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        if(controllerClass == null) {
-            throw new IllegalArgumentException("controllerClass must not be null!");
-        }
-        if(modelInjector == null) {
-            throw new IllegalArgumentException("modelInjector must not be null!");
-        }
+        Assert.requireNonNull(controllerClass, "controllerClass");
+        Assert.requireNonNull(modelInjector, "modelInjector");
         // SpringBeanAutowiringSupport kann man auch nutzen
         WebApplicationContext context = getContext();
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
@@ -61,10 +59,16 @@ public class SpringContainerManager implements ContainerManager {
     }
 
     @Override
+    public <T extends DolphinContextListener> T createContextListener(Class<T> listenerClass) {
+        Assert.requireNonNull(listenerClass, "listenerClass");
+        WebApplicationContext context = getContext();
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
+        return beanFactory.createBean(listenerClass);
+    }
+
+    @Override
     public void destroyController(Object instance, Class controllerClass) {
-        if(instance == null) {
-            throw new IllegalArgumentException("instance must not be null!");
-        }
+        Assert.requireNonNull(instance, "instance");
         ApplicationContext context = getContext();
         context.getAutowireCapableBeanFactory().destroyBean(instance);
     }

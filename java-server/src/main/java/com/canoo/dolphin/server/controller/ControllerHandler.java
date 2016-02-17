@@ -46,9 +46,12 @@ public class ControllerHandler {
 
     private final BeanManager beanManager;
 
-    public ControllerHandler(ContainerManager containerManager, BeanManager beanManager) {
+    private final ControllerRepository controllerRepository;
+
+    public ControllerHandler(ContainerManager containerManager, BeanManager beanManager, ControllerRepository controllerRepository) {
         this.containerManager = containerManager;
         this.beanManager = beanManager;
+        this.controllerRepository = controllerRepository;
     }
 
     public Object getControllerModel(String id) {
@@ -56,7 +59,7 @@ public class ControllerHandler {
     }
 
     public String createController(String name) {
-        Class<?> controllerClass = ControllerRepository.getControllerClassForName(name);
+        Class<?> controllerClass = controllerRepository.getControllerClassForName(name);
 
         final String id = UUID.randomUUID().toString();
         Object instance = containerManager.createManagedController(controllerClass, new ModelInjector() {

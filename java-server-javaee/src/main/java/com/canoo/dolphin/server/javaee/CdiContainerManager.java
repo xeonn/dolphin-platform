@@ -17,6 +17,8 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.server.context.DolphinContextListener;
+import com.canoo.dolphin.util.Assert;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.bean.BeanBuilder;
 
@@ -47,12 +49,8 @@ public class CdiContainerManager implements ContainerManager {
 
     @Override
     public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        if(controllerClass == null) {
-            throw new IllegalArgumentException("controllerClass must not be null!");
-        }
-        if(modelInjector == null) {
-            throw new IllegalArgumentException("modelInjector must not be null!");
-        }
+        Assert.requireNonNull(controllerClass, "controllerClass");
+        Assert.requireNonNull(modelInjector, "modelInjector");
         BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
         AnnotatedType annotatedType = bm.createAnnotatedType(controllerClass);
         final InjectionTarget<T> injectionTarget = bm.createInjectionTarget(annotatedType);
@@ -69,13 +67,23 @@ public class CdiContainerManager implements ContainerManager {
         return instance;
     }
 
-
+    @Override
+    public <T extends DolphinContextListener> T createContextListener(Class<T> listenerClass) {
+        Assert.requireNonNull(listenerClass, "listenerClass");
+        BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
+        final Bean<T> bean = new BeanBuilder<T>(bm)
+                .beanClass(listenerClass)
+                .scope(Dependent.class)
+                .create();
+        Class<?> beanClass = bean.getBeanClass();
+        CreationalContext<T> creationalContext = bm.createCreationalContext(bean);
+        T instance = (T) bm.getReference(bean, beanClass, creationalContext);
+        return instance;
+    }
 
     @Override
     public void destroyController(Object instance, Class controllerClass) {
-        if(instance == null) {
-            throw new IllegalArgumentException("instance must not be null!");
-        }
+        Assert.requireNonNull(instance, "instance");
         Bean bean = beanMap.get(instance);
         CreationalContext context = contextMap.get(instance);
         bean.destroy(instance, context);
