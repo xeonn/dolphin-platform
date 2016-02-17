@@ -17,6 +17,7 @@ package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
+import org.opendolphin.LogConfig;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
@@ -44,6 +45,7 @@ public class ClientContextFactory {
      */
     public static CompletableFuture<ClientContext> connect(ClientConfiguration clientConfiguration) {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
+        LogConfig.logOnLevel(clientConfiguration.getDolphinLogLevel());
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 final ClientDolphin dolphin = new ClientDolphin();
