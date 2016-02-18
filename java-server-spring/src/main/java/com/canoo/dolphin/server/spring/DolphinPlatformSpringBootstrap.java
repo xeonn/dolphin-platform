@@ -16,12 +16,11 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
-import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
@@ -52,16 +51,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Scope("session")
     protected BeanManager createManager() {
         return DolphinContext.getCurrentContext().getBeanManager();
-    }
-
-    /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in session scope.
-     * @return the instance
-     */
-    @Bean
-    @Scope("session")
-    protected ServerDolphin createDolphin() {
-        return DolphinContext.getCurrentContext().getDolphin();
     }
 
     /**

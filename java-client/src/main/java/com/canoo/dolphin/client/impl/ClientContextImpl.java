@@ -71,7 +71,7 @@ public class ClientContextImpl implements ClientContext {
         clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
         platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
 
-        invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
+        invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
     }
 
     @Override
@@ -137,9 +137,9 @@ public class ClientContextImpl implements ClientContext {
                 }
             }
             try {
-                //TODO: Hack - When calling the PlatformConstants.DISCONNECT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
+                //TODO: Hack - When calling the PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
                 state = State.DESTROYED;
-                invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME);
+                invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME);
                 result.complete(null);
             } catch (Exception e) {
                 result.completeExceptionally(e);

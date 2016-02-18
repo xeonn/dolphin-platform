@@ -19,9 +19,9 @@ public interface PlatformConstants {
 
     String DOLPHIN_PLATFORM_PREFIX = "dolphin_platform_intern_";
 
-    String RELEASE_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "release";
+    String RELEASE_EVENT_BUS_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "release";
 
-    String POLL_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "longPoll";
+    String POLL_EVENT_BUS_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "longPoll";
 
     String REGISTER_CONTROLLER_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "registerController";
 
@@ -29,11 +29,11 @@ public interface PlatformConstants {
 
     String CALL_CONTROLLER_ACTION_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "callControllerAction";
 
-    String INIT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "initClientContext";
+    String INIT_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "initClientContext";
 
     String CLIENT_ID_HTTP_HEADER_NAME = DOLPHIN_PLATFORM_PREFIX + "dolphin-client-id";
 
-    String DISCONNECT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
+    String DESTROY_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
 
     String DOLPHIN_BEAN = "@@@ DOLPHIN_BEAN @@@";
 
