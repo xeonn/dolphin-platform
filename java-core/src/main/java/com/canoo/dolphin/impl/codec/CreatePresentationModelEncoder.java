@@ -17,7 +17,6 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
     @Override
     public JsonObject encode(CreatePresentationModelCommand command) {
         final JsonObject jsonCommand = new JsonObject();
-        jsonCommand.addProperty("id", CreatePresentationModelCommand.class.getSimpleName());
         jsonCommand.addProperty("p", command.getPmId());
         jsonCommand.addProperty("t", command.getPmType());
 

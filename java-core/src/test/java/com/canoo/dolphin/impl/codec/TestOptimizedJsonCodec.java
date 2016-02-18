@@ -3,6 +3,7 @@ package com.canoo.dolphin.impl.codec;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.NamedCommand;
+import org.opendolphin.core.comm.ValueChangedCommand;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -26,6 +27,76 @@ public class TestOptimizedJsonCodec {
         final Command command = createCPMCommand();
         final String actual = new OptimizedJsonCodec().encode(Collections.singletonList(command));
         assertThat(actual, is("[" + createCPMCommandString() + "]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithNulls() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(null);
+        command.setNewValue(null);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithStrings() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue("Hello World");
+        command.setNewValue("Good Bye");
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":\"Hello World\",\"n\":\"Good Bye\",\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithIntegers() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(41);
+        command.setNewValue(42);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":41,\"n\":42,\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithLong() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(1234567890987654321L);
+        command.setNewValue(987654321234567890L);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithFloats() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(3.1415f);
+        command.setNewValue(2.7812f);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7812,\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithDoubles() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(3.1415);
+        command.setNewValue(2.7812);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7812,\"id\":\"ValueChangedCommand\"}]"));
+    }
+
+    @Test
+    public void shouldEncodeValueChangedCommandWithBooleans() {
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(true);
+        command.setNewValue(false);
+        command.setAttributeId("3357S");
+        final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":true,\"n\":false,\"id\":\"ValueChangedCommand\"}]"));
     }
 
     @Test
@@ -63,11 +134,11 @@ public class TestOptimizedJsonCodec {
 
     @Test
     public void shouldEncodeStandardCodecCommandAndCustomCodecCommand() {
-        final Command customCodecCommand = createCPMCommand();
         final Command standardCodecCommand = createNamedCommand();
+        final Command customCodecCommand = createCPMCommand();
         final String actual = new OptimizedJsonCodec().encode(Arrays.asList(standardCodecCommand, customCodecCommand));
-        final String customCodecCommandString = createCPMCommandString();
         final String standardCodecCommandString = createNamedCommandString();
+        final String customCodecCommandString = createCPMCommandString();
         assertThat(actual, is("[" + standardCodecCommandString + "," + customCodecCommandString + "]"));
     }
 
@@ -127,14 +198,13 @@ public class TestOptimizedJsonCodec {
     private static String createCPMCommandString() {
         return
             "{" +
-                "\"id\":\"CreatePresentationModelCommand\"," +
                 "\"p\":\"05ee43b7-a884-4d42-9fc5-00b083664eed\"," +
                 "\"t\":\"com.canoo.icos.casemanager.model.casedetails.CaseInfoBean\"," +
                 "\"a\":[" +
                     "{" +
                         "\"n\":\"@@@ SOURCE_SYSTEM @@@\"," +
                         "\"i\":\"3204S\"," +
-                        "\"v\":\"server\"" +
+                        "\"v\":\"servPer\"" +
                     "},{" +
                         "\"n\":\"caseDetailsLabel\"," +
                         "\"i\":\"3205S\"" +
@@ -148,7 +218,9 @@ public class TestOptimizedJsonCodec {
                         "\"n\":\"status\"," +
                         "\"i\":\"3208S\"" +
                     "}" +
-            "]}";
+                "]," +
+                "\"id\":\"CreatePresentationModelCommand\"" +
+            "}";
     }
 
     private static NamedCommand createNamedCommand() {

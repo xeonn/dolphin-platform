@@ -10,6 +10,7 @@ import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.JsonCodec;
+import org.opendolphin.core.comm.ValueChangedCommand;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,12 +20,13 @@ import java.util.Map;
 
 public class OptimizedJsonCodec implements Codec {
 
+    private static final Gson GSON = new Gson();
+
     private static final Map<String, CommandEncoder<?>> ENCODERS =
             Collections.unmodifiableMap(new HashMap<String, CommandEncoder<?>>() {{
                 this.put(CreatePresentationModelCommand.class.getSimpleName(), new CreatePresentationModelEncoder());
+                this.put(ValueChangedCommand.class.getSimpleName(), new ValueChangedCommandEncoder(GSON));
             }});
-
-    private static final Gson GSON = new Gson();
 
     private final Codec fallBack = new JsonCodec();
 
@@ -33,9 +35,12 @@ public class OptimizedJsonCodec implements Codec {
     public String encode(List<Command> commands) {
         final StringBuilder builder = new StringBuilder("[");
         for (final Command command : commands) {
-            final CommandEncoder encoder = ENCODERS.get(command.getClass().getSimpleName());
+            final String id = command.getClass().getSimpleName();
+            final CommandEncoder encoder = ENCODERS.get(id);
             if (encoder != null) {
-                GSON.toJson(encoder.encode(command), builder);
+                final JsonObject jsonObject = encoder.encode(command);
+                jsonObject.addProperty("id", id);
+                GSON.toJson(jsonObject, builder);
             } else {
                 final String result = fallBack.encode(Collections.singletonList(command));
                 builder.append(result.substring(1, result.length()-1));
