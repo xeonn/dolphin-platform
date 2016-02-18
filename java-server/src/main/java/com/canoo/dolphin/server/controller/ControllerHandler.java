@@ -28,7 +28,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +74,7 @@ public class ControllerHandler {
     }
 
     private void attachModel(String controllerId, Object controller) {
-        List<Field> allFields = getInheritedDeclaredFields(controller.getClass());
+        List<Field> allFields = ReflectionHelper.getInheritedDeclaredFields(controller.getClass());
 
         Field modelField = null;
 
@@ -138,7 +137,7 @@ public class ControllerHandler {
     }
 
     private <T> Method getActionMethod(T controller, Class<T> controllerClass, String actionName) {
-        List<Method> allMethods = getInheritedDeclaredMethods(controllerClass);
+        List<Method> allMethods = ReflectionHelper.getInheritedDeclaredMethods(controllerClass);
         Method foundMethod = null;
         for (Method method : allMethods) {
             if (method.isAnnotationPresent(DolphinAction.class)) {
@@ -156,26 +155,6 @@ public class ControllerHandler {
             }
         }
         return foundMethod;
-    }
-
-    private List<Field> getInheritedDeclaredFields(Class<?> type) {
-        List<Field> result = new ArrayList<>();
-        Class<?> i = type;
-        while (i != null && i != Object.class) {
-            result.addAll(Arrays.asList(i.getDeclaredFields()));
-            i = i.getSuperclass();
-        }
-        return result;
-    }
-
-    private List<Method> getInheritedDeclaredMethods(Class<?> type) {
-        List<Method> result = new ArrayList<>();
-        Class<?> i = type;
-        while (i != null && i != Object.class) {
-            result.addAll(Arrays.asList(i.getDeclaredMethods()));
-            i = i.getSuperclass();
-        }
-        return result;
     }
 
     @SuppressWarnings("unchecked")
