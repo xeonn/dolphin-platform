@@ -41,6 +41,7 @@ public interface ClientContext {
      * Returns the {@link ClientBeanManager} that is bound to the client context
      * @return the bean manager
      */
+    @Deprecated
     ClientBeanManager getBeanManager();
 
     /**
