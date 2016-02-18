@@ -1,6 +1,5 @@
 package com.canoo.dolphin.impl.codec;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -8,12 +7,6 @@ import com.google.gson.JsonPrimitive;
 import org.opendolphin.core.comm.ValueChangedCommand;
 
 public class ValueChangedCommandEncoder implements CommandEncoder<ValueChangedCommand> {
-
-    private final Gson gson;
-
-    public ValueChangedCommandEncoder(Gson gson) {
-        this.gson = gson;
-    }
 
     @Override
     public JsonObject encode(ValueChangedCommand command) {
@@ -25,6 +18,7 @@ public class ValueChangedCommandEncoder implements CommandEncoder<ValueChangedCo
         if (command.getNewValue() != null) {
             jsonCommand.add("n", encodeValue(command.getNewValue()));
         }
+        jsonCommand.addProperty("id", "ValueChanged");
         return jsonCommand;
     }
 

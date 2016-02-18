@@ -36,7 +36,7 @@ public class TestOptimizedJsonCodec {
         command.setNewValue(null);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestOptimizedJsonCodec {
         command.setNewValue("Good Bye");
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":\"Hello World\",\"n\":\"Good Bye\",\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":\"Hello World\",\"n\":\"Good Bye\",\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class TestOptimizedJsonCodec {
         command.setNewValue(42);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":41,\"n\":42,\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":41,\"n\":42,\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
@@ -66,27 +66,27 @@ public class TestOptimizedJsonCodec {
         command.setNewValue(987654321234567890L);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
     public void shouldEncodeValueChangedCommandWithFloats() {
         final ValueChangedCommand command = new ValueChangedCommand();
         command.setOldValue(3.1415f);
-        command.setNewValue(2.7812f);
+        command.setNewValue(2.7182f);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7812,\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7182,\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
     public void shouldEncodeValueChangedCommandWithDoubles() {
         final ValueChangedCommand command = new ValueChangedCommand();
         command.setOldValue(3.1415);
-        command.setNewValue(2.7812);
+        command.setNewValue(2.7182);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7812,\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7182,\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class TestOptimizedJsonCodec {
         command.setNewValue(false);
         command.setAttributeId("3357S");
         final String actual = new OptimizedJsonCodec().encode(Collections.<Command>singletonList(command));
-        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":true,\"n\":false,\"id\":\"ValueChangedCommand\"}]"));
+        assertThat(actual, is("[{\"a\":\"3357S\",\"o\":true,\"n\":false,\"id\":\"ValueChanged\"}]"));
     }
 
     @Test
@@ -204,7 +204,7 @@ public class TestOptimizedJsonCodec {
                     "{" +
                         "\"n\":\"@@@ SOURCE_SYSTEM @@@\"," +
                         "\"i\":\"3204S\"," +
-                        "\"v\":\"servPer\"" +
+                        "\"v\":\"server\"" +
                     "},{" +
                         "\"n\":\"caseDetailsLabel\"," +
                         "\"i\":\"3205S\"" +
@@ -219,7 +219,7 @@ public class TestOptimizedJsonCodec {
                         "\"i\":\"3208S\"" +
                     "}" +
                 "]," +
-                "\"id\":\"CreatePresentationModelCommand\"" +
+                "\"id\":\"CreatePresentationModel\"" +
             "}";
     }
 

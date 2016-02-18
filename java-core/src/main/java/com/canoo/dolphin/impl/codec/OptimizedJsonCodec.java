@@ -22,11 +22,17 @@ public class OptimizedJsonCodec implements Codec {
 
     private static final Gson GSON = new Gson();
 
-    private static final Map<String, CommandEncoder<?>> ENCODERS =
-            Collections.unmodifiableMap(new HashMap<String, CommandEncoder<?>>() {{
-                this.put(CreatePresentationModelCommand.class.getSimpleName(), new CreatePresentationModelEncoder());
-                this.put(ValueChangedCommand.class.getSimpleName(), new ValueChangedCommandEncoder(GSON));
-            }});
+    private static final Map<Class<? extends Command>, CommandEncoder<?>> ENCODERS = new HashMap<>();
+    private static final Map<String, CommandEncoder<?>> DECODERS = new HashMap<>();
+    static {
+        final CreatePresentationModelEncoder createPresentationModelEncoder = new CreatePresentationModelEncoder();
+        ENCODERS.put(CreatePresentationModelCommand.class, createPresentationModelEncoder);
+        DECODERS.put("CreatePresentationModel", createPresentationModelEncoder);
+
+        final ValueChangedCommandEncoder valueChangedCommandEncoder = new ValueChangedCommandEncoder();
+        ENCODERS.put(ValueChangedCommand.class, valueChangedCommandEncoder);
+        DECODERS.put("ValueChanged", valueChangedCommandEncoder);
+    }
 
     private final Codec fallBack = new JsonCodec();
 
@@ -35,11 +41,9 @@ public class OptimizedJsonCodec implements Codec {
     public String encode(List<Command> commands) {
         final StringBuilder builder = new StringBuilder("[");
         for (final Command command : commands) {
-            final String id = command.getClass().getSimpleName();
-            final CommandEncoder encoder = ENCODERS.get(id);
+            final CommandEncoder encoder = ENCODERS.get(command.getClass());
             if (encoder != null) {
                 final JsonObject jsonObject = encoder.encode(command);
-                jsonObject.addProperty("id", id);
                 GSON.toJson(jsonObject, builder);
             } else {
                 final String result = fallBack.encode(Collections.singletonList(command));
@@ -64,7 +68,7 @@ public class OptimizedJsonCodec implements Codec {
             for (final JsonElement jsonElement : array) {
                 final JsonObject command = (JsonObject) jsonElement;
                 final String id = command.getAsJsonPrimitive("id").getAsString();
-                final CommandEncoder<?> encoder = ENCODERS.get(id);
+                final CommandEncoder<?> encoder = DECODERS.get(id);
                 if (encoder != null) {
                     commands.add(encoder.decode(command));
                 } else {

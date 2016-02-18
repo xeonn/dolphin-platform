@@ -32,6 +32,7 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
             jsonArray.add(jsonAttribute);
         }
         jsonCommand.add("a", jsonArray);
+        jsonCommand.addProperty("id", "CreatePresentationModel");
 
         return jsonCommand;
     }
