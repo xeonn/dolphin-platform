@@ -42,7 +42,7 @@ public interface PlatformConstants {
     String SOURCE_SYSTEM_SERVER = "server";
     String JAVA_CLASS = "@@@ JAVA_CLASS @@@";
 
-    String LIST_SPLICE = "@@@ LIST_SPLICE @@@";
+    String LIST_SPLICE = "@DP:LS@";
 
     String CONTROLLER_ACTION_CALL_BEAN_NAME = "@@@ CONTROLLER_ACTION_CALL_BEAN @@@";
     String INTERNAL_ATTRIBUTES_BEAN_NAME = "@@@ HIGHLANDER_BEAN @@@";

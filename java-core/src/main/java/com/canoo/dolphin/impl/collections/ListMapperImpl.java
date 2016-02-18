@@ -92,23 +92,22 @@ public class ListMapperImpl implements ListMapper {
             final int from = change.getFrom();
             final int to = from + change.getRemovedElements().size();
             final List<?> newElements = event.getSource().subList(from, change.getTo());
-            sendSplice(observableListInfo, sourceId, attributeName, from, to, newElements);
-        }
-    }
+            final int count = newElements.size();
 
-    private void sendSplice(PropertyInfo observableListInfo, String sourceId, String attributeName, int from, int to, List<?> newElements) {
-        final int count = newElements.size();
-        final PresentationModelBuilder builder = builderFactory.createBuilder();
-        builder.withType(PlatformConstants.LIST_SPLICE)
-               .withAttribute("source", sourceId)
-               .withAttribute("attribute", attributeName)
-               .withAttribute("from", from)
-               .withAttribute("to", to)
-               .withAttribute("count", count);
-        int i = 0;
-        for (final Object current : newElements) {
-            builder.withAttribute(Integer.toString(i++), observableListInfo.convertToDolphin(current));
+            final PresentationModelBuilder builder = builderFactory.createBuilder();
+            builder.withType(PlatformConstants.LIST_SPLICE)
+                    .withAttribute("source", sourceId)
+                    .withAttribute("attribute", attributeName)
+                    .withAttribute("from", from)
+                    .withAttribute("to", to)
+                    .withAttribute("count", count);
+
+            int i = 0;
+            for (final Object current : newElements) {
+                builder.withAttribute(Integer.toString(i++), observableListInfo.convertToDolphin(current));
+            }
+
+            builder.create();
         }
-        builder.create();
     }
 }
