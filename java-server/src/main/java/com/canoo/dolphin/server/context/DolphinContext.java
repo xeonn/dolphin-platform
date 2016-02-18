@@ -68,8 +68,6 @@ public class DolphinContext {
 
     private final EventDispatcher dispatcher;
 
-    private final DolphinContextLifecycle lifecycle;
-
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private ContainerManager containerManager;
@@ -111,8 +109,6 @@ public class DolphinContext {
 
         //Init TaskExecutor
         taskExecutor = new DolphinContextTaskExecutor();
-
-        lifecycle = new DolphinContextLifecycle(containerManager);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -173,14 +169,12 @@ public class DolphinContext {
                     @Override
                     public void handleCommand(Command command, List response) {
                         platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher);
-                        lifecycle.onCreate();
                     }
                 });
 
                 registry.register(PlatformConstants.DISCONNECT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        lifecycle.onDestroy();
                         //TODO: destroy all controller and model instances....
                     }
                 });

@@ -17,7 +17,6 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
-import com.canoo.dolphin.server.context.DolphinContextListener;
 import com.canoo.dolphin.util.Assert;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -56,14 +55,6 @@ public class SpringContainerManager implements ContainerManager {
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
         SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
-    }
-
-    @Override
-    public <T extends DolphinContextListener> T createContextListener(Class<T> listenerClass) {
-        Assert.requireNonNull(listenerClass, "listenerClass");
-        WebApplicationContext context = getContext();
-        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-        return beanFactory.createBean(listenerClass);
     }
 
     @Override

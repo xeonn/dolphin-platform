@@ -17,7 +17,6 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
-import com.canoo.dolphin.server.context.DolphinContextListener;
 import com.canoo.dolphin.util.Assert;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.bean.BeanBuilder;
@@ -64,20 +63,6 @@ public class CdiContainerManager implements ContainerManager {
         T instance = (T) bm.getReference(bean, beanClass, creationalContext);
         contextMap.put(instance, creationalContext);
         beanMap.put(instance, bean);
-        return instance;
-    }
-
-    @Override
-    public <T extends DolphinContextListener> T createContextListener(Class<T> listenerClass) {
-        Assert.requireNonNull(listenerClass, "listenerClass");
-        BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
-        final Bean<T> bean = new BeanBuilder<T>(bm)
-                .beanClass(listenerClass)
-                .scope(Dependent.class)
-                .create();
-        Class<?> beanClass = bean.getBeanClass();
-        CreationalContext<T> creationalContext = bm.createCreationalContext(bean);
-        T instance = (T) bm.getReference(bean, beanClass, creationalContext);
         return instance;
     }
 
