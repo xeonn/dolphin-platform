@@ -19,9 +19,7 @@ import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.*;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -64,12 +62,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Scope("session")
     protected ServerDolphin createDolphin() {
         return DolphinContext.getCurrentContext().getDolphin();
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected TaskExecutor createTaskExecutor() {
-        return TaskExecutorImpl.getInstance();
     }
 
     /**

@@ -33,7 +33,6 @@ import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.controller.InvokeActionException;
-import com.canoo.dolphin.server.event.impl.DolphinContextTaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
@@ -74,8 +73,6 @@ public class DolphinContext {
 
     private String id;
 
-    private DolphinContextTaskExecutor taskExecutor;
-
     private final ControllerRepository controllerRepository;
 
     public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository) {
@@ -106,9 +103,6 @@ public class DolphinContext {
 
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(containerManager, beanManager, controllerRepository);
-
-        //Init TaskExecutor
-        taskExecutor = new DolphinContextTaskExecutor();
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -231,11 +225,6 @@ public class DolphinContext {
 
     public BeanRepository getBeanRepository() {
         return beanRepository;
-    }
-
-    @Deprecated
-    public DolphinContextTaskExecutor getTaskExecutor() {
-        return taskExecutor;
     }
 
     public String getId() {
