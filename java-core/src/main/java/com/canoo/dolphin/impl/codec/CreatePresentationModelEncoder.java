@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.canoo.dolphin.impl.codec.CommandConstants.*;
+
 public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePresentationModelCommand> {
 
     @Override
@@ -35,26 +37,26 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
         Assert.requireNonNull(command, "command");
 
         final JsonObject jsonCommand = new JsonObject();
-        jsonCommand.addProperty("p", command.getPmId());
-        jsonCommand.addProperty("t", command.getPmType());
+        jsonCommand.addProperty(PM_ID, command.getPmId());
+        jsonCommand.addProperty(PM_TYPE, command.getPmType());
 
         final JsonArray jsonArray = new JsonArray();
         for (final Map<String, Object> attribute : command.getAttributes()) {
             final JsonObject jsonAttribute = new JsonObject();
-            jsonAttribute.addProperty("n", String.valueOf(attribute.get("propertyName")));
-            jsonAttribute.addProperty("i", String.valueOf(attribute.get("id")));
+            jsonAttribute.addProperty(ATTRIBUTE_NAME, String.valueOf(attribute.get("propertyName")));
+            jsonAttribute.addProperty(ATTRIBUTE_ID, String.valueOf(attribute.get("id")));
             final Object value = attribute.get("value");
             if (value != null) {
-                jsonAttribute.addProperty("v", String.valueOf(attribute.get("value")));
+                jsonAttribute.addProperty(ATTRIBUTE_VALUE, String.valueOf(attribute.get("value")));
             }
             final Object tag = attribute.get("tag");
             if (tag != null && !Tag.VALUE.getName().equals(tag)) {
-                jsonAttribute.addProperty("t", tag.toString());
+                jsonAttribute.addProperty(ATTRIBUTE_TAG, tag.toString());
             }
             jsonArray.add(jsonAttribute);
         }
-        jsonCommand.add("a", jsonArray);
-        jsonCommand.addProperty("id", "CreatePresentationModel");
+        jsonCommand.add(PM_ATTRIBUTES, jsonArray);
+        jsonCommand.addProperty(ID, "CreatePresentationModel");
 
         return jsonCommand;
     }
@@ -66,22 +68,22 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
         try {
             final CreatePresentationModelCommand command = new CreatePresentationModelCommand();
 
-            command.setPmId(jsonObject.getAsJsonPrimitive("p").getAsString());
-            command.setPmType(jsonObject.getAsJsonPrimitive("t").getAsString());
+            command.setPmId(jsonObject.getAsJsonPrimitive(PM_ID).getAsString());
+            command.setPmType(jsonObject.getAsJsonPrimitive(PM_TYPE).getAsString());
             command.setClientSideOnly(false);
 
-            final JsonArray jsonArray = jsonObject.getAsJsonArray("a");
+            final JsonArray jsonArray = jsonObject.getAsJsonArray(PM_ATTRIBUTES);
             final List<Map<String, Object>> attributes = new ArrayList<>();
             for (final JsonElement jsonElement : jsonArray) {
                 final JsonObject attribute = jsonElement.getAsJsonObject();
                 final HashMap<String, Object> map = new HashMap<>();
-                map.put("propertyName", attribute.getAsJsonPrimitive("n").getAsString());
-                map.put("id", attribute.getAsJsonPrimitive("i").getAsString());
-                final String value = attribute.has("v")? attribute.getAsJsonPrimitive("v").getAsString() : null;
+                map.put("propertyName", attribute.getAsJsonPrimitive(ATTRIBUTE_NAME).getAsString());
+                map.put("id", attribute.getAsJsonPrimitive(ATTRIBUTE_ID).getAsString());
+                final String value = attribute.has(ATTRIBUTE_VALUE)? attribute.getAsJsonPrimitive(ATTRIBUTE_VALUE).getAsString() : null;
                 map.put("value", value);
                 map.put("baseValue", value);
                 map.put("qualifier", null);
-                map.put("tag", attribute.has("t")? Tag.tagFor.get(attribute.getAsJsonPrimitive("t").getAsString()) : Tag.VALUE);
+                map.put("tag", attribute.has(ATTRIBUTE_TAG)? Tag.tagFor.get(attribute.getAsJsonPrimitive(ATTRIBUTE_TAG).getAsString()) : Tag.VALUE);
                 attributes.add(map);
             }
             command.setAttributes(attributes);
