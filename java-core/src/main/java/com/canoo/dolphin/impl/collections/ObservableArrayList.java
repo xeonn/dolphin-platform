@@ -73,7 +73,7 @@ public class ObservableArrayList<E> implements ObservableList<E> {
         final List<E> removedElements = new ArrayList<>(slice);
         slice.clear();
         list.addAll(from, newElements);
-        notifyExternalListeners(new ListChangeEventImpl<E>(this, from, to, removedElements));
+        notifyExternalListeners(new ListChangeEventImpl<E>(this, from, from + newElements.size(), removedElements));
     }
 
     @Override
