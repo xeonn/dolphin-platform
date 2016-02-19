@@ -60,9 +60,22 @@ public class ValueChangedCommandEncoder implements CommandEncoder<ValueChangedCo
 
         if (value.isString()) {
             return value.getAsString();
-        } else if (value.isNumber()) {
-            return value.getAsNumber();
+        } else if (value.isBoolean()) {
+            return value.getAsBoolean();
         }
-        return value.getAsBoolean();
+
+        try {
+            final double d = value.getAsDouble();
+            if (d - Math.floor(d) > 1e-6) {
+                return d;
+            }
+            final long l = value.getAsLong();
+            if (l > (long)Integer.MAX_VALUE) {
+                return l;
+            }
+            return value.getAsInt();
+        } catch (NumberFormatException ex) {
+            throw new JsonParseException("Illegal JSON detected");
+        }
     }
 }

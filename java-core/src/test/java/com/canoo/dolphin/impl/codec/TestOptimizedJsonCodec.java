@@ -1,5 +1,6 @@
 package com.canoo.dolphin.impl.codec;
 
+import org.hamcrest.Matchers;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.NamedCommand;
@@ -9,9 +10,11 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 public class TestOptimizedJsonCodec {
@@ -140,6 +143,93 @@ public class TestOptimizedJsonCodec {
         final String standardCodecCommandString = createNamedCommandString();
         final String customCodecCommandString = createCPMCommandString();
         assertThat(actual, is("[" + standardCodecCommandString + "," + customCodecCommandString + "]"));
+    }
+
+
+
+    @Test
+    public void shouldDecodeEmptyList() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[]");
+        assertThat(commands, Matchers.<Command>empty());
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithNulls() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(null);
+        command.setNewValue(null);
+        command.setAttributeId("3357S");
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithStrings() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":\"Hello World\",\"n\":\"Good Bye\",\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue("Hello World");
+        command.setNewValue("Good Bye");
+        command.setAttributeId("3357S");
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithIntegers() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":41,\"n\":42,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(41);
+        command.setNewValue(42);
+        command.setAttributeId("3357S");
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithLong() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(1234567890987654321L);
+        command.setNewValue(987654321234567890L);
+        command.setAttributeId("3357S");
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithDoubles() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7182,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(3.1415);
+        command.setNewValue(2.7182);
+        command.setAttributeId("3357S");
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithBooleans() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":true,\"n\":false,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = new ValueChangedCommand();
+        command.setOldValue(true);
+        command.setNewValue(false);
+        command.setAttributeId("3357S");
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+    }
+
+    @Test
+    public void shouldDecodeSingleNamedCommand() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[" + createNamedCommandString() + "]");
+
+        assertThat(commands, hasSize(1));
+        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(createNamedCommand()));
     }
 
 

@@ -29,6 +29,10 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
             if (value != null) {
                 jsonAttribute.addProperty("v", String.valueOf(attribute.get("value")));
             }
+            final Object tag = attribute.get("tag");
+            if (tag != null && !"VALUE".equals(tag)) {
+                jsonAttribute.addProperty("t", tag.toString());
+            }
             jsonArray.add(jsonAttribute);
         }
         jsonCommand.add("a", jsonArray);
@@ -57,7 +61,7 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
                 map.put("value", value);
                 map.put("baseValue", value);
                 map.put("qualifier", null);
-                map.put("tag", Tag.VALUE);
+                map.put("tag", attribute.has("t")? Tag.tagFor.get(attribute.getAsJsonPrimitive("t").getAsString()) : Tag.VALUE);
                 attributes.add(map);
             }
             command.setAttributes(attributes);
