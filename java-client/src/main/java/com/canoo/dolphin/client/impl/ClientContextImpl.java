@@ -61,7 +61,6 @@ public class ClientContextImpl implements ClientContext {
         this.clientBeanManager = clientBeanManager;
         registeredWeakControllers = new CopyOnWriteArrayList<>();
 
-
         dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
     }
 

@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
+
 import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
 import com.canoo.dolphin.client.impl.ClientEventDispatcher;
@@ -37,7 +39,6 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
-import org.opendolphin.core.comm.JsonCodec;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -89,7 +90,7 @@ public class ClientContextFactory {
         final ClientDolphin clientDolphin = new ClientDolphin();
         clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
         final HttpClientConnector clientConnector = new HttpClientConnector(clientDolphin, clientConfiguration.getServerEndpoint());
-        clientConnector.setCodec(new JsonCodec());
+        clientConnector.setCodec(new OptimizedJsonCodec());
         clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
         clientDolphin.setClientConnector(clientConnector);
         return clientDolphin;

@@ -84,6 +84,8 @@ public class DolphinContextHandler {
 
         try {
             response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
+            response.setHeader("Content-Type", "application/json");
+            response.setCharacterEncoding("UTF-8");
 
             //copied from DolphinServlet
             StringBuilder requestJson = new StringBuilder();
@@ -94,7 +96,7 @@ public class DolphinContextHandler {
             List<Command> commands = currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString());
             List<Command> results = currentContext.handle(commands);
             String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
-            response.getOutputStream().print(jsonResponse);
+            response.getWriter().print(jsonResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error in Dolphin command handling", e);
         } finally {
