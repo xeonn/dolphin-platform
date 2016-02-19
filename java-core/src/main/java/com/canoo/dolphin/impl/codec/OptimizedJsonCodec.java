@@ -72,7 +72,7 @@ public class OptimizedJsonCodec implements Codec {
                 if (encoder != null) {
                     commands.add(encoder.decode(command));
                 } else {
-                    commands.addAll(fallBack.decode(command.getAsString()));
+                    commands.addAll(fallBack.decode("[" + command.toString() + "]"));
                 }
             }
             return commands;
