@@ -72,7 +72,7 @@ public class ListMapperImpl implements ListMapper {
 
                     list.internalSplice(from, to, newElements);
                 } catch (NullPointerException | ClassCastException ex) {
-                    System.out.println("Invalid LIST_ADD command received: " + model);
+                    System.out.println("Invalid LIST_SPLICE command received: " + model);
                 } finally {
                     if (model != null) {
                         ListMapperImpl.this.dolphin.remove(model);

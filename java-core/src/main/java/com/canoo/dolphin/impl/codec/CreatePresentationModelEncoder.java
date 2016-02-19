@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.canoo.dolphin.impl.codec.CommandConstants.*;
+import static com.canoo.dolphin.impl.codec.ValueEncoder.decodeValue;
+import static com.canoo.dolphin.impl.codec.ValueEncoder.encodeValue;
 
 public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePresentationModelCommand> {
 
@@ -47,7 +49,7 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
             jsonAttribute.addProperty(ATTRIBUTE_ID, String.valueOf(attribute.get("id")));
             final Object value = attribute.get("value");
             if (value != null) {
-                jsonAttribute.addProperty(ATTRIBUTE_VALUE, String.valueOf(attribute.get("value")));
+                jsonAttribute.add(ATTRIBUTE_VALUE, encodeValue(attribute.get("value")));
             }
             final Object tag = attribute.get("tag");
             if (tag != null && !Tag.VALUE.getName().equals(tag)) {
@@ -79,7 +81,7 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
                 final HashMap<String, Object> map = new HashMap<>();
                 map.put("propertyName", attribute.getAsJsonPrimitive(ATTRIBUTE_NAME).getAsString());
                 map.put("id", attribute.getAsJsonPrimitive(ATTRIBUTE_ID).getAsString());
-                final String value = attribute.has(ATTRIBUTE_VALUE)? attribute.getAsJsonPrimitive(ATTRIBUTE_VALUE).getAsString() : null;
+                final Object value = attribute.has(ATTRIBUTE_VALUE)? decodeValue(attribute.get(ATTRIBUTE_VALUE)) : null;
                 map.put("value", value);
                 map.put("baseValue", value);
                 map.put("qualifier", null);
