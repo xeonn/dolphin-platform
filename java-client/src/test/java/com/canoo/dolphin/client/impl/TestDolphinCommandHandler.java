@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
 
 /**
  * Created by hendrikebbers on 19.02.16.
@@ -22,7 +21,7 @@ import static org.testng.Assert.fail;
 public class TestDolphinCommandHandler extends AbstractDolphinBasedTest {
 
     @Test
-    public void testInvocation() {
+    public void testInvocation() throws Exception {
         //Given:
         final DolphinTestConfiguration configuration = createDolphinTestConfiguration();
         final ServerDolphin serverDolphin = configuration.getServerDolphin();
@@ -43,11 +42,7 @@ public class TestDolphinCommandHandler extends AbstractDolphinBasedTest {
         });
 
         //When:
-        try {
-            dolphinCommandHandler.invokeDolphinCommand("CHANGE_VALUE").get();
-        } catch (Exception e) {
-            fail("Can't invoke command", e);
-        }
+        dolphinCommandHandler.invokeDolphinCommand("CHANGE_VALUE").get();
 
         //Then:
         assertEquals(clientDolphin.findPresentationModelById(modelId).getAt("myAttribute").getValue(), "Hello World");
