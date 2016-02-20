@@ -22,7 +22,6 @@ import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.State;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
-import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.lang.ref.WeakReference;
@@ -66,20 +65,20 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public synchronized <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
-        if (StringUtil.isBlank(name)) {
-            throw new IllegalArgumentException("name must not be null or empty!");
-        }
+       Assert.requireNonBlank(name, "name");
         checkForInitializedState();
 
-        CompletableFuture<ControllerProxy<T>> task = controllerProxyFactory.create(name);
-
-        return task.handle((p, e) -> {
-            if (e != null) {
-                throw new ControllerInitalizationException(e);
+        final CompletableFuture<ControllerProxy<T>> task = new CompletableFuture<>();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                ControllerProxy<T> controllerProxy = controllerProxyFactory.create(name);
+                registeredWeakControllers.add(new WeakReference<>(controllerProxy));
+                task.complete(controllerProxy);
+            } catch (Exception e) {
+                task.completeExceptionally(new ControllerInitalizationException(e));
             }
-            registeredWeakControllers.add(new WeakReference<>(p));
-            return p;
         });
+        return task;
     }
 
     @Override
