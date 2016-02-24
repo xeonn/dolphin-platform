@@ -40,10 +40,7 @@ import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
-import org.opendolphin.core.server.ServerConnector;
-import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
@@ -84,10 +81,6 @@ public class DolphinContext {
         id = UUID.randomUUID().toString();
 
         //Init Open Dolphin
-        final ServerModelStore modelStore = new ServerModelStore();
-        final ServerConnector serverConnector = new ServerConnector();
-        serverConnector.setCodec(new JsonCodec());
-        serverConnector.setServerModelStore(modelStore);
         dolphin = dolphinFactory.create();
 
         //Init BeanRepository

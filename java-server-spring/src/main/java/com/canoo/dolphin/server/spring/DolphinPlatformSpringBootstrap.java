@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.TaskExecutor;
@@ -24,15 +24,16 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
+import static org.springframework.web.context.WebApplicationContext.SCOPE_SESSION;
 
 /**
  * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
@@ -41,10 +42,6 @@ import javax.servlet.ServletException;
  */
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
-
-    private final static String SCOPE_SESSION = WebApplicationContext.SCOPE_SESSION;
-
-    private final static String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
