@@ -16,14 +16,16 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.Binding;
-import com.canoo.dolphin.client.javafx.Converter;
 import com.canoo.dolphin.client.javafx.JavaFXListBinder;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.util.Assert;
 import javafx.collections.ListChangeListener;
 
 import java.util.IdentityHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
 
@@ -32,27 +34,26 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
     private static IdentityHashMap<javafx.collections.ObservableList, javafx.collections.ObservableList> boundLists = new IdentityHashMap<>();
 
     public DefaultJavaFXListBinder(javafx.collections.ObservableList<S> list) {
-        if (list == null) {
-            throw new IllegalArgumentException("list must not be null");
-        }
+        Assert.requireNonNull(list, "list");
         this.list = list;
     }
 
     @Override
-    public <T> Binding to(ObservableList<T> dolphinList, Converter<? super T, ? extends S> converter) {
+    public <T> Binding to(ObservableList<T> dolphinList, Function<? super T, ? extends S> converter) {
+        Assert.requireNonNull(dolphinList, "dolphinList");
+        Assert.requireNonNull(converter, "converter");
         if(boundLists.containsKey(list)) {
             throw new UnsupportedOperationException("A JavaFX list can only be bound to one Dolphin Platform list!");
-        };
+        }
 
         boundLists.put(list, list);
-        InternalListChangeListener listChangeListener = new InternalListChangeListener(list, converter);
-        Subscription subscription = dolphinList.onChanged(listChangeListener);
+        final InternalListChangeListener<T> listChangeListener = new InternalListChangeListener<>(converter);
+        final Subscription subscription = dolphinList.onChanged(listChangeListener);
 
-        list.clear();
-        dolphinList.forEach(item -> list.add(converter.convert(item)));
+        list.setAll(dolphinList.stream().map(converter).collect(Collectors.toList()));
 
-        ListChangeListener readOnlyListener = c -> {
-            if (!listChangeListener.isOnChange()) {
+        ListChangeListener<S> readOnlyListener = c -> {
+            if (!listChangeListener.onChange) {
                 throw new UnsupportedOperationException("A JavaFX list that is bound to a dolphin list can only be modified by the binding!");
             }
         };
@@ -66,45 +67,105 @@ public class DefaultJavaFXListBinder<S> implements JavaFXListBinder<S> {
         };
     }
 
-    private class InternalListChangeListener<S, T> implements com.canoo.dolphin.collections.ListChangeListener<T> {
+    @Override
+    public <T> Binding bidirectionalTo(ObservableList<T> dolphinList, Function<? super T, ? extends S> converter, Function<? super S, ? extends T> backConverter) {
+        Assert.requireNonNull(dolphinList, "dolphinList");
+        Assert.requireNonNull(converter, "converter");
+        Assert.requireNonNull(backConverter, "backConverter");
+        if(boundLists.containsKey(list)) {
+            throw new IllegalStateException("A JavaFX list can only be bound to one Dolphin Platform list!");
+        }
 
-        private final javafx.collections.ObservableList<S> javaFXList;
+        final InternalBidirectionalListChangeListener<T> listChangeListener = new InternalBidirectionalListChangeListener<>(dolphinList, converter, backConverter);
+        final Subscription subscription = dolphinList.onChanged(listChangeListener);
 
-        private final Converter<? super T, ? extends S> converter;
+        list.setAll(dolphinList.stream().map(converter).collect(Collectors.toList()));
 
-        private boolean onChange;
+        list.addListener(listChangeListener);
 
-        public InternalListChangeListener(javafx.collections.ObservableList<S> javaFXList, Converter<? super T, ? extends S> converter) {
+        return () -> {
+            subscription.unsubscribe();
+            list.removeListener(listChangeListener);
+        };
+    }
+
+    private class InternalListChangeListener<T> implements com.canoo.dolphin.collections.ListChangeListener<T> {
+
+        private final Function<? super T, ? extends S> converter;
+
+        protected boolean onChange;
+
+        private InternalListChangeListener(Function<? super T, ? extends S> converter) {
             this.converter = converter;
-            this.javaFXList = javaFXList;
             onChange = false;
         }
 
         @Override
         public void listChanged(ListChangeEvent<? extends T> e) {
+            if (onChange) {
+                return;
+            }
+
             onChange = true;
             try {
                 for (ListChangeEvent.Change<? extends T> c : e.getChanges()) {
-                    if (c.isRemoved()) {
-                        final int index = c.getFrom();
-                        javaFXList.remove(index, index + c.getRemovedElements().size());
-                    } else if (c.isAdded()) {
-                        for (int i = c.getFrom(); i < c.getTo(); i++) {
-                            javaFXList.add(i, converter.convert(e.getSource().get(i)));
-                        }
-                    } else if (c.isReplaced()) {
-                        for (int i = c.getFrom(); i < c.getTo(); i++) {
-                            javaFXList.set(i, converter.convert(e.getSource().get(i)));
-                        }
+                    final int index = c.getFrom();
+                    if (c.isRemoved() || c.isReplaced()) {
+                        list.subList(index, index + c.getRemovedElements().size()).clear();
+                    }
+                    if (c.isAdded() || c.isReplaced()) {
+                        list.addAll(index,
+                                e.getSource()
+                                        .subList(index, c.getTo()).stream()
+                                        .map(converter)
+                                        .collect(Collectors.toList()));
                     }
                 }
             } finally {
                 onChange = false;
             }
         }
+    }
 
-        public boolean isOnChange() {
-            return onChange;
+    private class InternalBidirectionalListChangeListener<T> extends InternalListChangeListener<T> implements ListChangeListener<S> {
+
+        private final ObservableList<T> dolphinList;
+        private final Function<? super S, ? extends T> backConverter;
+
+        private InternalBidirectionalListChangeListener(ObservableList<T> dolphinList,
+                                                        Function<? super T, ? extends S> converter,
+                                                        Function<? super S, ? extends T> backConverter) {
+            super(converter);
+            this.dolphinList = dolphinList;
+            this.backConverter = backConverter;
+        }
+
+        @Override
+        public void onChanged(Change<? extends S> change) {
+            if (onChange) {
+                return;
+            }
+
+            onChange = true;
+            try {
+                while (change.next()) {
+                    // TODO: Replace with subList() operation once implemented
+                    final int index = change.getFrom();
+                    if (change.wasRemoved() || change.wasReplaced()) {
+                        for (int i = 0; i < change.getRemovedSize(); i++) {
+                            dolphinList.remove(index);
+                        }
+                    }
+                    if (change.wasAdded() || change.wasReplaced()) {
+                        dolphinList.addAll(index,
+                                change.getAddedSubList().stream()
+                                        .map(backConverter)
+                                        .collect(Collectors.toList()));
+                    }
+                }
+            } finally {
+                onChange = false;
+            }
         }
     }
 }
