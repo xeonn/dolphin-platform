@@ -25,7 +25,7 @@ public interface JavaFXListBinder<S> {
 
     default Binding to(ObservableList<? extends S> dolphinList) {
         requireNonNull(dolphinList, "dolphinList");
-        return to(dolphinList, Function.identity());
+        return to(dolphinList, Function.<S>identity());
     }
 
     <T> Binding to(ObservableList<T> dolphinList, Function<? super T, ? extends S> converter);
