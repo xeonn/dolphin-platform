@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class ClientScopeExtension implements Extension, Serializable {
 
     public void addScope(@Observes final BeforeBeanDiscovery event) {
-        event.addScope(ClientScope.class, true, false);
+        event.addScope(ClientScoped.class, true, false);
     }
 
     public void registerContext(@Observes final AfterBeanDiscovery event) {

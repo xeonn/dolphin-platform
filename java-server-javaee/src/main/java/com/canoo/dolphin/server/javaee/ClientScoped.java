@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD,ElementType.FIELD})
-public @interface ClientScope {
+public @interface ClientScoped {
 }

@@ -1,28 +1,28 @@
 package com.canoo.dolphin.server.spring;
 
 
-import com.canoo.dolphin.server.context.DolphinContext;
-import com.canoo.dolphin.server.context.DolphinContextProvider;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Created by hendrikebbers on 01.03.16.
  */
 public class ClientScope implements Scope {
 
-    private WeakHashMap<DolphinContext, Map<String, Object>> store;
+    public final static String CLIENT_SCOPE = "client";
 
-    private DolphinContextProvider dolphinContextProvider;
+    private final static String CLIENT_STORE_ATTRIBUTE = "DolphinPlatformSpringClientScopeStore";
 
-    public ClientScope(DolphinContextProvider dolphinContextProvider) {
-        this.store = new WeakHashMap<>();
-        this.dolphinContextProvider = dolphinContextProvider;
+    private DolphinSessionProvider dolphinSessionProvider;
+
+    public ClientScope(DolphinSessionProvider dolphinSessionProvider) {
+        this.dolphinSessionProvider = dolphinSessionProvider;
     }
 
     @Override
@@ -50,21 +50,20 @@ public class ClientScope implements Scope {
     }
 
     private Map<String, Object> getLocalStore() {
-        DolphinContext currentContext = getContext();
-        Map<String, Object> localStore = store.get(currentContext);
+        Map<String, Object> localStore = getDolphinSession().getAttribute(CLIENT_STORE_ATTRIBUTE);
         if(localStore == null) {
             localStore = Collections.synchronizedMap(new HashMap<String, Object>());
-            store.put(currentContext, localStore);
+            getDolphinSession().setAttribute(CLIENT_STORE_ATTRIBUTE, localStore);
         }
         return localStore;
     }
 
     @Override
     public String getConversationId() {
-        return getContext().getId();
+        return getDolphinSession().getId();
     }
 
-    private DolphinContext getContext() {
-        return dolphinContextProvider.getCurrentContext();
+    private DolphinSession getDolphinSession() {
+        return dolphinSessionProvider.getDolphinSession();
     }
 }

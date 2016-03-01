@@ -17,7 +17,8 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.context.DefaultDolphinContextProvider;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.context.DefaultDolphinProvider;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.TaskExecutor;
@@ -43,12 +44,11 @@ import javax.servlet.ServletException;
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
 
-    public final static String CLIENT_SCOPE = "client";
 
     private DolphinContextProvider dolphinContextProvider;
 
     public DolphinPlatformSpringBootstrap() {
-        this.dolphinContextProvider = new DefaultDolphinContextProvider();
+        this.dolphinContextProvider = new DefaultDolphinProvider();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @ClientScoped
     protected BeanManager createManager() {
         return dolphinContextProvider.getCurrentContext().getBeanManager();
     }
@@ -71,10 +71,17 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @ClientScoped
     protected ServerDolphin createDolphin() {
         return dolphinContextProvider.getCurrentContext().getDolphin();
     }
+
+    @Bean
+    @ClientScoped
+    protected DolphinSession createDolphinSession() {
+        return dolphinContextProvider.getCurrentContext().getDolphinSession();
+    }
+
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -95,7 +102,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     public CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-        configurer.addScope(CLIENT_SCOPE, new ClientScope(dolphinContextProvider));
+        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(dolphinContextProvider));
         return configurer;
     }
 }

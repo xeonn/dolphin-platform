@@ -30,6 +30,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.InvokeActionException;
@@ -53,7 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public class DolphinContext {
+public class DolphinContext implements DolphinSessionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
@@ -75,9 +76,12 @@ public class DolphinContext {
 
     private DolphinContextTaskExecutor taskExecutor;
 
+    private DolphinSession dolphinSession;
+
     public DolphinContext(ContainerManager containerManager) {
         this.containerManager = containerManager;
 
+        this.dolphinSession = new DolphinSessionImpl(this);
         //ID
         id = UUID.randomUUID().toString();
 
@@ -267,5 +271,9 @@ public class DolphinContext {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public DolphinSession getDolphinSession() {
+        return dolphinSession;
     }
 }
