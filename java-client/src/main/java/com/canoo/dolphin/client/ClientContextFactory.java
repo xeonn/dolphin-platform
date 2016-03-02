@@ -64,6 +64,7 @@ public class ClientContextFactory {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
+
                 final ClientDolphin clientDolphin = createClientDolphin(clientConfiguration);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
 
@@ -77,7 +78,8 @@ public class ClientContextFactory {
                 final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
                 final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
                 final ClientContext clientContext = new ClientContextImpl(clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager);
-                clientDolphin.startPushListening(PlatformConstants.POLL_COMMAND_NAME, PlatformConstants.RELEASE_COMMAND_NAME);
+                clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
                 throw new ClientInitializationException(e);

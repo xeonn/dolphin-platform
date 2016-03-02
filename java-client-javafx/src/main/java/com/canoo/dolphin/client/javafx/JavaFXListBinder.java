@@ -16,15 +16,25 @@
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.collections.ObservableList;
+
+import java.util.function.Function;
+
 import static com.canoo.dolphin.util.Assert.*;
 
 public interface JavaFXListBinder<S> {
 
     default Binding to(ObservableList<? extends S> dolphinList) {
         requireNonNull(dolphinList, "dolphinList");
-        return to(dolphinList, n -> n);
+        return to(dolphinList, Function.<S>identity());
     }
 
-    <T> Binding to(ObservableList<T> dolphinList, Converter<? super T, ? extends S> converter);
+    <T> Binding to(ObservableList<T> dolphinList, Function<? super T, ? extends S> converter);
+
+    default Binding bidirectionalTo(ObservableList<S> dolphinList) {
+        requireNonNull(dolphinList, "dolphinList");
+        return bidirectionalTo(dolphinList, Function.identity(), Function.identity());
+    }
+
+    <T> Binding bidirectionalTo(ObservableList<T> dolphinList, Function<? super T, ? extends S> converter, Function<? super S, ? extends T> backConverter);
 
 }

@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerDolphin;
@@ -32,6 +33,7 @@ public class ServerPresentationModelBuilder extends AbstractPresentationModelBui
     private final ServerDolphin dolphin;
 
     public ServerPresentationModelBuilder(ServerDolphin dolphin) {
+        Assert.requireNonNull(dolphin, "dolphin");
         this.dolphin = dolphin;
         this.slots.add(new Slot(PlatformConstants.SOURCE_SYSTEM, PlatformConstants.SOURCE_SYSTEM_SERVER));
     }

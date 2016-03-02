@@ -59,8 +59,7 @@ public class ClientContextImpl implements ClientContext {
         this.platformBeanRepository = platformBeanRepository;
         this.clientBeanManager = clientBeanManager;
         registeredWeakControllers = new CopyOnWriteArrayList<>();
-
-        dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
+        dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
     }
 
     @Override
@@ -111,7 +110,7 @@ public class ClientContextImpl implements ClientContext {
                 //TODO: Hack - When calling the PlatformConstants.DISCONNECT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
                 // Currently I think that this is based on another problem: When calling the sisconnect on the JavaFX APplication.stop() method the Platform Tread will be stopped berfore the callback is called.
                 state = State.DESTROYED;
-                dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME);
+                dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME);
                 result.complete(null);
             } catch (Exception e) {
                 result.completeExceptionally(e);

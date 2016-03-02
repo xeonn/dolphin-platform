@@ -17,7 +17,6 @@ package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
@@ -53,8 +52,6 @@ public class DolphinPlatformBootstrap {
 
         servletContext.addListener(new DolphinContextCleaner());
         servletContext.addListener(new DolphinSessionHandlerCleaner());
-
-        ControllerRepository.init();
 
         DolphinContextHandler.getInstance().init(servletContext);
     }
