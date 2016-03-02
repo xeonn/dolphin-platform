@@ -16,35 +16,24 @@
 package com.canoo.dolphin.client;
 
 /**
- * This exception is thrown if a error occurs while creating the {@link ClientContext}
+ * Created by hendrikebbers on 18.02.16.
  */
-public class ClientInitializationException extends RuntimeException {
+public class ControllerInitalizationException extends RuntimeException {
 
-    private static final long serialVersionUID = -2590161524286922625L;
+    private static final long serialVersionUID = 4212442538247238882L;
 
-    /**
-     * constructor
-     * @param message the error message
-     */
-    public ClientInitializationException(String message) {
+    public ControllerInitalizationException() {
+    }
+
+    public ControllerInitalizationException(String message) {
         super(message);
     }
 
-    /**
-     * constructor
-     * @param message the error message
-     * @param cause the cause
-     */
-    public ClientInitializationException(String message, Throwable cause) {
+    public ControllerInitalizationException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    /**
-     * constructor
-     * @param cause the cause
-     */
-    public ClientInitializationException(Throwable cause) {
+    public ControllerInitalizationException(Throwable cause) {
         super(cause);
     }
-
 }
