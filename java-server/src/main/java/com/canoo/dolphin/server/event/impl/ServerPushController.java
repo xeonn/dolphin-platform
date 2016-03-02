@@ -18,8 +18,10 @@ package com.canoo.dolphin.server.event.impl;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 
-@DolphinController("ServerPushController")
+@DolphinController(ServerPushController.NAME)
 public class ServerPushController {
+
+    public static final String NAME = "ServerPushController";
 
     @DolphinAction
     public void longPoll() {

@@ -53,7 +53,7 @@ public class ClientContextFactory {
                 clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
                 dolphin.setClientConnector(clientConnector);
                 final ClientContext clientContext = new ClientContextImpl(dolphin);
-                dolphin.startPushListening(PlatformConstants.POLL_COMMAND_NAME, PlatformConstants.RELEASE_COMMAND_NAME);
+                dolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
                 throw new ClientInitializationException(e);
