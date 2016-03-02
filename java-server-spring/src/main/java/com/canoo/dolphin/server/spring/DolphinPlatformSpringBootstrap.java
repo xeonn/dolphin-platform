@@ -26,6 +26,7 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -48,7 +49,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @Scope(WebApplicationContext.SCOPE_SESSION)
     protected BeanManager createManager() {
         return DolphinContextHandler.getCurrentContext().getBeanManager();
     }
