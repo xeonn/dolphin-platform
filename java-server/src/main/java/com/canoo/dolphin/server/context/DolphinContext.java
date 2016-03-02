@@ -23,6 +23,7 @@ import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -38,7 +39,6 @@ import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerConnector;
 import org.opendolphin.core.server.ServerModelStore;
@@ -78,7 +78,7 @@ public class DolphinContext {
         //Init Open Dolphin
         final ServerModelStore modelStore = new ServerModelStore();
         final ServerConnector serverConnector = new ServerConnector();
-        serverConnector.setCodec(new JsonCodec());
+        serverConnector.setCodec(new OptimizedJsonCodec());
         serverConnector.setServerModelStore(modelStore);
         dolphin = new DefaultServerDolphin(modelStore, serverConnector);
 
