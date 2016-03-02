@@ -20,6 +20,8 @@ package com.canoo.dolphin.client;
  */
 public class ClientShutdownException extends Exception {
 
+    private static final long serialVersionUID = 8453749162802045073L;
+
     /**
      * constructor
      * @param message the error message

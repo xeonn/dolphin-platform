@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import org.opendolphin.core.comm.Command;
 
 import javax.servlet.ServletContext;
@@ -42,6 +43,8 @@ public class DolphinContextHandler {
 
     private OpenDolphinFactory openDolphinFactory;
 
+    private ControllerRepository controllerRepository;
+
     private DolphinContextHandler() {
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
@@ -55,6 +58,9 @@ public class DolphinContextHandler {
             throw new RuntimeException("No " + ContainerManager.class + " found!");
         }
         openDolphinFactory = new DefaultOpenDolphinFactory();
+
+        controllerRepository = new ControllerRepository();
+
     }
 
     public void init(ServletContext servletContext) {
@@ -73,7 +79,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager, openDolphinFactory);
+                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);
@@ -86,6 +92,8 @@ public class DolphinContextHandler {
 
         try {
             response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
+            response.setHeader("Content-Type", "application/json");
+            response.setCharacterEncoding("UTF-8");
 
             //copied from DolphinServlet
             StringBuilder requestJson = new StringBuilder();
@@ -96,7 +104,7 @@ public class DolphinContextHandler {
             List<Command> commands = currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString());
             List<Command> results = currentContext.handle(commands);
             String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
-            response.getOutputStream().print(jsonResponse);
+            response.getWriter().print(jsonResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error in Dolphin command handling", e);
         } finally {

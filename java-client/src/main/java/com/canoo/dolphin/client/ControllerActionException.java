@@ -21,6 +21,8 @@ package com.canoo.dolphin.client;
  */
 public class ControllerActionException extends Exception {
 
+    private static final long serialVersionUID = -7706398106144587910L;
+
     /**
      * constructor
      */

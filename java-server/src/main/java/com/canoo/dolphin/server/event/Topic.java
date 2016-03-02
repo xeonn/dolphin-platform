@@ -59,6 +59,10 @@ public class Topic<T> {
         return new Topic<>(uniqueName);
     }
 
+    public static <T> Topic<T> create() {
+        return new Topic<>();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

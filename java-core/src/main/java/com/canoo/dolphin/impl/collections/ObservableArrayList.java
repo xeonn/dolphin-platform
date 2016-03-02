@@ -68,21 +68,12 @@ public class ObservableArrayList<E> implements ObservableList<E> {
         }
     }
 
-    public void internalAdd(int index, E element) {
-        list.add(index, element);
-        notifyExternalListeners(new ListChangeEventImpl<>(this, index, index + 1, Collections.<E>emptyList()));
-    }
-
-    public void internalDelete(int from, int to) {
-        final List<E> toBeRemoved = list.subList(from, to);
-        final List<E> removedElements = Collections.unmodifiableList(new ArrayList<>(toBeRemoved));
-        toBeRemoved.clear();
-        notifyExternalListeners(new ListChangeEventImpl<>(this, from, from, removedElements));
-    }
-
-    public void internalReplace(int index, E newElement) {
-        final E oldElement = list.set(index, newElement);
-        notifyExternalListeners(new ListChangeEventImpl<>(this, index, index + 1, Collections.singletonList(oldElement)));
+    public void internalSplice(int from, int to, Collection<? extends E> newElements) {
+        final List<E> slice = list.subList(from, to);
+        final List<E> removedElements = new ArrayList<>(slice);
+        slice.clear();
+        list.addAll(from, newElements);
+        notifyExternalListeners(new ListChangeEventImpl<E>(this, from, from + newElements.size(), removedElements));
     }
 
     @Override

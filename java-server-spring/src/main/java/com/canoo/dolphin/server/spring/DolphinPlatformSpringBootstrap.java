@@ -17,13 +17,11 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.BeanManagerImpl;
-import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
-import org.opendolphin.core.server.ServerDolphin;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,9 +29,6 @@ import org.springframework.context.annotation.Scope;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
-import static org.springframework.web.context.WebApplicationContext.SCOPE_SESSION;
 
 /**
  * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
@@ -53,25 +48,9 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return the instance
      */
     @Bean
-    @Scope(SCOPE_SESSION)
+    @Scope("session")
     protected BeanManager createManager() {
-        return DolphinContext.getCurrentContext().getBeanManager();
-    }
-
-    /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in session scope.
-     * @return the instance
-     */
-    @Bean
-    @Scope(SCOPE_SESSION)
-    protected ServerDolphin createDolphin() {
-        return DolphinContext.getCurrentContext().getDolphin();
-    }
-
-    @Bean
-    @Scope(SCOPE_SINGLETON)
-    protected TaskExecutor createTaskExecutor() {
-        return TaskExecutorImpl.getInstance();
+        return DolphinContextHandler.getCurrentContext().getBeanManager();
     }
 
     /**
@@ -79,7 +58,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
      * @return
      */
     @Bean
-    @Scope(SCOPE_SINGLETON)
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
         return DolphinEventBusImpl.getInstance();
     }

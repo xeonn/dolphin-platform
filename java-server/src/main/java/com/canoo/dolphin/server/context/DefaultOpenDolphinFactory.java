@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.server.context;
 
-import org.opendolphin.core.comm.JsonCodec;
+import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerConnector;
 import org.opendolphin.core.server.ServerModelStore;
@@ -30,7 +30,7 @@ public class DefaultOpenDolphinFactory implements OpenDolphinFactory {
         //Init Open Dolphin
         final ServerModelStore modelStore = new ServerModelStore();
         final ServerConnector serverConnector = new ServerConnector();
-        serverConnector.setCodec(new JsonCodec());
+        serverConnector.setCodec(new OptimizedJsonCodec());
         serverConnector.setServerModelStore(modelStore);
         DefaultServerDolphin dolphin = new DefaultServerDolphin(modelStore, serverConnector);
         dolphin.registerDefaultActions();

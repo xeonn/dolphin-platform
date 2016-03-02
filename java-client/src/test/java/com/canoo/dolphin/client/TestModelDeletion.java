@@ -3,7 +3,6 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.util.*;
 import mockit.Mocked;
-import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;

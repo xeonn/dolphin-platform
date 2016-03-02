@@ -16,61 +16,24 @@
 package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.server.DolphinController;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
+import com.canoo.dolphin.util.Assert;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Created by hendrikebbers on 16.09.15.
+ */
 public class ControllerRepository {
 
-    private static Map<String, Class> controllersClasses;
+    private Map<String, Class> controllersClasses;
 
-    private static boolean initialized = false;
-
-    private ControllerRepository() {
-    }
-
-    public static synchronized void init() {
-        if (initialized) {
-            throw new RuntimeException(ControllerRepository.class.getName() + " already initialized");
-        }
+    public ControllerRepository() {
         controllersClasses = new HashMap<>();
-        ConfigurationBuilder configuration = ConfigurationBuilder.build(ControllerRepository.class.getClassLoader());
 
-        //Special case for JBOSS Application server to get all classes
-        try {
-            Enumeration<URL> res = ControllerRepository.class.getClassLoader().getResources("");
-            while(res.hasMoreElements()) {
-                URL resURL = res.nextElement();
-                if(!configuration.getUrls().contains(resURL)) {
-                    configuration.getUrls().add(resURL);
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Error in Dolphin Platform controller class scan", e);
-        }
-
-        //Remove native libs (will be added on Mac in a Spring Boot app)
-        Set<URL> urls = configuration.getUrls();
-        List<URL> toRemove = new ArrayList<>();
-        for(URL url : urls) {
-            if(url.toString().endsWith(".jnilib")) {
-                toRemove.add(url);
-            }
-        }
-        for(URL url : toRemove) {
-            configuration.getUrls().remove(url);
-        }
-
-        Reflections reflections = new Reflections(configuration);
-        Set<Class<?>> foundControllerClasses = reflections.getTypesAnnotatedWith(DolphinController.class);
+        Set<Class<?>> foundControllerClasses = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinController.class);
         for (Class<?> controllerClass : foundControllerClasses) {
             String name = controllerClass.getName();
             if (controllerClass.getAnnotation(DolphinController.class).value() != null && !controllerClass.getAnnotation(DolphinController.class).value().trim().isEmpty()) {
@@ -78,13 +41,14 @@ public class ControllerRepository {
             }
             controllersClasses.put(name, controllerClass);
         }
-        initialized = true;
     }
 
-    public static synchronized Class getControllerClassForName(String name) {
-        if(!initialized) {
-            throw new IllegalStateException(ControllerRepository.class.getName() + " has not been initialized!");
+    public synchronized Class<?> getControllerClassForName(String name) {
+        Assert.requireNonBlank(name, "name");
+        Class<?> foundClass = controllersClasses.get(name);
+        if(foundClass == null) {
+            throw new IllegalArgumentException("Can't find controller with name " + name);
         }
-        return controllersClasses.get(name);
+        return foundClass;
     }
 }
