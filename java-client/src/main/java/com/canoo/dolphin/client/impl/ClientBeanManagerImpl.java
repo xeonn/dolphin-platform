@@ -21,6 +21,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import org.opendolphin.core.client.ClientDolphin;
 
+@Deprecated
 public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBeanManager {
 
     private final ClientDolphin dolphin;

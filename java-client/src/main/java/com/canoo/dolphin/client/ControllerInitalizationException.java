@@ -13,8 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.event.impl;
+package com.canoo.dolphin.client;
 
-@Deprecated
-public interface TaskTrigger {
+/**
+ * Created by hendrikebbers on 18.02.16.
+ */
+public class ControllerInitalizationException extends RuntimeException {
+
+    private static final long serialVersionUID = 4212442538247238882L;
+
+    public ControllerInitalizationException() {
+    }
+
+    public ControllerInitalizationException(String message) {
+        super(message);
+    }
+
+    public ControllerInitalizationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ControllerInitalizationException(Throwable cause) {
+        super(cause);
+    }
 }

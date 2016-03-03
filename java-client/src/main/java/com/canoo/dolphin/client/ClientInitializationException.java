@@ -20,6 +20,8 @@ package com.canoo.dolphin.client;
  */
 public class ClientInitializationException extends RuntimeException {
 
+    private static final long serialVersionUID = -2590161524286922625L;
+
     /**
      * constructor
      * @param message the error message

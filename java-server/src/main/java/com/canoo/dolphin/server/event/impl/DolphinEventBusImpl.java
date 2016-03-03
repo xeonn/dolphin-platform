@@ -59,10 +59,6 @@ public class DolphinEventBusImpl implements DolphinEventBus {
         eventBus.publish(sender, new MessageImpl(topic, data));
     }
 
-    public void triggerTaskExecution() {
-        eventBus.publish(sender, new TaskTrigger(){});
-    }
-
     public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
         if(topic == null) {
             throw new IllegalArgumentException("topic must not be null!");
@@ -139,8 +135,6 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                     //TODO replace by log
 //                    System.out.println("handle event for dolphinId: " + dolphinId);
                     somethingHandled |= receiverInSession.handle(event);
-                } else if(TaskTrigger.class.isAssignableFrom(val.getClass())) {
-                    somethingHandled |= DolphinContext.getCurrentContext().getTaskExecutor().execute();
                 }
 
                 //if there are many events we would loop forever -> additional exit condition
