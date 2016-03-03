@@ -38,6 +38,7 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.comm.BlindCommandBatcher;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 
 import java.util.concurrent.CompletableFuture;
@@ -91,7 +92,7 @@ public class ClientContextFactory {
     private static ClientDolphin createClientDolphin(final ClientConfiguration clientConfiguration) {
         final ClientDolphin clientDolphin = new ClientDolphin();
         clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-        final HttpClientConnector clientConnector = new HttpClientConnector(clientDolphin, clientConfiguration.getServerEndpoint());
+        final HttpClientConnector clientConnector = new HttpClientConnector(clientDolphin, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint());
         clientConnector.setCodec(new OptimizedJsonCodec());
         clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
         clientDolphin.setClientConnector(clientConnector);
