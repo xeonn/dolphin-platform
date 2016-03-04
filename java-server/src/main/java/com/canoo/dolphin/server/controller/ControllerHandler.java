@@ -33,6 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This class wrapps the complete Dolphin Platform controller handling.
+ * It defines the methods to create or destroy controllers and to interact with them.
+ */
 public class ControllerHandler {
 
     private final Map<String, Object> controllers = new HashMap<>();

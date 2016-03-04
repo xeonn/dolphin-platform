@@ -28,6 +28,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class can be used to search for a set of classes in the classpath. Currently all classes that are annotated
+ * with a specific annotation can be found.
+ */
 public class ClasspathScanner {
 
     private Reflections reflections;
@@ -61,11 +65,20 @@ public class ClasspathScanner {
         reflections = new Reflections(configuration);
     }
 
+    /**
+     * Returns a set that contains all classes in the classpath that are annotated with the given annotation
+     * @param annotation the annotation
+     * @return the set of annotated classes
+     */
     public synchronized Set<Class<?>> getTypesAnnotatedWith(final Class<? extends Annotation> annotation) {
         Assert.requireNonNull(annotation, "annotation");
         return reflections.getTypesAnnotatedWith(annotation);
     }
 
+    /**
+     * Returns the single instance
+     * @return the instance
+     */
     public static ClasspathScanner getInstance() {
         return instance;
     }

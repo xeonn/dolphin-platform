@@ -50,6 +50,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class defines the central entry point for a Dolphin Platform session on the server.
+ * Each Dolphin Platform client context on the client side is connected with one {@link DolphinContext}.
+ */
 public class DolphinContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);

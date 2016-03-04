@@ -21,7 +21,7 @@ import org.opendolphin.core.server.ServerConnector;
 import org.opendolphin.core.server.ServerModelStore;
 
 /**
- * Created by hendrikebbers on 05.02.16.
+ * Default implementation of the {@link OpenDolphinFactory}
  */
 public class DefaultOpenDolphinFactory implements OpenDolphinFactory {
 

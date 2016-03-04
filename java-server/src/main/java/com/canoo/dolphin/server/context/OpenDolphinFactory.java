@@ -18,9 +18,13 @@ package com.canoo.dolphin.server.context;
 import org.opendolphin.core.server.DefaultServerDolphin;
 
 /**
- * Created by hendrikebbers on 05.02.16.
+ * A factory that creates an Open Dolphin {@link DefaultServerDolphin}
  */
 public interface OpenDolphinFactory {
 
+    /**
+     * Creates a new Open Dolphin {@link DefaultServerDolphin}
+     * @return the server dolphin
+     */
     DefaultServerDolphin create();
 }

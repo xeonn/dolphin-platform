@@ -24,12 +24,16 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by hendrikebbers on 16.09.15.
+ * This repository manages all Dolphin Platform controller classes (see {@link DolphinController}).
+ * Internally the class uses the {@link ClasspathScanner} to find all controller classes.
  */
 public class ControllerRepository {
 
     private Map<String, Class> controllersClasses;
 
+    /**
+     * Constructor
+     */
     public ControllerRepository() {
         controllersClasses = new HashMap<>();
 
@@ -43,6 +47,12 @@ public class ControllerRepository {
         }
     }
 
+    /**
+     * Returns the controller class that is registered for the given name. For more information about controller
+     * classes and the name definition see {@link DolphinController}
+     * @param name the name
+     * @return the controller class
+     */
     public synchronized Class<?> getControllerClassForName(String name) {
         Assert.requireNonBlank(name, "name");
         Class<?> foundClass = controllersClasses.get(name);

@@ -28,6 +28,10 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Class that manages all dolphin contexts (see {@link DolphinContext}).
+ * This class will be refactored in a furure version.
+ */
 public class DolphinContextHandler {
 
     private static final Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
