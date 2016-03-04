@@ -19,13 +19,13 @@ import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
-import org.opendolphin.LogConfig;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import java.util.EnumSet;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DolphinPlatformBootstrap {
 
@@ -43,7 +43,7 @@ public class DolphinPlatformBootstrap {
 
     private String dolphinInvalidationServletMapping;
 
-    private Level dolphinLogLevel = Level.INFO;
+    private Level openDolphinLogLevel = Level.SEVERE;
 
     public DolphinPlatformBootstrap() {
         this.dolphinServletMapping = DEFAULT_DOLPHIN_SERVLET_MAPPING;
@@ -62,7 +62,8 @@ public class DolphinPlatformBootstrap {
 
         DolphinContextHandler.getInstance().init(servletContext);
 
-        LogConfig.logOnLevel(dolphinLogLevel);
+        Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
+        openDolphinLogger.setLevel(openDolphinLogLevel);
     }
 
 }

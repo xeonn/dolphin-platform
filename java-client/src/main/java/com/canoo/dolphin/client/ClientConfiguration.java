@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 
@@ -53,7 +54,7 @@ public class ClientConfiguration {
         this.serverEndpoint = serverEndpoint;
 
         this.uiThreadHandler = uiThreadHandler;
-        this.dolphinLogLevel = Level.INFO;
+        this.dolphinLogLevel = Level.SEVERE;
     }
 
     /**
@@ -77,6 +78,7 @@ public class ClientConfiguration {
     }
 
     public void setDolphinLogLevel(Level dolphinLogLevel) {
+        Assert.requireNonNull(dolphinLogLevel, "dolphinLogLevel");
         this.dolphinLogLevel = dolphinLogLevel;
     }
 }
