@@ -23,7 +23,6 @@ import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -38,10 +37,9 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.DefaultServerDolphin;
-import org.opendolphin.core.server.ServerConnector;
-import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
 import org.opendolphin.core.server.comm.CommandHandler;
@@ -70,23 +68,15 @@ public class DolphinContext {
 
     private final String id;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository) {
-
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory) {
+        Assert.requireNonNull(containerManager, "containerManager");
+        Assert.requireNonNull(controllerRepository, "controllerRepository");
+        Assert.requireNonNull(dolphinFactory, "dolphinFactory");
         //ID
         id = UUID.randomUUID().toString();
 
         //Init Open Dolphin
-        final ServerModelStore modelStore = new ServerModelStore();
-        final ServerConnector serverConnector = new ServerConnector();
-        serverConnector.setCodec(new OptimizedJsonCodec());
-        serverConnector.setServerModelStore(modelStore);
-        dolphin = new DefaultServerDolphin(modelStore, serverConnector);
-
-        //TODO: Currently we do some initialization here in the constructor and other parts in the "init context" command.
-        //We should check if we can do all that follows this comment in the "init Context" command handler.
-
-        //Default Dolphin Actions
-        dolphin.registerDefaultActions();
+        dolphin = dolphinFactory.create();
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
@@ -223,11 +213,6 @@ public class DolphinContext {
 
     public String getId() {
         return id;
-    }
-
-    @Deprecated
-    public static DolphinContext getCurrentContext() {
-        return DolphinContextHandler.getCurrentContext();
     }
 
     public List<Command> handle(List<Command> commands) {

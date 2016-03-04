@@ -41,6 +41,8 @@ public class DolphinContextHandler {
 
     private final static DolphinContextHandler INSTANCE = new DolphinContextHandler();
 
+    private OpenDolphinFactory openDolphinFactory;
+
     private ControllerRepository controllerRepository;
 
     private DolphinContextHandler() {
@@ -55,7 +57,10 @@ public class DolphinContextHandler {
         } else {
             throw new RuntimeException("No " + ContainerManager.class + " found!");
         }
+        openDolphinFactory = new DefaultOpenDolphinFactory();
+
         controllerRepository = new ControllerRepository();
+
     }
 
     public void init(ServletContext servletContext) {
@@ -74,7 +79,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager, controllerRepository);
+                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);

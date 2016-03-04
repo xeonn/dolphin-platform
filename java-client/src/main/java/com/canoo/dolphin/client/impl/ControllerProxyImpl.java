@@ -57,6 +57,10 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         this.platformBeanRepository = platformBeanRepository;
     }
 
+    public String getControllerId() {
+        return controllerId;
+    }
+
     @Override
     public T getModel() {
         return model;
@@ -117,4 +121,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         });
         return ret;
     }
+
+
 }
