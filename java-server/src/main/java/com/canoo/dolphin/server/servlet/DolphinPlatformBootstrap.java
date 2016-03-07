@@ -17,7 +17,9 @@ package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
+import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
+import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
 import javax.servlet.DispatcherType;
@@ -40,20 +42,27 @@ public class DolphinPlatformBootstrap {
 
     private String dolphinInvalidationServletMapping;
 
+    private final DolphinContextHandlerFactory dolphinContextHandlerFactory;
+
+    private DolphinContextHandler dolphinContextHandler;
+
     public DolphinPlatformBootstrap() {
+        dolphinContextHandlerFactory = new DolphinContextHandlerFactoryImpl();
         this.dolphinServletMapping = DEFAULT_DOLPHIN_SERVLET_MAPPING;
         this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
     }
 
     public void onStartup(ServletContext servletContext) {
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet()).addMapping(dolphinServletMapping);
+        Assert.requireNonNull(servletContext, "servletContext");
+        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext);
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-        servletContext.addListener(new DolphinContextCleaner());
-        servletContext.addListener(new DolphinSessionHandlerCleaner());
-
-        DolphinContextHandler.getInstance().init(servletContext);
+        servletContext.addListener(new DolphinContextCleaner(dolphinContextHandler));
     }
 
+    public DolphinContextHandler getDolphinContextHandler() {
+        return dolphinContextHandler;
+    }
 }

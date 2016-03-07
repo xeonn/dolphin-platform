@@ -23,6 +23,12 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class DolphinContextCleaner implements HttpSessionListener {
 
+    private DolphinContextHandler dolphinContextHandler;
+
+    public DolphinContextCleaner(DolphinContextHandler dolphinContextHandler) {
+        this.dolphinContextHandler = dolphinContextHandler;
+    }
+
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         //Nothing to do
@@ -30,6 +36,6 @@ public class DolphinContextCleaner implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        DolphinContextHandler.removeAllContextsInSession(se.getSession());
+        dolphinContextHandler.removeAllContextsInSession(se.getSession());
     }
 }

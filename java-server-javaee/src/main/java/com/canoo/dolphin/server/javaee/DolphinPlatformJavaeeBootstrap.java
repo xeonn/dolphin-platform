@@ -29,8 +29,18 @@ import java.util.Set;
  */
 public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializer {
 
+    private static DolphinPlatformBootstrap bootstrap;
+
+    public DolphinPlatformJavaeeBootstrap() {
+        bootstrap = new DolphinPlatformBootstrap();
+    }
+
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        new DolphinPlatformBootstrap().onStartup(ctx);
+        bootstrap.onStartup(ctx);
+    }
+
+    public static DolphinPlatformBootstrap getBootstrap() {
+        return bootstrap;
     }
 }

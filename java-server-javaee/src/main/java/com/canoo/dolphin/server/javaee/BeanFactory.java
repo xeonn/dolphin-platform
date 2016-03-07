@@ -16,9 +16,7 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
@@ -34,12 +32,12 @@ public class BeanFactory {
     @Produces
     @SessionScoped
     public BeanManager createManager() {
-        return DolphinContextHandler.getCurrentContext().getBeanManager();
+        return DolphinPlatformJavaeeBootstrap.getBootstrap().getDolphinContextHandler().getCurrentContext().getBeanManager();
     }
 
     @Produces
     @ApplicationScoped
     public DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        return DolphinPlatformJavaeeBootstrap.getBootstrap().getDolphinContextHandler().getDolphinEventBus();
     }
 }
