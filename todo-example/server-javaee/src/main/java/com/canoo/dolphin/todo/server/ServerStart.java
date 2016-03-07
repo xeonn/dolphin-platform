@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.context;
+package com.canoo.dolphin.todo.server;
+
+import com.kumuluz.ee.EeApplication;
 
 /**
  * Created by hendrikebbers on 01.03.16.
  */
-public interface DolphinContextProvider extends DolphinSessionProvider{
+public class ServerStart {
 
-    DolphinContext getCurrentContext();
+    public static void main(String... args) {
+        EeApplication.main(args);
+    }
+
 }
