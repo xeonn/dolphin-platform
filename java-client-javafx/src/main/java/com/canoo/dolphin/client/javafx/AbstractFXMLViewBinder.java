@@ -67,7 +67,7 @@ public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
 
     /**
      * Usefull helper method that returns the root node (see {@link #getRootNode()}) as a {@link Parent} if the root node
-     * extends {@link Parent} or throws an runtime exception. Thsi can be used to simply add a {@link AbstractFXMLViewBinder}
+     * extends {@link Parent} or throws an runtime exception. This can be used to simply add a {@link AbstractFXMLViewBinder}
      * based view to a scene that needs a {@link Parent} as a root node.
      * @return the root node
      */
