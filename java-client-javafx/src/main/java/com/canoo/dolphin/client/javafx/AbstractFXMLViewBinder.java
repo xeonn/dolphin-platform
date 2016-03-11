@@ -16,10 +16,11 @@
 package com.canoo.dolphin.client.javafx;
 
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.util.Assert;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -43,13 +44,17 @@ public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
      * @param controllerName the controller name of the Dolphin Platform controller definition on the server that should
      *                       be used with this view.
      * @param fxmlLocation the location (url) of the FXML file that defines the layout of the view.
-     * @throws IOException if the fxml file can't be loaded.
      */
-    public AbstractFXMLViewBinder(ClientContext clientContext, String controllerName, URL fxmlLocation) throws IOException {
+    public AbstractFXMLViewBinder(ClientContext clientContext, String controllerName, URL fxmlLocation) {
         super(clientContext, controllerName);
-        FXMLLoader loader = new FXMLLoader(fxmlLocation);
-        loader.setController(this);
-        rootNode = loader.load();
+        Assert.requireNonNull(fxmlLocation, "fxmlLocation");
+        try {
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            loader.setController(this);
+            rootNode = loader.load();
+        } catch (Exception e) {
+            throw new FxmlLoadException("Can not create view based on FXML location " + fxmlLocation, e);
+        }
     }
 
     /**
@@ -58,5 +63,21 @@ public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
      */
     public Node getRootNode() {
         return rootNode;
+    }
+
+    /**
+     * Usefull helper method that returns the root node (see {@link #getRootNode()}) as a {@link Parent} if the root node
+     * extends {@link Parent} or throws an runtime exception. This can be used to simply add a {@link AbstractFXMLViewBinder}
+     * based view to a scene that needs a {@link Parent} as a root node.
+     * @return the root node
+     */
+    public Parent getParent() {
+        if(rootNode == null) {
+            throw new NullPointerException("The root node is null");
+        }
+        if(rootNode instanceof Parent) {
+            return (Parent) rootNode;
+        }
+        throw new IllegalStateException("The root node of this view is not a Parent");
     }
 }
