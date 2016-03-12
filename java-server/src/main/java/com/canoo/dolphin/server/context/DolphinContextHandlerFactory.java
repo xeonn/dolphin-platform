@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.controller.ControllerRepository;
+
 import javax.servlet.ServletContext;
 
 /**
@@ -22,6 +24,6 @@ import javax.servlet.ServletContext;
  */
 public interface DolphinContextHandlerFactory {
 
-    DolphinContextHandler create(ServletContext servletContext);
+    DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository);
 
 }

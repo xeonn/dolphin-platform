@@ -19,6 +19,7 @@ import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
@@ -54,7 +55,8 @@ public class DolphinPlatformBootstrap {
 
     public void onStartup(ServletContext servletContext) {
         Assert.requireNonNull(servletContext, "servletContext");
-        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext);
+        ControllerRepository controllerRepository = new ControllerRepository();
+        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository);
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");

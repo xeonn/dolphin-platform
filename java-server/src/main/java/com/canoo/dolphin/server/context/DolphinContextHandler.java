@@ -102,7 +102,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     public void removeAllContextsInSession(HttpSession session) {
         Assert.requireNonNull(session, "session");
-        throw new RuntimeException("NYI");
+        globalContextMap.remove(session.getId());
     }
 
     public DolphinContext getCurrentContext() {

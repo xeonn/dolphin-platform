@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.util.Assert;
+
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -26,7 +28,7 @@ public class DolphinContextCleaner implements HttpSessionListener {
     private DolphinContextHandler dolphinContextHandler;
 
     public DolphinContextCleaner(DolphinContextHandler dolphinContextHandler) {
-        this.dolphinContextHandler = dolphinContextHandler;
+        this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
     }
 
     @Override
@@ -35,7 +37,8 @@ public class DolphinContextCleaner implements HttpSessionListener {
     }
 
     @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
-        dolphinContextHandler.removeAllContextsInSession(se.getSession());
+    public void sessionDestroyed(HttpSessionEvent sessionEvent) {
+        Assert.requireNonNull(sessionEvent, "sessionEvent");
+        dolphinContextHandler.removeAllContextsInSession(sessionEvent.getSession());
     }
 }
