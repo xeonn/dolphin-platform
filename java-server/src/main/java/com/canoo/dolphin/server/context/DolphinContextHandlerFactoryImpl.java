@@ -31,6 +31,14 @@ public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFa
     @Override
     public DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository) {
         Assert.requireNonNull(servletContext, "servletContext");
+        Assert.requireNonNull(controllerRepository, "controllerRepository");
+
+        ContainerManager containerManager = findManager();
+        containerManager.init(servletContext);
+        return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
+    }
+
+    private ContainerManager findManager() {
         ContainerManager containerManager = null;
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
@@ -42,7 +50,6 @@ public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFa
         } else {
             throw new IllegalStateException("No " + ContainerManager.class + " found!");
         }
-        containerManager.init(servletContext);
-        return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
+        return containerManager;
     }
 }

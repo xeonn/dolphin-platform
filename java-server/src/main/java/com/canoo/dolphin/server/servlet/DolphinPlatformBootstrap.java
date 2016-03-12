@@ -55,12 +55,13 @@ public class DolphinPlatformBootstrap {
 
     public void onStartup(ServletContext servletContext) {
         Assert.requireNonNull(servletContext, "servletContext");
+
         ControllerRepository controllerRepository = new ControllerRepository();
         dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository);
+
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-
         servletContext.addListener(new DolphinContextCleaner(dolphinContextHandler));
     }
 
