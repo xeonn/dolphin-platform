@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * The garbage collection for Dolphin Platform models. Whenever a new Dolphin bean {@link com.canoo.dolphin.mapping.DolphinBean}
  * has been created or the hierarchy in a Dolphin model changes the GC will check if the mutated models are still
- * referenced by a root model. In this case a root model is a model as it's defined as a model for a MVG group in
+ * referenced by a root model. In this case a root model is a model as it's defined as a model for a MVC group in
  * Dolphin Platform (see {@link com.canoo.dolphin.server.DolphinModel}).
  */
 public class GarbageCollection {
@@ -47,16 +47,16 @@ public class GarbageCollection {
 
     private IdentityHashMap<Class, List<Field>> listFieldCache;
 
-    private GarbageCollectionCallback onRemove;
+    private GarbageCollectionCallback onRemoveCallback;
 
     private static final List<Class<? extends Serializable>> BASIC_TYPES = Arrays.asList(String.class, Number.class, Boolean.class);
 
     /**
      * Constructor
-     * @param onRemove callback that will be called for each garbage collection call.
+     * @param onRemoveCallback callback that will be called for each garbage collection call.
      */
-    public GarbageCollection(GarbageCollectionCallback onRemove) {
-        this.onRemove = onRemove;
+    public GarbageCollection(GarbageCollectionCallback onRemoveCallback) {
+        this.onRemoveCallback = onRemoveCallback;
         removeOnGC = new IdentitySet<>();
         allInstances = new IdentityHashMap<>();
         propertyToParent = new IdentityHashMap<>();
@@ -73,7 +73,7 @@ public class GarbageCollection {
      */
     public synchronized void onBeanCreated(Object bean, boolean rootBean) {
         if (allInstances.containsKey(bean)) {
-            throw new RuntimeException("Bean instance is already managed!");
+            throw new IllegalArgumentException("Bean instance is already managed!");
         }
 
         IdentitySet<Property> properties = getAllProperties(bean);
@@ -182,7 +182,7 @@ public class GarbageCollection {
      * will be called.
      */
     public synchronized void gc() {
-        onRemove.onRemove(removeOnGC);
+        onRemoveCallback.onRemove(removeOnGC);
         for (Instance removedInstance : removeOnGC) {
             for (Property property : removedInstance.getProperties()) {
                 propertyToParent.remove(property);
