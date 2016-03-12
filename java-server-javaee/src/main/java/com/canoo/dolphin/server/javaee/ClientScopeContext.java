@@ -24,9 +24,8 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientScopeContext implements Context {
 
@@ -76,7 +75,7 @@ public class ClientScopeContext implements Context {
     private Map<Class<?>, ClientScopeInstanceHolder<?>> getLocalStore() {
         Map<Class<?>, ClientScopeInstanceHolder<?>> localStore = getDolphinSession().getAttribute(CLIENT_STORE_ATTRIBUTE);
         if(localStore == null) {
-            localStore = Collections.synchronizedMap(new HashMap<Class<?>, ClientScopeInstanceHolder<?>>());
+            localStore = new ConcurrentHashMap<>();
             getDolphinSession().setAttribute(CLIENT_STORE_ATTRIBUTE, localStore);
         }
         return localStore;

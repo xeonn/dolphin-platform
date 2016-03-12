@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server;
 
+import java.util.Set;
+
 /**
  * Defines a Dolphin Platform Session. For each client (each client context instance) one {@link DolphinSession}
  * will be created on the server.
@@ -42,6 +44,12 @@ public interface DolphinSession {
      * @param name the name
      */
     void removeAttribute(String name);
+
+    /**
+     * Returns a unmodifiable Set of all attribute names that defines objects that are bound to this session.
+     * @return the set
+     */
+    Set<String> getAttributeNames();
 
     /**
      * Invalidates the Dolphin Platform session.

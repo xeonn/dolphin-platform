@@ -18,8 +18,9 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.server.DolphinSession;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DolphinSessionImpl implements DolphinSession {
 
@@ -29,7 +30,7 @@ public class DolphinSessionImpl implements DolphinSession {
 
     public DolphinSessionImpl(DolphinContext dolphinContext) {
         this.dolphinContext = dolphinContext;
-        this.store = Collections.synchronizedMap(new HashMap<String, Object>());
+        this.store = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -45,6 +46,11 @@ public class DolphinSessionImpl implements DolphinSession {
     @Override
     public void removeAttribute(String name) {
         store.remove(name);
+    }
+
+    @Override
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet(store.keySet());
     }
 
     @Override
