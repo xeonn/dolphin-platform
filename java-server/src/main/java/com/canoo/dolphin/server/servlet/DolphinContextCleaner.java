@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.event.impl;
+package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
@@ -21,7 +21,7 @@ import com.canoo.dolphin.server.context.DolphinContextHandler;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-public class DolphinSessionHandlerCleaner implements HttpSessionListener {
+public class DolphinContextCleaner implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
@@ -33,7 +33,7 @@ public class DolphinSessionHandlerCleaner implements HttpSessionListener {
         final Iterable<DolphinContext> contexts = DolphinContextHandler.getContexts(se.getSession());
         if (contexts != null) {
             for (DolphinContext dolphinContext : contexts) {
-                DolphinEventBusImpl.getInstance().unsubscribeSession(dolphinContext.getId());
+                dolphinContext.destroy();
             }
         }
     }

@@ -15,9 +15,7 @@
  */
 package com.canoo.dolphin.server.servlet;
 
-import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.event.impl.DolphinSessionHandlerCleaner;
 import org.opendolphin.server.adapter.InvalidationServlet;
 
 import javax.servlet.DispatcherType;
@@ -50,8 +48,8 @@ public class DolphinPlatformBootstrap {
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
         servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
+        servletContext.addListener(new com.canoo.dolphin.server.context.DolphinContextCleaner());
         servletContext.addListener(new DolphinContextCleaner());
-        servletContext.addListener(new DolphinSessionHandlerCleaner());
 
         DolphinContextHandler.getInstance().init(servletContext);
     }

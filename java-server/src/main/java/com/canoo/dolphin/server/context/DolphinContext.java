@@ -37,6 +37,7 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
+import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.DefaultServerDolphin;
@@ -72,10 +73,17 @@ public class DolphinContext {
 
     private final String id;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory) {
+    private final DolphinContextMBeanRegistry mBeanRegistry;
+
+    private final Callback<DolphinContext> onDestroyCallback;
+
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
+
+        this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
+
         //ID
         id = UUID.randomUUID().toString();
 
@@ -93,8 +101,11 @@ public class DolphinContext {
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
+        //Init MBean Support
+        mBeanRegistry = new DolphinContextMBeanRegistry(id);
+
         //Init ControllerHandler
-        controllerHandler = new ControllerHandler(containerManager, beanManager, controllerRepository);
+        controllerHandler = new ControllerHandler(mBeanRegistry, containerManager, beanManager, controllerRepository);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -163,7 +174,17 @@ public class DolphinContext {
     }
 
     private void onDestroyContext() {
-        //TODO: destroy all controller and model instances....
+        destroy();
+    }
+
+    public void destroy() {
+        //Deregister from event bus
+        DolphinEventBusImpl.getInstance().unsubscribeSession(getId());
+
+        //Destroy all controllers
+        controllerHandler.destroyAllControllers();
+
+        onDestroyCallback.call(this);
     }
 
     private void onRegisterController() {

@@ -64,7 +64,7 @@ public class ClientContextImpl implements ClientContext {
 
     @Override
     public synchronized <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
-       Assert.requireNonBlank(name, "name");
+        Assert.requireNonBlank(name, "name");
         checkForInitializedState();
 
         final CompletableFuture<ControllerProxy<T>> task = new CompletableFuture<>();
@@ -94,28 +94,18 @@ public class ClientContextImpl implements ClientContext {
         final CompletableFuture<Void> result = new CompletableFuture<>();
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            for (WeakReference<ControllerProxy> destroyableRef : registeredWeakControllers) {
-                try {
-                    ControllerProxy destroyable = destroyableRef.get();
-                    if(destroyable != null) {
-                        destroyable.destroy().get();
-                    }
-                } catch (Exception e) {
-                    //TODO
-                } finally {
-                    registeredWeakControllers.remove(destroyableRef);
+                    state = State.DESTROYED;
+                    dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME).handle((v, t) -> {
+                        if (t != null) {
+                            result.completeExceptionally(new RuntimeException("Can't disconnect", t));
+                        } else {
+                            result.complete(null);
+                        }
+                        return null;
+                    });
                 }
-            }
-            try {
-                //TODO: Hack - When calling the PlatformConstants.DISCONNECT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
-                // Currently I think that this is based on another problem: When calling the sisconnect on the JavaFX APplication.stop() method the Platform Tread will be stopped berfore the callback is called.
-                state = State.DESTROYED;
-                dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME);
-                result.complete(null);
-            } catch (Exception e) {
-                result.completeExceptionally(e);
-            }
-        });
+
+        );
 
         return result;
     }
