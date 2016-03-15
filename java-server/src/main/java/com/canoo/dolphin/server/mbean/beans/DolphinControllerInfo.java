@@ -32,7 +32,7 @@ public class DolphinControllerInfo implements DolphinControllerInfoMBean {
         if(provider != null) {
             Object model = provider.getModel();
             if(model != null) {
-                return model.toString();
+                return ModelJsonSerializer.toJson(model).toString();
             }
         }
         return null;
