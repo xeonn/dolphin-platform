@@ -5,7 +5,12 @@ package com.canoo.dolphin.server.mbean.beans;
  */
 public interface DolphinControllerInfoMBean {
 
+    String getDolphinSessionId();
+
     String getId();
 
     String getControllerClass();
+
+    String dumpModel();
+
 }

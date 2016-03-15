@@ -1,6 +1,8 @@
 package com.canoo.dolphin.server.mbean;
 
 import com.canoo.dolphin.event.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class MBeanRegistry {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MBeanRegistry.class);
+
     private final static MBeanRegistry INSTANCE = new MBeanRegistry();
 
     private MBeanServer server = ManagementFactory.getPlatformMBeanServer();
@@ -22,31 +26,34 @@ public class MBeanRegistry {
 
     private AtomicLong idGenerator = new AtomicLong(0L);
 
-    public Subscription register(Object mBean, MBeanDescription description) throws JMException {
+    public Subscription register(Object mBean, MBeanDescription description) {
         return register(mBean, description.getMBeanName(getNextId()));
     }
 
-    public Subscription register(final Object mBean, final String name) throws JMException {
-        if (mbeanSupport.get()) {
-            final ObjectName objectName = new ObjectName(name);
-            server.registerMBean(mBean, objectName);
-            return new Subscription() {
-                @Override
-                public void unsubscribe() {
-                    try {
-                        server.unregisterMBean(objectName);
-                    } catch (JMException e) {
-                        throw new RuntimeException("Can not unsubscribe!", e);
+    public Subscription register(final Object mBean, final String name){
+        try {
+            if (mbeanSupport.get()) {
+                final ObjectName objectName = new ObjectName(name);
+                server.registerMBean(mBean, objectName);
+                return new Subscription() {
+                    @Override
+                    public void unsubscribe() {
+                        try {
+                            server.unregisterMBean(objectName);
+                        } catch (JMException e) {
+                            throw new RuntimeException("Can not unsubscribe!", e);
+                        }
                     }
-                }
-            };
-        } else {
-            return new Subscription() {
-                @Override
-                public void unsubscribe() {
-                }
-            };
+                };
+            }
+        } catch (Exception e) {
+            LOG.warn("Can not register MBean!", e);
         }
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+            }
+        };
     }
 
     public boolean isMbeanSupport() {

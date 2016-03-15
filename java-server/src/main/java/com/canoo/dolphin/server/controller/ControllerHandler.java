@@ -25,6 +25,7 @@ import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
+import com.canoo.dolphin.server.mbean.beans.ModelProvider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -83,7 +84,12 @@ public class ControllerHandler {
         controllers.put(id, instance);
         controllerClassMapping.put(id, controllerClass);
 
-        mBeanSubscriptions.put(id, mBeanRegistry.registerController(controllerClass, id));
+        mBeanSubscriptions.put(id, mBeanRegistry.registerController(controllerClass, id, new ModelProvider() {
+            @Override
+            public Object getModel() {
+                return models.get(id);
+            }
+        }));
 
         return id;
     }

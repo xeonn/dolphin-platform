@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
@@ -77,6 +78,8 @@ public class DolphinContext {
 
     private final Callback<DolphinContext> onDestroyCallback;
 
+    private final Subscription mBeanSubscription;
+
     public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
@@ -109,6 +112,8 @@ public class DolphinContext {
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
+
+        mBeanSubscription = mBeanRegistry.registerDolphinContext(id);
     }
 
     private void registerDolphinPlatformDefaultCommands() {
@@ -183,6 +188,10 @@ public class DolphinContext {
 
         //Destroy all controllers
         controllerHandler.destroyAllControllers();
+
+        if(mBeanSubscription != null) {
+            mBeanSubscription.unsubscribe();
+        }
 
         onDestroyCallback.call(this);
     }
