@@ -56,6 +56,8 @@ public class SpringModelInjector extends InstantiationAwareBeanPostProcessorAdap
             if (modelInjector != null) {
                 modelInjector.inject(bean);
             }
+            currentControllerClass.set(null);
+            currentModelInjector.set(null);
         }
         return true;
     }

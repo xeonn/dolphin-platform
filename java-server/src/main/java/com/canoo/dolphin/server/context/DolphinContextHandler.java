@@ -77,7 +77,7 @@ public class DolphinContextHandler {
         DolphinContext currentContext;
 
         if(getContexts(request.getSession()).isEmpty()) {
-            Callback<DolphinContext> onDestroyCallback = new Callback<DolphinContext>() {
+            final Callback<DolphinContext> onDestroyCallback = new Callback<DolphinContext>() {
                 @Override
                 public void call(DolphinContext dolphinContext) {
                     Object contextList = httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
