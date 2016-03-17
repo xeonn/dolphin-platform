@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@ package com.canoo.dolphin.client.clientscope;
  * Created by hendrikebbers on 22.09.15.
  */
 public class DolphinRemotingException extends RuntimeException {
+
+    private static final long serialVersionUID = -4733020160511218297L;
 
     public DolphinRemotingException() {
     }

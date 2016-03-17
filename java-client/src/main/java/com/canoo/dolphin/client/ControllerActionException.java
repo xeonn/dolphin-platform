@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,8 @@ package com.canoo.dolphin.client;
  * an exception. This exception will be thrown on the client.
  */
 public class ControllerActionException extends Exception {
+
+    private static final long serialVersionUID = -7706398106144587910L;
 
     /**
      * constructor

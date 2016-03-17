@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,9 +20,7 @@ import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DefaultDolphinProvider;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.TaskExecutor;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -81,12 +79,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         return dolphinContextProvider.getCurrentContext().getDolphinSession();
     }
 
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected TaskExecutor createTaskExecutor() {
-        return TaskExecutorImpl.getInstance();
-    }
 
     /**
      * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.

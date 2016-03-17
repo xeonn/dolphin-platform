@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,10 @@ public class Topic<T> {
      */
     public static <T> Topic<T> create(String uniqueName) {
         return new Topic<>(uniqueName);
+    }
+
+    public static <T> Topic<T> create() {
+        return new Topic<>();
     }
 
     @Override

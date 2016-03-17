@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import org.opendolphin.core.client.ClientDolphin;
 
+@Deprecated
 public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBeanManager {
 
     private final ClientDolphin dolphin;

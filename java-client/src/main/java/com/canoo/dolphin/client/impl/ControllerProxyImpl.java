@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,6 +55,10 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         this.controllerId = controllerId;
         this.model = model;
         this.platformBeanRepository = platformBeanRepository;
+    }
+
+    public String getControllerId() {
+        return controllerId;
     }
 
     @Override
@@ -117,4 +121,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         });
         return ret;
     }
+
+
 }

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.controller.ControllerRepository;
 import org.opendolphin.core.comm.Command;
 
 import javax.servlet.ServletContext;
@@ -27,6 +28,10 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Class that manages all dolphin contexts (see {@link DolphinContext}).
+ * This class will be refactored in a furure version.
+ */
 public class DolphinContextHandler {
 
     private static final Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
@@ -40,6 +45,10 @@ public class DolphinContextHandler {
 
     private final static DolphinContextHandler INSTANCE = new DolphinContextHandler();
 
+    private OpenDolphinFactory openDolphinFactory;
+
+    private ControllerRepository controllerRepository;
+
     private DolphinContextHandler() {
         ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
         Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
@@ -52,6 +61,9 @@ public class DolphinContextHandler {
         } else {
             throw new RuntimeException("No " + ContainerManager.class + " found!");
         }
+        openDolphinFactory = new DefaultOpenDolphinFactory();
+
+        controllerRepository = new ControllerRepository();
 
     }
 
@@ -71,7 +83,7 @@ public class DolphinContextHandler {
                 globalContextMap.put(request.getSession().getId(), contextList);
             }
             if (contextList.isEmpty()) {
-                currentContext = new DolphinContext(containerManager);
+                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory);
                 contextList.add(currentContext);
             } else {
                 currentContext = contextList.get(0);
