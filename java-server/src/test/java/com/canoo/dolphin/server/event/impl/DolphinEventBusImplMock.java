@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.event.impl;
 
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 
@@ -27,6 +28,12 @@ public class DolphinEventBusImplMock extends DolphinEventBusImpl {
 
     public DolphinEventBusImplMock(String dolphinId) {
         super(new DolphinContextProvider() {
+
+            @Override
+            public DolphinSession getDolphinSession() {
+                return null;
+            }
+
             @Override
             public DolphinContext getCurrentContext() {
                 return null;

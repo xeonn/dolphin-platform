@@ -29,6 +29,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
@@ -54,7 +55,7 @@ import java.util.UUID;
  * This class defines the central entry point for a Dolphin Platform session on the server.
  * Each Dolphin Platform client context on the client side is connected with one {@link DolphinContext}.
  */
-public class DolphinContext {
+public class DolphinContext implements DolphinSessionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
@@ -73,6 +74,8 @@ public class DolphinContext {
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private final String id;
+
+    private final DolphinSession dolphinSession;
 
     public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus) {
         Assert.requireNonNull(containerManager, "containerManager");
@@ -98,6 +101,8 @@ public class DolphinContext {
 
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(containerManager, beanManager, controllerRepository);
+
+        dolphinSession = new DolphinSessionImpl(this);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -228,5 +233,25 @@ public class DolphinContext {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
         return results;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DolphinContext that = (DolphinContext) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    public DolphinSession getDolphinSession() {
+        return dolphinSession;
     }
 }

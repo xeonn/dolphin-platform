@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.context;
+package com.canoo.dolphin.server.javaee;
 
-public interface DolphinContextProvider extends DolphinSessionProvider {
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
+import java.io.Serializable;
 
-    DolphinContext getCurrentContext();
+public class ClientScopeExtension implements Extension, Serializable {
+
+    public void addScope(@Observes final BeforeBeanDiscovery event) {
+        event.addScope(ClientScoped.class, true, false);
+    }
+
+    public void registerContext(@Observes final AfterBeanDiscovery event) {
+        event.addContext(new ClientScopeContext());
+    }
 }
