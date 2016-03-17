@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * Created by hendrikebbers on 11.03.16.
+ * Default implementation of {@link DolphinContextHandlerFactory}
  */
 public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFactory {
 

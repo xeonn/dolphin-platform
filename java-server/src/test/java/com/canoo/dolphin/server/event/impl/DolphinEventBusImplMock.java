@@ -30,7 +30,7 @@ public class DolphinEventBusImplMock extends DolphinEventBusImpl {
         super(new DolphinContextProvider() {
 
             @Override
-            public DolphinSession getDolphinSession() {
+            public DolphinSession getCurrentDolphinSession() {
                 return null;
             }
 

@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * This class manages all {@link DolphinContext} instances
+ */
 public class DolphinContextHandler implements DolphinContextProvider {
 
     private static final Map<String, List<DolphinContext>> globalContextMap = new HashMap<>();
@@ -120,7 +123,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
     }
 
     @Override
-    public DolphinSession getDolphinSession() {
-        return getCurrentContext().getDolphinSession();
+    public DolphinSession getCurrentDolphinSession() {
+        return getCurrentContext().getCurrentDolphinSession();
     }
 }
