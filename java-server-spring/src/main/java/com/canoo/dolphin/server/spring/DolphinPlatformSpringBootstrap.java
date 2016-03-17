@@ -18,9 +18,10 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DefaultDolphinProvider;
-import com.canoo.dolphin.server.context.DolphinContextProvider;
+import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -41,16 +42,23 @@ import javax.servlet.ServletException;
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
 
-
-    private DolphinContextProvider dolphinContextProvider;
+    private final DolphinPlatformBootstrap bootstrap;
 
     public DolphinPlatformSpringBootstrap() {
-        this.dolphinContextProvider = new DefaultDolphinProvider();
+        this.bootstrap = new DolphinPlatformBootstrap();
+    }
+
+    private DolphinContextHandler getContextHandler() {
+        return bootstrap.getDolphinContextHandler();
+    }
+
+    private DolphinContext getCurrentContext() {
+        return getContextHandler().getCurrentContext();
     }
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        new DolphinPlatformBootstrap().onStartup(servletContext);
+        bootstrap.onStartup(servletContext);
     }
 
     /**
@@ -60,7 +68,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @ClientScoped
     protected BeanManager createManager() {
-        return dolphinContextProvider.getCurrentContext().getBeanManager();
+        return getCurrentContext().getBeanManager();
     }
 
     /**
@@ -70,13 +78,13 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @ClientScoped
     protected ServerDolphin createDolphin() {
-        return dolphinContextProvider.getCurrentContext().getDolphin();
+        return getCurrentContext().getDolphin();
     }
 
     @Bean
     @ClientScoped
     protected DolphinSession createDolphinSession() {
-        return dolphinContextProvider.getCurrentContext().getDolphinSession();
+        return getCurrentContext().getDolphinSession();
     }
 
 
@@ -87,13 +95,18 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        return getContextHandler().getDolphinEventBus();
     }
 
     @Bean
     public CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(dolphinContextProvider));
+        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
+            @Override
+            public DolphinSession getDolphinSession() {
+                return getCurrentContext().getDolphinSession();
+            }
+        }));
         return configurer;
     }
 }

@@ -16,8 +16,6 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.context.DefaultDolphinProvider;
-import com.canoo.dolphin.server.context.DolphinSessionProvider;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
@@ -34,10 +32,7 @@ public class ClientScopeContext implements Context {
 
     private final static String CLIENT_STORE_ATTRIBUTE = "DolphinPlatformCdiClientScopeStore";
 
-    private DolphinSessionProvider dolphinSessionProvider;
-
     public ClientScopeContext() {
-        dolphinSessionProvider = new DefaultDolphinProvider();
     }
 
     @Override
@@ -82,6 +77,6 @@ public class ClientScopeContext implements Context {
     }
 
     private DolphinSession getDolphinSession() {
-        return dolphinSessionProvider.getDolphinSession();
+        return DolphinPlatformJavaeeBootstrap.getBootstrap().getDolphinContextHandler().getCurrentContext().getDolphinSession();
     }
 }

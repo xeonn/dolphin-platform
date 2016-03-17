@@ -69,17 +69,19 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final EventDispatcher dispatcher;
 
+    private final DolphinEventBusImpl dolphinEventBus;
+
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private final String id;
 
     private final DolphinSession dolphinSession;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory) {
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
-
+        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
         //ID
         id = UUID.randomUUID().toString();
 
@@ -202,12 +204,12 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onReleaseEventBus() {
-        DolphinEventBusImpl.getInstance().release();
+        dolphinEventBus.release();
     }
 
     private void onPollEventBus() {
         try {
-            DolphinEventBusImpl.getInstance().longPoll();
+            dolphinEventBus.longPoll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
