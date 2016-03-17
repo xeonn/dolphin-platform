@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
@@ -116,5 +117,10 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     public DolphinEventBusImpl getDolphinEventBus() {
         return dolphinEventBus;
+    }
+
+    @Override
+    public DolphinSession getDolphinSession() {
+        return getCurrentContext().getDolphinSession();
     }
 }

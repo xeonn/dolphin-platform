@@ -17,7 +17,6 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.context.DefaultDolphinProvider;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
