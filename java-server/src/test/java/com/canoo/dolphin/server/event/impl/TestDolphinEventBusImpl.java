@@ -167,11 +167,6 @@ public class TestDolphinEventBusImpl {
     }
 
     private DolphinEventBusImpl createBus(final String dolphinId) {
-        return new DolphinEventBusImpl() {
-            @Override
-            protected String getDolphinId() {
-                return dolphinId;
-            }
-        };
+        return new DolphinEventBusImplMock(dolphinId);
     }
 }

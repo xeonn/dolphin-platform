@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
@@ -33,13 +33,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class DolphinEventBusImpl implements DolphinEventBus {
 
-    private static final DolphinEventBusImpl instance = new DolphinEventBusImpl();
     private static final int MAX_POLL_DURATION = 100;
     public static final int TIMEOUT = 20;
-
-    public static DolphinEventBusImpl getInstance() {
-        return instance;
-    }
 
     private final EventBus eventBus = new EventBus();
 
@@ -50,21 +45,24 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     //access is only concurrent for different keys. This sync strategy should be sufficient
     private Map<String, Receiver> receiverPerSession = new ConcurrentHashMap<>();
 
-    protected DolphinEventBusImpl() {
+    private final DolphinContextProvider dolphinContextProvider;
+
+    public DolphinEventBusImpl(DolphinContextProvider dolphinContextProvider) {
+        this.dolphinContextProvider = Assert.requireNonNull(dolphinContextProvider, "dolphinContextProvider");
     }
 
     public <T> void publish(final Topic<T> topic, final T data) {
-        if(topic == null) {
+        if (topic == null) {
             throw new IllegalArgumentException("topic must not be null!");
         }
         eventBus.publish(sender, new MessageImpl(topic, data));
     }
 
     public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
-        if(topic == null) {
+        if (topic == null) {
             throw new IllegalArgumentException("topic must not be null!");
         }
-        if(handler == null) {
+        if (handler == null) {
             throw new IllegalArgumentException("handler must not be empty!");
         }
         String dolphinId = getDolphinId();
@@ -75,11 +73,11 @@ public class DolphinEventBusImpl implements DolphinEventBus {
     }
 
     protected String getDolphinId() {
-        return DolphinContextHandler.getCurrentContext().getId();
+        return dolphinContextProvider.getCurrentContext().getId();
     }
 
     public void unsubscribeSession(final String dolphinId) {
-        if(StringUtil.isBlank(dolphinId)) {
+        if (StringUtil.isBlank(dolphinId)) {
             throw new IllegalArgumentException("dolphinId must not be empty!");
         }
         Receiver receiver = receiverPerSession.remove(dolphinId);
@@ -129,7 +127,7 @@ public class DolphinEventBusImpl implements DolphinEventBus {
                 if (val == releaseVal) {
                     return;
                 }
-                if(val instanceof  Message) {
+                if (val instanceof Message) {
                     final Message event = (Message) val;
                     //TODO replace by log
 //                    System.out.println("handle event for dolphinId: " + dolphinId);

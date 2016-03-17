@@ -15,29 +15,28 @@
  */
 package com.canoo.dolphin.server.event.impl;
 
-import com.canoo.dolphin.server.DolphinAction;
-import com.canoo.dolphin.server.DolphinController;
+import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextProvider;
 
-@DolphinController(ServerPushController.NAME)
-public class ServerPushController {
+/**
+ * Created by hendrikebbers on 11.03.16.
+ */
+public class DolphinEventBusImplMock extends DolphinEventBusImpl {
 
-    public static final String NAME = "ServerPushController";
+    private final String dolphinId;
 
-    @DolphinAction
-    public void longPoll() {
-        try {
-            getEventBus().longPoll();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    public DolphinEventBusImplMock(String dolphinId) {
+        super(new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                return null;
+            }
+        });
+       this.dolphinId = dolphinId;
     }
 
-    @DolphinAction
-    public void release() {
-        getEventBus().release();
-    }
-
-    private DolphinEventBusImpl getEventBus() {
-        return DolphinEventBusImpl.getInstance();
+    @Override
+    protected String getDolphinId() {
+        return dolphinId;
     }
 }
