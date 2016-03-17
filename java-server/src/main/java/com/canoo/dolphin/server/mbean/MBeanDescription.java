@@ -1,5 +1,8 @@
 package com.canoo.dolphin.server.mbean;
 
+/**
+ * A general description that can be used to define how a MBean will be registered
+ */
 public class MBeanDescription {
 
     private String domainName;
@@ -8,6 +11,12 @@ public class MBeanDescription {
 
     private String type;
 
+    /**
+     * Constructor
+     * @param domainName the domain name
+     * @param name the name
+     * @param type the type
+     */
     public MBeanDescription(String domainName, String name, String type) {
         this.domainName = domainName;
         this.name = name;

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by hendrikebbers on 14.03.16.
+ * A general MBean registry
  */
 public class MBeanRegistry {
 
@@ -26,10 +26,22 @@ public class MBeanRegistry {
 
     private AtomicLong idGenerator = new AtomicLong(0L);
 
+    /**
+     * Register the given MBean based on the given description
+     * @param mBean the bean
+     * @param description the description
+     * @return the subscription that can be used to unregister the bean
+     */
     public Subscription register(Object mBean, MBeanDescription description) {
         return register(mBean, description.getMBeanName(getNextId()));
     }
 
+    /**
+     * Register the given MBean based on the given name
+     * @param mBean the bean
+     * @param name the name
+     * @return the subscription that can be used to unregister the bean
+     */
     public Subscription register(final Object mBean, final String name){
         try {
             if (mbeanSupport.get()) {
@@ -56,10 +68,18 @@ public class MBeanRegistry {
         };
     }
 
+    /**
+     * Returns true if MBean registry is supported / active
+     * @return true if MBean registry is supported / active
+     */
     public boolean isMbeanSupport() {
         return mbeanSupport.get();
     }
 
+    /**
+     * setter for the MBean support
+     * @param mbeanSupport new state of MBean support
+     */
     public void setMbeanSupport(boolean mbeanSupport) {
         this.mbeanSupport.set(mbeanSupport);
     }
@@ -68,6 +88,10 @@ public class MBeanRegistry {
         return idGenerator.getAndIncrement() + "";
     }
 
+    /**
+     * Returns the single instance
+     * @return the single instance
+     */
     public static MBeanRegistry getInstance() {
         return INSTANCE;
     }
