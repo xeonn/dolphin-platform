@@ -27,7 +27,10 @@ public class DolphinContextCleaner implements HttpSessionListener {
 
     private DolphinContextHandler dolphinContextHandler;
 
-    public DolphinContextCleaner(DolphinContextHandler dolphinContextHandler) {
+    public DolphinContextCleaner() {
+    }
+
+    public void init(DolphinContextHandler dolphinContextHandler) {
         this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
     }
 

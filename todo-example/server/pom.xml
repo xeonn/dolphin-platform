@@ -29,6 +29,12 @@
             <artifactId>dolphin-platform-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.10</version>
+        </dependency>
+
     </dependencies>
 
     <build>
