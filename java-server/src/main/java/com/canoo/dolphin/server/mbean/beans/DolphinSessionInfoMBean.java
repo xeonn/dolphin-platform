@@ -18,7 +18,7 @@ package com.canoo.dolphin.server.mbean.beans;
 import java.util.Set;
 
 /**
- * Created by hendrikebbers on 14.03.16.
+ * Interface for a MBean that defines a Dolphin Platform session (see {@link com.canoo.dolphin.server.DolphinSession})
  */
 public interface DolphinSessionInfoMBean {
 

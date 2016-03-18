@@ -16,9 +16,13 @@
 package com.canoo.dolphin.server.mbean.beans;
 
 /**
- * Created by hendrikebbers on 15.03.16.
+ * A functional interface that provides a Dolphin Platform model
  */
 public interface ModelProvider {
 
+    /**
+     * Returns the current model
+     * @return the model
+     */
     Object getModel();
 }

@@ -22,9 +22,7 @@ import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
-import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.slf4j.Logger;
@@ -35,8 +33,10 @@ import javax.servlet.ServletContext;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import java.util.Set;
 
+/**
+ * This class defines the bootstrap for Dolphin Platform. 
+ */
 public class DolphinPlatformBootstrap {
 
     private static final DolphinPlatformBootstrap INSTANCE = new DolphinPlatformBootstrap();
@@ -87,18 +87,6 @@ public class DolphinPlatformBootstrap {
         dolphinContextCleaner.init(dolphinContextHandler);
         servletContext.addListener(dolphinContextCleaner);
 
-        Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
-        for (Class<?> listenerClass : listeners) {
-            if (DolphinBoostrapListener.class.isAssignableFrom(listenerClass)) {
-                try {
-                    DolphinBoostrapListener listener = (DolphinBoostrapListener) containerManager.createListener(listenerClass);
-                    listener.dolphinRuntimeCreated();
-                } catch (Exception e) {
-                    LOG.error("Error in calling DolphinBoostrapListener " + listenerClass, e);
-                    throw new DolphinPlatformBoostrapException("Error in calling DolphinBoostrapListener " + listenerClass, e);
-                }
-            }
-        }
 
         LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
         LOG.debug("Dolphin Platform endpoint defined as " + dolphinServletMapping);

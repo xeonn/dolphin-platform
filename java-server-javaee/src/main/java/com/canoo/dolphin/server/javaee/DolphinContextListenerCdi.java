@@ -23,6 +23,9 @@ import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 
 import javax.enterprise.inject.spi.BeanManager;
 
+/**
+ * This listener destroyes the {@link ClientScoped} CDI scope whenever a {@link DolphinSession} will be destroyed
+ */
 @DolphinListener
 public class DolphinContextListenerCdi implements DolphinSessionListener {
 

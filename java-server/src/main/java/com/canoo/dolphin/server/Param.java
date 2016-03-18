@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <blockquote>
  * <pre>
- *     {@literal @}DolphinControllerInfo("my-controller")
+ *     {@literal @}DolphinController("my-controller")
  *     public class MyController {
  *
  *         {@literal @}DolphinAction("my-action")

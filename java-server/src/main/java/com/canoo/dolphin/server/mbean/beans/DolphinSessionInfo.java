@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by hendrikebbers on 15.03.16.
+ *  MBean implementation for the {@link DolphinSessionInfoMBean} MBean interface
  */
 public class DolphinSessionInfo implements DolphinSessionInfoMBean {
 

@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.mbean.beans;
 
 /**
- * Created by hendrikebbers on 14.03.16.
+ * Interface for a MBean that defines a Dolphin Platform controller (see {@link com.canoo.dolphin.server.DolphinController})
  */
 public interface DolphinControllerInfoMBean {
 

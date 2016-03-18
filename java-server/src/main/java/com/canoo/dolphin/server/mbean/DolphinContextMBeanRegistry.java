@@ -23,20 +23,39 @@ import com.canoo.dolphin.server.mbean.beans.DolphinSessionInfoMBean;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
 import com.canoo.dolphin.util.Assert;
 
+/**
+ * Helper method to register MBeans for Dolphin Platform
+ */
 public class DolphinContextMBeanRegistry {
 
     private final String dolphinContextId;
 
+    /**
+     * Constructor
+     * @param dolphinContextId the dolphin context id
+     */
     public DolphinContextMBeanRegistry(String dolphinContextId) {
         this.dolphinContextId = Assert.requireNonNull(dolphinContextId, "dolphinContextId");
     }
 
+    /**
+     * Register a new dolphin session as a MBean
+     * @param dolphinSessionId the session id
+     * @return the subscription for deregistration
+     */
     public Subscription registerDolphinContext(String dolphinSessionId) {
         Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
         DolphinSessionInfoMBean mBean = new DolphinSessionInfo(dolphinSessionId);
         return MBeanRegistry.getInstance().register(mBean, new MBeanDescription("com.canoo.dolphin", "DolphinSession", "session"));
     }
 
+    /**
+     * Register a new Dolphin Platform controller as a MBean
+     * @param controllerClass the controller class
+     * @param controllerId the controller id
+     * @param modelProvider the model provider
+     * @return the subscription for deregistration
+     */
     public Subscription registerController(Class<?> controllerClass, String controllerId, ModelProvider modelProvider) {
         Assert.requireNonNull(controllerClass, "controllerClass");
         Assert.requireNonBlank(controllerId, "controllerId");

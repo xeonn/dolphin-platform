@@ -25,7 +25,7 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Field;
 
 /**
- * Created by hendrikebbers on 15.03.16.
+ * Helper class that experts the current state of a dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean}) to JSON
  */
 public class ModelJsonSerializer {
 

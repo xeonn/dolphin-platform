@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.javaee;
 
 /**
- * Created by hendrikebbers on 18.03.16.
+ * This exception will be thrown if a MVC model can't be created or injected in teh controller
  */
 public class ModelInjectionException extends RuntimeException {
 

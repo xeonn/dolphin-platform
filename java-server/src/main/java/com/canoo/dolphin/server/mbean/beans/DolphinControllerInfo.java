@@ -18,7 +18,7 @@ package com.canoo.dolphin.server.mbean.beans;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by hendrikebbers on 14.03.16.
+ * MBean implementation for the {@link DolphinControllerInfoMBean} MBean interface
  */
 public class DolphinControllerInfo implements DolphinControllerInfoMBean {
 
