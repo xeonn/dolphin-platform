@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 
 import javax.servlet.ServletContainerInitializer;
@@ -29,8 +31,26 @@ import java.util.Set;
  */
 public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializer {
 
+    private static DolphinPlatformBootstrap bootstrap;
+
+    public DolphinPlatformJavaeeBootstrap() {
+        bootstrap = new DolphinPlatformBootstrap();
+    }
+
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        new DolphinPlatformBootstrap().onStartup(ctx);
+        bootstrap.onStartup(ctx);
+    }
+
+    public static DolphinPlatformBootstrap getBootstrap() {
+        return bootstrap;
+    }
+
+    public static DolphinContextHandler getContextHandler() {
+        return getBootstrap().getDolphinContextHandler();
+    }
+
+    public static DolphinContext getCurrentContext() {
+        return getContextHandler().getCurrentContext();
     }
 }

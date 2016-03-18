@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,25 +16,24 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
+import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.comm.Command;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 
 /**
- * Class that manages all dolphin contexts (see {@link DolphinContext}).
- * This class will be refactored in a furure version.
+ * This class manages all {@link DolphinContext} instances
  */
-public class DolphinContextHandler {
+public class DolphinContextHandler implements DolphinContextProvider {
 
     private static final String DOLPHIN_CONTEXT_MAP = "DOLPHIN_CONTEXT_MAP";
 
@@ -42,32 +41,17 @@ public class DolphinContextHandler {
 
     private final ContainerManager containerManager;
 
-    private final static DolphinContextHandler INSTANCE = new DolphinContextHandler();
+    private final ControllerRepository controllerRepository;
 
-    private OpenDolphinFactory openDolphinFactory;
+    private final OpenDolphinFactory openDolphinFactory;
 
-    private ControllerRepository controllerRepository;
+    private final DolphinEventBusImpl dolphinEventBus;
 
-    private DolphinContextHandler() {
-        ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
-        Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
-        if (serviceIterator.hasNext()) {
-            this.containerManager = serviceIterator.next();
-
-            if (serviceIterator.hasNext()) {
-                throw new RuntimeException("More than 1 " + ContainerManager.class + " found!");
-            }
-        } else {
-            throw new RuntimeException("No " + ContainerManager.class + " found!");
-        }
-        openDolphinFactory = new DefaultOpenDolphinFactory();
-
-        controllerRepository = new ControllerRepository();
-
-    }
-
-    public void init(ServletContext servletContext) {
-        this.containerManager.init(servletContext);
+    public DolphinContextHandler(OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
+        this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+        this.dolphinEventBus = new DolphinEventBusImpl(this);
     }
 
     public void handle(final HttpServletRequest request, final HttpServletResponse response) {
@@ -89,7 +73,7 @@ public class DolphinContextHandler {
                     }
                 }
             };
-            currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, onDestroyCallback);
+            currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, dolphinEventBus, onDestroyCallback);
             ArrayList list = new ArrayList();
             list.add(currentContext);
             request.getSession().setAttribute(DOLPHIN_CONTEXT_MAP, list);
@@ -99,7 +83,6 @@ public class DolphinContextHandler {
         }
 
         currentContextThreadLocal.set(currentContext);
-
         try {
             response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
             response.setHeader("Content-Type", "application/json");
@@ -136,7 +119,7 @@ public class DolphinContextHandler {
         return Collections.unmodifiableList((List) contextList);
     }
 
-    public static DolphinContext getCurrentContext() {
+    public DolphinContext getCurrentContext() {
         return currentContextThreadLocal.get();
     }
 
@@ -147,7 +130,12 @@ public class DolphinContextHandler {
         session.removeAttribute(DOLPHIN_CONTEXT_MAP);
     }
 
-    public static DolphinContextHandler getInstance() {
-        return INSTANCE;
+    public DolphinEventBusImpl getDolphinEventBus() {
+        return dolphinEventBus;
+    }
+
+    @Override
+    public DolphinSession getCurrentDolphinSession() {
+        return getCurrentContext().getCurrentDolphinSession();
     }
 }

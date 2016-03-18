@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,14 @@ import java.io.IOException;
  */
 public class DolphinPlatformServlet extends HttpServlet {
 
+    private DolphinContextHandler dolphinContextHandler;
+
+    public DolphinPlatformServlet(DolphinContextHandler dolphinContextHandler) {
+        this.dolphinContextHandler = dolphinContextHandler;
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
-        DolphinContextHandler.getInstance().handle(req, resp);
+        dolphinContextHandler.handle(req, resp);
     }
 }

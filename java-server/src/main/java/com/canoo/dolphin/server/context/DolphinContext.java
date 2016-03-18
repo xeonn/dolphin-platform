@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
@@ -56,7 +57,7 @@ import java.util.UUID;
  * This class defines the central entry point for a Dolphin Platform session on the server.
  * Each Dolphin Platform client context on the client side is connected with one {@link DolphinContext}.
  */
-public class DolphinContext {
+public class DolphinContext implements DolphinSessionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
@@ -70,6 +71,8 @@ public class DolphinContext {
 
     private final EventDispatcher dispatcher;
 
+    private final DolphinEventBusImpl dolphinEventBus;
+
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private final String id;
@@ -80,12 +83,14 @@ public class DolphinContext {
 
     private final Subscription mBeanSubscription;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> onDestroyCallback) {
+    private final DolphinSession dolphinSession;
+
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
-
         this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
+        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
 
         //ID
         id = UUID.randomUUID().toString();
@@ -109,6 +114,8 @@ public class DolphinContext {
 
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(mBeanRegistry, containerManager, beanManager, controllerRepository);
+
+        dolphinSession = new DolphinSessionImpl(id);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -184,7 +191,7 @@ public class DolphinContext {
 
     public void destroy() {
         //Deregister from event bus
-        DolphinEventBusImpl.getInstance().unsubscribeSession(getId());
+        dolphinEventBus.unsubscribeSession(getId());
 
         //Destroy all controllers
         controllerHandler.destroyAllControllers();
@@ -226,12 +233,12 @@ public class DolphinContext {
     }
 
     private void onReleaseEventBus() {
-        DolphinEventBusImpl.getInstance().release();
+        dolphinEventBus.release();
     }
 
     private void onPollEventBus() {
         try {
-            DolphinEventBusImpl.getInstance().longPoll();
+            dolphinEventBus.longPoll();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -255,5 +262,25 @@ public class DolphinContext {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
         return results;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DolphinContext that = (DolphinContext) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    public DolphinSession getCurrentDolphinSession() {
+        return dolphinSession;
     }
 }
