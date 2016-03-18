@@ -78,7 +78,7 @@ public class ClientScopeContext implements Context {
     }
 
     private DolphinSession getDolphinSession() {
-        return DolphinPlatformBootstrap.getInstance().getContextHandler().getCurrentContext().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
     }
 
     public void destroy() {

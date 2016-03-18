@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.container;
 
+import com.canoo.dolphin.server.context.DolphinSessionListener;
+
 import javax.servlet.ServletContext;
 
 /**
@@ -50,7 +52,7 @@ public interface ContainerManager {
 
     /**
      * Creates a new managed instance. See {@link com.canoo.dolphin.server.DolphinListener} and
-     * {@link com.canoo.dolphin.server.context.DolphinContextListener} for more information
+     * {@link DolphinSessionListener} for more information
      * @param listenerClass the class of the listenerClass
      * @param <T> type of the listener
      * @return the new listener instance

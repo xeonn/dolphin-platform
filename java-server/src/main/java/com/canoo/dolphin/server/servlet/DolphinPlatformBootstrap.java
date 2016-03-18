@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
@@ -109,6 +110,10 @@ public class DolphinPlatformBootstrap {
 
     public DolphinContext getCurrentContext() {
         return getContextHandler().getCurrentContext();
+    }
+
+    public DolphinSession getCurrentDolphinSession() {
+        return getCurrentContext().getCurrentDolphinSession();
     }
 
     private ContainerManager findManager() {

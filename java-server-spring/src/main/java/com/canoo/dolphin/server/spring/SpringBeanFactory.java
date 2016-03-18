@@ -56,7 +56,7 @@ public class SpringBeanFactory {
     @Bean
     @ClientScoped
     protected DolphinSession createDolphinSession() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentContext().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
     }
 
 

@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server;
 
+import com.canoo.dolphin.server.context.DolphinSessionListener;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,7 +25,8 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to mark a listener.
+ * Annotation for global listener. Currently only {@link DolphinSessionListener}
+ * is supported. Any listener that is annotated by this annotation will be created at runtime and will be triggered.
  */
 @Documented
 @Retention(RUNTIME)

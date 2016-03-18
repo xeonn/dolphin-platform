@@ -57,7 +57,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     private final DolphinEventBusImpl dolphinEventBus;
 
-    private List<DolphinContextListener> contextListeners;
+    private List<DolphinSessionListener> contextListeners;
 
     public DolphinContextHandler(OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
         this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
@@ -80,8 +80,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
                     @Override
                     public void call(DolphinContext dolphinContext) {
                         Assert.requireNonNull(dolphinContext, "dolphinContext");
-                        for(DolphinContextListener listener : getAllListeners()) {
-                            listener.contextDestroyed(dolphinContext.getCurrentDolphinSession());
+                        for(DolphinSessionListener listener : getAllListeners()) {
+                            listener.sessionDestroyed(dolphinContext.getCurrentDolphinSession());
                         }
                     }
                 };
@@ -107,8 +107,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 list.add(currentContext);
                 httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, list);
 
-                for(DolphinContextListener listener : getAllListeners()) {
-                    listener.contextCreated(currentContext.getCurrentDolphinSession());
+                for(DolphinSessionListener listener : getAllListeners()) {
+                    listener.sessionCreated(currentContext.getCurrentDolphinSession());
                 }
 
                 LOG.info("Created new DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
@@ -198,18 +198,18 @@ public class DolphinContextHandler implements DolphinContextProvider {
         return context.getCurrentDolphinSession();
     }
 
-    private synchronized List<DolphinContextListener> getAllListeners() {
+    private synchronized List<DolphinSessionListener> getAllListeners() {
         if(contextListeners == null) {
             contextListeners = new ArrayList<>();
             Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
             for (Class<?> listenerClass : listeners) {
                 try {
-                    if (DolphinContextListener.class.isAssignableFrom(listenerClass)) {
-                        DolphinContextListener listener = (DolphinContextListener) containerManager.createListener(listenerClass);
+                    if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {
+                        DolphinSessionListener listener = (DolphinSessionListener) containerManager.createListener(listenerClass);
                         contextListeners.add(listener);
                     }
                 } catch (Exception e) {
-                    throw new DolphinPlatformBoostrapException("Error in creating DolphinContextListener " + listenerClass, e);
+                    throw new DolphinPlatformBoostrapException("Error in creating DolphinSessionListener " + listenerClass, e);
                 }
             }
         }
