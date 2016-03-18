@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * This class defines the bootstrap for Dolphin Platform. 
+ * This class defines the bootstrap for Dolphin Platform.
  */
 public class DolphinPlatformBootstrap {
 
