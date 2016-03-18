@@ -19,21 +19,15 @@ import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.util.Assert;
 
-import javax.servlet.ServletContext;
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
 /**
  * Default implementation of {@link DolphinContextHandlerFactory}
  */
 public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFactory {
 
     @Override
-    public DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository, ContainerManager containerManager) {
-        Assert.requireNonNull(servletContext, "servletContext");
+    public DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager) {
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
     }
-
 
 }

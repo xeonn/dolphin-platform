@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.context;
+package com.canoo.dolphin.util;
 
 /**
- * Created by hendrikebbers on 14.03.16.
+ * A basic callback interface.
  */
 public interface Callback<T> {
 
+    /**
+     * the callback method
+     * @param t the callback parameter
+     */
     void call(T t);
 
 }

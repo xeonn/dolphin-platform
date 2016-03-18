@@ -31,6 +31,6 @@ public interface DolphinContextHandlerFactory {
      * @param controllerRepository the controllerRepository
      * @return the created instance
      */
-    DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository, ContainerManager containerManager);
+    DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager);
 
 }

@@ -24,6 +24,7 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBoostrapException;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.comm.Command;
 import org.slf4j.Logger;

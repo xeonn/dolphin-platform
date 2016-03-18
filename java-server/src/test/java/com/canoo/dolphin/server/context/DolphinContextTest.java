@@ -20,6 +20,7 @@ import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImplMock;
+import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.server.comm.CommandHandler;
 import org.testng.annotations.Test;
 

@@ -48,6 +48,13 @@ public interface ContainerManager {
      */
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 
+    /**
+     * Creates a new managed instance. See {@link com.canoo.dolphin.server.DolphinListener} and
+     * {@link com.canoo.dolphin.server.context.DolphinContextListener} for more information
+     * @param listenerClass the class of the listenerClass
+     * @param <T> type of the listener
+     * @return the new listener instance
+     */
     <T> T createListener(Class<T> listenerClass);
 
     /**

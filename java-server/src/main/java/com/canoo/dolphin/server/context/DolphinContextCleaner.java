@@ -21,14 +21,16 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * Created by hendrikebbers on 15.09.15.
+ * A {@link HttpSessionListener} that destroys all {@link DolphinContext} instances for a session
  */
 public class DolphinContextCleaner implements HttpSessionListener {
 
+    //We can not simply pass this value in the constructor because CDI fails in this case
     private DolphinContextHandler dolphinContextHandler;
 
     public DolphinContextCleaner() {
     }
+
 
     public void init(DolphinContextHandler dolphinContextHandler) {
         this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
