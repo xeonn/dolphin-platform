@@ -20,10 +20,16 @@ import com.canoo.dolphin.server.controller.ControllerRepository;
 import javax.servlet.ServletContext;
 
 /**
- * Created by hendrikebbers on 11.03.16.
+ * Factory that creates a {@link DolphinContextHandler}
  */
 public interface DolphinContextHandlerFactory {
 
+    /**
+     * Returns a new {@link DolphinContextHandler} instance
+     * @param servletContext the servletContext
+     * @param controllerRepository the controllerRepository
+     * @return the created instance
+     */
     DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository);
 
 }

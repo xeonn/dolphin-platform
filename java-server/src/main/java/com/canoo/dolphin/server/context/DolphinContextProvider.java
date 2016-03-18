@@ -15,7 +15,14 @@
  */
 package com.canoo.dolphin.server.context;
 
+/**
+ * Interface that provides a {@link DolphinContext}
+ */
 public interface DolphinContextProvider extends DolphinSessionProvider {
 
+    /**
+     * Returns the current Dolphin Context
+     * @return the current Dolphin Context
+     */
     DolphinContext getCurrentContext();
 }

@@ -52,6 +52,10 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     private DolphinContext getCurrentContext() {
+        DolphinContextHandler contextHandler = getContextHandler();
+        if(contextHandler == null) {
+            throw new IllegalStateException("No DolphinContextHandler defined!");
+        }
         return getContextHandler().getCurrentContext();
     }
 
@@ -61,7 +65,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     /**
-     * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in session scope.
+     * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
      * @return the instance
      */
     @Bean
@@ -71,7 +75,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     }
 
     /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in session scope.
+     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in client scope.
      * @return the instance
      */
     @Bean
@@ -83,7 +87,7 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     @Bean
     @ClientScoped
     protected DolphinSession createDolphinSession() {
-        return getCurrentContext().getDolphinSession();
+        return getCurrentContext().getCurrentDolphinSession();
     }
 
 
@@ -102,8 +106,8 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
-            public DolphinSession getDolphinSession() {
-                return getCurrentContext().getDolphinSession();
+            public DolphinSession getCurrentDolphinSession() {
+                return getCurrentContext().getCurrentDolphinSession();
             }
         }));
         return configurer;

@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by hendrikebbers on 01.03.16.
+ * Implementation of the {@link ClientScoped} scope
  */
 public class ClientScope implements Scope {
 
@@ -79,6 +79,6 @@ public class ClientScope implements Scope {
     }
 
     private DolphinSession getDolphinSession() {
-        return dolphinSessionProvider.getDolphinSession();
+        return dolphinSessionProvider.getCurrentDolphinSession();
     }
 }

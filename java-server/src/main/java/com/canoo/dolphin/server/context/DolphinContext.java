@@ -251,7 +251,7 @@ public class DolphinContext implements DolphinSessionProvider {
         return id.hashCode();
     }
 
-    public DolphinSession getDolphinSession() {
+    public DolphinSession getCurrentDolphinSession() {
         return dolphinSession;
     }
 }

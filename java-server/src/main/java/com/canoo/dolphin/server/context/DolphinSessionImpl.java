@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Default implementation of {@link DolphinSession} that uses a map internally to store all attributes
+ */
 public class DolphinSessionImpl implements DolphinSession {
 
     private Map<String, Object> store;

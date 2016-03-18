@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 
 import javax.servlet.ServletContainerInitializer;
@@ -42,5 +44,13 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
 
     public static DolphinPlatformBootstrap getBootstrap() {
         return bootstrap;
+    }
+
+    public static DolphinContextHandler getContextHandler() {
+        return getBootstrap().getDolphinContextHandler();
+    }
+
+    public static DolphinContext getCurrentContext() {
+        return getContextHandler().getCurrentContext();
     }
 }

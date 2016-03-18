@@ -18,9 +18,13 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.server.DolphinSession;
 
 /**
- * Created by hendrikebbers on 01.03.16.
+ * Interface that provides the current Dolphin session
  */
 public interface DolphinSessionProvider {
 
-    DolphinSession getDolphinSession();
+    /**
+     * Returns the current dolphin session
+     * @return the current dolphin session
+     */
+    DolphinSession getCurrentDolphinSession();
 }
