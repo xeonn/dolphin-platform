@@ -1,0 +1,159 @@
+package com.canoo.dolphin.server.context;
+
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.server.controller.ControllerRepository;
+import com.canoo.dolphin.server.event.impl.DolphinEventBusImplMock;
+import org.opendolphin.core.server.comm.CommandHandler;
+import org.testng.annotations.Test;
+
+import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
+/**
+ * Created by hendrikebbers on 18.03.16.
+ */
+public class DolphinContextTest {
+
+    @Test
+    public void testUniqueId() {
+        //given:
+        List<DolphinContext> contextList = new ArrayList<>();
+        for(int i = 0; i < 1000; i++) {
+            DolphinContext dolphinContext = createContext();
+            contextList.add(dolphinContext);
+        }
+
+        //then:
+        assertEquals(contextList.size(), 1000);
+        while (!contextList.isEmpty()) {
+            DolphinContext dolphinContext = contextList.remove(0);
+            for(DolphinContext toCompare : contextList) {
+                assertFalse(dolphinContext.getId().equals(toCompare.getId()));
+                assertTrue(dolphinContext.hashCode() != toCompare.hashCode());
+                assertFalse(dolphinContext.equals(toCompare));
+            }
+        }
+    }
+
+    @Test
+    public void testUniqueBeanManager() {
+        //given:
+        List<DolphinContext> contextList = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            DolphinContext dolphinContext = createContext();
+            contextList.add(dolphinContext);
+        }
+
+        //then:
+        while (!contextList.isEmpty()) {
+            DolphinContext dolphinContext = contextList.remove(0);
+            for(DolphinContext toCompare : contextList) {
+                assertFalse(dolphinContext.getBeanManager().equals(toCompare.getBeanManager()));
+            }
+        }
+    }
+
+    @Test
+    public void testUniqueDolphin() {
+        //given:
+        List<DolphinContext> contextList = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            DolphinContext dolphinContext = createContext();
+            contextList.add(dolphinContext);
+        }
+
+        //then:
+        while (!contextList.isEmpty()) {
+            DolphinContext dolphinContext = contextList.remove(0);
+            for(DolphinContext toCompare : contextList) {
+                assertFalse(dolphinContext.getDolphin().equals(toCompare.getDolphin()));
+            }
+        }
+    }
+
+    @Test
+    public void testUniqueDolphinSession() {
+        //given:
+        List<DolphinContext> contextList = new ArrayList<>();
+        for(int i = 0; i < 100; i++) {
+            DolphinContext dolphinContext = createContext();
+            contextList.add(dolphinContext);
+        }
+
+        //then:
+        while (!contextList.isEmpty()) {
+            DolphinContext dolphinContext = contextList.remove(0);
+            for(DolphinContext toCompare : contextList) {
+                assertFalse(dolphinContext.getCurrentDolphinSession().equals(toCompare.getCurrentDolphinSession()));
+            }
+        }
+    }
+
+    @Test
+    public void testGetterReturnValue() {
+        //given:
+        DolphinContext dolphinContext = createContext();
+
+        //then:
+        assertNotNull(dolphinContext.getId());
+        assertNotNull(dolphinContext.getBeanManager());
+        assertNotNull(dolphinContext.getCurrentDolphinSession());
+        assertNotNull(dolphinContext.getDolphin());
+    }
+
+    @Test
+    public void testNewDolphinCommands() {
+        //given:
+        DolphinContext dolphinContext = createContext();
+
+        //then:
+        Map<String, List<CommandHandler>> dolphinActions = dolphinContext.getDolphin().getServerConnector().getRegistry().getActions();
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.INIT_CONTEXT_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME));
+        assertNotNull(dolphinActions.containsKey(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME));
+    }
+
+    private DolphinContext createContext() {
+        return new DolphinContext(new ContainerManagerMock(), new ControllerRepository(), new DefaultOpenDolphinFactory(), new DolphinEventBusImplMock(), new DestroyCallbackMock());
+    }
+
+    private class DestroyCallbackMock implements Callback<DolphinContext> {
+
+        @Override
+        public void call(DolphinContext dolphinContext) {
+
+        }
+    }
+
+    private class ContainerManagerMock implements ContainerManager {
+
+        @Override
+        public void init(ServletContext servletContext) {
+
+        }
+
+        @Override
+        public <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector) {
+            return null;
+        }
+
+        @Override
+        public void destroyController(Object instance, Class controllerClass) {
+
+        }
+    }
+
+}
