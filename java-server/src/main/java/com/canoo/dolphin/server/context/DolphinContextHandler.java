@@ -1,12 +1,12 @@
 /**
  * Copyright 2015-2016 Canoo Engineering AG.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,13 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
+import com.canoo.dolphin.server.servlet.DolphinPlatformBoostrapException;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.comm.Command;
@@ -32,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class manages all {@link DolphinContext} instances
@@ -52,6 +56,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     private final DolphinEventBusImpl dolphinEventBus;
 
+    private List<DolphinContextListener> contextListeners;
+
     public DolphinContextHandler(OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
         this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
@@ -68,6 +74,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
         try {
             List<DolphinContext> contextsForSession = getContexts(httpSession);
             if (contextsForSession.isEmpty()) {
+
+                final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
+                    @Override
+                    public void call(DolphinContext dolphinContext) {
+                        Assert.requireNonNull(dolphinContext, "dolphinContext");
+                        for(DolphinContextListener listener : getAllListeners()) {
+                            listener.contextDestroyed(dolphinContext.getCurrentDolphinSession());
+                        }
+                    }
+                };
+
                 final Callback<DolphinContext> onDestroyCallback = new Callback<DolphinContext>() {
                     @Override
                     public void call(DolphinContext dolphinContext) {
@@ -82,10 +99,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
                         }
                     }
                 };
-                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, dolphinEventBus, onDestroyCallback);
+
+
+                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, dolphinEventBus, preDestroyCallback, onDestroyCallback);
                 ArrayList list = new ArrayList();
                 list.add(currentContext);
                 httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, list);
+
+                for(DolphinContextListener listener : getAllListeners()) {
+                    listener.contextCreated(currentContext.getCurrentDolphinSession());
+                }
+
                 LOG.info("Created new DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
             } else {
                 //TODO: Curtently there is only 1 dolphin context in each session
@@ -152,7 +176,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
         return currentContextThreadLocal.get();
     }
 
-    public static void removeAllContextsInSession(HttpSession session) {
+    public void removeAllContextsInSession(HttpSession session) {
         Assert.requireNonNull(session, "session");
         for (DolphinContext context : getContexts(session)) {
             context.destroy();
@@ -171,5 +195,23 @@ public class DolphinContextHandler implements DolphinContextProvider {
             return null;
         }
         return context.getCurrentDolphinSession();
+    }
+
+    private synchronized List<DolphinContextListener> getAllListeners() {
+        if(contextListeners == null) {
+            contextListeners = new ArrayList<>();
+            Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
+            for (Class<?> listenerClass : listeners) {
+                try {
+                    if (DolphinContextListener.class.isAssignableFrom(listenerClass)) {
+                        DolphinContextListener listener = (DolphinContextListener) containerManager.createListener(listenerClass);
+                        contextListeners.add(listener);
+                    }
+                } catch (Exception e) {
+                    throw new DolphinPlatformBoostrapException("Error in creating DolphinContextListener " + listenerClass, e);
+                }
+            }
+        }
+        return contextListeners;
     }
 }

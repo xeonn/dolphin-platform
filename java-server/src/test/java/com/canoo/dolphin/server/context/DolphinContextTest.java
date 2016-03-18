@@ -142,7 +142,7 @@ public class DolphinContextTest {
     }
 
     private DolphinContext createContext() {
-        return new DolphinContext(new ContainerManagerMock(), new ControllerRepository(), new DefaultOpenDolphinFactory(), new DolphinEventBusImplMock(), new DestroyCallbackMock());
+        return new DolphinContext(new ContainerManagerMock(), new ControllerRepository(), new DefaultOpenDolphinFactory(), new DolphinEventBusImplMock(), new DestroyCallbackMock(), new DestroyCallbackMock());
     }
 
     private class DestroyCallbackMock implements Callback<DolphinContext> {
@@ -162,6 +162,11 @@ public class DolphinContextTest {
 
         @Override
         public <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector) {
+            return null;
+        }
+
+        @Override
+        public <T> T createListener(Class<T> listenerClass) {
             return null;
         }
 

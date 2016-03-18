@@ -29,27 +29,11 @@ import java.util.ServiceLoader;
 public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFactory {
 
     @Override
-    public DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository) {
+    public DolphinContextHandler create(ServletContext servletContext, ControllerRepository controllerRepository, ContainerManager containerManager) {
         Assert.requireNonNull(servletContext, "servletContext");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
-
-        ContainerManager containerManager = findManager();
-        containerManager.init(servletContext);
         return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
     }
 
-    private ContainerManager findManager() {
-        ContainerManager containerManager = null;
-        ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
-        Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
-        if (serviceIterator.hasNext()) {
-            containerManager = serviceIterator.next();
-            if (serviceIterator.hasNext()) {
-                throw new IllegalStateException("More than 1 " + ContainerManager.class + " found!");
-            }
-        } else {
-            throw new IllegalStateException("No " + ContainerManager.class + " found!");
-        }
-        return containerManager;
-    }
+
 }

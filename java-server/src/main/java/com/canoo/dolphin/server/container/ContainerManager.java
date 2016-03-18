@@ -48,6 +48,8 @@ public interface ContainerManager {
      */
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
 
+    <T> T createListener(Class<T> listenerClass);
+
     /**
      * Destroyes the given controller instance
      * @param instance controller instance

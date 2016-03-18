@@ -20,6 +20,7 @@ import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.util.Assert;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.bean.BeanBuilder;
+import org.apache.deltaspike.core.util.metadata.builder.DelegatingContextualLifecycle;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -30,6 +31,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.servlet.ServletContext;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * JavaEE / CDI based implementation of the {@link ContainerManager}
@@ -55,6 +57,7 @@ public class CdiContainerManager implements ContainerManager {
         final InjectionTarget<T> injectionTarget = bm.createInjectionTarget(annotatedType);
         final Bean<T> bean = new BeanBuilder<T>(bm)
                 .beanClass(controllerClass)
+                .name(UUID.randomUUID().toString())
                 .scope(Dependent.class)
                 .beanLifecycle(new DolphinPlatformContextualLifecycle<T>(injectionTarget, modelInjector))
                 .create();
@@ -67,10 +70,30 @@ public class CdiContainerManager implements ContainerManager {
     }
 
     @Override
+    public <T> T createListener(Class<T> listenerClass) {
+        Assert.requireNonNull(listenerClass, "listenerClass");
+        BeanManager bm = BeanManagerProvider.getInstance().getBeanManager();
+        AnnotatedType annotatedType = bm.createAnnotatedType(listenerClass);
+        final InjectionTarget<T> injectionTarget = bm.createInjectionTarget(annotatedType);
+        final Bean<T> bean = new BeanBuilder<T>(bm)
+                .beanClass(listenerClass)
+                .scope(Dependent.class)
+                .name(UUID.randomUUID().toString())
+                .beanLifecycle(new DelegatingContextualLifecycle<T>(injectionTarget))
+                .create();
+        Class<?> beanClass = bean.getBeanClass();
+        CreationalContext<T> creationalContext = bm.createCreationalContext(bean);
+        T instance = (T) bm.getReference(bean, beanClass, creationalContext);
+        contextMap.put(instance, creationalContext);
+        beanMap.put(instance, bean);
+        return instance;
+    }
+
+    @Override
     public void destroyController(Object instance, Class controllerClass) {
         Assert.requireNonNull(instance, "instance");
-        Bean bean = beanMap.get(instance);
-        CreationalContext context = contextMap.get(instance);
+        Bean bean = beanMap.remove(instance);
+        CreationalContext context = contextMap.remove(instance);
         bean.destroy(instance, context);
     }
 }

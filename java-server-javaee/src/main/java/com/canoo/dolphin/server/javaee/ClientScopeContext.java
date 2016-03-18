@@ -79,4 +79,11 @@ public class ClientScopeContext implements Context {
     private DolphinSession getDolphinSession() {
         return DolphinPlatformJavaeeBootstrap.getBootstrap().getDolphinContextHandler().getCurrentContext().getCurrentDolphinSession();
     }
+
+    public void destroy() {
+        for(ClientScopeInstanceHolder<?> holder : getLocalStore().values()) {
+            holder.destroy();
+        }
+        getLocalStore().clear();
+    }
 }

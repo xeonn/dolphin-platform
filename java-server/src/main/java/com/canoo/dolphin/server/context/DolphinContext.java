@@ -81,14 +81,17 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final Callback<DolphinContext> onDestroyCallback;
 
+    private final Callback<DolphinContext> preDestroyCallback;
+
     private final Subscription mBeanSubscription;
 
     private final DolphinSession dolphinSession;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> onDestroyCallback) {
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
+        this.preDestroyCallback = Assert.requireNonNull(preDestroyCallback, "preDestroyCallback");
         this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
 
@@ -190,6 +193,8 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     public void destroy() {
+        preDestroyCallback.call(this);
+
         //Deregister from event bus
         dolphinEventBus.unsubscribeSession(getId());
 

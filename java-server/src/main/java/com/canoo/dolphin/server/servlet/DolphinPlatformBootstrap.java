@@ -1,12 +1,12 @@
 /**
  * Copyright 2015-2016 Canoo Engineering AG.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,14 @@
  */
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
+import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.controller.ControllerRepository;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.slf4j.Logger;
@@ -28,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 public class DolphinPlatformBootstrap {
 
@@ -61,7 +67,10 @@ public class DolphinPlatformBootstrap {
         Assert.requireNonNull(servletContext, "servletContext");
 
         ControllerRepository controllerRepository = new ControllerRepository();
-        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository);
+        ContainerManager containerManager = findManager();
+        containerManager.init(servletContext);
+
+        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository, containerManager);
 
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(dolphinServletMapping);
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
@@ -71,11 +80,38 @@ public class DolphinPlatformBootstrap {
         dolphinContextCleaner.init(dolphinContextHandler);
         servletContext.addListener(dolphinContextCleaner);
 
+        Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
+        for (Class<?> listenerClass : listeners) {
+            if (DolphinBoostrapListener.class.isAssignableFrom(listenerClass)) {
+                try {
+                    DolphinBoostrapListener listener = (DolphinBoostrapListener) containerManager.createListener(listenerClass);
+                    listener.dolphinRuntimeCreated();
+                } catch (Exception e) {
+                    LOG.error("Error in calling DolphinBoostrapListener " + listenerClass, e);
+                    throw new DolphinPlatformBoostrapException("Error in calling DolphinBoostrapListener " + listenerClass, e);
+                }
+            }
+        }
+
         LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
         LOG.debug("Dolphin Platform endpoint defined as " + dolphinServletMapping);
     }
 
     public DolphinContextHandler getDolphinContextHandler() {
         return dolphinContextHandler;
+    }
+
+    private ContainerManager findManager() {
+        final ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
+        final Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
+        if (serviceIterator.hasNext()) {
+            final ContainerManager containerManager = serviceIterator.next();
+            if (serviceIterator.hasNext()) {
+                throw new IllegalStateException("More than 1 " + ContainerManager.class + " found!");
+            }
+            return containerManager;
+        } else {
+            throw new IllegalStateException("No " + ContainerManager.class + " found!");
+        }
     }
 }

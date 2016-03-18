@@ -58,6 +58,15 @@ public class SpringContainerManager implements ContainerManager {
     }
 
     @Override
+    public <T> T createListener(Class<T> listenerClass) {
+        Assert.requireNonNull(listenerClass, "listenerClass");
+        // SpringBeanAutowiringSupport kann man auch nutzen
+        WebApplicationContext context = getContext();
+        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
+        return beanFactory.createBean(listenerClass);
+    }
+
+    @Override
     public void destroyController(Object instance, Class controllerClass) {
         Assert.requireNonNull(instance, "instance");
         ApplicationContext context = getContext();
