@@ -23,6 +23,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ToDoClient extends Application {
 
@@ -49,6 +51,9 @@ public class ToDoClient extends Application {
     }
 
     public static void main(String[] args) {
+        Logger OD_LOGGER = Logger.getLogger("org.opendolphin");
+        OD_LOGGER.setLevel(Level.SEVERE);
+
         Application.launch(args);
     }
 }

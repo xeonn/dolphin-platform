@@ -17,12 +17,18 @@ package com.canoo.dolphin.todo.server;
 
 import com.kumuluz.ee.EeApplication;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by hendrikebbers on 01.03.16.
  */
 public class ServerStart {
 
     public static void main(String... args) {
+        Logger OD_LOGGER = Logger.getLogger("org.opendolphin");
+        OD_LOGGER.setLevel(Level.SEVERE);
+
         EeApplication.main(args);
     }
 

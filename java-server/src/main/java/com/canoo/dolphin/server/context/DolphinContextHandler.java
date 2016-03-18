@@ -23,6 +23,8 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.comm.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,8 @@ import java.util.List;
  * This class manages all {@link DolphinContext} instances
  */
 public class DolphinContextHandler implements DolphinContextProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinContextHandler.class);
 
     private static final String DOLPHIN_CONTEXT_MAP = "DOLPHIN_CONTEXT_MAP";
 
@@ -67,6 +71,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 final Callback<DolphinContext> onDestroyCallback = new Callback<DolphinContext>() {
                     @Override
                     public void call(DolphinContext dolphinContext) {
+                        Assert.requireNonNull(dolphinContext, "dolphinContext");
+                        LOG.info("Destroying DolphinContext " + dolphinContext.getId() + " in http session " + httpSession.getId());
                         Object contextList = httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
                         if (contextList == null) {
                             return;
@@ -80,6 +86,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 ArrayList list = new ArrayList();
                 list.add(currentContext);
                 httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, list);
+                LOG.info("Created new DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
             } else {
                 //TODO: Curtently there is only 1 dolphin context in each session
                 currentContext = getContexts(httpSession).get(0);
@@ -87,6 +94,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
         } catch (Exception e) {
             throw new DolphinContextException("Can not find or create matching dolphin context", e);
         }
+
+        LOG.debug("Handling request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
 
         currentContextThreadLocal.set(currentContext);
         try {
