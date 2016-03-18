@@ -76,7 +76,7 @@ public class SpringBeanFactory {
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
             public DolphinSession getCurrentDolphinSession() {
-                return DolphinPlatformBootstrap.getInstance().getCurrentContext().getCurrentDolphinSession();
+                return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
             }
         }));
         return configurer;
