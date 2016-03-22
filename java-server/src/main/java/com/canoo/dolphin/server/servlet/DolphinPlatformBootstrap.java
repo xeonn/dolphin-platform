@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
@@ -22,12 +23,16 @@ import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import java.util.EnumSet;
+import java.util.logging.Logger;
 
 public class DolphinPlatformBootstrap {
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DolphinPlatformBootstrap.class);
 
     public static final String DOLPHIN_SERVLET_NAME = "dolphin-platform-servlet";
 
@@ -53,16 +58,26 @@ public class DolphinPlatformBootstrap {
         this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
     }
 
-    public void onStartup(ServletContext servletContext) {
+    public void onStartup(ServletContext servletContext, DolphinPlatformConfiguration configuration) {
         Assert.requireNonNull(servletContext, "servletContext");
+        Assert.requireNonNull(configuration, "configuration");
+
+        LOG.info("Dolphin Platform starts with value for useCrossSiteOriginFilter=" + configuration.isUseCrossSiteOriginFilter());
+        LOG.info("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
+        LOG.info("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
 
         ControllerRepository controllerRepository = new ControllerRepository();
         dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository);
 
-        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(dolphinServletMapping);
+        servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
-        servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        if (configuration.isUseCrossSiteOriginFilter()) {
+            servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        }
         servletContext.addListener(new DolphinContextCleaner(dolphinContextHandler));
+
+        Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
+        openDolphinLogger.setLevel(configuration.getOpenDolphinLogLevel());
     }
 
     public DolphinContextHandler getDolphinContextHandler() {
