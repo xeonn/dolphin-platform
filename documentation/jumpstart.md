@@ -1,6 +1,6 @@
 #Dolphin Platform Jumpstart
 To get started with Dolphin Platform and create your first client-server-project several Maven archetypes are provided by Dolphin Platform. Based on this archetypes it's quite easy to create a full functional client-server-application as a perfect base for your own project or to learn the different APIs of Dolphin Platform by simply experimenting with the generated project.
-#Create a project
+###Create a project
  To create a new project only Maven must be installed on your system. Once Maven is installed you can create a complete project with only one shell command:
  ```shell
  mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:
