@@ -69,3 +69,4 @@ A complete "Getting started" documentation can be found [here](http://www.dolphi
 * [Polymer Github Repo](https://github.com/canoo/dolphin-platform-polymer)
 * [Spring Boot based Maven archetype](https://github.com/canoo/dolphin-platform-spring-boot-archetype)
 * [KumuluzEE based Maven archetype](https://github.com/canoo/dolphin-platform-kumuluz-archetype)
+* [Lazybones templates for Dolphin Platform](https://github.com/canoo/dolphin-platform-lazybones-templates)
