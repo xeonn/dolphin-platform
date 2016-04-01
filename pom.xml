@@ -57,6 +57,7 @@
         <module>todo-example/server-spring</module>
         <module>todo-example/server-javaee</module>
         <module>todo-example/client</module>
+        <module>documentation</module>
     </modules>
 
     <properties>
