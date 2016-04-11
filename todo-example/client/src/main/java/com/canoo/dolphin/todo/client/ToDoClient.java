@@ -34,7 +34,7 @@ public class ToDoClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/dolphin"));
+        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/todo-app/dolphin"));
         connectionPromise.thenAccept(context -> {
             clientContext = context;
             viewController = new ToDoViewBinder(context);
