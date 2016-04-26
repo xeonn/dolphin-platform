@@ -15,15 +15,13 @@
  */
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.BASIC_TYPE;
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
 
 /**
  * The class {@code DolphinUtils} is a horrible class that we should get rid of asap.
@@ -63,23 +61,32 @@ public class DolphinUtils {
         return null;
     }
 
-    public static Object mapFieldTypeToDolphin(ClassRepositoryImpl.FieldType fieldType) {
-        return fieldType.ordinal();
-    }
-
-    public static ClassRepositoryImpl.FieldType mapFieldTypeFromDolphin(Object value) {
-        try {
-            return ClassRepositoryImpl.FieldType.values()[(Integer) value];
-        } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
-            return ClassRepositoryImpl.FieldType.UNKNOWN;
+    public static FieldType getFieldType(Field field) {
+        final Class<?> type = ReflectionHelper.getTypeParameter(field.getGenericType());
+        if (String.class.equals(type)) {
+            return FieldType.STRING;
         }
-    }
-
-    public static ClassRepositoryImpl.FieldType getFieldType(Object value) {
-        if (value == null) {
-            return ClassRepositoryImpl.FieldType.UNKNOWN;
+        if (int.class.equals(type) || Integer.class.equals(type)) {
+            return FieldType.INT;
         }
-        return ReflectionHelper.isBasicType(value.getClass()) ? BASIC_TYPE : DOLPHIN_BEAN;
+        if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+            return FieldType.BOOLEAN;
+        }
+        if (long.class.equals(type) || Long.class.equals(type)) {
+            return FieldType.LONG;
+        }
+        if (double.class.equals(type) || Double.class.equals(type)) {
+            return FieldType.DOUBLE;
+        }
+        if (float.class.equals(type) || Float.class.equals(type)) {
+            return FieldType.FLOAT;
+        }
+        if (byte.class.equals(type) || Byte.class.equals(type)) {
+            return FieldType.BYTE;
+        }
+        if (short.class.equals(type) || Short.class.equals(type)) {
+            return FieldType.SHORT;
+        }
+        return FieldType.DOLPHIN_BEAN;
     }
-
 }

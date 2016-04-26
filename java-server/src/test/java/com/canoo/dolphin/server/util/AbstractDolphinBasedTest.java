@@ -49,8 +49,9 @@ public abstract class AbstractDolphinBasedTest {
     protected BeanManager createBeanManager(ServerDolphin dolphin) {
         final EventDispatcher dispatcher = new ServerEventDispatcher(dolphin);
         final BeanRepositoryImpl beanRepository = new BeanRepositoryImpl(dolphin, dispatcher);
+        final Converters converters = new Converters(beanRepository);
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, beanRepository, builderFactory);
+        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new BeanManagerImpl(beanRepository, beanBuilder);

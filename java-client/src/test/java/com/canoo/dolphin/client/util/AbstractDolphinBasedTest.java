@@ -22,6 +22,7 @@ import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
@@ -83,8 +84,9 @@ public abstract class AbstractDolphinBasedTest {
     protected BeanManager createBeanManager(ClientDolphin dolphin) {
         final EventDispatcher dispatcher = new ClientEventDispatcher(dolphin);
         final BeanRepositoryImpl beanRepository = new BeanRepositoryImpl(dolphin, dispatcher);
+        final Converters converters = new Converters(beanRepository);
         final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, beanRepository, builderFactory);
+        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         return new BeanManagerImpl(beanRepository, beanBuilder);

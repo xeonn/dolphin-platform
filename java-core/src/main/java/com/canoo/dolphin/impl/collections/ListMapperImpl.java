@@ -59,9 +59,9 @@ public class ListMapperImpl implements ListMapper {
 
                     final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                    final int from = (Integer) model.findAttributeByPropertyName("from").getValue();
-                    final int to = (Integer) model.findAttributeByPropertyName("to").getValue();
-                    final int count = (Integer) model.findAttributeByPropertyName("count").getValue();
+                    final int from = ((Number) model.findAttributeByPropertyName("from").getValue()).intValue();
+                    final int to = ((Number) model.findAttributeByPropertyName("to").getValue()).intValue();
+                    final int count = ((Number) model.findAttributeByPropertyName("count").getValue()).intValue();
 
                     final List<Object> newElements = new ArrayList<Object>(count);
                     for (int i = 0; i < count; i++) {

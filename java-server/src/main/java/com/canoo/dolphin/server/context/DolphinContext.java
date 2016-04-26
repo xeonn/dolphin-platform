@@ -20,6 +20,7 @@ import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
@@ -63,6 +64,8 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final BeanRepository beanRepository;
 
+    private final Converters converters;
+
     private final BeanManager beanManager;
 
     private final ControllerHandler controllerHandler;
@@ -91,10 +94,11 @@ public class DolphinContext implements DolphinSessionProvider {
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
         beanRepository = new BeanRepositoryImpl(dolphin, dispatcher);
+        converters = new Converters(beanRepository);
 
         //Init BeanManager
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
-        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, beanRepository, builderFactory);
+        final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
@@ -167,7 +171,7 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onInitContext() {
-        platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher);
+        platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher, converters);
     }
 
     private void onDestroyContext() {

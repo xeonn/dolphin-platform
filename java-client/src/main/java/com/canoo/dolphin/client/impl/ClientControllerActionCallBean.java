@@ -17,24 +17,19 @@ package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.AbstractControllerActionCallBean;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.DolphinUtils;
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientDolphin;
-
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
 
 public class ClientControllerActionCallBean extends AbstractControllerActionCallBean {
 
     private final Dolphin dolphin;
     private PresentationModel pm;
 
-    public ClientControllerActionCallBean(ClientDolphin dolphin, BeanRepository beanRepository, String controllerId, String actionName, Param... params) {
+    public ClientControllerActionCallBean(ClientDolphin dolphin, Converters converters, String controllerId, String actionName, Param... params) {
         this.dolphin = dolphin;
 
         final PresentationModelBuilder builder = new ClientPresentationModelBuilder(dolphin);
@@ -44,11 +39,10 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
                 .withAttribute(ERROR_CODE);
 
         for (final Param param : params) {
-            final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(param.getValue());
-            final Object value = type == DOLPHIN_BEAN ? beanRepository.getDolphinId(param.getValue()) : param.getValue();
+            final Object value = param.getValue();
+            final Object dolphinValue = converters.getConverter(value.getClass()).convertToDolphin(value);
             final String paramName = PARAM_PREFIX + param.getName();
-            builder.withAttribute(paramName, value);
-            builder.withAttribute(paramName, DolphinUtils.mapFieldTypeToDolphin(type), Tag.VALUE_TYPE);
+            builder.withAttribute(paramName, dolphinValue);
         }
 
         this.pm = builder.create();

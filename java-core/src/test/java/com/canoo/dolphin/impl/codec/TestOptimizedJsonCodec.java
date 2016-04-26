@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
@@ -196,35 +197,30 @@ public class TestOptimizedJsonCodec {
     public void shouldDecodeValueChangedCommandWithIntegers() {
         final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":41,\"n\":42,\"id\":\"ValueChanged\"}]");
 
-        final ValueChangedCommand command = new ValueChangedCommand();
-        command.setOldValue(41);
-        command.setNewValue(42);
-        command.setAttributeId("3357S");
-        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(((Number)command.getOldValue()).intValue(), is(41));
+        assertThat(((Number)command.getNewValue()).intValue(), is(42));
     }
 
     @Test
     public void shouldDecodeValueChangedCommandWithLong() {
         final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChanged\"}]");
 
-        final ValueChangedCommand command = new ValueChangedCommand();
-        command.setOldValue(1234567890987654321L);
-        command.setNewValue(987654321234567890L);
-        command.setAttributeId("3357S");
-        assertThat(commands, hasSize(1));
-        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(((Number)command.getOldValue()).longValue(), is(1234567890987654321L));
+        assertThat(((Number)command.getNewValue()).longValue(), is(987654321234567890L));
     }
 
     @Test
     public void shouldDecodeValueChangedCommandWithDoubles() {
         final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7182,\"id\":\"ValueChanged\"}]");
 
-        final ValueChangedCommand command = new ValueChangedCommand();
-        command.setOldValue(3.1415);
-        command.setNewValue(2.7182);
-        command.setAttributeId("3357S");
-        assertThat(commands, hasSize(1));
-        assertThat(commands.get(0), Matchers.<Command>samePropertyValuesAs(command));
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(((Number)command.getOldValue()).doubleValue(), closeTo(3.1415, 1e-6));
+        assertThat(((Number)command.getNewValue()).doubleValue(), closeTo(2.7182, 1e-6));
     }
 
     @Test

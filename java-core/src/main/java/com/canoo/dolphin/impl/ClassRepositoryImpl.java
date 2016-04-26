@@ -16,14 +16,16 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
-import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.impl.info.ClassPropertyInfo;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.internal.info.ClassInfo;
-import com.canoo.dolphin.impl.info.ClassPropertyInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
-import org.opendolphin.core.*;
+import com.canoo.dolphin.mapping.Property;
+import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.ModelStoreEvent;
+import org.opendolphin.core.ModelStoreListener;
+import org.opendolphin.core.Tag;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -37,17 +39,17 @@ import java.util.Map;
  */
 public class ClassRepositoryImpl implements ClassRepository {
 
-    public enum FieldType {UNKNOWN, BASIC_TYPE, DOLPHIN_BEAN}
+    public enum FieldType {DOLPHIN_BEAN, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, STRING, DATE, ENUM}
 
     private final PresentationModelBuilderFactory builderFactory;
-    private final Converters.Converter initialConverter;
+    private final Converters converters;
 
     private final Map<Class<?>, ClassInfo> classToClassInfoMap = new HashMap<>();
     private final Map<String, ClassInfo> modelTypeToClassInfoMap = new HashMap<>();
 
-    public ClassRepositoryImpl(Dolphin dolphin, BeanRepository beanRepository, PresentationModelBuilderFactory builderFactory) {
+    public ClassRepositoryImpl(Dolphin dolphin, Converters converters, PresentationModelBuilderFactory builderFactory) {
+        this.converters = converters;
         this.builderFactory = builderFactory;
-        this.initialConverter = new Converters(beanRepository).getUnknownTypeConverter();
 
         dolphin.addModelStoreListener(PlatformConstants.DOLPHIN_BEAN, new ModelStoreListener() {
             @Override
@@ -55,7 +57,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                 try {
                     final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
-                    final ClassInfo classInfo = createClassInfoForClass(beanClass, event.getPresentationModel());
+                    final ClassInfo classInfo = createClassInfoForClass(beanClass);
                     classToClassInfoMap.put(beanClass, classInfo);
                     modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
                 } catch (ClassNotFoundException e) {
@@ -75,14 +77,12 @@ public class ClassRepositoryImpl implements ClassRepository {
             return existingClassInfo;
         }
 
-        final PresentationModel model = createPresentationModelForClass(beanClass);
-        final ClassInfo newClassInfo = createClassInfoForClass(beanClass, model);
+        createPresentationModelForClass(beanClass);
 
-        classToClassInfoMap.put(beanClass, newClassInfo);
-        return newClassInfo;
+        return classToClassInfoMap.get(beanClass);
     }
 
-    private PresentationModel createPresentationModelForClass(Class<?> beanClass) {
+    private void createPresentationModelForClass(Class<?> beanClass) {
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = builderFactory.createBuilder()
                 .withId(id)
@@ -92,17 +92,17 @@ public class ClassRepositoryImpl implements ClassRepository {
         for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
-                builder.withAttribute(attributeName, FieldType.UNKNOWN.ordinal(), Tag.VALUE);
+                final FieldType type = DolphinUtils.getFieldType(field);
+                builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
             }
         }
 
-        return builder.create();
+        builder.create();
     }
 
-    private ClassInfo createClassInfoForClass(Class<?> beanClass, PresentationModel model) {
+    private ClassInfo createClassInfoForClass(Class<?> beanClass) {
         final List<PropertyInfo> propertyInfos = new ArrayList<>();
         final List<PropertyInfo> observableListInfos = new ArrayList<>();
-
 
         for (Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
             PropertyType type = null;
@@ -111,10 +111,12 @@ public class ClassRepositoryImpl implements ClassRepository {
             } else if (ObservableList.class.isAssignableFrom(field.getType())) {
                 type = PropertyType.OBSERVABLE_LIST;
             }
-            if (type != null) {
+            final Class<?> parameterType = ReflectionHelper.getTypeParameter(field.getGenericType());
+
+            if (type != null && parameterType != null) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
-                final Attribute attribute = model.findAttributeByPropertyName(attributeName);
-                final PropertyInfo propertyInfo = new ClassPropertyInfo(attribute, attributeName, initialConverter, field);
+                final Converters.Converter converter = converters.getConverter(parameterType);
+                final PropertyInfo propertyInfo = new ClassPropertyInfo(attributeName, converter, field);
                 if (type == PropertyType.PROPERTY) {
                     propertyInfos.add(propertyInfo);
                 } else {

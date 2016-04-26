@@ -115,6 +115,7 @@ public class ControllerHandler {
         final List<Object> args = new ArrayList<>(n);
 
         for (int i = 0; i < n; i++) {
+            final Class<?> paramType = method.getParameterTypes()[i];
             String paramName = Integer.toString(i);
             for (Annotation annotation : method.getParameterAnnotations()[i]) {
                 if (annotation.annotationType().equals(Param.class)) {
@@ -124,7 +125,7 @@ public class ControllerHandler {
                     }
                 }
             }
-            args.add(bean.getParam(paramName));
+            args.add(bean.getParam(paramName, paramType));
         }
         return args;
     }

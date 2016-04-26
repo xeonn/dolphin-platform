@@ -15,32 +15,16 @@
  */
 package com.canoo.dolphin.internal.info;
 
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.Converters;
-import com.canoo.dolphin.impl.DolphinUtils;
-import com.canoo.dolphin.impl.ReflectionHelper;
-import org.opendolphin.core.Attribute;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+public abstract class PropertyInfo {
 
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.BASIC_TYPE;
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.UNKNOWN;
-
-public abstract class PropertyInfo implements PropertyChangeListener {
-
-    private final Attribute attribute;
     private final String attributeName;
+    private final Converters.Converter converter;
 
-    private Converters.Converter converter;
-
-    public PropertyInfo(Attribute attribute, String attributeName, Converters.Converter converter) {
-        this.attribute = attribute;
+    public PropertyInfo(String attributeName, Converters.Converter converter) {
         this.attributeName = attributeName;
         this.converter = converter;
-
-        this.attribute.addPropertyChangeListener(this);
     }
 
     public String getAttributeName() {
@@ -56,24 +40,6 @@ public abstract class PropertyInfo implements PropertyChangeListener {
     }
 
     public Object convertToDolphin(Object value) {
-        if (converter.getFieldType() == UNKNOWN && value != null) {
-            final ClassRepositoryImpl.FieldType fieldType = ReflectionHelper.isBasicType(value.getClass()) ? BASIC_TYPE : DOLPHIN_BEAN;
-            updateFieldType(fieldType);
-        }
         return converter.convertToDolphin(value);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        final ClassRepositoryImpl.FieldType fieldType = DolphinUtils.mapFieldTypeFromDolphin(event.getNewValue());
-        updateFieldType(fieldType);
-    }
-
-    protected void updateFieldType(ClassRepositoryImpl.FieldType fieldType) {
-        if (fieldType != UNKNOWN) {
-            converter = converter.updateConverter(fieldType);
-            attribute.setValue(DolphinUtils.mapFieldTypeToDolphin(fieldType));
-            attribute.removePropertyChangeListener(Attribute.VALUE, this);
-        }
     }
 }

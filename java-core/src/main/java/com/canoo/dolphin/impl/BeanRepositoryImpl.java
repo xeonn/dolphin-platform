@@ -71,6 +71,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         });
     }
 
+    @Override
     public <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener) {
         beanAddedListenerMap.put(clazz, listener);
         return new Subscription() {
@@ -81,6 +82,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         };
     }
 
+    @Override
     public Subscription addOnAddedListener(final BeanAddedListener<Object> listener) {
         anyBeanAddedListeners.add(listener);
         return new Subscription() {
@@ -91,6 +93,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         };
     }
 
+    @Override
     public <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener) {
         beanRemovedListenerMap.put(clazz, listener);
         return new Subscription() {
@@ -101,6 +104,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         };
     }
 
+    @Override
     public Subscription addOnRemovedListener(final BeanRemovedListener<Object> listener) {
         anyBeanRemovedListeners.add(listener);
         return new Subscription() {
@@ -111,10 +115,12 @@ public class BeanRepositoryImpl implements BeanRepository{
         };
     }
 
+    @Override
     public boolean isManaged(Object bean) {
         return objectPmToDolphinPm.containsKey(bean);
     }
 
+    @Override
     public <T> void delete(T bean) {
         final PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
@@ -123,6 +129,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> beanClass) {
         final List<T> result = new ArrayList<>();
@@ -133,10 +140,12 @@ public class BeanRepositoryImpl implements BeanRepository{
         return result;
     }
 
+    @Override
     public Object getBean(String sourceId) {
         return dolphinIdToObjectPm.get(sourceId);
     }
 
+    @Override
     public String getDolphinId(Object bean) {
         if (bean == null) {
             return null;
@@ -148,10 +157,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         }
     }
 
-    public Object mapDolphinToObject(Object value, ClassRepositoryImpl.FieldType fieldType) {
-        return fieldType == ClassRepositoryImpl.FieldType.DOLPHIN_BEAN? dolphinIdToObjectPm.get(value) : value;
-    }
-
+    @Override
     @SuppressWarnings("unchecked")
     public void registerBean(Object bean, PresentationModel model, UpdateSource source) {
         objectPmToDolphinPm.put(bean, model);

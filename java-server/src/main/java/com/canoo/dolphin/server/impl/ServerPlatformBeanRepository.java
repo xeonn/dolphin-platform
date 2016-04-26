@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -29,14 +30,14 @@ public class ServerPlatformBeanRepository {
 
     private final InternalAttributesBean internalAttributesBean;
 
-    public ServerPlatformBeanRepository(ServerDolphin dolphin, final BeanRepository beanRepository, EventDispatcher dispatcher) {
+    public ServerPlatformBeanRepository(ServerDolphin dolphin, BeanRepository beanRepository, EventDispatcher dispatcher, final Converters converters) {
         dispatcher.addControllerActionCallBeanAddedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {
                 final String type = model.getPresentationModelType();
                 switch (type) {
                     case PlatformConstants.CONTROLLER_ACTION_CALL_BEAN_NAME:
-                        controllerActionCallBean = new ServerControllerActionCallBean(beanRepository, model);
+                        controllerActionCallBean = new ServerControllerActionCallBean(converters, model);
                         break;
                 }
             }
