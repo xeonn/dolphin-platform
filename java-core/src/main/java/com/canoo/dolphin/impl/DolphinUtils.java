@@ -22,6 +22,8 @@ import com.canoo.dolphin.mapping.Property;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * The class {@code DolphinUtils} is a horrible class that we should get rid of asap.
@@ -61,31 +63,36 @@ public class DolphinUtils {
         return null;
     }
 
-    public static FieldType getFieldType(Field field) {
-        final Class<?> type = ReflectionHelper.getTypeParameter(field.getGenericType());
-        if (String.class.equals(type)) {
+    public static FieldType getFieldType(Class<?> clazz) {
+        if (String.class.equals(clazz)) {
             return FieldType.STRING;
         }
-        if (int.class.equals(type) || Integer.class.equals(type)) {
+        if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
             return FieldType.INT;
         }
-        if (boolean.class.equals(type) || Boolean.class.equals(type)) {
+        if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
             return FieldType.BOOLEAN;
         }
-        if (long.class.equals(type) || Long.class.equals(type)) {
+        if (long.class.equals(clazz) || Long.class.equals(clazz)) {
             return FieldType.LONG;
         }
-        if (double.class.equals(type) || Double.class.equals(type)) {
+        if (double.class.equals(clazz) || Double.class.equals(clazz)) {
             return FieldType.DOUBLE;
         }
-        if (float.class.equals(type) || Float.class.equals(type)) {
+        if (float.class.equals(clazz) || Float.class.equals(clazz)) {
             return FieldType.FLOAT;
         }
-        if (byte.class.equals(type) || Byte.class.equals(type)) {
+        if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
             return FieldType.BYTE;
         }
-        if (short.class.equals(type) || Short.class.equals(type)) {
+        if (short.class.equals(clazz) || Short.class.equals(clazz)) {
             return FieldType.SHORT;
+        }
+        if (Enum.class.isAssignableFrom(clazz)) {
+            return FieldType.ENUM;
+        }
+        if (Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz)) {
+            return FieldType.DATE;
         }
         return FieldType.DOLPHIN_BEAN;
     }

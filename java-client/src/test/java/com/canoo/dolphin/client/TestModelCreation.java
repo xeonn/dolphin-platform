@@ -259,6 +259,87 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
+    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ComplexDataTypesModel model = manager.create(ComplexDataTypesModel.class);
+
+        assertThat(model, notNullValue());
+        assertThat(model.getDateProperty(), notNullValue());
+        assertThat(model.getDateProperty().get(), nullValue());
+        assertThat(model.getCalendarProperty(), notNullValue());
+        assertThat(model.getCalendarProperty().get(), nullValue());
+        assertThat(manager.isManaged(model), is(true));
+
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName());
+        assertThat(dolphinModels, hasSize(1));
+
+        PresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<Attribute> attributes = dolphinModel.getAttributes();
+
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("dateProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is("calendarProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
+                        hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ClientPresentationModel> classModels = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
+                                hasProperty("value", is(ComplexDataTypesModel.class.getName())),
+                                hasProperty("baseValue", is(ComplexDataTypesModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("dateProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("calendarProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
+                                hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
+    }
+
+
+    @Test
     public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);

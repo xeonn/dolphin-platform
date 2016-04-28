@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -134,9 +133,9 @@ public class ReflectionHelper {
         return Proxy.isProxyClass(bean.getClass());
     }
 
-    public static Class getTypeParameter(Type type) {
+    public static Class getTypeParameter(Field field) {
         try {
-            ParameterizedType pType = (ParameterizedType) type;
+            ParameterizedType pType = (ParameterizedType) field.getGenericType();
             if (pType.getActualTypeArguments().length > 0) {
                 return (Class) pType.getActualTypeArguments()[0];
             }

@@ -16,13 +16,25 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.util.*;
+import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
+import com.canoo.dolphin.server.util.ComplexDataTypesModel;
+import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
+import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
+import mockit.Mocked;
 import org.opendolphin.core.Attribute;
+import org.opendolphin.core.PresentationModel;
+import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,11 +55,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Platform"));
         assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Dolphin"));
         assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
     }
 
@@ -64,11 +76,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Platform"));
         assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Dolphin"));
         assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
     }
 
@@ -85,11 +97,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Platform"));
         assertThat(model.getTextProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
-        assertThat(textAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat((String) textAttribute.getValue(), is("Hallo Dolphin"));
         assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
 
 
@@ -97,11 +109,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(intAttribute.getValue(), nullValue());
 
         model.getIntegerProperty().set(1);
-        assertThat(intAttribute.getValue(), is((Object) 1));
+        assertThat((Integer) intAttribute.getValue(), is(1));
         assertThat(model.getIntegerProperty().get(), is(1));
 
         intAttribute.setValue(2);
-        assertThat(intAttribute.getValue(), is((Object) 2));
+        assertThat((Integer) intAttribute.getValue(), is(2));
         assertThat(model.getIntegerProperty().get(), is(2));
 
 
@@ -109,13 +121,55 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(booleanAttribute.getValue(), nullValue());
 
         model.getBooleanProperty().set(true);
-        assertThat(booleanAttribute.getValue(), is((Object) true));
+        assertThat((Boolean) booleanAttribute.getValue(), is(true));
         assertThat(model.getBooleanProperty().get(), is(true));
 
         model.getBooleanProperty().set(false);
-        assertThat(booleanAttribute.getValue(), is((Object) false));
+        assertThat((Boolean) booleanAttribute.getValue(), is(false));
         assertThat(model.getBooleanProperty().get(), is(false));
 
+    }
+
+
+    @Test
+    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+        final Calendar date1 = new GregorianCalendar(2016, Calendar.MARCH, 1, 0, 1, 2);
+        date1.set(Calendar.MILLISECOND, 3);
+        date1.setTimeZone(TimeZone.getTimeZone("GMT+2:00"));
+        final Calendar date2 = new GregorianCalendar(2016, Calendar.FEBRUARY, 29, 0, 1, 2);
+        date2.set(Calendar.MILLISECOND, 3);
+        date2.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ComplexDataTypesModel model = manager.create(ComplexDataTypesModel.class);
+
+        PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName()).get(0);
+
+
+        Attribute dateAttribute = dolphinModel.findAttributeByPropertyName("dateProperty");
+        assertThat(dateAttribute.getValue(), nullValue());
+
+        model.getDateProperty().set(date1.getTime());
+        assertThat((String) dateAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(model.getDateProperty().get(), is(date1.getTime()));
+
+        dateAttribute.setValue("2016-02-29T00:01:02.003Z");
+        assertThat((String) dateAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(model.getDateProperty().get(), is(date2.getTime()));
+
+
+        Attribute calendarAttribute = dolphinModel.findAttributeByPropertyName("calendarProperty");
+        assertThat(calendarAttribute.getValue(), nullValue());
+
+        model.getCalendarProperty().set(date1);
+        assertThat((String) calendarAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(model.getCalendarProperty().get().getTimeInMillis(), is(date1.getTimeInMillis()));
+
+        calendarAttribute.setValue("2016-02-29T00:01:02.003Z");
+        assertThat((String) calendarAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(model.getCalendarProperty().get(), is(date2));
     }
 
 
@@ -140,11 +194,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(referenceAttribute.getValue(), nullValue());
 
         model.getReferenceProperty().set(ref1);
-        assertThat(referenceAttribute.getValue(), is((Object) ref1PM.getId()));
+        assertThat((String) referenceAttribute.getValue(), is(ref1PM.getId()));
         assertThat(model.getReferenceProperty().get(), is(ref1));
 
         referenceAttribute.setValue(ref2PM.getId());
-        assertThat(referenceAttribute.getValue(), is((Object) ref2PM.getId()));
+        assertThat((String) referenceAttribute.getValue(), is(ref2PM.getId()));
         assertThat(model.getReferenceProperty().get(), is(ref2));
     }
 
@@ -163,15 +217,15 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(parentAttribute.getValue(), nullValue());
 
         model.getChildProperty().set("Hallo Platform");
-        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat((String) childAttribute.getValue(), is("Hallo Platform"));
         assertThat(model.getChildProperty().get(), is("Hallo Platform"));
         assertThat(parentAttribute.getValue(), nullValue());
         assertThat(model.getParentProperty().get(), nullValue());
 
         parentAttribute.setValue("Hallo Dolphin");
-        assertThat(childAttribute.getValue(), is((Object) "Hallo Platform"));
+        assertThat((String) childAttribute.getValue(), is("Hallo Platform"));
         assertThat(model.getChildProperty().get(), is("Hallo Platform"));
-        assertThat(parentAttribute.getValue(), is((Object) "Hallo Dolphin"));
+        assertThat((String) parentAttribute.getValue(), is("Hallo Dolphin"));
         assertThat(model.getParentProperty().get(), is("Hallo Dolphin"));
     }
 

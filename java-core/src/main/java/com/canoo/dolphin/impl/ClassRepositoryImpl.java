@@ -26,6 +26,8 @@ import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ import java.util.Map;
  * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
  */
 public class ClassRepositoryImpl implements ClassRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
 
     public enum FieldType {DOLPHIN_BEAN, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, STRING, DATE, ENUM}
 
@@ -92,7 +96,8 @@ public class ClassRepositoryImpl implements ClassRepository {
         for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
             if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
-                final FieldType type = DolphinUtils.getFieldType(field);
+                final Class<?> clazz = ReflectionHelper.getTypeParameter(field);
+                final FieldType type = DolphinUtils.getFieldType(clazz);
                 builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
             }
         }
@@ -111,7 +116,7 @@ public class ClassRepositoryImpl implements ClassRepository {
             } else if (ObservableList.class.isAssignableFrom(field.getType())) {
                 type = PropertyType.OBSERVABLE_LIST;
             }
-            final Class<?> parameterType = ReflectionHelper.getTypeParameter(field.getGenericType());
+            final Class<?> parameterType = ReflectionHelper.getTypeParameter(field);
 
             if (type != null && parameterType != null) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);

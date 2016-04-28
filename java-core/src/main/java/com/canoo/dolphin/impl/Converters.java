@@ -16,55 +16,72 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.internal.BeanRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * The class {@code Converters} contains all {@link Converter} that are used in the Dolphin Platform.
  */
 public class Converters {
 
-    private static final Converter IDENTITY_CONVERTER = new Converter();
+    private static final Logger LOG = LoggerFactory.getLogger(Converters.class);
 
-    private static final Converter BYTE_CONVERTER = new Converter() {
+    private static final Converter IDENTITY_CONVERTER = new BaseConverter();
+
+    private static final Converter BYTE_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).byteValue();
         }
     };
 
-    private static final Converter SHORT_CONVERTER = new Converter() {
+    private static final Converter SHORT_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).shortValue();
         }
     };
 
-    private static final Converter INTEGER_CONVERTER = new Converter() {
+    private static final Converter INTEGER_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).intValue();
         }
     };
 
-    private static final Converter LONG_CONVERTER = new Converter() {
+    private static final Converter LONG_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).longValue();
         }
     };
 
-    private static final Converter FLOAT_CONVERTER = new Converter() {
+    private static final Converter FLOAT_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).floatValue();
         }
     };
 
-    private static final Converter DOUBLE_CONVERTER = new Converter() {
+    private static final Converter DOUBLE_CONVERTER = new BaseConverter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return value == null? null : ((Number)value).doubleValue();
         }
     };
+
+    private static final Converter ENUM_CONVERTER = new EnumConverter();
+
+    private final Converter dateConverter = new DateConverter();
+
+    private final Converter calendarConverter = new CalendarConverter();
 
     private final Converter dolphinBeanConverter;
 
@@ -73,40 +90,49 @@ public class Converters {
     }
 
     public Converter getConverter(Class<?> clazz) {
-        if (String.class.equals(clazz) || boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
-            return IDENTITY_CONVERTER;
+        final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(clazz);
+        switch (type) {
+            default:
+                return dolphinBeanConverter;
+            case BYTE:
+                return BYTE_CONVERTER;
+            case SHORT:
+                return SHORT_CONVERTER;
+            case INT:
+                return INTEGER_CONVERTER;
+            case LONG:
+                return LONG_CONVERTER;
+            case FLOAT:
+                return FLOAT_CONVERTER;
+            case DOUBLE:
+                return DOUBLE_CONVERTER;
+            case BOOLEAN:
+            case STRING:
+                return IDENTITY_CONVERTER;
+            case DATE:
+                return Date.class.isAssignableFrom(clazz)? dateConverter : calendarConverter;
+            case ENUM:
+                return ENUM_CONVERTER;
         }
-        if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
-            return INTEGER_CONVERTER;
-        }
-        if (long.class.equals(clazz) || Long.class.equals(clazz)) {
-            return LONG_CONVERTER;
-        }
-        if (double.class.equals(clazz) || Double.class.equals(clazz)) {
-            return DOUBLE_CONVERTER;
-        }
-        if (float.class.equals(clazz) || Float.class.equals(clazz)) {
-            return FLOAT_CONVERTER;
-        }
-        if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
-            return BYTE_CONVERTER;
-        }
-        if (short.class.equals(clazz) || Short.class.equals(clazz)) {
-            return SHORT_CONVERTER;
-        }
-        return dolphinBeanConverter;
     }
 
-    public static class Converter {
+    public interface Converter {
+        Object convertFromDolphin(Object value);
+        Object convertToDolphin(Object value);
+    }
+
+    private static class BaseConverter implements Converter {
+        @Override
         public Object convertFromDolphin(Object value) {
             return value;
         }
+        @Override
         public Object convertToDolphin(Object value) {
             return value;
         }
     }
 
-    private static class DolphinBeanConverter extends Converter {
+    private static class DolphinBeanConverter implements Converter {
         private final BeanRepository beanRepository;
 
         private DolphinBeanConverter(BeanRepository beanRepository) {
@@ -121,6 +147,92 @@ public class Converters {
         @Override
         public Object convertToDolphin(Object value) {
             return beanRepository.getDolphinId(value);
+        }
+    }
+
+    private static class EnumConverter implements Converter {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return null;
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            return null;
+        }
+    }
+
+    private static class DateConverter implements Converter {
+
+        private final DateFormat dateFormat;
+
+        private DateConverter() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.parse((String)value);
+            } catch (ClassCastException | ParseException e) {
+                LOG.warn("Unable to parse the date: " + value);
+                return null;
+            }
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.format(value);
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to format the date: " + value);
+                return null;
+            }
+        }
+    }
+
+    private static class CalendarConverter implements Converter {
+
+        private final DateFormat dateFormat;
+
+        private CalendarConverter() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                final Calendar result = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                result.setTime(dateFormat.parse((String)value));
+                return result;
+            } catch (ClassCastException | ParseException e) {
+                LOG.warn("Unable to parse the date: " + value);
+                return null;
+            }
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.format(((Calendar)value).getTime());
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to format the date: " + value);
+                return null;
+            }
         }
     }
 }
