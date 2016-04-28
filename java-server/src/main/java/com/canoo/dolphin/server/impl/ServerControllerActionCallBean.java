@@ -49,6 +49,6 @@ public class ServerControllerActionCallBean extends AbstractControllerActionCall
         if (valueAttribute == null) {
             throw new IllegalArgumentException(String.format("Invoking DolphinAction requires parameter '%s', but it was not send", name));
         }
-        return converters.getConverter(type).convertFromDolphin(valueAttribute);
+        return converters.getConverter(type).convertFromDolphin(valueAttribute.getValue());
     }
 }

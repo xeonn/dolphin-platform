@@ -36,6 +36,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import static com.canoo.dolphin.client.util.ComplexDataTypesModel.EnumValues.VALUE_1;
+import static com.canoo.dolphin.client.util.ComplexDataTypesModel.EnumValues.VALUE_2;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -170,6 +172,18 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         calendarAttribute.setValue("2016-02-29T00:01:02.003Z");
         assertThat(calendarAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
         assertThat(model.getCalendarProperty().get(), is(date2));
+
+
+        Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
+        assertThat(enumAttribute.getValue(), nullValue());
+
+        model.getEnumProperty().set(VALUE_1);
+        assertThat(enumAttribute.getValue(), is("VALUE_1"));
+        assertThat(model.getEnumProperty().get(), is(VALUE_1));
+
+        enumAttribute.setValue("VALUE_2");
+        assertThat(enumAttribute.getValue(), is("VALUE_2"));
+        assertThat(model.getEnumProperty().get(), is(VALUE_2));
     }
 
 

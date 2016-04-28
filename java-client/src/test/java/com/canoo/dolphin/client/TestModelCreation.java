@@ -270,6 +270,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         assertThat(model.getDateProperty().get(), nullValue());
         assertThat(model.getCalendarProperty(), notNullValue());
         assertThat(model.getCalendarProperty().get(), nullValue());
+        assertThat(model.getEnumProperty(), notNullValue());
+        assertThat(model.getEnumProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
         List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName());
@@ -289,6 +291,13 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                 ),
                 allOf(
                         hasProperty("propertyName", is("calendarProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is("enumProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
                         hasProperty("qualifier", nullValue()),
@@ -324,6 +333,13 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is("calendarProperty")),
                                 hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
                                 hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("enumProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),

@@ -22,9 +22,13 @@ import java.util.Date;
 
 public class ComplexDataTypesModel {
 
+    public enum EnumValues { VALUE_1, VALUE_2 }
+
     private Property<Date> dateProperty;
 
     private Property<Calendar> calendarProperty;
+
+    private Property<EnumValues> enumProperty;
 
     public Property<Date> getDateProperty() {
         return dateProperty;
@@ -32,5 +36,9 @@ public class ComplexDataTypesModel {
 
     public Property<Calendar> getCalendarProperty() {
         return calendarProperty;
+    }
+
+    public Property<EnumValues> getEnumProperty() {
+        return enumProperty;
     }
 }

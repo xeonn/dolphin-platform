@@ -24,6 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -77,13 +79,13 @@ public class Converters {
         }
     };
 
-    private static final Converter ENUM_CONVERTER = new EnumConverter();
-
     private final Converter dateConverter = new DateConverter();
 
     private final Converter calendarConverter = new CalendarConverter();
 
     private final Converter dolphinBeanConverter;
+
+    private final Map<Class<?>, Converter> enumConverters = new HashMap<>();
 
     public Converters(BeanRepository beanRepository) {
         this.dolphinBeanConverter = new DolphinBeanConverter(beanRepository);
@@ -112,7 +114,12 @@ public class Converters {
             case DATE:
                 return Date.class.isAssignableFrom(clazz)? dateConverter : calendarConverter;
             case ENUM:
-                return ENUM_CONVERTER;
+                Converter enumConverter = enumConverters.get(clazz);
+                if (enumConverter == null) {
+                    enumConverter = new EnumConverter(clazz);
+                    enumConverters.put(clazz, enumConverter);
+                }
+                return enumConverter;
         }
     }
 
@@ -151,14 +158,38 @@ public class Converters {
     }
 
     private static class EnumConverter implements Converter {
+
+        private final Class<? extends Enum> clazz;
+
+        @SuppressWarnings("unchecked")
+        private EnumConverter(Class<?> clazz) {
+            this.clazz = (Class<? extends Enum>) clazz;
+        }
+
         @Override
         public Object convertFromDolphin(Object value) {
-            return null;
+            if (value == null) {
+                return null;
+            }
+            try {
+                return Enum.valueOf(clazz, value.toString());
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to convert to an enum (%s): %s", clazz, value);
+                return null;
+            }
         }
 
         @Override
         public Object convertToDolphin(Object value) {
-            return null;
+            if (value == null) {
+                return null;
+            }
+            try {
+                return ((Enum)value).name();
+            } catch (ClassCastException ex) {
+                LOG.warn("Unable to evaluate the enum: " + value);
+                return null;
+            }
         }
     }
 
@@ -177,8 +208,8 @@ public class Converters {
                 return null;
             }
             try {
-                return dateFormat.parse((String)value);
-            } catch (ClassCastException | ParseException e) {
+                return dateFormat.parse(value.toString());
+            } catch (ParseException e) {
                 LOG.warn("Unable to parse the date: " + value);
                 return null;
             }
@@ -214,9 +245,9 @@ public class Converters {
             }
             try {
                 final Calendar result = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                result.setTime(dateFormat.parse((String)value));
+                result.setTime(dateFormat.parse(value.toString()));
                 return result;
-            } catch (ClassCastException | ParseException e) {
+            } catch (ParseException e) {
                 LOG.warn("Unable to parse the date: " + value);
                 return null;
             }
