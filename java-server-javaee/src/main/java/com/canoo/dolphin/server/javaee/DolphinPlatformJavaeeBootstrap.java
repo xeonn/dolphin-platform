@@ -15,13 +15,18 @@
  */
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.server.config.ConfigurationFileLoader;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -31,6 +36,8 @@ import java.util.Set;
  */
 public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformJavaeeBootstrap.class);
+
     private static DolphinPlatformBootstrap bootstrap;
 
     public DolphinPlatformJavaeeBootstrap() {
@@ -38,8 +45,15 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
     }
 
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        bootstrap.onStartup(ctx);
+    public void onStartup(Set<Class<?>> c, ServletContext servletContext) throws ServletException {
+        DolphinPlatformConfiguration configuration = null;
+        try {
+            configuration = ConfigurationFileLoader.load();
+        } catch (IOException e) {
+            LOG.error("Can not read configuration! Will use default configuration!", e);
+            configuration = new DolphinPlatformConfiguration();
+        }
+        bootstrap.onStartup(servletContext, configuration);
     }
 
     public static DolphinPlatformBootstrap getBootstrap() {

@@ -17,12 +17,16 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.ConfigurationFileLoader;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
@@ -32,6 +36,7 @@ import org.springframework.context.annotation.Scope;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
@@ -40,6 +45,8 @@ import javax.servlet.ServletException;
  */
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringBootstrap.class);
 
     private final DolphinPlatformBootstrap bootstrap;
 
@@ -61,7 +68,14 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        bootstrap.onStartup(servletContext);
+        DolphinPlatformConfiguration configuration = null;
+        try {
+            configuration = ConfigurationFileLoader.load();
+        } catch (IOException e) {
+            LOG.error("Can not read configuration! Will use default configuration!", e);
+            configuration = new DolphinPlatformConfiguration();
+        }
+        bootstrap.onStartup(servletContext, configuration);
     }
 
     /**
