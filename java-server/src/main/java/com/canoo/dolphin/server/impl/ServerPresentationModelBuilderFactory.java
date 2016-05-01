@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 
@@ -25,11 +26,12 @@ public class ServerPresentationModelBuilderFactory implements PresentationModelB
     private final ServerDolphin dolphin;
 
     public ServerPresentationModelBuilderFactory(ServerDolphin dolphin) {
+        Assert.requireNonNull(dolphin, "dolphin");
         this.dolphin = dolphin;
     }
 
     @Override
-    public PresentationModelBuilder createBuilder() {
+    public PresentationModelBuilder<ServerPresentationModel> createBuilder() {
         return new ServerPresentationModelBuilder(dolphin);
     }
 }

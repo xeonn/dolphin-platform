@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,28 +17,15 @@ package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ClientBeanManager;
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ControllerInitalizationException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.State;
-import com.canoo.dolphin.impl.BeanBuilderImpl;
-import com.canoo.dolphin.impl.BeanRepositoryImpl;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
-import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.collections.ListMapperImpl;
-import com.canoo.dolphin.internal.BeanBuilder;
-import com.canoo.dolphin.internal.BeanRepository;
-import com.canoo.dolphin.internal.ClassRepository;
-import com.canoo.dolphin.internal.EventDispatcher;
-import com.canoo.dolphin.internal.collections.ListMapper;
-import org.opendolphin.StringUtil;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.OnFinishedHandler;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -56,64 +43,47 @@ public class ClientContextImpl implements ClientContext {
 
     private final List<WeakReference<ControllerProxy>> registeredWeakControllers;
 
-    public ClientContextImpl(ClientDolphin clientDolphin) throws ExecutionException, InterruptedException {
-        if (clientDolphin == null) {
-            throw new IllegalArgumentException("clientDolphin must not be null!");
-        }
-        this.clientDolphin = clientDolphin;
-        registeredWeakControllers = new CopyOnWriteArrayList<>();
-        final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
-        final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
-        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
-        final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
-        final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
-        platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
+    private final ControllerProxyFactory controllerProxyFactory;
 
-        invokeDolphinCommand(PlatformConstants.INIT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
+    private final DolphinCommandHandler dolphinCommandHandler;
+
+    public ClientContextImpl(ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager) throws ExecutionException, InterruptedException {
+        Assert.requireNonNull(clientDolphin, "clientDolphin");
+        Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
+        Assert.requireNonNull(dolphinCommandHandler, "dolphinCommandHandler");
+        Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
+        Assert.requireNonNull(clientBeanManager, "clientBeanManager");
+        this.clientDolphin = clientDolphin;
+        this.controllerProxyFactory = controllerProxyFactory;
+        this.dolphinCommandHandler = dolphinCommandHandler;
+        this.platformBeanRepository = platformBeanRepository;
+        this.clientBeanManager = clientBeanManager;
+        registeredWeakControllers = new CopyOnWriteArrayList<>();
+        dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
     }
 
     @Override
     public synchronized <T> CompletableFuture<ControllerProxy<T>> createController(String name) {
-        if (StringUtil.isBlank(name)) {
-            throw new IllegalArgumentException("name must not be null or empty!");
-        }
+       Assert.requireNonBlank(name, "name");
         checkForInitializedState();
-        final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
-        bean.setControllerName(name);
-        return invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).handle((v, e) -> {
-            if (e != null) {
-                throw new RuntimeException(e);
+
+        final CompletableFuture<ControllerProxy<T>> task = new CompletableFuture<>();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                ControllerProxy<T> controllerProxy = controllerProxyFactory.create(name);
+                registeredWeakControllers.add(new WeakReference<>(controllerProxy));
+                task.complete(controllerProxy);
+            } catch (Exception e) {
+                task.completeExceptionally(new ControllerInitalizationException(e));
             }
-            @SuppressWarnings("unchecked")
-            final T model = (T) bean.getModel();
-            ControllerProxyImpl controllerProxy = new ControllerProxyImpl<>(bean.getControllerId(), model, clientDolphin, platformBeanRepository);
-            registeredWeakControllers.add(new WeakReference<>(controllerProxy));
-            return controllerProxy;
         });
+        return task;
     }
 
     @Override
     public synchronized ClientBeanManager getBeanManager() {
         checkForInitializedState();
         return clientBeanManager;
-    }
-
-    private synchronized CompletableFuture<Void> invokeDolphinCommand(String command) {
-        final CompletableFuture<Void> result = new CompletableFuture<>();
-        clientDolphin.send(command, new OnFinishedHandler() {
-            @Override
-            public void onFinished(List<ClientPresentationModel> presentationModels) {
-                result.complete(null);
-            }
-
-            @Override
-            public void onFinishedData(List<Map> data) {
-                //Unused....
-            }
-        });
-        return result;
     }
 
     @Override
@@ -138,8 +108,9 @@ public class ClientContextImpl implements ClientContext {
             }
             try {
                 //TODO: Hack - When calling the PlatformConstants.DISCONNECT_COMMAND_NAME command the internal result listener in OD is never called and therefore the command handling will never be finished.
+                // Currently I think that this is based on another problem: When calling the sisconnect on the JavaFX APplication.stop() method the Platform Tread will be stopped berfore the callback is called.
                 state = State.DESTROYED;
-                invokeDolphinCommand(PlatformConstants.DISCONNECT_COMMAND_NAME);
+                dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME);
                 result.complete(null);
             } catch (Exception e) {
                 result.completeExceptionally(e);

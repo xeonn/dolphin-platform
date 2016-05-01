@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
 
     private final List<DolphinEventHandler> modelAddedHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> modelRemovedHandlers = new ArrayList<>(1);
-    private final List<DolphinEventHandler> listElementsAddHandlers = new ArrayList<>(1);
-    private final List<DolphinEventHandler> listElementsDelHandlers = new ArrayList<>(1);
-    private final List<DolphinEventHandler> listElementsSetHandlers = new ArrayList<>(1);
+    private final List<DolphinEventHandler> listSpliceHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> controllerActionCallBeanAddedHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> controllerActionCallBeanRemovedHandlers = new ArrayList<>(1);
     private final List<DolphinEventHandler> internalAttributesBeanAddedHandlers = new ArrayList<>(1);
@@ -50,18 +48,8 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     @Override
-    public void addListElementAddHandler(DolphinEventHandler handler) {
-        listElementsAddHandlers.add(handler);
-    }
-
-    @Override
-    public void addListElementDelHandler(DolphinEventHandler handler) {
-        listElementsDelHandlers.add(handler);
-    }
-
-    @Override
-    public void addListElementSetHandler(DolphinEventHandler handler) {
-        listElementsSetHandlers.add(handler);
+    public void addListSpliceHandler(DolphinEventHandler handler) {
+        listSpliceHandlers.add(handler);
     }
 
     @Override
@@ -108,18 +96,8 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
                 }
                 internalAttributesBeanAddedHandlers.clear();
                 break;
-            case PlatformConstants.LIST_ADD:
-                for (final DolphinEventHandler handler : listElementsAddHandlers) {
-                    handler.onEvent(model);
-                }
-                break;
-            case PlatformConstants.LIST_DEL:
-                for (final DolphinEventHandler handler : listElementsDelHandlers) {
-                    handler.onEvent(model);
-                }
-                break;
-            case PlatformConstants.LIST_SET:
-                for (final DolphinEventHandler handler : listElementsSetHandlers) {
+            case PlatformConstants.LIST_SPLICE:
+                for (final DolphinEventHandler handler : listSpliceHandlers) {
                     handler.onEvent(model);
                 }
                 break;
@@ -135,9 +113,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
-            case PlatformConstants.LIST_ADD:
-            case PlatformConstants.LIST_DEL:
-            case PlatformConstants.LIST_SET:
+            case PlatformConstants.LIST_SPLICE:
             case PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME:
                 // ignore
                 break;

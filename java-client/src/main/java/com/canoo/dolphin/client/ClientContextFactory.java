@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,31 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
+
+import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
+import com.canoo.dolphin.client.impl.ClientEventDispatcher;
+import com.canoo.dolphin.client.impl.ClientPlatformBeanRepository;
+import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
+import com.canoo.dolphin.client.impl.ControllerProxyFactory;
+import com.canoo.dolphin.client.impl.ControllerProxyFactoryImpl;
+import com.canoo.dolphin.client.impl.DolphinCommandHandler;
+import com.canoo.dolphin.impl.BeanBuilderImpl;
+import com.canoo.dolphin.impl.BeanRepositoryImpl;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
+import com.canoo.dolphin.impl.collections.ListMapperImpl;
+import com.canoo.dolphin.internal.BeanBuilder;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
+import org.opendolphin.core.client.comm.BlindCommandBatcher;
 import org.opendolphin.core.client.comm.HttpClientConnector;
-import org.opendolphin.core.comm.JsonCodec;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -44,24 +63,31 @@ public class ClientContextFactory {
      * @param clientConfiguration the configuration
      * @return the future
      */
-    public static CompletableFuture<ClientContext> connect(ClientConfiguration clientConfiguration) {
+    public static CompletableFuture<ClientContext> connect(final ClientConfiguration clientConfiguration) {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
-
-
+        
         Level openDolphinLogLevel = clientConfiguration.getDolphinLogLevel();
         Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(openDolphinLogLevel);
 
-        Executors.newSingleThreadExecutor().execute(() -> {
+Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                final ClientDolphin dolphin = new ClientDolphin();
-                dolphin.setClientModelStore(new ClientModelStore(dolphin));
-                final HttpClientConnector clientConnector = new HttpClientConnector(dolphin, clientConfiguration.getServerEndpoint());
-                clientConnector.setCodec(new JsonCodec());
-                clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
-                dolphin.setClientConnector(clientConnector);
-                final ClientContext clientContext = new ClientContextImpl(dolphin);
-                dolphin.startPushListening(PlatformConstants.POLL_COMMAND_NAME, PlatformConstants.RELEASE_COMMAND_NAME);
+
+                final ClientDolphin clientDolphin = createClientDolphin(clientConfiguration);
+                final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
+
+                final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
+                final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+                final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
+                final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
+                final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
+                final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+                final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
+                final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+                final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
+                final ClientContext clientContext = new ClientContextImpl(clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager);
+                clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
                 throw new ClientInitializationException(e);
@@ -70,4 +96,13 @@ public class ClientContextFactory {
         return result;
     }
 
+    private static ClientDolphin createClientDolphin(final ClientConfiguration clientConfiguration) {
+        final ClientDolphin clientDolphin = new ClientDolphin();
+        clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
+        final HttpClientConnector clientConnector = new HttpClientConnector(clientDolphin, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint());
+        clientConnector.setCodec(new OptimizedJsonCodec());
+        clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
+        clientDolphin.setClientConnector(clientConnector);
+        return clientDolphin;
+    }
 }

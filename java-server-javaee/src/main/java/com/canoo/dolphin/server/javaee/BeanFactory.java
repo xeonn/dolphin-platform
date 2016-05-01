@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,10 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.TaskExecutor;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 
 /**
@@ -34,20 +30,21 @@ import javax.enterprise.inject.Produces;
 public class BeanFactory {
 
     @Produces
-    @SessionScoped
+    @ClientScoped
     public BeanManager createManager() {
-        return DolphinContext.getCurrentContext().getBeanManager();
+        return DolphinPlatformJavaeeBootstrap.getCurrentContext().getBeanManager();
     }
 
     @Produces
-    @ApplicationScoped
-    public TaskExecutor createTaskExecutor() {
-        return TaskExecutorImpl.getInstance();
+    @ClientScoped
+    public DolphinSession createDolphinSession() {
+        return DolphinPlatformJavaeeBootstrap.getCurrentContext().getCurrentDolphinSession();
     }
 
     @Produces
     @ApplicationScoped
     public DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        return DolphinPlatformJavaeeBootstrap.getContextHandler().getDolphinEventBus();
     }
+
 }

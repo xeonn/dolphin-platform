@@ -27,6 +27,12 @@
             <artifactId>dolphin-client</artifactId>
             <version>${open-dolphin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.open-dolphin</groupId>
+            <artifactId>dolphin-combined</artifactId>
+            <version>${open-dolphin.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

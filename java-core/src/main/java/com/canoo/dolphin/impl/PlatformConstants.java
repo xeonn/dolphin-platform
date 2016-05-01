@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,9 @@ public interface PlatformConstants {
 
     String DOLPHIN_PLATFORM_PREFIX = "dolphin_platform_intern_";
 
-    String RELEASE_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "release";
+    String RELEASE_EVENT_BUS_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "release";
 
-    String POLL_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "longPoll";
+    String POLL_EVENT_BUS_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "longPoll";
 
     String REGISTER_CONTROLLER_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "registerController";
 
@@ -29,11 +29,11 @@ public interface PlatformConstants {
 
     String CALL_CONTROLLER_ACTION_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "callControllerAction";
 
-    String INIT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "initClientContext";
+    String INIT_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "initClientContext";
 
     String CLIENT_ID_HTTP_HEADER_NAME = DOLPHIN_PLATFORM_PREFIX + "dolphin-client-id";
 
-    String DISCONNECT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
+    String DESTROY_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
 
     String DOLPHIN_BEAN = "@@@ DOLPHIN_BEAN @@@";
 
@@ -42,9 +42,7 @@ public interface PlatformConstants {
     String SOURCE_SYSTEM_SERVER = "server";
     String JAVA_CLASS = "@@@ JAVA_CLASS @@@";
 
-    String LIST_ADD = "@@@ LIST_ADD @@@";
-    String LIST_DEL = "@@@ LIST_DEL @@@";
-    String LIST_SET = "@@@ LIST_SET @@@";
+    String LIST_SPLICE = "@DP:LS@";
 
     String CONTROLLER_ACTION_CALL_BEAN_NAME = "@@@ CONTROLLER_ACTION_CALL_BEAN @@@";
     String INTERNAL_ATTRIBUTES_BEAN_NAME = "@@@ HIGHLANDER_BEAN @@@";

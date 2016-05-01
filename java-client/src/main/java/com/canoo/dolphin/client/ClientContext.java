@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ public interface ClientContext {
      * Returns the {@link ClientBeanManager} that is bound to the client context
      * @return the bean manager
      */
+    @Deprecated
     ClientBeanManager getBeanManager();
 
     /**

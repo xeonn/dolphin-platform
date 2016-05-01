@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,13 +31,13 @@ public abstract class AbstractPresentationModelBuilder<T extends PresentationMod
     }
 
     @Override
-    public PresentationModelBuilder withType(String type) {
+    public PresentationModelBuilder<T> withType(String type) {
         this.type = type;
         return this;
     }
 
     @Override
-    public PresentationModelBuilder withId(String id) {
+    public PresentationModelBuilder<T> withId(String id) {
         this.id = id;
         return this;
     }

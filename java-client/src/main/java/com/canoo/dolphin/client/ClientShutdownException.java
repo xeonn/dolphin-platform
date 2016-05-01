@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@ package com.canoo.dolphin.client;
  * This exception is thrown when a client can't disconnect
  */
 public class ClientShutdownException extends Exception {
+
+    private static final long serialVersionUID = 8453749162802045073L;
 
     /**
      * constructor

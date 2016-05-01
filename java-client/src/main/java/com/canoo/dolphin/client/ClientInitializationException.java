@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@ package com.canoo.dolphin.client;
  * This exception is thrown if a error occurs while creating the {@link ClientContext}
  */
 public class ClientInitializationException extends RuntimeException {
+
+    private static final long serialVersionUID = -2590161524286922625L;
 
     /**
      * constructor

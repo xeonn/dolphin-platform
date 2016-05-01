@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,37 @@
 package com.canoo.dolphin.server.controller;
 
 /**
- * Created by hendrikebbers on 22.09.15.
+ * This exception is thrown if a an dolphin action (see {@link com.canoo.dolphin.server.DolphinAction}) throws an exception
  */
 public class InvokeActionException extends Exception {
 
+    /**
+     * Default constructor
+     */
     public InvokeActionException() {
     }
 
+    /**
+     * Constructor
+     * @param message the message
+     */
     public InvokeActionException(String message) {
         super(message);
     }
 
+    /**
+     * Constructor
+     * @param message the message
+     * @param cause the cause
+     */
     public InvokeActionException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Constructor
+     * @param cause the cause
+     */
     public InvokeActionException(Throwable cause) {
         super(cause);
     }

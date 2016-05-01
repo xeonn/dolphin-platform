@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,19 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.impl.*;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.ConfigurationFileLoader;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.TaskExecutor;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.event.impl.TaskExecutorImpl;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +36,7 @@ import org.springframework.context.annotation.Scope;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
@@ -41,45 +46,84 @@ import javax.servlet.ServletException;
 @Configuration
 public class DolphinPlatformSpringBootstrap implements ServletContextInitializer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringBootstrap.class);
+
+    private final DolphinPlatformBootstrap bootstrap;
+
+    public DolphinPlatformSpringBootstrap() {
+        this.bootstrap = new DolphinPlatformBootstrap();
+    }
+
+    private DolphinContextHandler getContextHandler() {
+        return bootstrap.getDolphinContextHandler();
+    }
+
+    private DolphinContext getCurrentContext() {
+        DolphinContextHandler contextHandler = getContextHandler();
+        if(contextHandler == null) {
+            throw new IllegalStateException("No DolphinContextHandler defined!");
+        }
+        return getContextHandler().getCurrentContext();
+    }
+
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        new DolphinPlatformBootstrap().onStartup(servletContext);
+        DolphinPlatformConfiguration configuration = null;
+        try {
+            configuration = ConfigurationFileLoader.load();
+        } catch (IOException e) {
+            LOG.error("Can not read configuration! Will use default configuration!", e);
+            configuration = new DolphinPlatformConfiguration();
+        }
+        bootstrap.onStartup(servletContext, configuration);
     }
 
     /**
-     * Method to create a spring managed {@link BeanManagerImpl} instance in session scope.
+     * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @ClientScoped
     protected BeanManager createManager() {
-        return DolphinContext.getCurrentContext().getBeanManager();
+        return getCurrentContext().getBeanManager();
     }
 
     /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in session scope.
+     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in client scope.
      * @return the instance
      */
     @Bean
-    @Scope("session")
+    @ClientScoped
     protected ServerDolphin createDolphin() {
-        return DolphinContext.getCurrentContext().getDolphin();
+        return getCurrentContext().getDolphin();
     }
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected TaskExecutor createTaskExecutor() {
-        return TaskExecutorImpl.getInstance();
+    @ClientScoped
+    protected DolphinSession createDolphinSession() {
+        return getCurrentContext().getCurrentDolphinSession();
     }
+
 
     /**
      * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
-     * @return
+     * @return the instance
      */
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        return getContextHandler().getDolphinEventBus();
     }
 
+    @Bean
+    public CustomScopeConfigurer createClientScope() {
+        CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return getCurrentContext().getCurrentDolphinSession();
+            }
+        }));
+        return configurer;
+    }
 }

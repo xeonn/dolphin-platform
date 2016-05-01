@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,11 +23,7 @@ public interface EventDispatcher extends ModelStoreListener {
 
     void addRemovedHandler(DolphinEventHandler handler);
 
-    void addListElementAddHandler(DolphinEventHandler handler);
-
-    void addListElementDelHandler(DolphinEventHandler handler);
-
-    void addListElementSetHandler(DolphinEventHandler handler);
+    void addListSpliceHandler(DolphinEventHandler handler);
 
     void addControllerActionCallBeanAddedHandler(DolphinEventHandler handler);
 
