@@ -43,6 +43,8 @@ import org.opendolphin.core.client.comm.HttpClientConnector;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Factory to create a {@link ClientContext}. Normally you will create a {@link ClientContext} at the bootstrap of your
@@ -63,7 +65,12 @@ public class ClientContextFactory {
      */
     public static CompletableFuture<ClientContext> connect(final ClientConfiguration clientConfiguration) {
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
-        Executors.newSingleThreadExecutor().execute(() -> {
+        
+        Level openDolphinLogLevel = clientConfiguration.getDolphinLogLevel();
+        Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
+        openDolphinLogger.setLevel(openDolphinLogLevel);
+
+Executors.newSingleThreadExecutor().execute(() -> {
             try {
 
                 final ClientDolphin clientDolphin = createClientDolphin(clientConfiguration);
