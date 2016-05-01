@@ -20,6 +20,8 @@ package com.canoo.dolphin.server.servlet;
  */
 public class DolphinPlatformBoostrapException extends RuntimeException {
 
+    private static final long serialVersionUID = 235126969040697596L;
+
     public DolphinPlatformBoostrapException() {
     }
 

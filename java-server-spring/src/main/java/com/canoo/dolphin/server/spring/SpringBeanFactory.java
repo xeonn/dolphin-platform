@@ -37,7 +37,7 @@ public class SpringBeanFactory {
      * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
      * @return the instance
      */
-    @Bean
+    @Bean(name="beanManager")
     @ClientScoped
     protected BeanManager createManager() {
         return DolphinPlatformBootstrap.getInstance().getCurrentContext().getBeanManager();
@@ -47,13 +47,13 @@ public class SpringBeanFactory {
      * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in client scope.
      * @return the instance
      */
-    @Bean
+    @Bean(name="serverDolphin")
     @ClientScoped
     protected ServerDolphin createDolphin() {
         return DolphinPlatformBootstrap.getInstance().getCurrentContext().getDolphin();
     }
 
-    @Bean
+    @Bean(name="dolphinSession")
     @ClientScoped
     protected DolphinSession createDolphinSession() {
         return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
@@ -64,13 +64,13 @@ public class SpringBeanFactory {
      * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
      * @return the instance
      */
-    @Bean
+    @Bean(name="dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
         return DolphinPlatformBootstrap.getInstance().getContextHandler().getDolphinEventBus();
     }
 
-    @Bean
+    @Bean(name="customScopeConfigurer")
     public CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {

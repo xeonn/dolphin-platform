@@ -20,6 +20,8 @@ package com.canoo.dolphin.server.javaee;
  */
 public class ModelInjectionException extends RuntimeException {
 
+    private static final long serialVersionUID = -4241723730436067531L;
+
     public ModelInjectionException() {
     }
 

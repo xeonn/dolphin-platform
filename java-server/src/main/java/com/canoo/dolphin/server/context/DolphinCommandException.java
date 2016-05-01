@@ -20,6 +20,8 @@ package com.canoo.dolphin.server.context;
  */
 public class DolphinCommandException extends RuntimeException {
 
+    private static final long serialVersionUID = -1936119062569456362L;
+
     public DolphinCommandException() {
     }
 
