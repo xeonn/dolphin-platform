@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference;
  */
 public class DolphinControllerInfo implements DolphinControllerInfoMBean {
 
-    private Class<?> controllerClass;
+    private String controllerClass;
 
     private String id;
 
@@ -31,14 +31,14 @@ public class DolphinControllerInfo implements DolphinControllerInfoMBean {
     private WeakReference<ModelProvider> weakModelProvider;
 
     public DolphinControllerInfo(String dolphinSessionId, Class<?> controllerClass, String id, ModelProvider modelProvider) {
-        this.controllerClass = controllerClass;
+        this.controllerClass = controllerClass.getName();
         this.dolphinSessionId = dolphinSessionId;
         this.id = id;
         this.weakModelProvider = new WeakReference<ModelProvider>(modelProvider);
     }
 
     public String getControllerClass() {
-        return controllerClass.getName();
+        return controllerClass;
     }
 
     @Override

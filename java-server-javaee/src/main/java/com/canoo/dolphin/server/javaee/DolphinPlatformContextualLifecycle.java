@@ -46,7 +46,7 @@ public class DolphinPlatformContextualLifecycle<T> implements ContextualLifecycl
         Assert.requireNonNull(bean, "bean");
         Assert.requireNonNull(creationalContext, "creationalContext");
         if(modelInjector == null) {
-            throw new ModelInjectionException("The model for a " + bean.getBeanClass() + " controller instance was already injected!");
+            throw new ModelInjectionException("No model injector defined!");
         }
         try {
             T instance = injectionTarget.produce(creationalContext);
