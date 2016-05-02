@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.todo.server;
-
-import com.kumuluz.ee.EeApplication;
+package com.canoo.dolphin.server.servlet;
 
 /**
- * Created by hendrikebbers on 01.03.16.
+ * Created by hendrikebbers on 02.05.16.
  */
-public class ServerStart {
+public class DolphinAccessException extends RuntimeException {
 
-    public static void main(String... args) {
-        EeApplication.main(args);
+    private static final long serialVersionUID = -2257268594556887415L;
+
+    public DolphinAccessException() {
     }
 
+    public DolphinAccessException(String message) {
+        super(message);
+    }
+
+    public DolphinAccessException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DolphinAccessException(Throwable cause) {
+        super(cause);
+    }
 }

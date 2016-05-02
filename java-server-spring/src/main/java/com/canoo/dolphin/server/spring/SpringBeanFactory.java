@@ -67,7 +67,7 @@ public class SpringBeanFactory {
     @Bean(name="dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return DolphinPlatformBootstrap.getInstance().getContextHandler().getDolphinEventBus();
+        return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
     }
 
     @Bean(name="customScopeConfigurer")

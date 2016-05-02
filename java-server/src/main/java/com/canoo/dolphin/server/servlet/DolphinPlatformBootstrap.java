@@ -23,7 +23,9 @@ import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
+import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.controller.ControllerRepository;
+import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,28 @@ public class DolphinPlatformBootstrap {
 
     private DolphinContextHandler dolphinContextHandler;
 
-    private DolphinPlatformBootstrap() {}
+    private DolphinEventBusImpl dolphinEventBus;
+
+    private DolphinPlatformBootstrap() {
+        dolphinEventBus = new DolphinEventBusImpl(new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                if(dolphinContextHandler == null) {
+                    throw new DolphinPlatformBoostrapException("Dolphin Platform Event Bus can not be used before Dolphin Platform was initialized!");
+                }
+                DolphinContext context = dolphinContextHandler.getCurrentContext();
+                if(context == null) {
+                    throw new DolphinAccessException("This method can not be called outside of a Dolphin Platform request!");
+                }
+                return context;
+            }
+
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return getCurrentContext().getCurrentDolphinSession();
+            }
+        });
+    }
 
     /**
      * This methods starts the Dolphin Platform server runtime
@@ -124,5 +147,9 @@ public class DolphinPlatformBootstrap {
 
     public static DolphinPlatformBootstrap getInstance() {
         return INSTANCE;
+    }
+
+    public DolphinEventBusImpl getDolphinEventBus() {
+        return dolphinEventBus;
     }
 }
