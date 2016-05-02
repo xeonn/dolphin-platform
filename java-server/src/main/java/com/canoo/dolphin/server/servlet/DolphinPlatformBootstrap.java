@@ -137,11 +137,11 @@ public class DolphinPlatformBootstrap {
         if (serviceIterator.hasNext()) {
             final ContainerManager containerManager = serviceIterator.next();
             if (serviceIterator.hasNext()) {
-                throw new IllegalStateException("More than 1 " + ContainerManager.class + " found!");
+                throw new IllegalStateException("More than 1 Dolphin Platform " + ContainerManager.class + " found!");
             }
             return containerManager;
         } else {
-            throw new IllegalStateException("No " + ContainerManager.class + " found!");
+            throw new IllegalStateException("No Dolphin Platform " + ContainerManager.class + " found!");
         }
     }
 
