@@ -16,7 +16,13 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.client.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.client.util.ChildModel;
+import com.canoo.dolphin.client.util.ComplexDataTypesModel;
+import com.canoo.dolphin.client.util.PrimitiveDataTypesModel;
+import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.client.util.SimpleTestModel;
+import com.canoo.dolphin.client.util.SingleReferenceModel;
 import mockit.Mocked;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -25,8 +31,13 @@ import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.testng.annotations.Test;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
+import static com.canoo.dolphin.client.util.ComplexDataTypesModel.EnumValues.VALUE_1;
+import static com.canoo.dolphin.client.util.ComplexDataTypesModel.EnumValues.VALUE_2;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -119,6 +130,60 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(booleanAttribute.getValue(), is((Object) false));
         assertThat(model.getBooleanProperty().get(), is(false));
 
+    }
+
+
+    @Test
+    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+        final Calendar date1 = new GregorianCalendar(2016, Calendar.MARCH, 1, 0, 1, 2);
+        date1.set(Calendar.MILLISECOND, 3);
+        date1.setTimeZone(TimeZone.getTimeZone("GMT+2:00"));
+        final Calendar date2 = new GregorianCalendar(2016, Calendar.FEBRUARY, 29, 0, 1, 2);
+        date2.set(Calendar.MILLISECOND, 3);
+        date2.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ComplexDataTypesModel model = manager.create(ComplexDataTypesModel.class);
+
+        PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName()).get(0);
+
+
+        Attribute dateAttribute = dolphinModel.findAttributeByPropertyName("dateProperty");
+        assertThat(dateAttribute.getValue(), nullValue());
+
+        model.getDateProperty().set(date1.getTime());
+        assertThat(dateAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(model.getDateProperty().get(), is(date1.getTime()));
+
+        dateAttribute.setValue("2016-02-29T00:01:02.003Z");
+        assertThat(dateAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(model.getDateProperty().get(), is(date2.getTime()));
+
+
+        Attribute calendarAttribute = dolphinModel.findAttributeByPropertyName("calendarProperty");
+        assertThat(calendarAttribute.getValue(), nullValue());
+
+        model.getCalendarProperty().set(date1);
+        assertThat(calendarAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(model.getCalendarProperty().get().getTimeInMillis(), is(date1.getTimeInMillis()));
+
+        calendarAttribute.setValue("2016-02-29T00:01:02.003Z");
+        assertThat(calendarAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(model.getCalendarProperty().get(), is(date2));
+
+
+        Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
+        assertThat(enumAttribute.getValue(), nullValue());
+
+        model.getEnumProperty().set(VALUE_1);
+        assertThat(enumAttribute.getValue(), is("VALUE_1"));
+        assertThat(model.getEnumProperty().get(), is(VALUE_1));
+
+        enumAttribute.setValue("VALUE_2");
+        assertThat(enumAttribute.getValue(), is("VALUE_2"));
+        assertThat(model.getEnumProperty().get(), is(VALUE_2));
     }
 
 

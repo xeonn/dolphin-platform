@@ -17,9 +17,6 @@ package com.canoo.dolphin.server.util;
 
 import com.canoo.dolphin.mapping.Property;
 
-/**
- * Created by hendrikebbers on 30.03.15.
- */
 public class PrimitiveDataTypesModel {
 
     private Property<String> textProperty;

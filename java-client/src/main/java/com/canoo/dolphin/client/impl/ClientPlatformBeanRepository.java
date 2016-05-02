@@ -16,6 +16,7 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.Param;
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.DolphinEventHandler;
@@ -26,13 +27,13 @@ import org.opendolphin.core.client.ClientDolphin;
 public class ClientPlatformBeanRepository {
 
     private final ClientDolphin dolphin;
-    private final BeanRepository beanRepository;
+    private final Converters converters;
 
     private InternalAttributesBean internalAttributesBean;
 
-    public ClientPlatformBeanRepository(ClientDolphin dolphin, BeanRepository beanRepository, EventDispatcher dispatcher) {
+    public ClientPlatformBeanRepository(ClientDolphin dolphin, BeanRepository beanRepository, EventDispatcher dispatcher, Converters converters) {
         this.dolphin = dolphin;
-        this.beanRepository = beanRepository;
+        this.converters = converters;
 
         dispatcher.onceInternalAttributesBeanAddedHandler(new DolphinEventHandler() {
             @Override
@@ -43,7 +44,7 @@ public class ClientPlatformBeanRepository {
     }
 
     public ClientControllerActionCallBean createControllerActionCallBean(String controllerId, String actionName, Param... params) {
-        return new ClientControllerActionCallBean(dolphin, beanRepository, controllerId, actionName, params);
+        return new ClientControllerActionCallBean(dolphin, converters, controllerId, actionName, params);
     }
 
     public InternalAttributesBean getInternalAttributesBean() {

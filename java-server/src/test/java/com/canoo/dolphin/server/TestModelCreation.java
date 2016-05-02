@@ -18,7 +18,14 @@ package com.canoo.dolphin.server;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.server.util.*;
+import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
+import com.canoo.dolphin.server.util.ComplexDataTypesModel;
+import com.canoo.dolphin.server.util.ListReferenceModel;
+import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
+import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -32,6 +39,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.testng.Assert.fail;
 
 public class TestModelCreation extends AbstractDolphinBasedTest {
 
@@ -83,8 +91,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("text_property")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -147,8 +155,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("text")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -212,12 +220,144 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                 assertThat(attribute.getValue(), Matchers.<Object>is(PlatformConstants.SOURCE_SYSTEM_SERVER));
                 assertThat(attribute.getBaseValue(), Matchers.<Object>is(PlatformConstants.SOURCE_SYSTEM_SERVER));
             } else {
-                assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal()));
-                assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal()));
+                switch (attribute.getPropertyName()) {
+                    case "byteProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.BYTE.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.BYTE.ordinal()));
+                        break;
+                    case "shortProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.SHORT.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.SHORT.ordinal()));
+                        break;
+                    case "integerProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.INT.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.INT.ordinal()));
+                        break;
+                    case "longProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.LONG.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.LONG.ordinal()));
+                        break;
+                    case "floatProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.FLOAT.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.FLOAT.ordinal()));
+                        break;
+                    case "doubleProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.DOUBLE.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.DOUBLE.ordinal()));
+                        break;
+                    case "booleanProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.BOOLEAN.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.BOOLEAN.ordinal()));
+                        break;
+                    case "textProperty":
+                        assertThat(attribute.getValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.STRING.ordinal()));
+                        assertThat(attribute.getBaseValue(), Matchers.<Object>is(ClassRepositoryImpl.FieldType.STRING.ordinal()));
+                        break;
+                    default:
+                        fail("Unknown attribute found: " + attribute);
+                        break;
+                }
             }
             assertThat(attribute.getQualifier(), nullValue());
             assertThat(attribute.getTag(), is(Tag.VALUE));
         }
+    }
+
+
+    @Test
+    public void testWithComplexDataTypesModel() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        ComplexDataTypesModel model = manager.create(ComplexDataTypesModel.class);
+
+        assertThat(model, notNullValue());
+        assertThat(model.getDateProperty(), notNullValue());
+        assertThat(model.getDateProperty().get(), nullValue());
+        assertThat(model.getCalendarProperty(), notNullValue());
+        assertThat(model.getCalendarProperty().get(), nullValue());
+        assertThat(model.getEnumProperty(), notNullValue());
+        assertThat(model.getEnumProperty().get(), nullValue());
+        assertThat(manager.isManaged(model), is(true));
+
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName());
+        assertThat(dolphinModels, hasSize(1));
+
+        PresentationModel dolphinModel = dolphinModels.get(0);
+
+        List<Attribute> attributes = dolphinModel.getAttributes();
+
+        assertThat(attributes, containsInAnyOrder(
+                allOf(
+                        hasProperty("propertyName", is("dateProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is("calendarProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is("enumProperty")),
+                        hasProperty("value", nullValue()),
+                        hasProperty("baseValue", nullValue()),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                ),
+                allOf(
+                        hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
+                        hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_SERVER)),
+                        hasProperty("qualifier", nullValue()),
+                        hasProperty("tag", is(Tag.VALUE))
+                )
+        ));
+
+        List<ServerPresentationModel> classModels = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_BEAN);
+        assertThat(classModels, contains(
+                hasProperty("attributes", containsInAnyOrder(
+                        allOf(
+                                hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
+                                hasProperty("value", is(ComplexDataTypesModel.class.getName())),
+                                hasProperty("baseValue", is(ComplexDataTypesModel.class.getName())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("dateProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("calendarProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is("enumProperty")),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        ),
+                        allOf(
+                                hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
+                                hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_SERVER)),
+                                hasProperty("qualifier", nullValue()),
+                                hasProperty("tag", is(Tag.VALUE))
+                        )
+                ))
+        ));
     }
 
 
@@ -269,8 +409,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("referenceProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -325,15 +465,15 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("objectList")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("primitiveList")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -406,15 +546,15 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("childProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("parentProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.UNKNOWN.ordinal())),
+                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),

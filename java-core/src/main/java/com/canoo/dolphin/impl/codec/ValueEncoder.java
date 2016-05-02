@@ -50,19 +50,7 @@ class ValueEncoder {
         } else if (value.isBoolean()) {
             return value.getAsBoolean();
         } else if (value.isNumber()) {
-            try {
-                final double d = value.getAsDouble();
-                if (d - Math.floor(d) > 1e-6) {
-                    return d;
-                }
-                final long l = value.getAsLong();
-                if (l > (long) Integer.MAX_VALUE) {
-                    return l;
-                }
-                return value.getAsInt();
-            } catch (NumberFormatException ex) {
-                throw new JsonParseException("Illegal JSON detected");
-            }
+            return value.getAsNumber();
         }
         throw new JsonParseException("Currently only String, Boolean, or Number are allowed as primitives");
     }

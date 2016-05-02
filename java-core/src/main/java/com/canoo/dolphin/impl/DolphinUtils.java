@@ -15,15 +15,15 @@
  */
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.BASIC_TYPE;
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.DOLPHIN_BEAN;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * The class {@code DolphinUtils} is a horrible class that we should get rid of asap.
@@ -63,23 +63,37 @@ public class DolphinUtils {
         return null;
     }
 
-    public static Object mapFieldTypeToDolphin(ClassRepositoryImpl.FieldType fieldType) {
-        return fieldType.ordinal();
-    }
-
-    public static ClassRepositoryImpl.FieldType mapFieldTypeFromDolphin(Object value) {
-        try {
-            return ClassRepositoryImpl.FieldType.values()[(Integer) value];
-        } catch (NullPointerException | ClassCastException | IndexOutOfBoundsException ex) {
-            return ClassRepositoryImpl.FieldType.UNKNOWN;
+    public static FieldType getFieldType(Class<?> clazz) {
+        if (String.class.equals(clazz)) {
+            return FieldType.STRING;
         }
-    }
-
-    public static ClassRepositoryImpl.FieldType getFieldType(Object value) {
-        if (value == null) {
-            return ClassRepositoryImpl.FieldType.UNKNOWN;
+        if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
+            return FieldType.INT;
         }
-        return ReflectionHelper.isBasicType(value.getClass()) ? BASIC_TYPE : DOLPHIN_BEAN;
+        if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
+            return FieldType.BOOLEAN;
+        }
+        if (long.class.equals(clazz) || Long.class.equals(clazz)) {
+            return FieldType.LONG;
+        }
+        if (double.class.equals(clazz) || Double.class.equals(clazz)) {
+            return FieldType.DOUBLE;
+        }
+        if (float.class.equals(clazz) || Float.class.equals(clazz)) {
+            return FieldType.FLOAT;
+        }
+        if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
+            return FieldType.BYTE;
+        }
+        if (short.class.equals(clazz) || Short.class.equals(clazz)) {
+            return FieldType.SHORT;
+        }
+        if (Enum.class.isAssignableFrom(clazz)) {
+            return FieldType.ENUM;
+        }
+        if (Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz)) {
+            return FieldType.DATE;
+        }
+        return FieldType.DOLPHIN_BEAN;
     }
-
 }

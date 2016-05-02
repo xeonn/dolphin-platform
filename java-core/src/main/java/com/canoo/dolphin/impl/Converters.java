@@ -15,69 +15,137 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
 import com.canoo.dolphin.internal.BeanRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
- * The class {@code Converters} contains all {@link Converters.Converter} that are
- * used in the Dolphin Platform (three at present). It is mostly a helper class to minimize the memory footprint
- * of a {@link PropertyImpl}, because all functionality related to a {@link FieldType} are summed up here.
- *
- * Each {@code Converter} is responsible for converting a property of a given {@code FieldType}. The {@code FieldType}
- * that is supported by the current Converter can be requested with {@link Converter#getFieldType()}.
- *
- * Initially we do not know
- * the {@code FieldType} of a property. Only after we set it to a non-{@code null} value can we determine the type.
- * The implementations of {@code Converter} support switching the converter with the method
- * {@link Converter#updateConverter(FieldType)}.
+ * The class {@code Converters} contains all {@link Converter} that are used in the Dolphin Platform.
  */
 public class Converters {
 
-    public abstract class Converter {
+    private static final Logger LOG = LoggerFactory.getLogger(Converters.class);
+
+    private static final Converter IDENTITY_CONVERTER = new BaseConverter();
+
+    private static final Converter BYTE_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).byteValue();
+        }
+    };
+
+    private static final Converter SHORT_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).shortValue();
+        }
+    };
+
+    private static final Converter INTEGER_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).intValue();
+        }
+    };
+
+    private static final Converter LONG_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).longValue();
+        }
+    };
+
+    private static final Converter FLOAT_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).floatValue();
+        }
+    };
+
+    private static final Converter DOUBLE_CONVERTER = new BaseConverter() {
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).doubleValue();
+        }
+    };
+
+    private final Converter dateConverter = new DateConverter();
+
+    private final Converter calendarConverter = new CalendarConverter();
+
+    private final Converter dolphinBeanConverter;
+
+    private final Map<Class<?>, Converter> enumConverters = new HashMap<>();
+
+    public Converters(BeanRepository beanRepository) {
+        this.dolphinBeanConverter = new DolphinBeanConverter(beanRepository);
+    }
+
+    public Converter getConverter(Class<?> clazz) {
+        final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(clazz);
+        switch (type) {
+            default:
+                return dolphinBeanConverter;
+            case BYTE:
+                return BYTE_CONVERTER;
+            case SHORT:
+                return SHORT_CONVERTER;
+            case INT:
+                return INTEGER_CONVERTER;
+            case LONG:
+                return LONG_CONVERTER;
+            case FLOAT:
+                return FLOAT_CONVERTER;
+            case DOUBLE:
+                return DOUBLE_CONVERTER;
+            case BOOLEAN:
+            case STRING:
+                return IDENTITY_CONVERTER;
+            case DATE:
+                return Date.class.isAssignableFrom(clazz)? dateConverter : calendarConverter;
+            case ENUM:
+                Converter enumConverter = enumConverters.get(clazz);
+                if (enumConverter == null) {
+                    enumConverter = new EnumConverter(clazz);
+                    enumConverters.put(clazz, enumConverter);
+                }
+                return enumConverter;
+        }
+    }
+
+    public interface Converter {
+        Object convertFromDolphin(Object value);
+        Object convertToDolphin(Object value);
+    }
+
+    private static class BaseConverter implements Converter {
+        @Override
         public Object convertFromDolphin(Object value) {
             return value;
         }
+        @Override
         public Object convertToDolphin(Object value) {
             return value;
         }
-        public Converter updateConverter(FieldType value) {
-            return this;
-        }
-        public abstract FieldType getFieldType();
     }
 
-    private final BeanRepository beanRepository;
+    private static class DolphinBeanConverter implements Converter {
+        private final BeanRepository beanRepository;
 
-    public Converter getUnknownTypeConverter() {
-        return unknownTypeConverter;
-    }
-
-    protected Converters(BeanRepository beanRepository) {
-        this.beanRepository = beanRepository;
-    }
-
-    private final Converter unknownTypeConverter = new Converter() {
-        @Override
-        public Converter updateConverter(ClassRepositoryImpl.FieldType fieldType) {
-            return fieldType == DOLPHIN_BEAN ? dolphinBeanTypeConverter : basicTypeConverter;
+        private DolphinBeanConverter(BeanRepository beanRepository) {
+            this.beanRepository = beanRepository;
         }
 
-        @Override
-        public FieldType getFieldType() {
-            return UNKNOWN;
-        }
-    };
-
-    private final Converter basicTypeConverter = new Converter() {
-        @Override
-        public FieldType getFieldType() {
-            return BASIC_TYPE;
-        }
-    };
-
-    private final Converter dolphinBeanTypeConverter = new Converter() {
         @Override
         public Object convertFromDolphin(Object value) {
             return beanRepository.getBean((String) value);
@@ -87,12 +155,115 @@ public class Converters {
         public Object convertToDolphin(Object value) {
             return beanRepository.getDolphinId(value);
         }
+    }
+
+    private static class EnumConverter implements Converter {
+
+        private final Class<? extends Enum> clazz;
+
+        @SuppressWarnings("unchecked")
+        private EnumConverter(Class<?> clazz) {
+            this.clazz = (Class<? extends Enum>) clazz;
+        }
 
         @Override
-        public FieldType getFieldType() {
-            return DOLPHIN_BEAN;
+        public Object convertFromDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return Enum.valueOf(clazz, value.toString());
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to convert to an enum (%s): %s", clazz, value);
+                return null;
+            }
         }
-    };
 
+        @Override
+        public Object convertToDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return ((Enum)value).name();
+            } catch (ClassCastException ex) {
+                LOG.warn("Unable to evaluate the enum: " + value);
+                return null;
+            }
+        }
+    }
 
+    private static class DateConverter implements Converter {
+
+        private final DateFormat dateFormat;
+
+        private DateConverter() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.parse(value.toString());
+            } catch (ParseException e) {
+                LOG.warn("Unable to parse the date: " + value);
+                return null;
+            }
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.format(value);
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to format the date: " + value);
+                return null;
+            }
+        }
+    }
+
+    private static class CalendarConverter implements Converter {
+
+        private final DateFormat dateFormat;
+
+        private CalendarConverter() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                final Calendar result = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                result.setTime(dateFormat.parse(value.toString()));
+                return result;
+            } catch (ParseException e) {
+                LOG.warn("Unable to parse the date: " + value);
+                return null;
+            }
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                return dateFormat.format(((Calendar)value).getTime());
+            } catch (IllegalArgumentException ex) {
+                LOG.warn("Unable to format the date: " + value);
+                return null;
+            }
+        }
+    }
 }

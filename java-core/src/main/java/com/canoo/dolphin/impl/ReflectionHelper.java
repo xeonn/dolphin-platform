@@ -22,6 +22,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -135,5 +136,17 @@ public class ReflectionHelper {
 
     public static boolean isProxyInstance(Object bean) {
         return Proxy.isProxyClass(bean.getClass());
+    }
+
+    public static Class getTypeParameter(Field field) {
+        try {
+            ParameterizedType pType = (ParameterizedType) field.getGenericType();
+            if (pType.getActualTypeArguments().length > 0) {
+                return (Class) pType.getActualTypeArguments()[0];
+            }
+        } catch (ClassCastException ex) {
+            // do nothing
+        }
+        return null;
     }
 }

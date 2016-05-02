@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
 
 import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
@@ -78,11 +79,12 @@ Executors.newSingleThreadExecutor().execute(() -> {
 
                 final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
                 final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+                final Converters converters = new Converters(beanRepository);
                 final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
-                final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, beanRepository, builderFactory);
+                final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, converters, builderFactory);
                 final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
                 final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-                final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher);
+                final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
                 final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
                 final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
                 final ClientContext clientContext = new ClientContextImpl(clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager);
