@@ -1,0 +1,33 @@
+
+= Server configuration
+
+Dolphin Platform can be simply configured by a property file. To configure the server part of Dolphin Platform a `dolphin.properties` must be created in the `META-INF` folder. In a Maven based project the file would be defined as `project/src/main/resources/META-INF/dolphin.properties`. This file must be defined as a regular Java property file. Here is an example how the content of such an file might look:
+[source,txt]
+----
+openDolphinLogLevel=OFF
+useCrossSiteOriginFilter=true
+----
+
+== Supported properties
+
+Currently the following properties are supported by Dolphin Platform:
+
+.Table title
+|===
+|Name |Description |Supported values |Default value
+
+|openDolphinLogLevel
+|Defines the logging level for the remoting layer.
+|off, severe, warning, info, config, fine, finer, finest, all
+|severe
+
+|useCrossSiteOriginFilter
+|Boolean property that defines if the HTTP filter for the cross site origin policy should be used. By default the filter will be used.
+|true, false
+|true
+
+|servletMapping
+|A string based property that defines the server URL endpoint for the Dolphin Platform.
+|any String that defines an URL mapping
+|/dolphin
+|===

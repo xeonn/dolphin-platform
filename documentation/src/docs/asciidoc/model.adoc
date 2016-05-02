@@ -34,3 +34,17 @@ public class MyModel {
 }
 ----
 
+== Supported types
+
+Currently Dolphin Platform properties and collections support the following types as content:
+
+* Integer
+* Long
+* Float
+* Double
+* Byte
+* Short
+* Boolean
+* String
+* Date
+* Enums
