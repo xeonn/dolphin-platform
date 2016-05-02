@@ -45,7 +45,7 @@ public class CdiBeanFactory {
     @Produces
     @ApplicationScoped
     public DolphinEventBus createEventBus() {
-        return DolphinPlatformBootstrap.getInstance().getContextHandler().getDolphinEventBus();
+        return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
     }
 
 }

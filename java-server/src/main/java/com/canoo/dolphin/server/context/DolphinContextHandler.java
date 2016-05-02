@@ -20,9 +20,9 @@ import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBoostrapException;
+import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -55,15 +55,12 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     private final OpenDolphinFactory openDolphinFactory;
 
-    private final DolphinEventBusImpl dolphinEventBus;
-
     private List<DolphinSessionListener> contextListeners;
 
     public DolphinContextHandler(OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
         this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
-        this.dolphinEventBus = new DolphinEventBusImpl(this);
     }
 
     public void handle(final HttpServletRequest request, final HttpServletResponse response) {
@@ -102,7 +99,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 };
 
 
-                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, dolphinEventBus, preDestroyCallback, onDestroyCallback);
+                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, DolphinPlatformBootstrap.getInstance().getDolphinEventBus(), preDestroyCallback, onDestroyCallback);
                 ArrayList list = new ArrayList();
                 list.add(currentContext);
                 httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, list);
@@ -174,7 +171,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
     }
 
     public DolphinContext getCurrentContext() {
+        // TODO: Maybe it's better to throw an exception if no context:
+        // throw new DolphinAccessException("This method can not be called outside of a Dolphin Platform request!");
         return currentContextThreadLocal.get();
+    }
+
+    /**
+     * Returns true if the method is called in a thread that currently handles a Dolphin Platform request
+     * @return true if the method is called in a thread that currently handles a Dolphin Platform request
+     */
+    public boolean isDolphinRequestThread() {
+        return currentContextThreadLocal.get() != null;
     }
 
     public void removeAllContextsInSession(HttpSession session) {
@@ -183,10 +190,6 @@ public class DolphinContextHandler implements DolphinContextProvider {
             context.destroy();
         }
         session.removeAttribute(DOLPHIN_CONTEXT_MAP);
-    }
-
-    public DolphinEventBusImpl getDolphinEventBus() {
-        return dolphinEventBus;
     }
 
     @Override
