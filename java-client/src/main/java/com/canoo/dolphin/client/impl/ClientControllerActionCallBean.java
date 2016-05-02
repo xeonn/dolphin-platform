@@ -40,7 +40,7 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
 
         for (final Param param : params) {
             final Object value = param.getValue();
-            final Object dolphinValue = converters.getConverter(value.getClass()).convertToDolphin(value);
+            final Object dolphinValue = value != null? converters.getConverter(value.getClass()).convertToDolphin(value) : null;
             final String paramName = PARAM_PREFIX + param.getName();
             builder.withAttribute(paramName, dolphinValue);
         }
