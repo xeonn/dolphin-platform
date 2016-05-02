@@ -47,4 +47,8 @@ Currently Dolphin Platform properties and collections support the following type
 * Boolean
 * String
 * Date
+* Calendar
 * Enums
+
+=== JavaScript restriction for the type Calendar adn Date
+As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it will be converted.
