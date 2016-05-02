@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.util.Assert;
 import org.apache.deltaspike.core.util.metadata.builder.ContextualLifecycle;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -33,24 +34,35 @@ public class DolphinPlatformContextualLifecycle<T> implements ContextualLifecycl
 
     private final InjectionTarget<T> injectionTarget;
 
-    private final ModelInjector modelInjector;
+    private ModelInjector modelInjector;
 
     public DolphinPlatformContextualLifecycle(InjectionTarget<T> injectionTarget, ModelInjector modelInjector) {
-        this.injectionTarget = injectionTarget;
-        this.modelInjector = modelInjector;
+        this.injectionTarget = Assert.requireNonNull(injectionTarget, "injectionTarget");
+        this.modelInjector = Assert.requireNonNull(modelInjector, "modelInjector");
     }
 
     @Override
     public T create(Bean<T> bean, CreationalContext<T> creationalContext) {
-        T instance = injectionTarget.produce(creationalContext);
-        modelInjector.inject(instance);
-        injectionTarget.inject(instance, creationalContext);
-        injectionTarget.postConstruct(instance);
-        return instance;
+        Assert.requireNonNull(bean, "bean");
+        Assert.requireNonNull(creationalContext, "creationalContext");
+        if(modelInjector == null) {
+            throw new ModelInjectionException("No model injector defined!");
+        }
+        try {
+            T instance = injectionTarget.produce(creationalContext);
+            modelInjector.inject(instance);
+            injectionTarget.inject(instance, creationalContext);
+            injectionTarget.postConstruct(instance);
+            return instance;
+        } finally {
+            modelInjector = null;
+        }
     }
 
     @Override
     public void destroy(Bean<T> bean, T instance, CreationalContext<T> creationalContext) {
+        Assert.requireNonNull(bean, "bean");
+        Assert.requireNonNull(creationalContext, "creationalContext");
         injectionTarget.preDestroy(instance);
         creationalContext.release();
     }

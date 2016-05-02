@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.controller;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
@@ -23,14 +24,18 @@ import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
+import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
+import com.canoo.dolphin.server.mbean.beans.ModelProvider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -43,6 +48,8 @@ public class ControllerHandler {
 
     private final Map<String, Class> controllerClassMapping = new HashMap<>();
 
+    private final Map<String, Subscription> mBeanSubscriptions = new HashMap<>();
+
     private final Map<String, Object> models = new HashMap<>();
 
     private final ContainerManager containerManager;
@@ -51,7 +58,10 @@ public class ControllerHandler {
 
     private final ControllerRepository controllerRepository;
 
-    public ControllerHandler(ContainerManager containerManager, BeanManager beanManager, ControllerRepository controllerRepository) {
+    private final DolphinContextMBeanRegistry mBeanRegistry;
+
+    public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, BeanManager beanManager, ControllerRepository controllerRepository) {
+        this.mBeanRegistry = mBeanRegistry;
         this.containerManager = containerManager;
         this.beanManager = beanManager;
         this.controllerRepository = controllerRepository;
@@ -74,7 +84,36 @@ public class ControllerHandler {
         controllers.put(id, instance);
         controllerClassMapping.put(id, controllerClass);
 
+        mBeanSubscriptions.put(id, mBeanRegistry.registerController(controllerClass, id, new ModelProvider() {
+            @Override
+            public Object getModel() {
+                return models.get(id);
+            }
+        }));
+
         return id;
+    }
+
+    public void destroyController(String id) {
+        Object controller = controllers.remove(id);
+        Class controllerClass = controllerClassMapping.remove(id);
+        containerManager.destroyController(controller, controllerClass);
+
+        Object model = models.get(id);
+        if (model != null) {
+            beanManager.remove(model);
+        }
+
+        Subscription subscription = mBeanSubscriptions.remove(id);
+        if(subscription != null) {
+            subscription.unsubscribe();
+        }
+    }
+
+    public void destroyAllControllers() {
+        for(String id : getAllControllerIds()) {
+            destroyController(id);
+        }
     }
 
     private void attachModel(String controllerId, Object controller) {
@@ -129,15 +168,8 @@ public class ControllerHandler {
         return args;
     }
 
-    public void destroyController(String id) {
-        Object controller = controllers.remove(id);
-        Class controllerClass = controllerClassMapping.remove(id);
-        containerManager.destroyController(controller, controllerClass);
-
-        Object model = models.get(id);
-        if (model != null) {
-            beanManager.remove(model);
-        }
+    public Set<String> getAllControllerIds() {
+        return Collections.unmodifiableSet(controllers.keySet());
     }
 
     private <T> Method getActionMethod(T controller, Class<T> controllerClass, String actionName) {

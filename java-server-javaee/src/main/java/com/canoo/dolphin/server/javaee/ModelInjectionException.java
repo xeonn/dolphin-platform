@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.impl;
+package com.canoo.dolphin.server.javaee;
 
-import com.canoo.dolphin.impl.ReflectionHelper;
-import com.canoo.dolphin.server.util.DataType;
-import org.testng.annotations.Test;
+/**
+ * This exception will be thrown if a MVC model can't be created or injected in teh controller
+ */
+public class ModelInjectionException extends RuntimeException {
 
-import static org.testng.AssertJUnit.assertTrue;
+    private static final long serialVersionUID = -4241723730436067531L;
 
+    public ModelInjectionException() {
+    }
 
-public class ReflectionHelperTest {
+    public ModelInjectionException(String message) {
+        super(message);
+    }
 
-    @Test
-    public void testIsEnumType() throws Exception {
+    public ModelInjectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-        assertTrue(ReflectionHelper.isEnumType(DataType.class));
+    public ModelInjectionException(Throwable cause) {
+        super(cause);
     }
 }

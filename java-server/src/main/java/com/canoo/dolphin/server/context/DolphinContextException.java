@@ -15,19 +15,25 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.util.Assert;
-
 /**
- * Default implementation of {@link DolphinContextHandlerFactory}
+ * This exception defines an error in the context handling like when creating or deleting a context
  */
-public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFactory {
+public class DolphinContextException extends RuntimeException {
 
-    @Override
-    public DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager) {
-        Assert.requireNonNull(controllerRepository, "controllerRepository");
-        return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
+    private static final long serialVersionUID = 6012443743549799211L;
+
+    public DolphinContextException() {
     }
 
+    public DolphinContextException(String message) {
+        super(message);
+    }
+
+    public DolphinContextException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DolphinContextException(Throwable cause) {
+        super(cause);
+    }
 }

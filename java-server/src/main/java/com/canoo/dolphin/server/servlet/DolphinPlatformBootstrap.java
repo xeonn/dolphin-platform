@@ -15,7 +15,10 @@
  */
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
+import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextCleaner;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
@@ -28,9 +31,16 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
+/**
+ * This class defines the bootstrap for Dolphin Platform.
+ */
 public class DolphinPlatformBootstrap {
+
+    private static final DolphinPlatformBootstrap INSTANCE = new DolphinPlatformBootstrap();
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DolphinPlatformBootstrap.class);
 
@@ -40,25 +50,19 @@ public class DolphinPlatformBootstrap {
 
     public static final String DOLPHIN_INVALIDATION_SERVLET_NAME = "dolphin-platform-invalidation-servlet";
 
-    public static final String DEFAULT_DOLPHIN_SERVLET_MAPPING = "/dolphin";
-
     public static final String DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING = "/dolphininvalidate";
 
-    private String dolphinServletMapping;
-
-    private String dolphinInvalidationServletMapping;
-
-    private final DolphinContextHandlerFactory dolphinContextHandlerFactory;
+    private DolphinContextHandlerFactory dolphinContextHandlerFactory;
 
     private DolphinContextHandler dolphinContextHandler;
 
-    public DolphinPlatformBootstrap() {
-        dolphinContextHandlerFactory = new DolphinContextHandlerFactoryImpl();
-        this.dolphinServletMapping = DEFAULT_DOLPHIN_SERVLET_MAPPING;
-        this.dolphinInvalidationServletMapping = DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING;
-    }
+    private DolphinPlatformBootstrap() {}
 
-    public void onStartup(ServletContext servletContext, DolphinPlatformConfiguration configuration) {
+    /**
+     * This methods starts the Dolphin Platform server runtime
+     * @param servletContext the servlet context
+     */
+    public void start(ServletContext servletContext, DolphinPlatformConfiguration configuration) {
         Assert.requireNonNull(servletContext, "servletContext");
         Assert.requireNonNull(configuration, "configuration");
 
@@ -67,20 +71,58 @@ public class DolphinPlatformBootstrap {
         LOG.info("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
 
         ControllerRepository controllerRepository = new ControllerRepository();
-        dolphinContextHandler = dolphinContextHandlerFactory.create(servletContext, controllerRepository);
+        ContainerManager containerManager = findManager();
+        containerManager.init(servletContext);
+
+        dolphinContextHandlerFactory = new DolphinContextHandlerFactoryImpl();
+        dolphinContextHandler = dolphinContextHandlerFactory.create(controllerRepository, containerManager);
+
 
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
-        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(dolphinInvalidationServletMapping);
+        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
+
+        LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
+        LOG.debug("Dolphin Platform endpoint defined as " + configuration.getDolphinPlatformServletMapping());
+
         if (configuration.isUseCrossSiteOriginFilter()) {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
-        servletContext.addListener(new DolphinContextCleaner(dolphinContextHandler));
 
-        Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
+        DolphinContextCleaner contextCleaner = new DolphinContextCleaner();
+        contextCleaner.init(dolphinContextHandler);
+        servletContext.addListener(contextCleaner);
+
+        java.util.logging.Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(configuration.getOpenDolphinLogLevel());
     }
 
-    public DolphinContextHandler getDolphinContextHandler() {
+    public DolphinContextHandler getContextHandler() {
         return dolphinContextHandler;
+    }
+
+    public DolphinContext getCurrentContext() {
+        return getContextHandler().getCurrentContext();
+    }
+
+    public DolphinSession getCurrentDolphinSession() {
+        return getCurrentContext().getCurrentDolphinSession();
+    }
+
+    private ContainerManager findManager() {
+        final ServiceLoader<ContainerManager> serviceLoader = ServiceLoader.load(ContainerManager.class);
+        final Iterator<ContainerManager> serviceIterator = serviceLoader.iterator();
+        if (serviceIterator.hasNext()) {
+            final ContainerManager containerManager = serviceIterator.next();
+            if (serviceIterator.hasNext()) {
+                throw new IllegalStateException("More than 1 " + ContainerManager.class + " found!");
+            }
+            return containerManager;
+        } else {
+            throw new IllegalStateException("No " + ContainerManager.class + " found!");
+        }
+    }
+
+    public static DolphinPlatformBootstrap getInstance() {
+        return INSTANCE;
     }
 }

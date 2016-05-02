@@ -15,24 +15,13 @@
  */
 package com.canoo.dolphin.server.spring;
 
-import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
-import com.canoo.dolphin.server.context.DolphinContext;
-import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.context.DolphinSessionProvider;
-import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
-import org.opendolphin.core.server.ServerDolphin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -48,24 +37,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringBootstrap.class);
 
-    private final DolphinPlatformBootstrap bootstrap;
-
-    public DolphinPlatformSpringBootstrap() {
-        this.bootstrap = new DolphinPlatformBootstrap();
-    }
-
-    private DolphinContextHandler getContextHandler() {
-        return bootstrap.getDolphinContextHandler();
-    }
-
-    private DolphinContext getCurrentContext() {
-        DolphinContextHandler contextHandler = getContextHandler();
-        if(contextHandler == null) {
-            throw new IllegalStateException("No DolphinContextHandler defined!");
-        }
-        return getContextHandler().getCurrentContext();
-    }
-
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         DolphinPlatformConfiguration configuration = null;
@@ -75,55 +46,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
             LOG.error("Can not read configuration! Will use default configuration!", e);
             configuration = new DolphinPlatformConfiguration();
         }
-        bootstrap.onStartup(servletContext, configuration);
-    }
-
-    /**
-     * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
-     * @return the instance
-     */
-    @Bean
-    @ClientScoped
-    protected BeanManager createManager() {
-        return getCurrentContext().getBeanManager();
-    }
-
-    /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in client scope.
-     * @return the instance
-     */
-    @Bean
-    @ClientScoped
-    protected ServerDolphin createDolphin() {
-        return getCurrentContext().getDolphin();
-    }
-
-    @Bean
-    @ClientScoped
-    protected DolphinSession createDolphinSession() {
-        return getCurrentContext().getCurrentDolphinSession();
-    }
-
-
-    /**
-     * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
-     * @return the instance
-     */
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected DolphinEventBus createEventBus() {
-        return getContextHandler().getDolphinEventBus();
-    }
-
-    @Bean
-    public CustomScopeConfigurer createClientScope() {
-        CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
-            @Override
-            public DolphinSession getCurrentDolphinSession() {
-                return getCurrentContext().getCurrentDolphinSession();
-            }
-        }));
-        return configurer;
+        DolphinPlatformBootstrap.getInstance().start(servletContext, configuration);
     }
 }

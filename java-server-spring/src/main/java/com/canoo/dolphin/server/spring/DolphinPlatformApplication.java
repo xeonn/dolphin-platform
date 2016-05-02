@@ -29,6 +29,6 @@ import org.springframework.context.annotation.Import;
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @java.lang.annotation.Documented
 @SpringBootApplication
-@Import(DolphinPlatformSpringBootstrap.class)
+@Import({DolphinPlatformSpringBootstrap.class, SpringBeanFactory.class})
 public @interface DolphinPlatformApplication {
 }

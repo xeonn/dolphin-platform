@@ -13,8 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.util;
+package com.canoo.dolphin.util;
 
-public enum DataType {
-    TEST_VALUE_1, TEST_VALUE_2, TEST_VALUE_3
+/**
+ * This exception is thrown if an error occurs in the protocol (request / response body)
+ */
+public class DolphinRemotingException extends RuntimeException {
+
+    private static final long serialVersionUID = 1934440187016337212L;
+
+    public DolphinRemotingException() {
+    }
+
+    public DolphinRemotingException(String message) {
+        super(message);
+    }
+
+    public DolphinRemotingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DolphinRemotingException(Throwable cause) {
+        super(cause);
+    }
 }

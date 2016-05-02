@@ -23,6 +23,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ToDoClient extends Application {
 
@@ -32,8 +34,9 @@ public class ToDoClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/dolphin"));
+        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/todo-app/dolphin"));
         connectionPromise.thenAccept(context -> {
+            clientContext = context;
             viewController = new ToDoViewBinder(context);
             primaryStage.setScene(new Scene(viewController.getRoot()));
             primaryStage.show();
@@ -42,16 +45,15 @@ public class ToDoClient extends Application {
 
     @Override
     public void stop() throws Exception {
-        super.stop();
-        if(viewController != null) {
-            viewController.destroy().get();
-        }
         if(clientContext != null) {
-            clientContext.disconnect().get();
+            clientContext.disconnect();
         }
     }
 
     public static void main(String[] args) {
+        Logger OD_LOGGER = Logger.getLogger("org.opendolphin");
+        OD_LOGGER.setLevel(Level.SEVERE);
+
         Application.launch(args);
     }
 }

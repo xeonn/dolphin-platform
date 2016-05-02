@@ -27,12 +27,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DolphinSessionImpl implements DolphinSession {
 
-    private Map<String, Object> store;
+    private final Map<String, Object> store;
 
-    private DolphinContext dolphinContext;
+    private final String dolphinSessionId;
 
-    public DolphinSessionImpl(DolphinContext dolphinContext) {
-        this.dolphinContext = dolphinContext;
+    public DolphinSessionImpl(String dolphinSessionId) {
+        this.dolphinSessionId = dolphinSessionId;
         this.store = new ConcurrentHashMap<>();
     }
 
@@ -63,6 +63,6 @@ public class DolphinSessionImpl implements DolphinSession {
 
     @Override
     public String getId() {
-        return dolphinContext.getId();
+        return dolphinSessionId;
     }
 }

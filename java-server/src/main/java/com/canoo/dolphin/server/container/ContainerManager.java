@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.container;
 
+import com.canoo.dolphin.server.context.DolphinSessionListener;
+
 import javax.servlet.ServletContext;
 
 /**
@@ -47,6 +49,15 @@ public interface ContainerManager {
      * @return the new controller instance
      */
     <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector);
+
+    /**
+     * Creates a new managed instance. See {@link com.canoo.dolphin.server.DolphinListener} and
+     * {@link DolphinSessionListener} for more information
+     * @param listenerClass the class of the listenerClass
+     * @param <T> type of the listener
+     * @return the new listener instance
+     */
+    <T> T createListener(Class<T> listenerClass);
 
     /**
      * Destroyes the given controller instance

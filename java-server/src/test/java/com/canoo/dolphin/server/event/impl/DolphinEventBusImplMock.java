@@ -19,12 +19,18 @@ import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 
+import java.util.UUID;
+
 /**
  * Created by hendrikebbers on 11.03.16.
  */
 public class DolphinEventBusImplMock extends DolphinEventBusImpl {
 
     private final String dolphinId;
+
+    public DolphinEventBusImplMock() {
+        this(UUID.randomUUID().toString());
+    }
 
     public DolphinEventBusImplMock(String dolphinId) {
         super(new DolphinContextProvider() {

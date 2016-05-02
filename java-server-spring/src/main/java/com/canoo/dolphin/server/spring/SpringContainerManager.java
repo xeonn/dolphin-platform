@@ -58,6 +58,13 @@ public class SpringContainerManager implements ContainerManager {
     }
 
     @Override
+    public <T> T createListener(Class<T> listenerClass) {
+        Assert.requireNonNull(listenerClass, "listenerClass");
+        WebApplicationContext context = getContext();
+        return context.getBean(listenerClass);
+    }
+
+    @Override
     public void destroyController(Object instance, Class controllerClass) {
         Assert.requireNonNull(instance, "instance");
         ApplicationContext context = getContext();

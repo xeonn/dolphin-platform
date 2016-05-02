@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
 
 import java.beans.PropertyDescriptor;
@@ -114,6 +115,10 @@ public class ReflectionHelper {
 
     public static boolean isProperty(Class<?> propertyType) {
         return Property.class.isAssignableFrom(propertyType);
+    }
+
+    public static boolean isObservableList(Class<?> propertyType) {
+        return ObservableList.class.isAssignableFrom(propertyType);
     }
 
     public static boolean isEnumType(Class<?> cls) {

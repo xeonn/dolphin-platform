@@ -17,8 +17,6 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
-import com.canoo.dolphin.server.context.DolphinContext;
-import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +36,8 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformJavaeeBootstrap.class);
 
-    private static DolphinPlatformBootstrap bootstrap;
-
-    public DolphinPlatformJavaeeBootstrap() {
-        bootstrap = new DolphinPlatformBootstrap();
-    }
-
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
         DolphinPlatformConfiguration configuration = null;
         try {
             configuration = ConfigurationFileLoader.load();
@@ -53,18 +45,6 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
             LOG.error("Can not read configuration! Will use default configuration!", e);
             configuration = new DolphinPlatformConfiguration();
         }
-        bootstrap.onStartup(servletContext, configuration);
-    }
-
-    public static DolphinPlatformBootstrap getBootstrap() {
-        return bootstrap;
-    }
-
-    public static DolphinContextHandler getContextHandler() {
-        return getBootstrap().getDolphinContextHandler();
-    }
-
-    public static DolphinContext getCurrentContext() {
-        return getContextHandler().getCurrentContext();
+        DolphinPlatformBootstrap.getInstance().start(ctx, configuration);
     }
 }

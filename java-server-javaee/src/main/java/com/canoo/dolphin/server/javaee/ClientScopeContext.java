@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
@@ -77,6 +78,13 @@ public class ClientScopeContext implements Context {
     }
 
     private DolphinSession getDolphinSession() {
-        return DolphinPlatformJavaeeBootstrap.getBootstrap().getDolphinContextHandler().getCurrentContext().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
+    }
+
+    public void destroy() {
+        for(ClientScopeInstanceHolder<?> holder : getLocalStore().values()) {
+            holder.destroy();
+        }
+        getLocalStore().clear();
     }
 }

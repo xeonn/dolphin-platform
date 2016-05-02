@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.todo.server;
+package com.canoo.dolphin.server;
 
-import com.kumuluz.ee.EeApplication;
+import com.canoo.dolphin.server.context.DolphinSessionListener;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by hendrikebbers on 01.03.16.
+ * Annotation for global listener. Currently only {@link DolphinSessionListener}
+ * is supported. Any listener that is annotated by this annotation will be created at runtime and will be triggered.
  */
-public class ServerStart {
-
-    public static void main(String... args) {
-        EeApplication.main(args);
-    }
-
+@Documented
+@Retention(RUNTIME)
+@Target(ElementType.TYPE)
+public @interface DolphinListener {
 }

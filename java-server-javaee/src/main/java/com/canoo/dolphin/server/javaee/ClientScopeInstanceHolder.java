@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.util.Assert;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
@@ -30,9 +32,9 @@ public class ClientScopeInstanceHolder<T> {
     private T instance;
 
     public ClientScopeInstanceHolder(Bean<T> bean, CreationalContext<T> creationalContext, T instance) {
-        this.bean = bean;
-        this.creationalContext = creationalContext;
-        this.instance = instance;
+        this.bean = Assert.requireNonNull(bean, "bean");
+        this.creationalContext = Assert.requireNonNull(creationalContext, "creationalContext");
+        this.instance = Assert.requireNonNull(instance, "instance");
     }
 
     public Bean<T> getBean() {
@@ -45,5 +47,9 @@ public class ClientScopeInstanceHolder<T> {
 
     public T getInstance() {
         return instance;
+    }
+
+    public void destroy() {
+        bean.destroy(instance, creationalContext);
     }
 }

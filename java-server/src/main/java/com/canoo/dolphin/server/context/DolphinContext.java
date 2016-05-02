@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.impl.BeanBuilderImpl;
 import com.canoo.dolphin.impl.BeanManagerImpl;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
@@ -38,7 +39,9 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
+import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.action.DolphinServerAction;
@@ -75,13 +78,24 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final String id;
 
+    private final DolphinContextMBeanRegistry mBeanRegistry;
+
+    private final Callback<DolphinContext> onDestroyCallback;
+
+    private final Callback<DolphinContext> preDestroyCallback;
+
+    private final Subscription mBeanSubscription;
+
     private final DolphinSession dolphinSession;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus) {
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
+        this.preDestroyCallback = Assert.requireNonNull(preDestroyCallback, "preDestroyCallback");
+        this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
+
         //ID
         id = UUID.randomUUID().toString();
 
@@ -99,13 +113,18 @@ public class DolphinContext implements DolphinSessionProvider {
         final BeanBuilder beanBuilder = new BeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
-        //Init ControllerHandler
-        controllerHandler = new ControllerHandler(containerManager, beanManager, controllerRepository);
+        //Init MBean Support
+        mBeanRegistry = new DolphinContextMBeanRegistry(id);
 
-        dolphinSession = new DolphinSessionImpl(this);
+        //Init ControllerHandler
+        controllerHandler = new ControllerHandler(mBeanRegistry, containerManager, beanManager, controllerRepository);
+
+        dolphinSession = new DolphinSessionImpl(id);
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
+
+        mBeanSubscription = mBeanRegistry.registerDolphinContext(id);
     }
 
     private void registerDolphinPlatformDefaultCommands() {
@@ -171,7 +190,23 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onDestroyContext() {
-        //TODO: destroy all controller and model instances....
+        destroy();
+    }
+
+    public void destroy() {
+        preDestroyCallback.call(this);
+
+        //Deregister from event bus
+        dolphinEventBus.unsubscribeSession(getId());
+
+        //Destroy all controllers
+        controllerHandler.destroyAllControllers();
+
+        if(mBeanSubscription != null) {
+            mBeanSubscription.unsubscribe();
+        }
+
+        onDestroyCallback.call(this);
     }
 
     private void onRegisterController() {

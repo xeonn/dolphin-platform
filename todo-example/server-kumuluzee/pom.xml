@@ -12,10 +12,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>todo-example-server-javaee</artifactId>
-    <packaging>war</packaging>
+    <artifactId>todo-example-server-kumuluzee</artifactId>
 
-    <name>Todo Example Server for JavaEE</name>
+    <name>Todo Example Server for KumuluzEE</name>
 
     <properties>
         <kumuluzee.version>1.0.0</kumuluzee.version>
@@ -33,9 +32,24 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-core</artifactId>
+            <version>${kumuluzee.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-servlet-jetty</artifactId>
+            <version>${kumuluzee.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-cdi</artifactId>
+            <version>${kumuluzee.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.10</version>
         </dependency>
     </dependencies>
 
@@ -44,11 +58,9 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>

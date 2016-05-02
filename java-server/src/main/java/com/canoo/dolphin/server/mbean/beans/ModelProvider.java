@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.context;
-
-import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.controller.ControllerRepository;
-
-import javax.servlet.ServletContext;
+package com.canoo.dolphin.server.mbean.beans;
 
 /**
- * Factory that creates a {@link DolphinContextHandler}
+ * A functional interface that provides a Dolphin Platform model
  */
-public interface DolphinContextHandlerFactory {
+public interface ModelProvider {
 
     /**
-     * Returns a new {@link DolphinContextHandler} instance
-     * @param servletContext the servletContext
-     * @param controllerRepository the controllerRepository
-     * @return the created instance
+     * Returns the current model
+     * @return the model
      */
-    DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager);
-
+    Object getModel();
 }
