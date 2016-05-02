@@ -44,7 +44,7 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
         } catch (IOException e) {
             LOG.error("Can not read configuration! Will use default configuration!", e);
             configuration = new DolphinPlatformConfiguration();
-            DolphinPlatformBootstrap.getInstance().start(ctx, configuration);
         }
+        DolphinPlatformBootstrap.getInstance().start(ctx, configuration);
     }
 }
