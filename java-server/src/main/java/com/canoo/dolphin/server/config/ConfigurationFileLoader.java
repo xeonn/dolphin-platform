@@ -45,7 +45,7 @@ public class ConfigurationFileLoader {
 
     private static final String DOLPHIN_PLATFORM_SERVLET_MAPPING = "servletMapping";
 
-    private static final String  USE_CROSS_SITE_ORIGIN_FILTER = "useCrossSiteOriginFilter";
+    private static final String USE_CROSS_SITE_ORIGIN_FILTER = "useCrossSiteOriginFilter";
 
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
