@@ -15,8 +15,11 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.comm.UiThreadHandler;
+
+import java.util.logging.Level;
 
 /**
  * Configuration class for a Dolphin Platform client. A configuration is needed to create a {@link ClientContext} by
@@ -34,6 +37,8 @@ public class ClientConfiguration {
 
     private final UiThreadHandler uiThreadHandler;
 
+    private Level dolphinLogLevel;
+
     /**
      * Default constructor of a client configuration
      * @param serverEndpoint the DOlphin Platform server url
@@ -49,6 +54,7 @@ public class ClientConfiguration {
         this.serverEndpoint = serverEndpoint;
 
         this.uiThreadHandler = uiThreadHandler;
+        this.dolphinLogLevel = Level.SEVERE;
     }
 
     /**
@@ -65,5 +71,14 @@ public class ClientConfiguration {
      */
     public String getServerEndpoint() {
         return serverEndpoint;
+    }
+
+    public Level getDolphinLogLevel() {
+        return dolphinLogLevel;
+    }
+
+    public void setDolphinLogLevel(Level dolphinLogLevel) {
+        Assert.requireNonNull(dolphinLogLevel, "dolphinLogLevel");
+        this.dolphinLogLevel = dolphinLogLevel;
     }
 }
