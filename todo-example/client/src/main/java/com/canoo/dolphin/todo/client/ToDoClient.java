@@ -15,40 +15,29 @@
  */
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.javafx.JavaFXConfiguration;
 import com.canoo.dolphin.client.ClientContext;
-import com.canoo.dolphin.client.ClientContextFactory;
+import com.canoo.dolphin.client.javafx.DolphinPlatformApplication;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ToDoClient extends Application {
-
-    private ClientContext clientContext;
-
-    private ToDoViewBinder viewController;
+public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        CompletableFuture<ClientContext> connectionPromise = ClientContextFactory.connect(new JavaFXConfiguration("http://localhost:8080/todo-app/dolphin"));
-        connectionPromise.thenAccept(context -> {
-            clientContext = context;
-            viewController = new ToDoViewBinder(context);
-            primaryStage.setScene(new Scene(viewController.getRoot()));
-            primaryStage.show();
-        });
+    protected String getServerEndpoint() {
+        return "http://localhost:8080/todo-app/dolphin";
     }
 
     @Override
-    public void stop() throws Exception {
-        if(clientContext != null) {
-            clientContext.disconnect();
-        }
+    protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
+        ToDoViewBinder viewController = new ToDoViewBinder(clientContext);
+        primaryStage.setScene(new Scene(viewController.getRoot()));
+        primaryStage.show();
     }
+
 
     public static void main(String[] args) {
         Logger OD_LOGGER = Logger.getLogger("org.opendolphin");
@@ -56,4 +45,5 @@ public class ToDoClient extends Application {
 
         Application.launch(args);
     }
+
 }

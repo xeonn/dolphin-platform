@@ -39,6 +39,8 @@ public class ClientConfiguration {
 
     private Level dolphinLogLevel;
 
+    private long connectionTimeout;
+
     /**
      * Default constructor of a client configuration
      * @param serverEndpoint the DOlphin Platform server url
@@ -55,6 +57,7 @@ public class ClientConfiguration {
 
         this.uiThreadHandler = uiThreadHandler;
         this.dolphinLogLevel = Level.SEVERE;
+        this.connectionTimeout = 5000;
     }
 
     /**
@@ -80,5 +83,13 @@ public class ClientConfiguration {
     public void setDolphinLogLevel(Level dolphinLogLevel) {
         Assert.requireNonNull(dolphinLogLevel, "dolphinLogLevel");
         this.dolphinLogLevel = dolphinLogLevel;
+    }
+
+    public long getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(long connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 }
