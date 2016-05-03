@@ -9,6 +9,7 @@ include ':dolphin-platform-bean-validation'
 include ':todo-example-common'
 include ':todo-example-server'
 include ':todo-example-server-spring'
+include ':todo-example-server-kumuluzee'
 include ':todo-example-server-javaee'
 include ':todo-example-client'
 include ':dolphin-platform-documentation'
@@ -23,6 +24,7 @@ project(':dolphin-platform-bean-validation').projectDir = "$rootDir/java-bean-va
 project(':todo-example-common').projectDir = "$rootDir/todo-example/common" as File
 project(':todo-example-server').projectDir = "$rootDir/todo-example/server" as File
 project(':todo-example-server-spring').projectDir = "$rootDir/todo-example/server-spring" as File
+project(':todo-example-server-kumuluzee').projectDir = "$rootDir/todo-example/server-kumuluzee" as File
 project(':todo-example-server-javaee').projectDir = "$rootDir/todo-example/server-javaee" as File
 project(':todo-example-client').projectDir = "$rootDir/todo-example/client" as File
 project(':dolphin-platform-documentation').projectDir = "$rootDir/documentation" as File

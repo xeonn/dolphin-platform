@@ -4,4 +4,7 @@ dependencies {
     runtime "org.apache.deltaspike.core:deltaspike-core-impl:$deltaSpikeVersion"
     compileOnly 'javax.enterprise:cdi-api:1.1'
     compileOnly "javax.servlet:javax.servlet-api:$servletApiVersion"
+
+    testCompile 'javax.enterprise:cdi-api:1.1'
+    testCompile "javax.servlet:javax.servlet-api:$servletApiVersion"
 }
