@@ -18,6 +18,8 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.comm.UiThreadHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.logging.Level;
 
@@ -33,11 +35,17 @@ import java.util.logging.Level;
  */
 public class ClientConfiguration {
 
+    private final static long DEFAULT_CONNECTION_TIMEOUT = 5000;
+
     private final String serverEndpoint;
 
     private final UiThreadHandler uiThreadHandler;
 
     private Level dolphinLogLevel;
+
+    private long connectionTimeout;
+
+    private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
 
     /**
      * Default constructor of a client configuration
@@ -55,6 +63,7 @@ public class ClientConfiguration {
 
         this.uiThreadHandler = uiThreadHandler;
         this.dolphinLogLevel = Level.SEVERE;
+        this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     }
 
     /**
@@ -73,12 +82,41 @@ public class ClientConfiguration {
         return serverEndpoint;
     }
 
+    /**
+     * Returns the logging level for the remoting layer
+     * @return the logging level for the remoting layer
+     */
     public Level getDolphinLogLevel() {
         return dolphinLogLevel;
     }
 
+    /**
+     * Sets the logging level for the remoting layer
+     * @param dolphinLogLevel the logging level for the remoting layer
+     */
     public void setDolphinLogLevel(Level dolphinLogLevel) {
         Assert.requireNonNull(dolphinLogLevel, "dolphinLogLevel");
         this.dolphinLogLevel = dolphinLogLevel;
+    }
+
+    /**
+     * Returns the connection timeout in milliseconds
+     * @return the connection timeout in milliseconds
+     */
+    public long getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    /**
+     * Sets the connection timeout in milliseconds. if the value is < 1 it will be set to the default value {@link #DEFAULT_CONNECTION_TIMEOUT} (5000 ms)
+     * @param connectionTimeout the connection timeout in milliseconds
+     */
+    public void setConnectionTimeout(long connectionTimeout) {
+        if(connectionTimeout > 0) {
+            this.connectionTimeout = connectionTimeout;
+        } else {
+            LOG.warn("Default connection timeout (" + DEFAULT_CONNECTION_TIMEOUT + " ms) is used instead of " + connectionTimeout + " ms");
+            this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+        }
     }
 }

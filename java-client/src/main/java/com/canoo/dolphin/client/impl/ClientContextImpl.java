@@ -16,7 +16,9 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ClientBeanManager;
+import com.canoo.dolphin.client.ClientConfiguration;
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.ClientInitializationException;
 import com.canoo.dolphin.client.ControllerInitalizationException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.State;
@@ -30,6 +32,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ClientContextImpl implements ClientContext {
 
@@ -47,7 +51,7 @@ public class ClientContextImpl implements ClientContext {
 
     private final DolphinCommandHandler dolphinCommandHandler;
 
-    public ClientContextImpl(ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager) throws ExecutionException, InterruptedException {
+    public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager) throws ExecutionException, InterruptedException {
         Assert.requireNonNull(clientDolphin, "clientDolphin");
         Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
         Assert.requireNonNull(dolphinCommandHandler, "dolphinCommandHandler");
@@ -59,7 +63,19 @@ public class ClientContextImpl implements ClientContext {
         this.platformBeanRepository = platformBeanRepository;
         this.clientBeanManager = clientBeanManager;
         registeredWeakControllers = new CopyOnWriteArrayList<>();
-        dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).thenAccept(v -> state = State.INITIALIZED).get();
+        try {
+            dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle((v, e) -> {
+                if(e != null) {
+                    state = State.DESTROYED;
+                    throw new ClientInitializationException("Can't call init action!");
+                } else {
+                    state = State.INITIALIZED;
+                }
+                return null;
+            }).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            throw new ClientInitializationException("Can not connect to server!", e);
+        }
     }
 
     @Override
