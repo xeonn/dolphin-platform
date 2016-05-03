@@ -22,6 +22,8 @@ import com.canoo.dolphin.client.ClientShutdownException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Defines a basic application class for Dolphin Platform based applications that can be used like the {@link Application}
  * class. Next to the general {@link Application} class of JavaFX this class supports the DOlphin Platform connecttion lifecycle.
@@ -39,7 +41,7 @@ public abstract class DolphinPlatformApplication extends Application {
     @Override
     public void init() throws Exception {
         try {
-            clientContext = ClientContextFactory.connect(getClientConfiguration()).get();
+            clientContext = ClientContextFactory.connect(getClientConfiguration()).get(getClientConfiguration().getConnectionTimeout(), TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             initializationException = new ClientInitializationException("Can not initialize Dolphin Platform Context", e);
         }

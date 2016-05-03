@@ -76,19 +76,35 @@ public class ClientConfiguration {
         return serverEndpoint;
     }
 
+    /**
+     * Returns the logging level for the remoting layer
+     * @return the logging level for the remoting layer
+     */
     public Level getDolphinLogLevel() {
         return dolphinLogLevel;
     }
 
+    /**
+     * Sets the logging level for the remoting layer
+     * @param dolphinLogLevel the logging level for the remoting layer
+     */
     public void setDolphinLogLevel(Level dolphinLogLevel) {
         Assert.requireNonNull(dolphinLogLevel, "dolphinLogLevel");
         this.dolphinLogLevel = dolphinLogLevel;
     }
 
+    /**
+     * Returns the connection timeout in milliseconds
+     * @return the connection timeout in milliseconds
+     */
     public long getConnectionTimeout() {
         return connectionTimeout;
     }
 
+    /**
+     * Sets the connection timeout in milliseconds
+     * @param connectionTimeout the connection timeout in milliseconds
+     */
     public void setConnectionTimeout(long connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
