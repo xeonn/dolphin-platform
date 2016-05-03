@@ -31,7 +31,7 @@ package com.canoo.dolphin.server.container;
 public interface ModelInjector {
 
     /**
-     * Methgod is called for a new controller instance and can inject to model to the controller
+     * Method is called for a new controller instance and will inject the model to the controller
      * @param controller the new controller instance
      */
     void inject(Object controller);
