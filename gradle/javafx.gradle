@@ -9,3 +9,7 @@ for (location in ['lib/jfxrt.jar', 'jre/lib/jfxrt.jar', 'jre/lib/ext/jfxrt.jar']
         break
     }
 }
+
+println('#' * 80)
+println(jfxrtLocation + ' exists? ' + new File(jfxrtLocation).exists())
+println('#' * 80)
