@@ -20,7 +20,8 @@ def pomConfig = {
     developers {
         [
             'Hendrik Ebbers': 'hendrik.ebbers@canoo.com',
-            'Michael Heinrichs': 'michael.heinrichs@canoo.com'
+            'Michael Heinrichs': 'michael.heinrichs@canoo.com',
+            'Andres Almiray': 'andres.almiray@canoo.com'
         ].each { devName, devEmail ->
             developer {
                 name devName

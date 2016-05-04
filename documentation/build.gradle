@@ -37,6 +37,7 @@ asciidoctor {
         linkattrs              : true,
         imagesdir              : 'images',
         linkcss                : true,
+        'revision-number'      : project.version
     ]
 
     sources {

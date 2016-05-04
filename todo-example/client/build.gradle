@@ -1,10 +1,8 @@
 apply plugin: 'application'
-apply from: rootProject.file('gradle/javafx.gradle')
 
 mainClassName = 'com.canoo.dolphin.todo.client.ToDoClient'
 
 dependencies {
-  compileOnly project.files(project.jfxrtLocation)
   compile project(':todo-example-common')
   compile project(':dolphin-platform-client-javafx')
 }
