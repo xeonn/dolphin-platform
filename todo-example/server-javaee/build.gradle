@@ -5,3 +5,7 @@ dependencies {
     compile project(':dolphin-platform-server-javaee')
     compileOnly 'javax:javaee-api:6.0'
 }
+
+war {
+    archiveName = 'todo-app.war'
+}
