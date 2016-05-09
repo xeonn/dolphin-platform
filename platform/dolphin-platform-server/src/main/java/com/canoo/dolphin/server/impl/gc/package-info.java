@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * This package contains a first garbage collection implementation for the Dolphin Platform model.
  * As defined by {@link com.canoo.dolphin.server.DolphinModel} and {@link com.canoo.dolphin.mapping.DolphinBean} each
