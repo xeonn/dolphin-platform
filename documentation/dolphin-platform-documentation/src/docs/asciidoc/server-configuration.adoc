@@ -30,4 +30,9 @@ Currently the following properties are supported by the Dolphin Platform:
 |A string based property that defines the server URL endpoint for the Dolphin Platform.
 |any String that defines an URL mapping
 |/dolphin
+
+|garbageCollectionActive
+|By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an unstable feature at the moment and should only be activated for tests.
+|true, false
+|false
 |===

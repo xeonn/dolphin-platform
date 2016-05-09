@@ -16,7 +16,6 @@
 package com.canoo.dolphin.server.config;
 
 import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
-import com.canoo.dolphin.server.impl.gc.GarbageCollectionConfiguration;
 
 import java.util.logging.Level;
 
@@ -24,7 +23,7 @@ import java.util.logging.Level;
  * This class defines the configuration of the Dolphin Platform. Normally the configuration is created based
  * on defaults and a property file (see {@link ConfigurationFileLoader}).
  */
-public class DolphinPlatformConfiguration implements GarbageCollectionConfiguration {
+public class DolphinPlatformConfiguration {
 
     private boolean useCrossSiteOriginFilter = true;
 
@@ -58,7 +57,6 @@ public class DolphinPlatformConfiguration implements GarbageCollectionConfigurat
         this.openDolphinLogLevel = openDolphinLogLevel;
     }
 
-    @Override
     public boolean isGarbageCollectionActive() {
         return garbageCollectionActive;
     }
