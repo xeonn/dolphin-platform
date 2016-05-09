@@ -50,6 +50,12 @@ jar:: Package all classes and resources.
 javadoc:: Generate API documentation.
 bintrayUpload:: Publish artifacts to link:https://bintray.org
 asciidoctor:: Generate Asciidoc documentation.
+license:: Check if license headers are up to date.
+licenseFormat:: Update all license headers.
+check:: Execute quality control and tests.
+
+
+You can obtain a list of all available tasks by invoking `tasks --all`.
 
 Note that you may invoke these tasks on any project, however invoking any of them at the root level will invoke the task
 on all subprojects.
