@@ -1,0 +1,137 @@
+/**
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.canoo.dolphin.impl;
+
+import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.impl.info.ClassPropertyInfo;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.internal.info.ClassInfo;
+import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.Property;
+import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.ModelStoreEvent;
+import org.opendolphin.core.ModelStoreListener;
+import org.opendolphin.core.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A {@code ClassRepository} manages {@link ClassInfo} objects for all registered Dolphin Beans. A {@code ClassInfo}
+ * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
+ */
+public class ClassRepositoryImpl implements ClassRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
+
+    public enum FieldType {DOLPHIN_BEAN, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, STRING, DATE, ENUM}
+
+    private final PresentationModelBuilderFactory builderFactory;
+    private final Converters converters;
+
+    private final Map<Class<?>, ClassInfo> classToClassInfoMap = new HashMap<>();
+    private final Map<String, ClassInfo> modelTypeToClassInfoMap = new HashMap<>();
+
+    public ClassRepositoryImpl(Dolphin dolphin, Converters converters, PresentationModelBuilderFactory builderFactory) {
+        this.converters = converters;
+        this.builderFactory = builderFactory;
+
+        dolphin.addModelStoreListener(PlatformConstants.DOLPHIN_BEAN, new ModelStoreListener() {
+            @Override
+            public void modelStoreChanged(ModelStoreEvent event) {
+                try {
+                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
+                    final Class<?> beanClass = Class.forName(className);
+                    final ClassInfo classInfo = createClassInfoForClass(beanClass);
+                    classToClassInfoMap.put(beanClass, classInfo);
+                    modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
+                } catch (ClassNotFoundException e) {
+                    // Ignore unknown classes
+                }
+            }
+        });
+    }
+
+    public ClassInfo getClassInfo(String modelType) {
+        return modelTypeToClassInfoMap.get(modelType);
+    }
+
+    public ClassInfo getOrCreateClassInfo(final Class<?> beanClass) {
+        final ClassInfo existingClassInfo = classToClassInfoMap.get(beanClass);
+        if (existingClassInfo != null) {
+            return existingClassInfo;
+        }
+
+        createPresentationModelForClass(beanClass);
+
+        return classToClassInfoMap.get(beanClass);
+    }
+
+    private void createPresentationModelForClass(Class<?> beanClass) {
+        final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
+        final PresentationModelBuilder builder = builderFactory.createBuilder()
+                .withId(id)
+                .withType(PlatformConstants.DOLPHIN_BEAN)
+                .withAttribute(PlatformConstants.JAVA_CLASS, beanClass.getName());
+
+        for (final Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
+            if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
+                final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
+                final Class<?> clazz = ReflectionHelper.getTypeParameter(field);
+                final FieldType type = DolphinUtils.getFieldType(clazz);
+                builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
+            }
+        }
+
+        builder.create();
+    }
+
+    private ClassInfo createClassInfoForClass(Class<?> beanClass) {
+        final List<PropertyInfo> propertyInfos = new ArrayList<>();
+        final List<PropertyInfo> observableListInfos = new ArrayList<>();
+
+        for (Field field : ReflectionHelper.getInheritedDeclaredFields(beanClass)) {
+            PropertyType type = null;
+            if (Property.class.isAssignableFrom(field.getType())) {
+                type = PropertyType.PROPERTY;
+            } else if (ObservableList.class.isAssignableFrom(field.getType())) {
+                type = PropertyType.OBSERVABLE_LIST;
+            }
+            final Class<?> parameterType = ReflectionHelper.getTypeParameter(field);
+
+            if (type != null && parameterType != null) {
+                final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
+                final Converters.Converter converter = converters.getConverter(parameterType);
+                final PropertyInfo propertyInfo = new ClassPropertyInfo(attributeName, converter, field);
+                if (type == PropertyType.PROPERTY) {
+                    propertyInfos.add(propertyInfo);
+                } else {
+                    observableListInfos.add(propertyInfo);
+                }
+            }
+        }
+
+        return new ClassInfo(beanClass, propertyInfos, observableListInfos);
+    }
+
+    private enum PropertyType {PROPERTY, OBSERVABLE_LIST}
+}
