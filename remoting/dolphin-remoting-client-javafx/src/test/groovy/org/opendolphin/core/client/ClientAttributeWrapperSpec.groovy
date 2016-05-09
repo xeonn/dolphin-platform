@@ -16,9 +16,14 @@
 package org.opendolphin.core.client
 
 import javafx.beans.value.ChangeListener
+import javafx.embed.swing.JFXPanel
 import spock.lang.Specification
 
 class ClientAttributeWrapperSpec extends Specification {
+    static {
+        new JFXPanel()
+    }
+    
     void "ChangeListener is notified when an attribute value changes"() {
         given:
         def attribute = new ClientAttribute('name')
@@ -46,6 +51,6 @@ class ClientAttributeWrapperSpec extends Specification {
         wrapper = new ClientAttributeWrapper(attribute)
         wrapper.set(null)
         then:
-        null ==wrapper.get()
+        null == wrapper.get()
     }
 }

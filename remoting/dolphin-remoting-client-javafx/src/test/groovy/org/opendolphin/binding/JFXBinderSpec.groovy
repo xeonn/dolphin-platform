@@ -16,12 +16,16 @@
 package org.opendolphin.binding
 
 import groovy.beans.Bindable
+import javafx.embed.swing.JFXPanel
 import spock.lang.Specification
 
 import static org.opendolphin.binding.JFXBinder.bind
 import static org.opendolphin.binding.JFXBinder.unbind
 
 class JFXBinderSpec extends Specification {
+    static {
+        new JFXPanel()
+    }
 
     def 'bind and unbind jfx Node to POJO'() {
         given:

@@ -15,6 +15,7 @@
  */
 package org.opendolphin.binding;
 
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Label;
 import org.junit.Test;
 import org.opendolphin.core.AbstractObservable;
@@ -33,6 +34,9 @@ import static org.junit.Assert.assertNotNull;
  * Java Style Tests for JFX Binding
  */
 public class JFXBinderJavaTest {
+    static {
+        new JFXPanel();
+    }
 
     private final String initialValue = "initialValue";
     private final String newValue = "newValue";

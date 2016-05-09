@@ -52,4 +52,3 @@ class JavaFxUtilTests extends GroovyTestCase {
         assert 'convertedValue newValue' == model.getAt('attr').value
     }
 }
-

@@ -16,6 +16,7 @@
 package org.opendolphin.binding
 
 import groovy.beans.Bindable
+import javafx.embed.swing.JFXPanel
 import javafx.scene.paint.Color
 import org.opendolphin.core.BasePresentationModel
 import org.opendolphin.core.PresentationModel
@@ -23,9 +24,15 @@ import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientPresentationModel
 
-import static org.opendolphin.binding.JFXBinder.*
+import static org.opendolphin.binding.JFXBinder.bind
+import static org.opendolphin.binding.JFXBinder.bindInfo
+import static org.opendolphin.binding.JFXBinder.unbind
+import static org.opendolphin.binding.JFXBinder.unbindInfo
 
 class JFXBinderTest extends GroovyTestCase {
+    static {
+        new JFXPanel()
+    }
 
     void testNodeBinding() {
         given:
@@ -59,7 +66,7 @@ class JFXBinderTest extends GroovyTestCase {
         assert !targetLabel.text
 
         when:
-        bind "text" of sourceLabel to "text" of targetLabel, {"[" + it + "]"}
+        bind "text" of sourceLabel to "text" of targetLabel, { "[" + it + "]" }
 
         assert targetLabel.text == "[initialValue]"
 
@@ -80,7 +87,7 @@ class JFXBinderTest extends GroovyTestCase {
         assert !targetLabel.text
 
         when:
-        bind "text" of sourceLabel using {"[" + it + "]"} to "text" of targetLabel
+        bind "text" of sourceLabel using { "[" + it + "]" } to "text" of targetLabel
 
         assert targetLabel.text == "[initialValue]"
 
@@ -163,7 +170,6 @@ class JFXBinderTest extends GroovyTestCase {
         assert label.text == 'Dolphin'
     }
 
-
     // TODO (DOL-93) remove legacy code
     void testPojoBindingWithConverterClosure_OldStyle() {
         given:
@@ -173,7 +179,7 @@ class JFXBinderTest extends GroovyTestCase {
 
         when:
 
-        bindInfo 'value' of bean to 'textFill' of label, {it == 'white' ? Color.WHITE : Color.BLACK}
+        bindInfo 'value' of bean to 'textFill' of label, { it == 'white' ? Color.WHITE : Color.BLACK }
 
         then:
 
@@ -196,7 +202,7 @@ class JFXBinderTest extends GroovyTestCase {
 
         when:
 
-        bindInfo 'value' of bean using {it == 'white' ? Color.WHITE : Color.BLACK} to 'textFill' of label
+        bindInfo 'value' of bean using { it == 'white' ? Color.WHITE : Color.BLACK } to 'textFill' of label
 
         then:
 
