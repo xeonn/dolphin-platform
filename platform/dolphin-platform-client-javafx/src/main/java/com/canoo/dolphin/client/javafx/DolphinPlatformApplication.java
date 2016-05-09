@@ -105,7 +105,7 @@ public abstract class DolphinPlatformApplication extends Application {
     }
 
     /**
-     * Whenever JavaFX calls the stop method the connectiopn to the DOlphin Platform server will be closed.
+     * Whenever JavaFX calls the stop method the connection to the Dolphin Platform server will be closed.
      * @throws Exception an error
      */
     @Override
