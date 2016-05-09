@@ -140,7 +140,15 @@ subprojects { subprj ->
                 }
             }
 
-            test.useJUnit()
+            test {
+                useJUnit()
+                testLogging {
+                    exceptionFormat 'full'
+                    showCauses true
+                    showExceptions true
+                    showStackTraces true
+                }
+            }
         }
     }
 }
