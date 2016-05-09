@@ -23,7 +23,7 @@ class ClientAttributeWrapperSpec extends Specification {
     static {
         new JFXPanel()
     }
-    
+
     void "ChangeListener is notified when an attribute value changes"() {
         given:
         def attribute = new ClientAttribute('name')

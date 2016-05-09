@@ -21,6 +21,7 @@ import org.opendolphin.core.server.comm.NamedCommandHandler
 
 
 public interface ServerDolphin extends Dolphin<ServerAttribute, ServerPresentationModel> {
+    ServerConnector getServerConnector()
 
     void registerDefaultActions()
 
