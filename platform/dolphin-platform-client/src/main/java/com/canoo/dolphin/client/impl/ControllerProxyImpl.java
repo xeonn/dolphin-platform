@@ -76,21 +76,13 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
 
         final CompletableFuture<Void> result = new CompletableFuture<>();
-        dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new OnFinishedHandler() {
-            @Override
-            public void onFinished(List<ClientPresentationModel> presentationModels) {
-                if (bean.isError()) {
-                    result.completeExceptionally(new ControllerActionException());
-                } else {
-                    result.complete(null);
-                }
-                bean.unregister();
+        dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, presentationModels -> {
+            if (bean.isError()) {
+                result.completeExceptionally(new ControllerActionException());
+            } else {
+                result.complete(null);
             }
-
-            @Override
-            public void onFinishedData(List<Map> data) {
-                //Unused....
-            }
+            bean.unregister();
         });
         return result;
     }
@@ -107,20 +99,10 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
         final CompletableFuture<Void> ret = new CompletableFuture<>();
 
-        dolphin.send(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new OnFinishedHandler() {
-            @Override
-            public void onFinished(List<ClientPresentationModel> presentationModels) {
-                model = null;
-                ret.complete(null);
-            }
-
-            @Override
-            public void onFinishedData(List<Map> data) {
-                //Unused....
-            }
+        dolphin.send(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, presentationModels -> {
+            model = null;
+            ret.complete(null);
         });
         return ret;
     }
-
-
 }
