@@ -17,7 +17,7 @@ package org.opendolphin.core.client.comm
 
 import groovyx.gpars.dataflow.DataflowQueue
 
-class CommandBatcher implements ICommandBatcher {
+class CommandBatcher {
 
     final DataflowQueue<List<CommandAndHandler>> waitingBatches = new DataflowQueue<>()
 

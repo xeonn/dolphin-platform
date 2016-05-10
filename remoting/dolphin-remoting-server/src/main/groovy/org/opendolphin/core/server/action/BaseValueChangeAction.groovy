@@ -16,23 +16,23 @@
 package org.opendolphin.core.server.action
 
 import groovy.util.logging.Log
-import org.opendolphin.core.comm.EmptyNotification
+import org.opendolphin.core.comm.BaseValueChangedCommand
+import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.comm.ActionRegistry
 
-/**
- * An action that does nothing on the server.
- * It is only used to hook into the communication at a known point
- * such that the onFinished handler for the command is executed
- * in the expected sequence.
- */
-
-//CompileStatic
 @Log
-class EmptyAction implements ServerAction {
-
+class BaseValueChangeAction extends DolphinServerAction {
     void registerIn(ActionRegistry registry) {
-        registry.register(EmptyNotification) { EmptyNotification command, response ->
-            log.finest "empty action reached - doing nothing on the server"
+        registry.register(BaseValueChangedCommand) { BaseValueChangedCommand command, response ->
+            def modelStore = serverDolphin.serverModelStore
+            ServerAttribute attribute = modelStore.findAttributeById(command.attributeId)
+            if (attribute) {
+                attribute.silently {
+                    attribute.rebase()
+                }
+                log.finest "S: attribute $attribute.id for $attribute.propertyName with value $attribute.value is dirty? : $attribute.dirty"
+            }
+            else log.warning("Could not find attribute with id '$command.attributeId' to change its base value.")
         }
     }
 }

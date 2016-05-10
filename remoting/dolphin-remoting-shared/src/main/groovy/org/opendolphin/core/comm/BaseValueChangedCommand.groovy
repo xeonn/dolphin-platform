@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm
+package org.opendolphin.core.comm
 
-/**
- * interface for data point handler
- */
-interface OnFinishedData extends OnFinishedHandler {
-    void onFinishedData(List<Map> data);
+import groovy.transform.TupleConstructor
+
+@TupleConstructor
+class BaseValueChangedCommand extends Command { // todo dk: should better be named: RebaseCommand
+    String attributeId
+
+    String toString() { super.toString() + " attr:$attributeId"}
 }

@@ -18,8 +18,8 @@ package org.opendolphin.core.server.action
 import org.opendolphin.core.Tag
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.server.DTO
-import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.ServerAttribute
 
 /**
  * Common superclass for all actions that need access to
@@ -33,11 +33,11 @@ abstract class DolphinServerAction implements ServerAction {
 
 
     void presentationModel(String id, String presentationModelType, DTO dto) {
-        DefaultServerDolphin.presentationModelCommand(dolphinResponse, id, presentationModelType, dto)
+        DefaultServerDolphin.presentationModel(dolphinResponse, id, presentationModelType, dto)
     }
 
     void changeValue(ServerAttribute attribute, value) {
-        DefaultServerDolphin.changeValueCommand(dolphinResponse, attribute, value)
+        DefaultServerDolphin.changeValue(dolphinResponse, attribute, value)
     }
 
     /** Convenience method for the InitializeAttributeCommand */

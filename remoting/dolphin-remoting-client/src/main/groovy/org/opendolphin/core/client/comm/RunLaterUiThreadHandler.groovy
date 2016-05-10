@@ -16,7 +16,6 @@
 package org.opendolphin.core.client.comm
 
 import groovyx.gpars.agent.Agent
-import org.opendolphin.core.client.comm.UiThreadHandler
 
 class RunLaterUiThreadHandler implements UiThreadHandler{
 

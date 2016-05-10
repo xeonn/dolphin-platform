@@ -35,7 +35,7 @@ package org.opendolphin.core
  * Several tags are predeclared; see documentation for suggested usage.
  * @see Attribute
  */
-final class Tag {
+class Tag {
 
     final String name;
 

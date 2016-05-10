@@ -15,9 +15,12 @@
  */
 package org.opendolphin.core.client.comm
 
+import groovy.transform.CompileStatic
+import groovy.util.logging.Log
 import groovyx.gpars.dataflow.KanbanFlow
 import groovyx.gpars.dataflow.KanbanTray
 import groovyx.gpars.dataflow.ProcessingNode
+import org.codehaus.groovy.runtime.StackTraceUtils
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
@@ -25,10 +28,22 @@ import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.comm.*
-import groovy.transform.CompileStatic
-import groovy.util.logging.Log
-import org.codehaus.groovy.runtime.StackTraceUtils
+import org.opendolphin.core.comm.AttributeMetadataChangedCommand
+import org.opendolphin.core.comm.BaseValueChangedCommand
+import org.opendolphin.core.comm.CallNamedActionCommand
+import org.opendolphin.core.comm.Codec
+import org.opendolphin.core.comm.Command
+import org.opendolphin.core.comm.CreatePresentationModelCommand
+import org.opendolphin.core.comm.DataCommand
+import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
+import org.opendolphin.core.comm.DeletePresentationModelCommand
+import org.opendolphin.core.comm.InitializeAttributeCommand
+import org.opendolphin.core.comm.NamedCommand
+import org.opendolphin.core.comm.PresentationModelResetedCommand
+import org.opendolphin.core.comm.SavedPresentationModelNotification
+import org.opendolphin.core.comm.SignalCommand
+import org.opendolphin.core.comm.SwitchPresentationModelCommand
+import org.opendolphin.core.comm.ValueChangedCommand
 
 import java.util.logging.Level
 
@@ -36,7 +51,6 @@ import static groovyx.gpars.GParsPool.withPool
 
 @Log
 abstract class ClientConnector {
-    boolean strictMode = true // disallow value changes that are based on improper old values
     Codec codec
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
 
@@ -48,13 +62,13 @@ abstract class ClientConnector {
     }
 
     protected final ClientDolphin clientDolphin
-    protected final ICommandBatcher commandBatcher
+    protected final CommandBatcher commandBatcher
 
     ClientConnector(ClientDolphin clientDolphin) {
         this(clientDolphin, null)
     }
 
-    ClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
+    ClientConnector(ClientDolphin clientDolphin, CommandBatcher commandBatcher) {
         this.clientDolphin = clientDolphin
         this.commandBatcher = commandBatcher ?: new CommandBatcher()
 
@@ -91,7 +105,7 @@ abstract class ClientConnector {
         flow.start(1)
     }
 
-    protected ClientModelStore getClientModelStore() {
+    protected getClientModelStore() {
         clientDolphin.clientModelStore
     }
 
@@ -125,12 +139,9 @@ abstract class ClientConnector {
             }
         }
         def callback = commandsAndHandlers.first().handler // there can only be one relevant handler anyway
-        // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
-        if (callback !=null) {
+        if (callback) {
             callback.onFinished((List<ClientPresentationModel>) touchedPresentationModels.unique { ((ClientPresentationModel) it).id })
-            if (callback instanceof OnFinishedData) {
-                callback.onFinishedData(touchedDataMaps)
-            }
+            callback.onFinishedData(touchedDataMaps)
         }
     }
 
@@ -189,7 +200,7 @@ abstract class ClientConnector {
 
     @CompileStatic
     ClientPresentationModel handle(CreatePresentationModelCommand serverCommand) {
-        if (clientModelStore.containsPresentationModel(serverCommand.pmId)) {
+        if (((ClientModelStore) clientModelStore).containsPresentationModel(serverCommand.pmId)) {
             throw new IllegalStateException("There already is a presentation model with id '$serverCommand.pmId' known to the client.")
         }
         List<ClientAttribute> attributes = []
@@ -210,7 +221,7 @@ abstract class ClientConnector {
         if (serverCommand.clientSideOnly) {
             model.clientSideOnly = true
         }
-        clientModelStore.add(model)
+        ((ClientModelStore)clientModelStore).add(model)
         clientDolphin.updateQualifiers(model)
         return model
     }
@@ -224,13 +235,24 @@ abstract class ClientConnector {
         if (attribute.value?.toString() == serverCommand.newValue?.toString()) {
             return null
         }
-        if (strictMode && attribute.value?.toString() != serverCommand.oldValue?.toString()) {
+        if (attribute.value?.toString() != serverCommand.oldValue?.toString()) {
             // todo dk: think about sending a RejectCommand here to tell the server about a possible lost update
             log.warning "C: attribute with id '$serverCommand.attributeId' and value '$attribute.value' cannot be set to new value '$serverCommand.newValue' because the change was based on an outdated old value of '$serverCommand.oldValue'."
             return null
         }
         log.info "C: updating '$attribute.propertyName' id '$serverCommand.attributeId' from '$attribute.value' to '$serverCommand.newValue'"
         attribute.value = serverCommand.newValue
+        return null // this command is not expected to be sent explicitly, so no pm needs to be returned
+    }
+
+    ClientPresentationModel handle(BaseValueChangedCommand serverCommand) {
+        Attribute attribute = clientModelStore.findAttributeById(serverCommand.attributeId)
+        if (!attribute) {
+            log.warning "C: attribute with id '$serverCommand.attributeId' not found, cannot set initial value."
+            return null
+        }
+        log.info "C: updating id '$serverCommand.attributeId' setting initialValue to '$attribute.value'"
+        attribute.rebase()
         return null // this command is not expected to be sent explicitly, so no pm needs to be returned
     }
 

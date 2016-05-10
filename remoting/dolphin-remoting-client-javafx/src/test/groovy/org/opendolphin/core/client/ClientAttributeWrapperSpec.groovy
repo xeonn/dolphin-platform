@@ -51,6 +51,6 @@ class ClientAttributeWrapperSpec extends Specification {
         wrapper = new ClientAttributeWrapper(attribute)
         wrapper.set(null)
         then:
-        null == wrapper.get()
+        null ==wrapper.get()
     }
 }

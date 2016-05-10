@@ -17,7 +17,13 @@ package org.opendolphin.binding
 
 import groovy.beans.Bindable
 import javafx.embed.swing.JFXPanel
+import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.client.ClientModelStore
+import org.opendolphin.core.client.ClientPresentationModel
+import org.opendolphin.core.client.comm.InMemoryClientConnector
 import spock.lang.Specification
+
+import javax.swing.JTextField
 
 import static org.opendolphin.binding.JFXBinder.bind
 import static org.opendolphin.binding.JFXBinder.unbind
@@ -25,6 +31,21 @@ import static org.opendolphin.binding.JFXBinder.unbind
 class JFXBinderSpec extends Specification {
     static {
         new JFXPanel()
+    }
+
+    // exposes http://www.canoo.com/jira/browse/DOL-26
+    def 'binding the text property of a Swing component to an Attribute should not throw Exceptions'() {
+        given:
+        def dolphin = new ClientDolphin()
+        dolphin.clientModelStore = new ClientModelStore(dolphin)
+        dolphin.clientConnector = new InMemoryClientConnector(dolphin)
+        ClientPresentationModel loginPM = dolphin.presentationModel("loginPM", [name: "abc"])
+
+        JTextField txtName = new JTextField()
+
+        expect:
+        Binder.bind("name").of(loginPM).to("text").of(txtName)
+        Binder.bind("text").of(txtName).to("name").of(loginPM)
     }
 
     def 'bind and unbind jfx Node to POJO'() {

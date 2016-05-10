@@ -117,16 +117,14 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     }
 
     // todo dk: think about specific method versions for each allowed type
-    public void setValue(Object newValue) {
-        Object checkedValue = checkValue(newValue);
-        setDirty(isDifferent(baseValue, checkedValue));
-        if (isDifferent(value, checkedValue)){ // firePropertyChange doesn't do this check sufficiently
-            firePropertyChange(VALUE, value, value = checkedValue); // set inline to avoid recursion
-        }
+    public void setValue(Object value) {
+        value = checkValue(value);
+        setDirty(calculateDirty(baseValue, value));
+        firePropertyChange(VALUE, this.value, this.value = value);
     }
 
-    private boolean isDifferent(Object oldValue, Object newValue) {
-        return oldValue == null ? newValue != null : !oldValue.equals(newValue);
+    private boolean calculateDirty(Object baseValue, Object value) {
+        return baseValue == null ? value != null : !baseValue.equals(value);
     }
 
     private void setDirty(boolean dirty) {
@@ -135,7 +133,7 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     }
 
     public void setBaseValue(Object baseValue) {
-        setDirty(isDifferent(baseValue, value));
+        setDirty(calculateDirty(baseValue, value));
         firePropertyChange(BASE_VALUE, this.baseValue, this.baseValue = baseValue);
     }
 

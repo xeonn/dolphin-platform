@@ -20,23 +20,19 @@ package org.opendolphin
 class LogConfig {
 
     private static final Logger ROOT_LOGGER = Logger.getLogger("")
-    private static final Logger DOLPHIN_LOGGER = Logger.getLogger("org.opendolphin")
 
     static noLogs() {
-        logOnLevel(DOLPHIN_LOGGER, Level.OFF)
+        logOnLevel(ROOT_LOGGER, Level.OFF)
     }
 
     static logCommunication() {
-        logOnLevel(DOLPHIN_LOGGER, Level.INFO)
+        logOnLevel(ROOT_LOGGER, Level.INFO)
     }
 
     static logOnLevel(Level level) {
-        logOnLevel(DOLPHIN_LOGGER, level)
+        logOnLevel(ROOT_LOGGER, level)
     }
 
-    /**
-     * One may choose to use DOLPHIN_LOGGER or ROOT_LOGGER.
-     */
     static logOnLevel(Logger logger, Level level) {
         logger.level = level
         logger.handlers.each { it.setLevel(level) }
@@ -44,7 +40,11 @@ class LogConfig {
     }
 }
 
-import java.util.logging.*
+import java.util.logging.ConsoleHandler
+import java.util.logging.Level
+import java.util.logging.LogRecord
+import java.util.logging.Logger
+import java.util.logging.SimpleFormatter
 
 class ShortFormatter extends SimpleFormatter {
     synchronized String format(LogRecord record) {

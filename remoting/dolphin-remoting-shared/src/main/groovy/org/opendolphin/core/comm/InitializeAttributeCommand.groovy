@@ -15,8 +15,8 @@
  */
 package org.opendolphin.core.comm
 
-import org.opendolphin.core.Tag
 import groovy.transform.TupleConstructor
+import org.opendolphin.core.Tag
 
 @TupleConstructor
 class InitializeAttributeCommand extends Command {

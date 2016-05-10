@@ -17,6 +17,7 @@ package org.opendolphin.core.client.comm
 
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Log
+import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.comm.Command
 
 /** An in-memory client connector without any asynchronous calls such that
@@ -27,6 +28,10 @@ import org.opendolphin.core.comm.Command
 
 @Log @InheritConstructors
 class SynchronousInMemoryClientConnector extends InMemoryClientConnector {
+
+    SynchronousInMemoryClientConnector(ClientDolphin clientDolphin) {
+        super(clientDolphin)
+    }
 
     protected void startCommandProcessing() {
         /* do nothing! */

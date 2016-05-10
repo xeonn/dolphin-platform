@@ -16,17 +16,10 @@
 package org.opendolphin.core.server
 
 import org.opendolphin.core.Tag
-import groovy.transform.CompileStatic
 
 // should be immutable?
 //CompileStatic
-/**
- * A Slot corresponds to an attribute in the presentation model.
- * A slot consists of a propertyName (String), a value, a baseValue, a qualifier, and a tag.
- * A DTO (data transfer object) consists of a list of slots; the DTO is the equivalent of a presentation model.
- * @see DTO
- */
-final class Slot {
+class Slot {
     String propertyName
     Object value
     Object baseValue

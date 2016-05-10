@@ -23,11 +23,6 @@ import org.opendolphin.core.comm.Command;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * The ServerModelStore is a {@link org.opendolphin.core.ModelStore} with customized behavior appropriate to the
- * server side of a Dolphin connection.  There is one ServerModelSore for each user session.
- * The ServerModelStore self-assigns a unique ID which identifies each user session.
- */
 public class ServerModelStore extends ModelStore {
 
     protected List<Command> currentResponse = null;
@@ -61,7 +56,7 @@ public class ServerModelStore extends ModelStore {
     @Override
     public boolean add(PresentationModel model) {
         boolean added = super.add(model);
-        if (! added) return false;
+        if (! added) return added;
         ((ServerPresentationModel)model).modelStore = this;
         return true;
     }

@@ -39,8 +39,8 @@ public class DefaultOpenDolphinFactoryTest {
         assertNotNull(serverDolphin.getServerConnector().getCodec());
         assertEquals(OptimizedJsonCodec.class, serverDolphin.getServerConnector().getCodec().getClass());
 
-        assertEquals(serverDolphin.getServerConnector().getRegistry().getActions().size(), 7);
-        //assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("BaseValueChanged"));
+        assertEquals(serverDolphin.getServerConnector().getRegistry().getActions().size(), 8);
+        assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("BaseValueChanged"));
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("Empty"));
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("ValueChanged"));
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("CreatePresentationModel"));

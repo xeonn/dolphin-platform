@@ -17,7 +17,9 @@ package org.opendolphin.core.comm
 
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.server.*
+import org.opendolphin.core.server.DTO
+import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.Slot
 
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener

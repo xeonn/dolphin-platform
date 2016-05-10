@@ -23,10 +23,9 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.OnFinishedHandler;
+import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class ControllerProxyImpl<T> implements ControllerProxy<T> {
@@ -76,13 +75,16 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
 
         final CompletableFuture<Void> result = new CompletableFuture<>();
-        dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, presentationModels -> {
-            if (bean.isError()) {
-                result.completeExceptionally(new ControllerActionException());
-            } else {
-                result.complete(null);
+        dolphin.send(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new OnFinishedHandlerAdapter(){
+            @Override
+            public void onFinished(List<ClientPresentationModel> presentationModels) {
+                if (bean.isError()) {
+                    result.completeExceptionally(new ControllerActionException());
+                } else {
+                    result.complete(null);
+                }
+                bean.unregister();
             }
-            bean.unregister();
         });
         return result;
     }
@@ -99,9 +101,12 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
         final CompletableFuture<Void> ret = new CompletableFuture<>();
 
-        dolphin.send(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, presentationModels -> {
-            model = null;
-            ret.complete(null);
+        dolphin.send(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new OnFinishedHandlerAdapter() {
+            @Override
+            public void onFinished(List<ClientPresentationModel> presentationModels) {
+                model = null;
+                ret.complete(null);
+            }
         });
         return ret;
     }

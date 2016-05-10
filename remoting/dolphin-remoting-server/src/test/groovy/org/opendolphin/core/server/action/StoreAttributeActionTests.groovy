@@ -17,8 +17,8 @@ package org.opendolphin.core.server.action
 
 import org.opendolphin.core.comm.AttributeCreatedNotification
 import org.opendolphin.core.comm.ChangeAttributeMetadataCommand
-import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.ServerDolphinFactory
 import org.opendolphin.core.server.ServerPresentationModel
 import org.opendolphin.core.server.comm.ActionRegistry

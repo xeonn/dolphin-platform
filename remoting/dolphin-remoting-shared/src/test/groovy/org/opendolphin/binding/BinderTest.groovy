@@ -15,9 +15,9 @@
  */
 package org.opendolphin.binding
 
+import groovy.beans.Bindable
 import org.opendolphin.core.BaseAttribute
 import org.opendolphin.core.BasePresentationModel
-import groovy.beans.Bindable
 
 import static org.opendolphin.binding.Binder.bind
 
