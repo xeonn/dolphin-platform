@@ -21,7 +21,12 @@ import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent
 import org.opendolphin.core.ModelStoreListener
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.server.*
+import org.opendolphin.core.server.DTO
+import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.ServerAttribute
+import org.opendolphin.core.server.ServerModelStore
+import org.opendolphin.core.server.ServerPresentationModel
+import org.opendolphin.core.server.Slot
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
 

@@ -15,11 +15,11 @@
  */
 package org.opendolphin.core.client;
 
-import org.opendolphin.core.Attribute;
 import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.ModelStoreConfig;
-import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.client.comm.*;
+import org.opendolphin.core.client.comm.AttributeChangeListener;
+import org.opendolphin.core.client.comm.ClientConnector;
+import org.opendolphin.core.client.comm.WithPresentationModelHandler;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.DeletedAllPresentationModelsOfTypeNotification;
 import org.opendolphin.core.comm.DeletedPresentationModelNotification;

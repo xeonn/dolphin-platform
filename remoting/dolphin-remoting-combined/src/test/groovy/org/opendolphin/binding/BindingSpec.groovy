@@ -15,7 +15,6 @@
  */
 package org.opendolphin.binding
 
-
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
@@ -23,7 +22,7 @@ import org.opendolphin.core.client.comm.InMemoryClientConnector
 import org.opendolphin.core.server.ServerConnector
 import spock.lang.Specification
 
-import javax.swing.*
+import javax.swing.JTextField
 
 
 class BindingSpec extends Specification {

@@ -15,9 +15,8 @@
  */
 package org.opendolphin.core.client
 
-import org.opendolphin.core.BasePresentationModel
-import org.opendolphin.core.Tag
 import groovy.transform.CompileStatic
+import org.opendolphin.core.BasePresentationModel
 
 @CompileStatic
 final class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 package org.opendolphin.core.server
-
-import groovy.transform.CompileStatic
-
 //CompileStatic
 /**
  * A DTO is a <a href="http://en.wikipedia.org/wiki/Data_transfer_object">data transfer object</a>, used to

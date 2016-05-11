@@ -15,10 +15,10 @@
  */
 package org.opendolphin.core.comm
 
+import groovy.transform.CompileStatic
 import groovy.util.logging.Log
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
-import groovy.transform.CompileStatic
 
 @CompileStatic
 @Log

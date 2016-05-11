@@ -15,9 +15,12 @@
  */
 package org.opendolphin.core.client.comm
 
+import groovy.transform.CompileStatic
+import groovy.util.logging.Log
 import groovyx.gpars.dataflow.KanbanFlow
 import groovyx.gpars.dataflow.KanbanTray
 import groovyx.gpars.dataflow.ProcessingNode
+import org.codehaus.groovy.runtime.StackTraceUtils
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
@@ -25,10 +28,21 @@ import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.comm.*
-import groovy.transform.CompileStatic
-import groovy.util.logging.Log
-import org.codehaus.groovy.runtime.StackTraceUtils
+import org.opendolphin.core.comm.AttributeMetadataChangedCommand
+import org.opendolphin.core.comm.CallNamedActionCommand
+import org.opendolphin.core.comm.Codec
+import org.opendolphin.core.comm.Command
+import org.opendolphin.core.comm.CreatePresentationModelCommand
+import org.opendolphin.core.comm.DataCommand
+import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
+import org.opendolphin.core.comm.DeletePresentationModelCommand
+import org.opendolphin.core.comm.InitializeAttributeCommand
+import org.opendolphin.core.comm.NamedCommand
+import org.opendolphin.core.comm.PresentationModelResetedCommand
+import org.opendolphin.core.comm.SavedPresentationModelNotification
+import org.opendolphin.core.comm.SignalCommand
+import org.opendolphin.core.comm.SwitchPresentationModelCommand
+import org.opendolphin.core.comm.ValueChangedCommand
 
 import java.util.logging.Level
 

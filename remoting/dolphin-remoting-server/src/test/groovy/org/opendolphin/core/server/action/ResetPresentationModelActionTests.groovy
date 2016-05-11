@@ -15,12 +15,11 @@
  */
 package org.opendolphin.core.server.action
 
-import org.opendolphin.core.ModelStore
 import org.opendolphin.core.comm.PresentationModelResetedCommand
 import org.opendolphin.core.comm.ResetPresentationModelCommand
+import org.opendolphin.core.server.ServerConnector
 import org.opendolphin.core.server.ServerModelStore
 import org.opendolphin.core.server.ServerPresentationModel
-import org.opendolphin.core.server.ServerConnector
 
 class ResetPresentationModelActionTests extends GroovyTestCase {
 

@@ -15,10 +15,10 @@
  */
 package org.opendolphin.core.server.action
 
+import groovy.util.logging.Log
 import org.opendolphin.core.comm.ValueChangedCommand
 import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.comm.ActionRegistry
-import groovy.util.logging.Log
 
 //CompileStatic
 @Log

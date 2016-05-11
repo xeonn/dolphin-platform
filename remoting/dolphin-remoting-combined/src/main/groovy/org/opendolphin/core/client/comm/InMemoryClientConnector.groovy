@@ -15,9 +15,9 @@
  */
 package org.opendolphin.core.client.comm
 
-import org.opendolphin.core.comm.Command
 import groovy.util.logging.Log
 import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.comm.Command
 import org.opendolphin.core.server.ServerConnector
 
 @Log

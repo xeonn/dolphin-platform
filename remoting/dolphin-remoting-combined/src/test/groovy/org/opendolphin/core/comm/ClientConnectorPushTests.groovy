@@ -18,8 +18,8 @@ package org.opendolphin.core.comm
 import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.server.EventBus
 import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.EventBus
 import spock.lang.Specification
 
 import java.util.concurrent.CountDownLatch

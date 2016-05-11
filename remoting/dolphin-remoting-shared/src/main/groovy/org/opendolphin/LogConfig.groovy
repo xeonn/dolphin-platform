@@ -44,7 +44,11 @@ class LogConfig {
     }
 }
 
-import java.util.logging.*
+import java.util.logging.ConsoleHandler
+import java.util.logging.Level
+import java.util.logging.LogRecord
+import java.util.logging.Logger
+import java.util.logging.SimpleFormatter
 
 class ShortFormatter extends SimpleFormatter {
     synchronized String format(LogRecord record) {

@@ -17,7 +17,6 @@ package org.opendolphin.core.client
 
 import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.ModelStore
-import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.comm.ClientConnector
 import org.opendolphin.core.client.comm.OnFinishedDataAdapter

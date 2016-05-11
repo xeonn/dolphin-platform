@@ -15,10 +15,14 @@
  */
 package org.opendolphin.core.server.comm;
 
-import org.opendolphin.core.comm.Command;
 import groovy.lang.Closure;
+import org.opendolphin.core.comm.Command;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // todo: think about inlining this into receiver and use get/setProperty to ease registration
 public class ActionRegistry {

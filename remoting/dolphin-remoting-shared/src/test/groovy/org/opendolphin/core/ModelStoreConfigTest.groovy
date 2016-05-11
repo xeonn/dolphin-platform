@@ -15,7 +15,11 @@
  */
 package org.opendolphin.core
 
-import java.util.logging.*
+import java.util.logging.Handler
+import java.util.logging.Level
+import java.util.logging.Logger
+import java.util.logging.SimpleFormatter
+import java.util.logging.StreamHandler
 
 class ModelStoreConfigTest extends GroovyTestCase {
 

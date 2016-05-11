@@ -15,10 +15,9 @@
  */
 package org.opendolphin.core.server.action
 
+import groovy.util.logging.Log
 import org.opendolphin.core.comm.EmptyNotification
 import org.opendolphin.core.server.comm.ActionRegistry
-import groovy.transform.CompileStatic
-import groovy.util.logging.Log
 
 /**
  * An action that does nothing on the server.
