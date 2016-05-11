@@ -1,4 +1,9 @@
 rootProject.name = 'dolphin-platform'
+include 'remoting/dolphin-remoting-shared'
+include 'remoting/dolphin-remoting-server'
+include 'remoting/dolphin-remoting-client'
+include 'remoting/dolphin-remoting-client-javafx'
+include 'remoting/dolphin-remoting-combined'
 include 'platform/dolphin-platform-core'
 include 'platform/dolphin-platform-client'
 include 'platform/dolphin-platform-client-javafx'
@@ -13,6 +18,7 @@ include 'platform-examples/todo-example/todo-server-kumuluzee'
 include 'platform-examples/todo-example/todo-server-javaee'
 include 'platform-examples/todo-example/todo-client'
 include 'documentation/dolphin-platform-documentation'
+include 'documentation/dolphin-remoting-documentation'
 
 rootProject.children.each { project ->
     int slash = project.name.lastIndexOf('/')

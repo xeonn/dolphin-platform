@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import java.text.SimpleDateFormat
 
 buildscript {
@@ -51,6 +67,10 @@ subprojects { subprj ->
     apply plugin: 'java'
     apply plugin: 'org.kordamp.gradle.stats'
     apply from: rootProject.file('gradle/code-quality.gradle')
+
+    if (subprj.name.startsWith('dolphin-remoting')) {
+        apply plugin: 'groovy'
+    }
 
     subprj.tasks.withType(JavaCompile) {
         sourceCompatibility = subprj.sourceCompatibility
@@ -111,6 +131,26 @@ subprojects { subprj ->
         }
 
         test.useTestNG()
+
+        if (subprj.name.startsWith('dolphin-remoting')) {
+            dependencies {
+                testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+                testCompile 'cglib:cglib-nodep:3.2.0'
+                testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {
+                    exclude group: 'org.codehaus.groovy'
+                }
+            }
+
+            test {
+                useJUnit()
+                testLogging {
+                    exceptionFormat 'full'
+                    showCauses true
+                    showExceptions true
+                    showStackTraces true
+                }
+            }
+        }
     }
 }
 
