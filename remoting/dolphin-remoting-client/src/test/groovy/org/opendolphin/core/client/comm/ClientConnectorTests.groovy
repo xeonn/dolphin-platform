@@ -21,23 +21,7 @@ import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand
-import org.opendolphin.core.comm.BaseValueChangedCommand
-import org.opendolphin.core.comm.ChangeAttributeMetadataCommand
-import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.comm.DataCommand
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
-import org.opendolphin.core.comm.DeletePresentationModelCommand
-import org.opendolphin.core.comm.DeletedAllPresentationModelsOfTypeNotification
-import org.opendolphin.core.comm.DeletedPresentationModelNotification
-import org.opendolphin.core.comm.EmptyNotification
-import org.opendolphin.core.comm.InitializeAttributeCommand
-import org.opendolphin.core.comm.PresentationModelResetedCommand
-import org.opendolphin.core.comm.ResetPresentationModelCommand
-import org.opendolphin.core.comm.SavedPresentationModelNotification
-import org.opendolphin.core.comm.SwitchPresentationModelCommand
-import org.opendolphin.core.comm.ValueChangedCommand
+import org.opendolphin.core.comm.*
 
 import java.beans.PropertyChangeEvent
 import java.util.concurrent.CountDownLatch
@@ -202,7 +186,7 @@ class ClientConnectorTests extends GroovyTestCase {
 		assertCommandsTransmitted(3 + 1)
 		assert attribute.baseValue                  == 'new_base_value'
 		assert secondAttWithSameQualifier.baseValue == 'new_base_value'
-		assert clientConnector.transmittedCommands.any { it instanceof BaseValueChangedCommand }
+		assert clientConnector.transmittedCommands.any { it instanceof ChangeAttributeMetadataCommand }
 	}
 
 	void test_that_notWellKnown_property_causes_MetaDataChange() {
@@ -292,19 +276,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		assert 'one' == dolphin.getAt('p2').getAt('attr').value
 	}
 
-	void testHandle_InitialValueChanged_AttrNotExists() {
-		def attribute = new ClientAttribute('attr', 'initialValue')
-		assert !clientConnector.handle(new BaseValueChangedCommand(attributeId: attribute.id))
-	}
-
-	void testHandle_InitialValueChanged() {
-		def attribute = new ClientAttribute('attr', 'initialValue')
-		attribute.value = 'newValue'
-		dolphin.clientModelStore.registerAttribute(attribute)
-		clientConnector.handle(new BaseValueChangedCommand(attributeId: attribute.id))
-		assert 'newValue' == attribute.baseValue
-	}
-
 	void testHandle_ValueChanged_AttrNotExists() {
 		assert !clientConnector.handle(new ValueChangedCommand(attributeId: 0, oldValue: 'oldValue', newValue: 'newValue'))
 	}
@@ -314,6 +285,15 @@ class ClientConnectorTests extends GroovyTestCase {
    		dolphin.clientModelStore.registerAttribute(attribute)
         clientConnector.handle(new ValueChangedCommand(attributeId: attribute.id, oldValue: 'no-such-base-value', newValue: 'newValue'))
         assert 'initialValue' == attribute.value
+   	}
+
+    void testHandle_ValueChangedWithBadBaseValueIgnoredInNonStrictMode() {
+		clientConnector.strictMode = false
+   		def attribute = new ClientAttribute('attr', 'initialValue')
+   		dolphin.clientModelStore.registerAttribute(attribute)
+        clientConnector.handle(new ValueChangedCommand(attributeId: attribute.id, oldValue: 'no-such-base-value', newValue: 'newValue'))
+        assert 'newValue' == attribute.value
+		clientConnector.strictMode = true // re-setting for later tests
    	}
 
     void testHandle_ValueChanged() {

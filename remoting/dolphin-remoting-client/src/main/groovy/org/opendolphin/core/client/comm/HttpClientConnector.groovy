@@ -22,6 +22,7 @@ import org.apache.http.StatusLine
 import org.apache.http.client.HttpResponseException
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.FileEntity
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
@@ -46,7 +47,7 @@ class HttpClientConnector extends ClientConnector {
         this(clientDolphin, null, servletUrl)
     }
 
-    HttpClientConnector(ClientDolphin clientDolphin, CommandBatcher commandBatcher, String servletUrl) {
+    HttpClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher, String servletUrl) {
         super(clientDolphin, commandBatcher)
         this.servletUrl = servletUrl
         this.responseHandler = new SessionAffinityCheckingResponseHandler()
@@ -74,9 +75,32 @@ class HttpClientConnector extends ClientConnector {
                 signalHttpClient.execute(httpPost, signalResponseHandler)
             } else {
                 response = httpClient.execute(httpPost, responseHandler)
+
+                def cookieStore = httpClient.cookieStore
+                if( cookieStore ) {
+                    signalHttpClient.cookieStore = cookieStore;
+                }
+
                 log.finest response
                 result = codec.decode(response)
             }
+        }
+        catch (ex) {
+            log.severe("cannot transmit")
+            ex.printStackTrace()
+            throw ex
+        }
+        return result
+    }
+
+    String uploadFile(File file, URI handler) {
+        def result
+        try {
+            HttpPost httpPost = new HttpPost(handler)
+            httpPost.entity = new FileEntity(file, charset)
+
+            result = httpClient.execute(httpPost, responseHandler)
+            log.finest result
         }
         catch (ex) {
             log.severe("cannot transmit")

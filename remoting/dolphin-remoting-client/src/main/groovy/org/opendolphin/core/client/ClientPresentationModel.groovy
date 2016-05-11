@@ -15,11 +15,12 @@
  */
 package org.opendolphin.core.client
 
-import groovy.transform.CompileStatic
 import org.opendolphin.core.BasePresentationModel
+import org.opendolphin.core.Tag
+import groovy.transform.CompileStatic
 
 @CompileStatic
-class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {
+final class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {
 
     public  static final String AUTO_ID_SUFFIX = "-AUTO-CLT"
     boolean clientSideOnly = false

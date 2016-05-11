@@ -15,9 +15,9 @@
  */
 package org.opendolphin.binding
 
+import org.opendolphin.core.client.ClientAttributeWrapper
 import javafx.scene.control.TableColumn
 import javafx.util.Callback
-import org.opendolphin.core.client.ClientAttributeWrapper
 
 class JavaFxUtil {
 

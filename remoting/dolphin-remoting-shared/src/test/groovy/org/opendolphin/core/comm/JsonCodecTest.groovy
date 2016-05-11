@@ -95,7 +95,6 @@ public class JsonCodecTest extends GroovyTestCase {
         assertCodingCommand(new DeletePresentationModelCommand())
         assertCodingCommand(new EmptyNotification())
         assertCodingCommand(new InitializeAttributeCommand())
-        assertCodingCommand(new BaseValueChangedCommand())
         assertCodingCommand(new NamedCommand())
         assertCodingCommand(new PresentationModelResetedCommand())
         assertCodingCommand(new ResetPresentationModelCommand())
@@ -141,5 +140,106 @@ public class JsonCodecTest extends GroovyTestCase {
         assert in_command.newValue == out_command.newValue
     }
 
+    /**
+     * locale might be different for client and server
+     */
+    void testProperTypeEnAndDeAndEnAndDecodingADateDifferentLocale() {
 
+        def cpmc = new CreatePresentationModelCommand();
+        cpmc.attributes << [
+                propertyName: "theDate",
+                id          : "0",
+                qualifier   : "1",
+                value       : new Date(),
+                baseValue   : new Date(),
+        ]
+
+        cpmc.pmId = "untilDate0"
+        cpmc.pmType = "aDate"
+
+        def theOriginalValue = cpmc.attributes.get(0).get("value")
+        def codec = new JsonCodec()
+        def locale = Locale.getDefault()
+
+        try {
+            Locale.setDefault(Locale.GERMAN)
+            def encoded0 = codec.encode([cpmc])
+            Locale.setDefault(Locale.US)
+            def decoded0 = codec.decode(encoded0)[0]
+            // without proper transport encoding, we would end up here with:
+            // java.text.ParseException: Unparseable date: "27.02.2016"
+
+            def encoded1 = codec.encode([decoded0])
+            Locale.setDefault(Locale.GERMAN)
+            def decoded1 = codec.decode(encoded1)[0]
+
+            assert Date.class.cast(decoded1.attributes.get(0).get("value")).compareTo(Date.class.cast(theOriginalValue)) == 0
+
+        } catch (Exception e) {
+            Locale.setDefault(locale)
+            throw e
+        }
+        Locale.setDefault(locale)
+    }
+
+    /**
+     * this test works until 5ca3b2b but not beyond
+     * crashes at [2] with "Attribute values of this type are not allowed: LazyMap"
+     */
+    void testProperTypeEnAndDeAndEnAndDecodingADate() {
+
+        def cpmc = new CreatePresentationModelCommand();
+        cpmc.attributes << [
+                propertyName: "theDate",
+                id          : "0",
+                qualifier   : "1",
+                value       : new Date(),
+                baseValue   : new Date()
+        ]
+        cpmc.pmId = "untilDate0"
+        cpmc.pmType = "aDate"
+
+        def codec = new JsonCodec()
+
+        // [0] from one end
+        def encoded0 = codec.encode([cpmc])
+        // [1] to the other
+        def decoded0 = codec.decode(encoded0)[0];
+        // [2] and back
+        def encoded1 = codec.encode([decoded0])
+        // should work too
+        def decoded1 = codec.decode(encoded1)[0];
+
+        assert decoded1 != null;
+    }
+
+    /**
+     * this test works until 7fd89dd and beyond
+     */
+    void testProperTypeEnAndDeAndEnAndDecodingAString() {
+
+        def cpmc = new CreatePresentationModelCommand();
+        cpmc.attributes << [
+                propertyName: "theMessage",
+                id          : "0",
+                qualifier   : "1",
+                value       : "momo was here",
+                baseValue   : "momo was here"
+        ]
+        cpmc.pmId = "aName"
+        cpmc.pmType = "aString"
+
+        def codec = new JsonCodec()
+
+        // from one end
+        def encoded0 = codec.encode([cpmc])
+        // to the other
+        def decoded0 = codec.decode(encoded0)[0];
+        // and back
+        def encoded1 = codec.encode([decoded0])
+        // should work too
+        def decoded1 = codec.decode(encoded1)[0];
+
+        assert decoded1 != null;
+    }
 }

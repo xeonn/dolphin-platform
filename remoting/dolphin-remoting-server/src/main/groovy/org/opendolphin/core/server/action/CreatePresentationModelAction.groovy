@@ -19,8 +19,8 @@ import groovy.util.logging.Log
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerAttribute
+import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerPresentationModel
 import org.opendolphin.core.server.comm.ActionRegistry
 

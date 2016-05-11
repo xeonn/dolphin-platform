@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
+
+import groovy.transform.CompileStatic
+import org.codehaus.groovy.runtime.StringGroovyMethods
+
 // todo dk: go through all subtypes and apply the new naming convention
 
 /**

@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx.impl.numeric;
+package org.opendolphin.core.client.comm
 
-import javafx.beans.property.DoubleProperty;
+import org.opendolphin.core.client.ClientPresentationModel
 
 /**
- * Created by hendrikebbers on 27.09.15.
+ * Convenience class for OnFinishedData
  */
-public class DoubleJavaFXBidirectionalBinder extends AbstractNumericJavaFXBidirectionalBinder<Double> {
-
-    public DoubleJavaFXBidirectionalBinder(final DoubleProperty javaFxProperty) {
-        super(javaFxProperty);
-    }
-
+abstract public class OnFinishedDataAdapter implements OnFinishedData {
     @Override
-    public Double convertNumber(Number value) {
-        if (value == null) {
-            return null;
-        }
-        return value.doubleValue();
+    void onFinished(List<ClientPresentationModel> presentationModels) {
+            // ignore
     }
-
+    static OnFinishedData withAction (Closure cl) {
+        return new OnFinishedDataAdapter() {
+            @Override
+            void onFinishedData(List<Map> data) {
+                cl.call(data)
+            }
+        }
+    }
 }

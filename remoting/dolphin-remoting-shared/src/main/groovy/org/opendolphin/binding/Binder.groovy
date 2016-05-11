@@ -15,14 +15,14 @@
  */
 package org.opendolphin.binding
 
-import groovy.transform.Canonical
 import org.opendolphin.core.BasePresentationModel
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.Tag
 
 import java.beans.Introspector
-import java.beans.PropertyChangeEvent
+import groovy.transform.Canonical
 import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
 import java.util.logging.Level
 import java.util.logging.Logger
 

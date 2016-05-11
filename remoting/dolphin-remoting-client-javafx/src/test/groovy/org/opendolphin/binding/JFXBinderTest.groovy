@@ -24,10 +24,7 @@ import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientPresentationModel
 
-import static org.opendolphin.binding.JFXBinder.bind
-import static org.opendolphin.binding.JFXBinder.bindInfo
-import static org.opendolphin.binding.JFXBinder.unbind
-import static org.opendolphin.binding.JFXBinder.unbindInfo
+import static org.opendolphin.binding.JFXBinder.*
 
 class JFXBinderTest extends GroovyTestCase {
     static {

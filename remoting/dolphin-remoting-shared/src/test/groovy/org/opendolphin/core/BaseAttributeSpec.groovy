@@ -16,7 +16,6 @@
 package org.opendolphin.core
 
 import spock.lang.Specification
-
 import java.beans.PropertyChangeListener
 
 class BaseAttributeSpec extends Specification {

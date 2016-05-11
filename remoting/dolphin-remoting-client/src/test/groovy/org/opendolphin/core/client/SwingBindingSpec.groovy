@@ -15,12 +15,11 @@
  */
 package org.opendolphin.core.client
 
-import spock.lang.Specification
-
 import javax.swing.AbstractAction
 import java.awt.event.ActionEvent
 
 import static org.opendolphin.binding.Binder.bindInfo
+import spock.lang.Specification
 
 class DirtyBindingSpec extends Specification{
 

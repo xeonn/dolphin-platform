@@ -15,9 +15,9 @@
  */
 package org.opendolphin.core.client
 
-import groovy.transform.CompileStatic
 import org.opendolphin.core.BaseAttribute
 import org.opendolphin.core.Tag
+import groovy.transform.CompileStatic
 
 /**
  * A client side (remote) ClientAttribute is considered a remote representation of a ServerAttribute.

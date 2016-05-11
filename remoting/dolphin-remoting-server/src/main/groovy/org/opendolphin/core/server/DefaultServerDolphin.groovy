@@ -17,28 +17,20 @@ package org.opendolphin.core.server
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
-import org.opendolphin.core.AbstractDolphin
+import org.opendolphin.core.Attribute
 import org.opendolphin.core.BaseAttribute
+import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.ModelStore
 import org.opendolphin.core.Tag
-import org.opendolphin.core.comm.BaseValueChangedCommand
+import org.opendolphin.core.comm.AttributeMetadataChangedCommand
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
 import org.opendolphin.core.comm.DeletePresentationModelCommand
+import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
 import org.opendolphin.core.comm.InitializeAttributeCommand
 import org.opendolphin.core.comm.PresentationModelResetedCommand
 import org.opendolphin.core.comm.ValueChangedCommand
-import org.opendolphin.core.server.action.BaseValueChangeAction
-import org.opendolphin.core.server.action.ClosureServerAction
-import org.opendolphin.core.server.action.CreatePresentationModelAction
-import org.opendolphin.core.server.action.DeletePresentationModelAction
-import org.opendolphin.core.server.action.DeletedAllPresentationModelsOfTypeAction
-import org.opendolphin.core.server.action.DolphinServerAction
-import org.opendolphin.core.server.action.EmptyAction
-import org.opendolphin.core.server.action.NamedServerAction
-import org.opendolphin.core.server.action.StoreAttributeAction
-import org.opendolphin.core.server.action.StoreValueChangeAction
+import org.opendolphin.core.server.action.*
 import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.atomic.AtomicBoolean
@@ -87,7 +79,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         register new StoreValueChangeAction()
         register new StoreAttributeAction()
         register new CreatePresentationModelAction()
-        register new BaseValueChangeAction()
         register new DeletePresentationModelAction()
         register new DeletedAllPresentationModelsOfTypeAction()
         serverConnector.register new EmptyAction()
@@ -178,18 +169,20 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
             log.severe("Cannot rebase null attribute")
             return
         }
-        rebaseCommand(response, attribute.id)
+        response << new AttributeMetadataChangedCommand(
+            attributeId: attribute.id,
+            metadataName: Attribute.BASE_VALUE,
+            value: attribute.value)
     }
 
-    /** @deprecated use {@link #rebaseCommand(java.util.List, java.lang.String)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
+    /** @deprecated use attribute.rebase(). Will be removed in version 1.0! */
     static void rebase(List<Command> response, String attributeId){
         rebaseCommand(response, attributeId)
     }
 
-    /** Convenience method to let Dolphin rebase the value of an attribute */
+    /** @deprecated use attribute.rebase(). Will be removed in version 1.0! */
     static void rebaseCommand(List<Command> response, String attributeId){
-        if (null == response) return
-        response << new BaseValueChangedCommand(attributeId: attributeId)
+        throw new UnsupportedOperationException("Direct use of rebaseCommand is no longer supported. Use attribute.rebase()")
     }
 
     /** Convenience method to let Dolphin remove a presentation model directly on the server and notify the client.*/
@@ -222,7 +215,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
             log.severe("Cannot delete null presentation model")
             return
         }
-        delete(response, pm.id)
+        deleteCommand(response, pm.id)
     }
 
     /** @deprecated use {@link #deleteCommand(java.util.List, java.lang.String)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
@@ -258,7 +251,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
             log.severe("Cannot reset null presentation model")
             return
         }
-        reset(response, pm.id)
+        resetCommand(response, pm.id)
     }
 
     /** @deprecated use {@link #resetCommand(java.util.List, java.lang.String)}. You can use the "inline method refactoring". Will be removed in version 1.0! */

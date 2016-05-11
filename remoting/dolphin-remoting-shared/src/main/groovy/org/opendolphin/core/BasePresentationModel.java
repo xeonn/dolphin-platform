@@ -18,6 +18,8 @@ package org.opendolphin.core;
 import groovy.lang.MissingPropertyException;
 import groovy.util.Eval;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

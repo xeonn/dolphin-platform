@@ -15,8 +15,8 @@
  */
 package org.opendolphin.core.server.comm;
 
-import groovy.lang.Closure;
 import org.opendolphin.core.comm.Command;
+import groovy.lang.Closure;
 
 import java.util.List;
 
