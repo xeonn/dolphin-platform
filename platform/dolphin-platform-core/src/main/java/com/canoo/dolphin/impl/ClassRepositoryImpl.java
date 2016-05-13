@@ -21,6 +21,7 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.MappingException;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
@@ -100,7 +101,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
                 final Class<?> clazz = ReflectionHelper.getTypeParameter(field);
                 if(clazz == null) {
-                    throw new RuntimeException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
+                    throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
                 }
                 final FieldType type = DolphinUtils.getFieldType(clazz);
                 builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
