@@ -21,7 +21,9 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.MappingException;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
@@ -87,6 +89,7 @@ public class ClassRepositoryImpl implements ClassRepository {
     }
 
     private void createPresentationModelForClass(Class<?> beanClass) {
+        Assert.requireNonNull(beanClass, "beanClass");
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = builderFactory.createBuilder()
                 .withId(id)
@@ -97,6 +100,9 @@ public class ClassRepositoryImpl implements ClassRepository {
             if (Property.class.isAssignableFrom(field.getType()) || ObservableList.class.isAssignableFrom(field.getType())) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
                 final Class<?> clazz = ReflectionHelper.getTypeParameter(field);
+                if(clazz == null) {
+                    throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
+                }
                 final FieldType type = DolphinUtils.getFieldType(clazz);
                 builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
             }
