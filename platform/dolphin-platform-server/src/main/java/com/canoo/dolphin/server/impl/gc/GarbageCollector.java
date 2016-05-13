@@ -37,17 +37,17 @@ import java.util.List;
  */
 public class GarbageCollector {
 
-    private final IdentityHashMap<Instance, Object> removeOnGC;
+    private final IdentityHashMap<Instance, Object> removeOnGC = new IdentityHashMap<>();
 
-    private final IdentityHashMap<Object, Instance> allInstances;
+    private final IdentityHashMap<Object, Instance> allInstances = new IdentityHashMap<>();
 
-    private final IdentityHashMap<Property, Instance> propertyToParent;
+    private final IdentityHashMap<Property, Instance> propertyToParent = new IdentityHashMap<>();
 
-    private final IdentityHashMap<ObservableList, Instance> listToParent;
+    private final IdentityHashMap<ObservableList, Instance> listToParent = new IdentityHashMap<>();
 
-    private final IdentityHashMap<Class, List<Field>> propertyFieldCache;
+    private final IdentityHashMap<Class, List<Field>> propertyFieldCache = new IdentityHashMap<>();
 
-    private final IdentityHashMap<Class, List<Field>> listFieldCache;
+    private final IdentityHashMap<Class, List<Field>> listFieldCache = new IdentityHashMap<>();
 
     private final GarbageCollectionCallback onRemoveCallback;
 
@@ -61,12 +61,6 @@ public class GarbageCollector {
      */
     public GarbageCollector(GarbageCollectionCallback onRemoveCallback) {
         this.onRemoveCallback = Assert.requireNonNull(onRemoveCallback, "onRemoveCallback");
-        removeOnGC = new IdentityHashMap<>();
-        allInstances = new IdentityHashMap<>();
-        propertyToParent = new IdentityHashMap<>();
-        listToParent = new IdentityHashMap<>();
-        propertyFieldCache = new IdentityHashMap<>();
-        listFieldCache = new IdentityHashMap<>();
     }
 
     /**
