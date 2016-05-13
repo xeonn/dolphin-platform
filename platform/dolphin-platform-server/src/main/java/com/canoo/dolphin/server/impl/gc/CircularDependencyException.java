@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.impl.gc;
 
 /**
- * Exception that is thrown by {@link GarbageCollection} if a cycle in the model has been defined
+ * Exception that is thrown by {@link GarbageCollector} if a cycle in the model has been defined
  */
 public class CircularDependencyException extends RuntimeException {
 

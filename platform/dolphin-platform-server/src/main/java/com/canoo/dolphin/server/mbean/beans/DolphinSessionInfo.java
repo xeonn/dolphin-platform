@@ -16,7 +16,8 @@
 package com.canoo.dolphin.server.mbean.beans;
 
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.impl.gc.GarbageCollection;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
+import com.canoo.dolphin.util.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
@@ -28,27 +29,23 @@ public class DolphinSessionInfo implements DolphinSessionInfoMBean {
 
     private final WeakReference<DolphinSession> dolphinSessionRef;
 
-    private final WeakReference<GarbageCollection> garbageCollectionRef;
+    private final WeakReference<GarbageCollector> garbageCollectionRef;
 
-    public DolphinSessionInfo(DolphinSession dolphinSession, GarbageCollection garbageCollection) {
+    public DolphinSessionInfo(DolphinSession dolphinSession, GarbageCollector garbageCollector) {
         this.dolphinSessionRef = new WeakReference<>(dolphinSession);
-        this.garbageCollectionRef = new WeakReference<>(garbageCollection);
+        this.garbageCollectionRef = new WeakReference<>(garbageCollector);
     }
 
     private DolphinSession getSession() {
         DolphinSession session = dolphinSessionRef.get();
-        if(session == null) {
-            throw new RuntimeException("Session == null");
-        }
+        Assert.requireNonNull(session, "session");
         return session;
     }
 
-    private GarbageCollection getGarbageCollection() {
-        GarbageCollection garbageCollection = garbageCollectionRef.get();
-        if(garbageCollection == null) {
-            throw new RuntimeException("GarbageCollection == null");
-        }
-        return garbageCollection;
+    private GarbageCollector getGarbageCollection() {
+        GarbageCollector garbageCollector = garbageCollectionRef.get();
+        Assert.requireNonNull(garbageCollector, "garbageCollector");
+        return garbageCollector;
     }
 
     @Override

@@ -17,7 +17,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.internal.EventDispatcher;
-import com.canoo.dolphin.server.impl.gc.GarbageCollection;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
 
@@ -26,21 +26,21 @@ import org.opendolphin.core.Dolphin;
  */
 public class ServerBeanRepositoryImpl extends BeanRepositoryImpl implements ServerBeanRepository{
 
-    final GarbageCollection garbageCollection;
+    final GarbageCollector garbageCollector;
 
-    public ServerBeanRepositoryImpl(final Dolphin dolphin, final EventDispatcher dispatcher, final GarbageCollection garbageCollection) {
+    public ServerBeanRepositoryImpl(final Dolphin dolphin, final EventDispatcher dispatcher, final GarbageCollector garbageCollector) {
         super(dolphin, dispatcher);
-        this.garbageCollection = Assert.requireNonNull(garbageCollection, "garbageCollection");
+        this.garbageCollector = Assert.requireNonNull(garbageCollector, "garbageCollector");
     }
 
     @Override
     public <T> void delete(T bean) {
         super.delete(bean);
-        garbageCollection.onBeanRemoved(bean);
+        garbageCollector.onBeanRemoved(bean);
     }
 
     @Override
-    public <T> void deleteByGC(T bean) {
+    public <T> void onGarbageCollectionRejection(T bean) {
         super.delete(bean);
     }
 }

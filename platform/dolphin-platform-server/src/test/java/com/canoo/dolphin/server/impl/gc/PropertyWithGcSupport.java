@@ -22,16 +22,16 @@ import com.canoo.dolphin.impl.MockedProperty;
  */
 public class PropertyWithGcSupport<T> extends MockedProperty<T> {
 
-    private final GarbageCollection garbageCollection;
+    private final GarbageCollector garbageCollector;
 
-    public PropertyWithGcSupport(final GarbageCollection garbageCollection) {
-        this.garbageCollection = garbageCollection;
+    public PropertyWithGcSupport(final GarbageCollector garbageCollector) {
+        this.garbageCollector = garbageCollector;
     }
 
     @Override
     public void set(final T value) {
         final T oldValue = get();
         super.set(value);
-        garbageCollection.onPropertyValueChanged(this, oldValue, value);
+        garbageCollector.onPropertyValueChanged(this, oldValue, value);
     }
 }

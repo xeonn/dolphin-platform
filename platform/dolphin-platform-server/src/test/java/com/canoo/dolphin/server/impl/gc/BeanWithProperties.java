@@ -32,12 +32,12 @@ public class BeanWithProperties {
 
     private Property<BeanWithLists> listBeanProperty;
 
-    public BeanWithProperties(GarbageCollection garbageCollection) {
-        this.stringProperty = new PropertyWithGcSupport<>(garbageCollection);
-        this.booleanProperty = new PropertyWithGcSupport<>(garbageCollection);
-        this.doubleProperty = new PropertyWithGcSupport<>(garbageCollection);
-        this.beanProperty = new PropertyWithGcSupport<>(garbageCollection);
-        this.listBeanProperty = new PropertyWithGcSupport<>(garbageCollection);
+    public BeanWithProperties(GarbageCollector garbageCollector) {
+        this.stringProperty = new PropertyWithGcSupport<>(garbageCollector);
+        this.booleanProperty = new PropertyWithGcSupport<>(garbageCollector);
+        this.doubleProperty = new PropertyWithGcSupport<>(garbageCollector);
+        this.beanProperty = new PropertyWithGcSupport<>(garbageCollector);
+        this.listBeanProperty = new PropertyWithGcSupport<>(garbageCollector);
     }
 
     public Property<String> stringProperty() {

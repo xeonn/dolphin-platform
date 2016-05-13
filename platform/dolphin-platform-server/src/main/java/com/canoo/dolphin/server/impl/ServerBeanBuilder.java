@@ -18,9 +18,18 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.internal.BeanBuilder;
 
 /**
- * Created by hendrikebbers on 09.05.16.
+ * Interface that defines the {@link BeanBuilder} for the server
  */
 public interface ServerBeanBuilder extends BeanBuilder {
 
+   /**
+    * Method to create a root mode. A root model is the model that is defined as a controller in a MVC group.
+    * All other models are submodels since they will be part of a model hierarchy that starts with a root model.
+    * To create a model instance that is not a root model see {@link BeanBuilder#create(Class)}.
+    *
+    * @param beanClass the model class
+    * @param <T> type of the model
+    * @return the created model instance
+     */
    <T> T createRootModel(Class<T> beanClass);
 }

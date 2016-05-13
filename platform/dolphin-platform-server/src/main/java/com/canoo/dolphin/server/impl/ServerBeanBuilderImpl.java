@@ -29,7 +29,7 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.impl.gc.GarbageCollection;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -39,23 +39,23 @@ import org.opendolphin.core.PresentationModel;
  */
 public class ServerBeanBuilderImpl extends AbstractBeanBuilder implements ServerBeanBuilder {
 
-    private final GarbageCollection garbageCollection;
+    private final GarbageCollector garbageCollector;
 
-    public ServerBeanBuilderImpl(final ClassRepository classRepository, final BeanRepository beanRepository, final ListMapper listMapper, final PresentationModelBuilderFactory builderFactory, final EventDispatcher dispatcher, final GarbageCollection garbageCollection) {
+    public ServerBeanBuilderImpl(final ClassRepository classRepository, final BeanRepository beanRepository, final ListMapper listMapper, final PresentationModelBuilderFactory builderFactory, final EventDispatcher dispatcher, final GarbageCollector garbageCollector) {
         super(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-        this.garbageCollection = Assert.requireNonNull(garbageCollection, "garbageCollection");
+        this.garbageCollector = Assert.requireNonNull(garbageCollector, "garbageCollector");
     }
 
     public <T> T createRootModel(Class<T> beanClass) {
         T bean = super.create(beanClass);
-        garbageCollection.onBeanCreated(bean, true);
+        garbageCollector.onBeanCreated(bean, true);
         return bean;
     }
 
     @Override
     public <T> T create(Class<T> beanClass) {
         T bean = super.create(beanClass);
-        garbageCollection.onBeanCreated(bean, false);
+        garbageCollector.onBeanCreated(bean, false);
         return bean;
     }
 
@@ -73,12 +73,12 @@ public class ServerBeanBuilderImpl extends AbstractBeanBuilder implements Server
                 for(ListChangeEvent.Change<? extends T> c : event.getChanges()) {
                     if(c.isAdded()) {
                         for(Object added : list.subList(c.getFrom(), c.getTo())) {
-                            garbageCollection.onAddedToList(list, added);
+                            garbageCollector.onAddedToList(list, added);
                         }
                     }
                     if(c.isRemoved()) {
                         for(Object removed : c.getRemovedElements()) {
-                            garbageCollection.onRemovedFromList(list, removed);
+                            garbageCollector.onRemovedFromList(list, removed);
                         }
                     }
                     if(c.isReplaced()) {
@@ -97,7 +97,7 @@ public class ServerBeanBuilderImpl extends AbstractBeanBuilder implements Server
             @Override
             protected void notifyInternalListeners(ValueChangeEvent event) {
                 super.notifyInternalListeners(event);
-                garbageCollection.onPropertyValueChanged(event.getSource(), event.getOldValue(), event.getNewValue());
+                garbageCollector.onPropertyValueChanged(event.getSource(), event.getOldValue(), event.getNewValue());
             }
         };
     }

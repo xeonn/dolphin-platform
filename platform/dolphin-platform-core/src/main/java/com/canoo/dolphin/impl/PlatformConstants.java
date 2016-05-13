@@ -31,11 +31,11 @@ public interface PlatformConstants {
 
     String INIT_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "initClientContext";
 
-    String CLIENT_ID_HTTP_HEADER_NAME = DOLPHIN_PLATFORM_PREFIX + "dolphin-client-id";
+    String CLIENT_ID_HTTP_HEADER_NAME = DOLPHIN_PLATFORM_PREFIX + "dolphinClientId";
 
     String DESTROY_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
 
-    String GARBAGE_COLLECTION_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "garbage-collection";
+    String GARBAGE_COLLECTION_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "garbageCollection";
 
     String DOLPHIN_BEAN = "@@@ DOLPHIN_BEAN @@@";
 

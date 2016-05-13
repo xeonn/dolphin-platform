@@ -18,9 +18,16 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.internal.BeanRepository;
 
 /**
- * Created by hendrikebbers on 09.05.16.
+ * Interface that defines the {@link BeanRepository} for the server.
  */
 public interface ServerBeanRepository extends BeanRepository {
 
-    <T> void deleteByGC(T bean);
+    /**
+     * Method should be called if a bean get rejected by the Dolphin Platform garbage collection. This means
+     * that the bean isn't referenced anymore by another bean and can be removed. Implementations shoudl remove
+     * the bean from the model / remoting layer. For more information see {@link com.canoo.dolphin.server.impl.gc.GarbageCollector}
+     * @param rejectedBean the rejected bean
+     * @param <T> type of the bean.
+     */
+    <T> void onGarbageCollectionRejection(T rejectedBean);
 }

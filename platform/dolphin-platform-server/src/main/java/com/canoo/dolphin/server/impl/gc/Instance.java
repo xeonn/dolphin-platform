@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * This class holds an instance of a dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean}) for the internal
- * garbage collection (see {@link GarbageCollection}).
+ * garbage collection (see {@link GarbageCollector}).
  */
 public class Instance {
 

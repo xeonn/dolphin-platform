@@ -35,7 +35,7 @@ import java.util.List;
  * referenced by a root model. In this case a root model is a model as it's defined as a model for a MVC group in
  * Dolphin Platform (see {@link com.canoo.dolphin.server.DolphinModel}).
  */
-public class GarbageCollection {
+public class GarbageCollector {
 
     private final IdentityHashMap<Instance, Object> removeOnGC;
 
@@ -59,7 +59,7 @@ public class GarbageCollection {
      * Constructor
      * @param onRemoveCallback callback that will be called for each garbage collection call.
      */
-    public GarbageCollection(GarbageCollectionCallback onRemoveCallback) {
+    public GarbageCollector(GarbageCollectionCallback onRemoveCallback) {
         this.onRemoveCallback = Assert.requireNonNull(onRemoveCallback, "onRemoveCallback");
         removeOnGC = new IdentityHashMap<>();
         allInstances = new IdentityHashMap<>();
@@ -193,7 +193,7 @@ public class GarbageCollection {
         if(!UnstableFeatureFlags.isUseGc()) {
             return;
         }
-        onRemoveCallback.onRemove(removeOnGC.keySet());
+        onRemoveCallback.onReject(removeOnGC.keySet());
         for (Instance removedInstance : removeOnGC.keySet()) {
             for (Property property : removedInstance.getProperties()) {
                 propertyToParent.remove(property);

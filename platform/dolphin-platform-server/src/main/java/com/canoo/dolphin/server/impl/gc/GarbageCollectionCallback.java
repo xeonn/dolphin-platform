@@ -18,14 +18,14 @@ package com.canoo.dolphin.server.impl.gc;
 import java.util.Set;
 
 /**
- * A callback that is called by the {@link GarbageCollection} after each garbage collection.
+ * A callback that is called by the {@link GarbageCollector} after each garbage collection.
  */
 public interface GarbageCollectionCallback {
 
     /**
      * The method is called by the GC to handle all instanced of the models that can be removed
-     * @param instances set of all instances that can be removed
+     * @param rejectedInstances set of all instances that can be removed
      */
-    void onRemove(Set<Instance> instances);
+    void onReject(Set<Instance> rejectedInstances);
 
 }

@@ -40,7 +40,7 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.gc.GarbageCollection;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
 import com.canoo.dolphin.server.impl.gc.Instance;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
@@ -96,7 +96,7 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final DolphinSession dolphinSession;
 
-    private final GarbageCollection garbageCollection;
+    private final GarbageCollector garbageCollector;
 
     public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
@@ -113,25 +113,25 @@ public class DolphinContext implements DolphinSessionProvider {
         dolphin = dolphinFactory.create();
 
         //Init Garbage Collection
-        garbageCollection = new GarbageCollection(new GarbageCollectionCallback() {
+        garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
             @Override
-            public void onRemove(Set<Instance> instances) {
+            public void onReject(Set<Instance> instances) {
                 for(Instance instance : instances) {
-                    beanRepository.deleteByGC(instance.getBean());
+                    beanRepository.onGarbageCollectionRejection(instance.getBean());
                 }
             }
         });
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
-        beanRepository = new ServerBeanRepositoryImpl(dolphin, dispatcher, garbageCollection);
+        beanRepository = new ServerBeanRepositoryImpl(dolphin, dispatcher, garbageCollector);
         converters = new Converters(beanRepository);
 
         //Init BeanManager
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final ServerBeanBuilder beanBuilder = new ServerBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher, garbageCollection);
+        final ServerBeanBuilder beanBuilder = new ServerBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher, garbageCollector);
         beanManager = new BeanManagerImpl(beanRepository, beanBuilder);
 
         //Init MBean Support
@@ -145,7 +145,7 @@ public class DolphinContext implements DolphinSessionProvider {
         //Register commands
         registerDolphinPlatformDefaultCommands();
 
-        mBeanSubscription = mBeanRegistry.registerDolphinContext(dolphinSession, garbageCollection);
+        mBeanSubscription = mBeanRegistry.registerDolphinContext(dolphinSession, garbageCollector);
     }
 
     private void registerDolphinPlatformDefaultCommands() {
@@ -279,7 +279,7 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onGarbageCollection() {
-        garbageCollection.gc();
+        garbageCollector.gc();
     }
 
     public DefaultServerDolphin getDolphin() {

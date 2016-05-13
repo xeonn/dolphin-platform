@@ -30,7 +30,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.impl.ServerBeanBuilderImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.gc.GarbageCollection;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
 import com.canoo.dolphin.server.impl.gc.Instance;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
@@ -63,13 +63,13 @@ public abstract class AbstractDolphinBasedTest {
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final GarbageCollection garbageCollection = new GarbageCollection(new GarbageCollectionCallback() {
+        final GarbageCollector garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
             @Override
-            public void onRemove(Set<Instance> instances) {
+            public void onReject(Set<Instance> instances) {
 
             }
         });
-        final BeanBuilder beanBuilder = new ServerBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher, garbageCollection);
+        final BeanBuilder beanBuilder = new ServerBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher, garbageCollector);
         return new BeanManagerImpl(beanRepository, beanBuilder);
     }
 }
