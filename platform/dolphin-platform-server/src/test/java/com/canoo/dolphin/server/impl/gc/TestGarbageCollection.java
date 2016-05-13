@@ -16,7 +16,8 @@
 package com.canoo.dolphin.server.impl.gc;
 
 import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
-import org.hamcrest.Matchers;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -32,6 +34,16 @@ import static org.testng.Assert.fail;
  * Created by hendrikebbers on 20.01.16.
  */
 public class TestGarbageCollection {
+
+    @BeforeMethod
+    public void beforeEachTest() {
+        UnstableFeatureFlags.setUseGc(true);
+    }
+
+    @AfterMethod
+    public void afterEachTest() {
+        UnstableFeatureFlags.setUseGc(false);
+    }
 
     @Test
     public void testForRootBean() {
@@ -51,13 +63,13 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
 
         garbageCollector.onBeanRemoved(testBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
     }
 
@@ -79,7 +91,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == testBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
     }
@@ -127,7 +139,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
 
@@ -140,14 +152,14 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
 
         garbageCollector.onBeanRemoved(testBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
     }
 
@@ -173,7 +185,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
 
@@ -183,7 +195,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
 
@@ -193,14 +205,14 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
 
         garbageCollector.onBeanRemoved(testBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
     }
 
@@ -225,7 +237,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 2);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         removedObjects.clear();
@@ -236,7 +248,7 @@ public class TestGarbageCollection {
         parentBean.beanProperty().set(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 2);
         removedObjects.clear();
 
@@ -244,13 +256,13 @@ public class TestGarbageCollection {
         parentBean.beanProperty().set(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBean.beanProperty().set(null);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
 
@@ -260,7 +272,7 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
 
     }
@@ -285,7 +297,7 @@ public class TestGarbageCollection {
         garbageCollector.onBeanCreated(childBean, false);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
 
@@ -295,20 +307,20 @@ public class TestGarbageCollection {
         parentBean.getBeansList2().add(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBean.getBeansList2().clear();
         parentBean.getBeansList2().add(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBean.getBeansList2().clear();
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
     }
@@ -563,13 +575,13 @@ public class TestGarbageCollection {
         }
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBean.getBeansList().clear();
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1000));
+        assertThat(removedObjects, hasSize(1000));
         removedObjects.clear();
     }
 
@@ -597,14 +609,14 @@ public class TestGarbageCollection {
 
         assertEquals(garbageCollector.getManagedInstancesCount(), 1001);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         assertEquals(garbageCollector.getManagedInstancesCount(), 1001);
         removedObjects.clear();
 
         garbageCollector.onBeanRemoved(parentBean);
         assertEquals(garbageCollector.getManagedInstancesCount(), 1000);
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1000));
+        assertThat(removedObjects, hasSize(1000));
         assertEquals(garbageCollector.getManagedInstancesCount(), 0);
         removedObjects.clear();
     }
@@ -634,7 +646,7 @@ public class TestGarbageCollection {
         System.out.println("Added " + beanCount + " beans");
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
     }
 
@@ -663,13 +675,13 @@ public class TestGarbageCollection {
         System.out.println("Added " + beanCount + " beans");
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBean.getBeansList().clear();
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(beanCount + 1));
+        assertThat(removedObjects, hasSize(beanCount + 1));
         removedObjects.clear();
     }
 
@@ -698,25 +710,25 @@ public class TestGarbageCollection {
         parentBeanA.getBeansList2().add(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBeanB.getBeansList2().add(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBeanA.getBeansList2().remove(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBeanB.getBeansList2().remove(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
     }
@@ -749,13 +761,13 @@ public class TestGarbageCollection {
         parentBeanA.getBeansList2().add(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(0));
+        assertThat(removedObjects, hasSize(0));
         removedObjects.clear();
 
         parentBeanA.getBeansList2().remove(childBean);
 
         garbageCollector.gc();
-        assertThat(removedObjects, Matchers.hasSize(1));
+        assertThat(removedObjects, hasSize(1));
         assertTrue(removedObjects.get(0) == childBean);
         removedObjects.clear();
     }
@@ -845,7 +857,6 @@ public class TestGarbageCollection {
     }
 
     private GarbageCollector createGarbageCollection(GarbageCollectionCallback gcConsumer) {
-        UnstableFeatureFlags.setUseGc(true);
         return new GarbageCollector(gcConsumer);
     }
 }
