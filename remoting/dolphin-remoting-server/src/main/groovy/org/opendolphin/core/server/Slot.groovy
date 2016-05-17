@@ -19,7 +19,13 @@ import org.opendolphin.core.Tag
 
 // should be immutable?
 //CompileStatic
-class Slot {
+/**
+ * A Slot corresponds to an attribute in the presentation model.
+ * A slot consists of a propertyName (String), a value, a baseValue, a qualifier, and a tag.
+ * A DTO (data transfer object) consists of a list of slots; the DTO is the equivalent of a presentation model.
+ * @see DTO
+ */
+final class Slot {
     String propertyName
     Object value
     Object baseValue

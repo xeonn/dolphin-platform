@@ -16,7 +16,6 @@
 package org.opendolphin
 
 class StringUtil {
-
     /**
      * <p>Determines whether a given string is <code>null</code>, empty,
      * or only contains whitespace. If it contains anything other than
@@ -28,6 +27,15 @@ class StringUtil {
      *         blank.
      */
     public static boolean isBlank(String str) {
-        return str == null || str.trim().length() == 0
+        if (str == null || str.length() == 0) {
+            return true;
+        }
+        for (char c : str.toCharArray()) {
+            if (!Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

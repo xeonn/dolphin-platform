@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import org.opendolphin.core.BasePresentationModel
 
 @CompileStatic
-class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {
+final class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {
 
     public  static final String AUTO_ID_SUFFIX = "-AUTO-CLT"
     boolean clientSideOnly = false

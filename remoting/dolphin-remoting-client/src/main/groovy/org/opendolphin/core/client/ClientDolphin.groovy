@@ -19,6 +19,7 @@ import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.ModelStore
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.comm.ClientConnector
+import org.opendolphin.core.client.comm.OnFinishedDataAdapter
 import org.opendolphin.core.client.comm.OnFinishedHandler
 import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter
 import org.opendolphin.core.comm.AttributeCreatedNotification
@@ -67,7 +68,7 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
         return result
     }
 
-    /** both groovy- and java-friendly full-control factory */
+    /** both groovy- and java-friendly full-control constructor */
     ClientPresentationModel presentationModel(String id, String presentationModelType = null, ClientAttribute... attributes) {
         def result = new ClientPresentationModel(id, attributes as List)
         result.presentationModelType = presentationModelType
@@ -101,11 +102,7 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
 
     /** groovy-friendly convenience method for sending a named command that expects only data responses*/
     void data(String commandName, Closure onFinished) {
-        clientConnector.send(new NamedCommand(commandName), new OnFinishedHandlerAdapter(){
-            void onFinishedData(List<Map> data) {
-                onFinished(data)
-            }
-        })
+        clientConnector.send(new NamedCommand(commandName), OnFinishedDataAdapter.withAction(onFinished))
     }
 
     /** start of a fluent api: apply source to target. Use for selection changes in master-detail views. */
@@ -130,7 +127,7 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
      * Tags the attribute by
      * adding a new attribute with the given tag and value to the model store
      * inside the given presentation model and for the given property name.
-     * @return the ClientAttribute that carries the tag value
+     * @return the created ClientAttribute that carries the tag value
      */
     // todo: make this available on the server side as well
     public ClientAttribute tag(ClientPresentationModel model, String propertyName, Tag tag, def value) {
@@ -139,6 +136,11 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
         return attribute
     }
 
+    /**
+     * Adds the supplied attribute to the model store for the specified presentation model.
+     * @param presentationModel
+     * @param attribute
+     */
     public void addAttributeToModel(ClientPresentationModel presentationModel, ClientAttribute attribute) {
         presentationModel._internal_addAttribute(attribute)
         clientModelStore.registerAttribute(attribute)
@@ -161,6 +163,11 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
         return result
     }
 
+    /**
+     * Constructs a new {@link ClientPresentationModel} with attributes identical to the source presentation model.
+     * @param sourcePM
+     * @return the newly constructed ClientPresentationModel
+     */
     public ClientPresentationModel copy(ClientPresentationModel sourcePM) {
         def attrs  = sourcePM.attributes.collect{ copyAttribute(it) }
         def result = new ClientPresentationModel(null, attrs)
