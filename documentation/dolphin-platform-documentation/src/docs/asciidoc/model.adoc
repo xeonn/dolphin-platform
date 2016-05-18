@@ -34,6 +34,12 @@ public class MyModel {
 }
 ----
 
+NOTE: Maybe you ask yourself why the `@DolphinBean` annotation is needed. Currently the Dolphin Platform don't need the
+annotation and don't evaluate the annotation. We plan to add some features based on the annotation in the future. One
+example can be an annotation processor that checks if all classes that are defined as Dolphin Platform beans (by adding
+the `@DolphinBean` annotation) are valid Dolphin Platform beans.
+
+[[supported-types]]
 == Supported types
 
 Currently Dolphin Platform properties and collections support the following types as content:
@@ -46,9 +52,89 @@ Currently Dolphin Platform properties and collections support the following type
 * Short
 * Boolean
 * String
-* Date
-* Calendar
-* Enums
+* Date _(since version 0.8.4)_
+* Calendar _(since version 0.8.4)_
+* Enums _(since version 0.8.4)_
+* Dolphin Platform Bean <<bean-hierarchies, (see description)>>
 
-=== JavaScript restriction for the type Calendar adn Date
-As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it will be converted.
+CAUTION: As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it will be converted.
+
+== Using collections
+
+The first example of a Dolphin Platform bean contained only a String property but most of the time you need more complex
+beans. That's why we added collection support to the Dolphin Platform model API. Next to the properties a bean can contain
+lists that are define by the `ObservableList<V>` interface. The interface extends the default Java `List` interface by adding
+support for observers. A Dolphin Platform bean that contains a list might look like this:
+
+[source,java]
+----
+@DolphinBean
+public class MyModel {
+
+    private ObservableList<String> values;
+
+    public ObservableList<String> getValues() {
+        return values;
+    }
+
+}
+----
+
+A `ObservableList<V>` supports <<supported-types, all the same generic types as a property.>>
+
+[[bean-hierarchies]]
+== Defining hierarchies
+
+TODO
+
+== Add observer
+
+TODO
+
+== Defining the model of a MVC group
+
+As you can see in the following image each MVC group in the Dolphin Platform contains a model. A MVC group is based on the
+MVC pattern and contains a controller, a view and a model. In the Dolphin Platform approach the controller lives on the server
+and the view is defined on the client. The model is shared between the client and the server.
+
+.A MVC group
+image::model-sync.png[]
+
+As we have seen until now a model is defined by properties and collections. Since `Property<V>` and `ObservableList<V>` are
+defined as interfaces and no model provides a specific constructor it's still not clear how a new instance of a model should
+created. Thanks to the Dolphin Platform architecture a developer don't need to think about the model instanciation or the
+lifecycle of a model. Whenever a new MVC group is created by the platform the model instance will be created automatically.
+To do so the model must be defined in the controller. The Dolphin Platform provides the `@DolphinModel` annotation that is
+used to inject the created model instance in the controller instance. The following sample code shows a minimal controller
+that defines its model type:
+
+----
+@DolphinController
+public class MyController {
+
+    @DolphinModel
+    private MyModel model;
+
+}
+----
+
+The model instance will be automatically synchronized with the client. Since the model is completelly observable you can
+ simply bind the properties and lists that are defined in the model to your UI components in the client.
+
+== Working with the BeanManager
+
+TODO
+
+=== Creating new model instances
+
+TODO
+
+=== Removing a bean
+
+TODO
+
+== The Dolphin Platform garbage collection
+
+The Dolphin Platform contains a garbage collection on the server that will automatically remove all bean instances from
+the remoting layer that aren't referenced anymore by other beans. Currently the garbage collection is an experimental
+feature and it's active by default. If you want to use the garbage collection you need to activate it in the `dolphin.properties` file.
