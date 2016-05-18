@@ -23,6 +23,8 @@ import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 import com.canoo.dolphin.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ import java.util.List;
  * Dolphin Platform (see {@link com.canoo.dolphin.server.DolphinModel}).
  */
 public class GarbageCollector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GarbageCollector.class);
+
 
     private final IdentityHashMap<Instance, Object> removeOnGC = new IdentityHashMap<>();
 
@@ -185,8 +190,12 @@ public class GarbageCollector {
      */
     public synchronized void gc() {
         if(!UnstableFeatureFlags.isUseGc()) {
+            LOG.debug("GC deactivated, no beans will be removed!");
             return;
         }
+
+        LOG.debug("GC will remove " + removeOnGC.size() + " beans!");
+
         onRemoveCallback.onReject(removeOnGC.keySet());
         for (Instance removedInstance : removeOnGC.keySet()) {
             for (Property property : removedInstance.getProperties()) {
@@ -256,7 +265,13 @@ public class GarbageCollector {
     }
 
     private void addToGC(Instance instance, Object value) {
+
+        LOG.debug("Bean of type " + value.getClass() + " added to GC and will be removed on next GC run");
+
         removeOnGC.put(instance, value);
+
+        LOG.debug("GC will remove " + removeOnGC.size() + " beans at next GC run");
+
 
         for (Property property : instance.getProperties()) {
             Object propertyValue = property.get();
@@ -280,7 +295,12 @@ public class GarbageCollector {
     }
 
     private void removeFromGC(Instance instance) {
+        LOG.debug("Bean of type " + instance.getBean().getClass() + " removed to GC and will not be removed on next GC run");
+
         Object removed = removeOnGC.remove(instance);
+
+        LOG.debug("GC will remove " + removeOnGC.size() + " beans at next GC run");
+
 
         if (removed != null) {
             for (Property property : instance.getProperties()) {
