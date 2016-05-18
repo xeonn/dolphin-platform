@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,8 +39,7 @@ public class DefaultOpenDolphinFactoryTest {
         assertNotNull(serverDolphin.getServerConnector().getCodec());
         assertEquals(OptimizedJsonCodec.class, serverDolphin.getServerConnector().getCodec().getClass());
 
-        assertEquals(serverDolphin.getServerConnector().getRegistry().getActions().size(), 8);
-        assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("BaseValueChanged"));
+        assertEquals(serverDolphin.getServerConnector().getRegistry().getActions().size(), 7);
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("Empty"));
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("ValueChanged"));
         assertTrue(serverDolphin.getServerConnector().getRegistry().getActions().containsKey("CreatePresentationModel"));
@@ -51,5 +50,4 @@ public class DefaultOpenDolphinFactoryTest {
 
         assertEquals(serverDolphin.listPresentationModelIds().size(), 0);
     }
-
 }

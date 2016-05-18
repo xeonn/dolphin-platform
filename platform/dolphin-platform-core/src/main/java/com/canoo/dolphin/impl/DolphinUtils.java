@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
 import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -64,6 +65,7 @@ public class DolphinUtils {
     }
 
     public static FieldType getFieldType(Class<?> clazz) {
+        Assert.requireNonNull(clazz, "clazz");
         if (String.class.equals(clazz)) {
             return FieldType.STRING;
         }

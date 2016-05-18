@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,7 @@ public class Converters {
     }
 
     public Converter getConverter(Class<?> clazz) {
+        Assert.requireNonNull(clazz, "clazz");
         final ClassRepositoryImpl.FieldType type = DolphinUtils.getFieldType(clazz);
         switch (type) {
             default:
