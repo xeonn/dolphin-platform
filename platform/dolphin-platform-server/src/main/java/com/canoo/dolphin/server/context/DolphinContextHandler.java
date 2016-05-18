@@ -121,7 +121,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
             throw new DolphinContextException("Can not find or create matching dolphin context", e);
         }
 
-        LOG.debug("Handling request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
+        String userAgent = request.getHeader("user-agent");
+        LOG.debug("Handling request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId() + " from client with user-agent " + userAgent);
 
         currentContextThreadLocal.set(currentContext);
         try {
@@ -134,15 +135,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 }
                 commands.addAll(currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString()));
             } catch (Exception e) {
-                throw new DolphinRemotingException("Can not parse request!", e);
+                throw new DolphinRemotingException("Can not parse request! (DolphinContext " + currentContext.getId() + ")", e);
             }
 
             final List<Command> results = new ArrayList<>();
             try {
                 results.addAll(currentContext.handle(commands));
             } catch (Exception e) {
-                throw new DolphinCommandException("Can not handle the commands", e);
+                throw new DolphinCommandException("Can not handle the commands (DolphinContext " + currentContext.getId() + ")", e);
             }
+
+
 
             try {
                 response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());

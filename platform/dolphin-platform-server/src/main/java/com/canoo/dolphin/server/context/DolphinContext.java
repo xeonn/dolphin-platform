@@ -108,7 +108,6 @@ public class DolphinContext implements DolphinSessionProvider {
 
         //ID
         id = UUID.randomUUID().toString();
-
         //Init Open Dolphin
         dolphin = dolphinFactory.create();
 
@@ -214,6 +213,7 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onInitContext() {
+        LOG.debug("Initializing DolphinContext " + getId());
         platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher, converters);
     }
 
