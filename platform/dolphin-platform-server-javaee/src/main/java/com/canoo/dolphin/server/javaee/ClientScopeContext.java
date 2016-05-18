@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.util.Assert;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
@@ -38,6 +39,7 @@ public class ClientScopeContext implements Context {
 
     @Override
     public <T> T get(final Contextual<T> contextual) {
+        Assert.requireNonNull(contextual, "contextual");
         Bean bean = (Bean) contextual;
         if (getLocalStore().containsKey(bean.getBeanClass())) {
             return (T) getLocalStore().get(bean.getBeanClass()).getInstance();
@@ -48,6 +50,7 @@ public class ClientScopeContext implements Context {
 
     @Override
     public <T> T get(final Contextual<T> contextual, final CreationalContext<T> creationalContext) {
+        Assert.requireNonNull(contextual, "contextual");
         Bean bean = (Bean) contextual;
         if (getLocalStore().containsKey(bean.getBeanClass())) {
             return (T) getLocalStore().get(bean.getBeanClass()).getInstance();

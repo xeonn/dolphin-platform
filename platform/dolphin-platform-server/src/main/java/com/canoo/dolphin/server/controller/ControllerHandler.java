@@ -27,6 +27,7 @@ import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
+import com.canoo.dolphin.util.Assert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -64,11 +65,11 @@ public class ControllerHandler {
     private final BeanRepository beanRepository;
 
     public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, ServerBeanBuilder beanBuilder, BeanRepository beanRepository, ControllerRepository controllerRepository) {
-        this.mBeanRegistry = mBeanRegistry;
-        this.containerManager = containerManager;
-        this.beanBuilder = beanBuilder;
-        this.controllerRepository = controllerRepository;
-        this.beanRepository = beanRepository;
+        this.mBeanRegistry = Assert.requireNonNull(mBeanRegistry, "mBeanRegistry");
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.beanBuilder = Assert.requireNonNull(beanBuilder, "beanBuilder");
+        this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
     }
 
     public Object getControllerModel(String id) {
@@ -121,6 +122,7 @@ public class ControllerHandler {
     }
 
     private void attachModel(String controllerId, Object controller) {
+        Assert.requireNonNull(controller, "controller");
         List<Field> allFields = ReflectionHelper.getInheritedDeclaredFields(controller.getClass());
 
         Field modelField = null;

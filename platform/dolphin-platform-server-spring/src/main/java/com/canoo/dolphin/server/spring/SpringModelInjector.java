@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.util.Assert;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 
@@ -28,28 +29,23 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
  */
 public class SpringModelInjector extends InstantiationAwareBeanPostProcessorAdapter {
 
-    private ThreadLocal<ModelInjector> currentModelInjector = new ThreadLocal<>();
+    private final ThreadLocal<ModelInjector> currentModelInjector = new ThreadLocal<>();
 
-    private ThreadLocal<Class> currentControllerClass = new ThreadLocal<>();
+    private final ThreadLocal<Class> currentControllerClass = new ThreadLocal<>();
 
-    private static SpringModelInjector instance = new SpringModelInjector();
+    private static final SpringModelInjector instance = new SpringModelInjector();
 
-    public void prepare(Class controllerClass, ModelInjector injector) {
-        if(controllerClass == null) {
-            throw new IllegalArgumentException("controllerClass must not be null!");
-        }
-        if(injector == null) {
-            throw new IllegalArgumentException("injector must not be null!");
-        }
+    public void prepare(final Class controllerClass, final ModelInjector injector) {
+        Assert.requireNonNull(controllerClass, "controllerClass");
+        Assert.requireNonNull(injector, "injector");
+
         currentControllerClass.set(controllerClass);
         currentModelInjector.set(injector);
     }
 
     @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        if(bean == null) {
-            throw new IllegalArgumentException("bean must not be null!");
-        }
+    public boolean postProcessAfterInstantiation(final Object bean, final String beanName) throws BeansException {
+        Assert.requireNonNull(bean, "bean");
         Class controllerClass = currentControllerClass.get();
         if (controllerClass != null && controllerClass.isAssignableFrom(bean.getClass())) {
             ModelInjector modelInjector = currentModelInjector.get();
