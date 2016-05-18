@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 
@@ -31,6 +32,6 @@ public interface DolphinContextHandlerFactory {
      * @param controllerRepository the controllerRepository
      * @return the created instance
      */
-    DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager);
+    DolphinContextHandler create(DolphinPlatformConfiguration configuration, ControllerRepository controllerRepository, ContainerManager containerManager);
 
 }

@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -38,7 +39,7 @@ public class DolphinContextHandlerTest {
         //given:
         ControllerRepository controllerRepository = new ControllerRepository();
         OpenDolphinFactory openDolphinFactory = new DefaultOpenDolphinFactory();
-        DolphinContextHandler contextHandler = new DolphinContextHandler(openDolphinFactory, containerManager, controllerRepository);
+        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration(), openDolphinFactory, containerManager, controllerRepository);
 
         //then:
         assertNull(contextHandler.getCurrentContext());
@@ -50,7 +51,7 @@ public class DolphinContextHandlerTest {
         //given:
         ControllerRepository controllerRepository = new ControllerRepository();
         OpenDolphinFactory openDolphinFactory = new DefaultOpenDolphinFactory();
-        DolphinContextHandler contextHandler = new DolphinContextHandler(openDolphinFactory, containerManager, controllerRepository);
+        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration(), openDolphinFactory, containerManager, controllerRepository);
 
         //then:
         contextHandler.handle(request, response);

@@ -98,7 +98,7 @@ public class DolphinPlatformBootstrap {
         containerManager.init(servletContext);
 
         dolphinContextHandlerFactory = new DolphinContextHandlerFactoryImpl();
-        dolphinContextHandler = dolphinContextHandlerFactory.create(controllerRepository, containerManager);
+        dolphinContextHandler = dolphinContextHandlerFactory.create(configuration, controllerRepository, containerManager);
 
 
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(configuration.getDolphinPlatformServletMapping());

@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.util.Assert;
@@ -25,9 +26,9 @@ import com.canoo.dolphin.util.Assert;
 public class DolphinContextHandlerFactoryImpl implements DolphinContextHandlerFactory {
 
     @Override
-    public DolphinContextHandler create(ControllerRepository controllerRepository, ContainerManager containerManager) {
+    public DolphinContextHandler create(DolphinPlatformConfiguration configuration, ControllerRepository controllerRepository, ContainerManager containerManager) {
         Assert.requireNonNull(controllerRepository, "controllerRepository");
-        return new DolphinContextHandler(new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
+        return new DolphinContextHandler(configuration, new DefaultOpenDolphinFactory(), containerManager, controllerRepository);
     }
 
 }

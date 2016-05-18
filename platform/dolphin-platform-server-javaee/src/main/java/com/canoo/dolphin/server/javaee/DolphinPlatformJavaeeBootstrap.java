@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.server.javaee;
 
-import com.canoo.dolphin.server.config.ConfigurationFileLoader;
+import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import org.slf4j.Logger;

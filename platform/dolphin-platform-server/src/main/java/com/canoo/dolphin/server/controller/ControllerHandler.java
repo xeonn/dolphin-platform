@@ -15,14 +15,15 @@
  */
 package com.canoo.dolphin.server.controller;
 
-import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.impl.ReflectionHelper;
+import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
@@ -54,17 +55,20 @@ public class ControllerHandler {
 
     private final ContainerManager containerManager;
 
-    private final BeanManager beanManager;
+    private final ServerBeanBuilder beanBuilder;
 
     private final ControllerRepository controllerRepository;
 
     private final DolphinContextMBeanRegistry mBeanRegistry;
 
-    public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, BeanManager beanManager, ControllerRepository controllerRepository) {
+    private final BeanRepository beanRepository;
+
+    public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, ServerBeanBuilder beanBuilder, BeanRepository beanRepository, ControllerRepository controllerRepository) {
         this.mBeanRegistry = mBeanRegistry;
         this.containerManager = containerManager;
-        this.beanManager = beanManager;
+        this.beanBuilder = beanBuilder;
         this.controllerRepository = controllerRepository;
+        this.beanRepository = beanRepository;
     }
 
     public Object getControllerModel(String id) {
@@ -101,7 +105,7 @@ public class ControllerHandler {
 
         Object model = models.get(id);
         if (model != null) {
-            beanManager.remove(model);
+            beanRepository.delete(model);
         }
 
         Subscription subscription = mBeanSubscriptions.remove(id);
@@ -131,7 +135,7 @@ public class ControllerHandler {
         }
 
         if (modelField != null) {
-            Object model = beanManager.create(modelField.getType());
+            Object model = beanBuilder.createRootModel(modelField.getType());
             ReflectionHelper.setPrivileged(modelField, controller, model);
             models.put(controllerId, model);
         }

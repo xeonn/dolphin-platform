@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.config;
+package com.canoo.dolphin.server.impl;
+
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +48,8 @@ public class ConfigurationFileLoader {
     private static final String DOLPHIN_PLATFORM_SERVLET_MAPPING = "servletMapping";
 
     private static final String USE_CROSS_SITE_ORIGIN_FILTER = "useCrossSiteOriginFilter";
+
+    private static final String GARBAGE_COLLECTION_ACTIVE = "garbageCollectionActive";
 
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
@@ -110,6 +114,10 @@ public class ConfigurationFileLoader {
 
         if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
             configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
+        }
+
+        if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
+            UnstableFeatureFlags.setUseGc(Boolean.parseBoolean(prop.getProperty(GARBAGE_COLLECTION_ACTIVE)));
         }
 
         return configuration;

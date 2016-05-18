@@ -18,6 +18,7 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
@@ -55,12 +56,15 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     private final OpenDolphinFactory openDolphinFactory;
 
+    private final DolphinPlatformConfiguration configuration;
+
     private List<DolphinSessionListener> contextListeners;
 
-    public DolphinContextHandler(OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
+    public DolphinContextHandler(DolphinPlatformConfiguration configuration, OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
         this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
     }
 
     public void handle(final HttpServletRequest request, final HttpServletResponse response) {

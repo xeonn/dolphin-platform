@@ -18,8 +18,8 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
-import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.Property;
 import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;
@@ -93,8 +93,16 @@ public class PropertyImpl<T> implements Property<T> {
                 return newValue;
             }
         };
+        notifyInternalListeners(event);
+        notifyExternalListeners(event);
+    }
+
+    protected void notifyExternalListeners(ValueChangeEvent<T> event) {
         for(ValueChangeListener<? super T> listener : listeners) {
             listener.valueChanged(event);
         }
+    }
+
+    protected void notifyInternalListeners(ValueChangeEvent<T> event) {
     }
 }

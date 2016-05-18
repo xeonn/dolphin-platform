@@ -15,7 +15,11 @@
  */
 package com.canoo.dolphin.server.mbean.beans;
 
-import java.util.HashSet;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
+import com.canoo.dolphin.util.Assert;
+
+import java.lang.ref.WeakReference;
 import java.util.Set;
 
 /**
@@ -23,28 +27,54 @@ import java.util.Set;
  */
 public class DolphinSessionInfo implements DolphinSessionInfoMBean {
 
-    private String dolphinSessionId;
+    private final WeakReference<DolphinSession> dolphinSessionRef;
 
-    public DolphinSessionInfo(String dolphinSessionId) {
-        this.dolphinSessionId = dolphinSessionId;
+    private final WeakReference<GarbageCollector> garbageCollectionRef;
+
+    public DolphinSessionInfo(DolphinSession dolphinSession, GarbageCollector garbageCollector) {
+        this.dolphinSessionRef = new WeakReference<>(dolphinSession);
+        this.garbageCollectionRef = new WeakReference<>(garbageCollector);
+    }
+
+    private DolphinSession getSession() {
+        DolphinSession session = dolphinSessionRef.get();
+        Assert.requireNonNull(session, "session");
+        return session;
+    }
+
+    private GarbageCollector getGarbageCollection() {
+        GarbageCollector garbageCollector = garbageCollectionRef.get();
+        Assert.requireNonNull(garbageCollector, "garbageCollector");
+        return garbageCollector;
     }
 
     @Override
     public String getDolphinSessionId() {
-        return dolphinSessionId;
+        return getSession().getId();
     }
 
     @Override
     public Set<String> getAttributesNames() {
-        Set<String> dummySet = new HashSet<>();
-        dummySet.add("Currently");
-        dummySet.add("Not");
-        dummySet.add("Supported");
-        return dummySet;
+        return getSession().getAttributeNames();
     }
 
     @Override
     public Object getAttribute(String name) {
-        return "Currently not supported";
+        return getSession().getAttribute(name);
+    }
+
+    @Override
+    public long getGarbageCollectionRuns() {
+        return getGarbageCollection().getGcCalls();
+    }
+
+    @Override
+    public long getGarbageCollectionRemovedBeansTotal() {
+        return getGarbageCollection().getRemovedBeansCount();
+    }
+
+    @Override
+    public int getGarbageCollectionCurrentManagedBeansCount() {
+        return getGarbageCollection().getManagedInstancesCount();
     }
 }

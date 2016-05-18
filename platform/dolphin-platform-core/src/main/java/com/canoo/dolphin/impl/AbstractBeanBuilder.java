@@ -15,9 +15,7 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
-import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
@@ -40,14 +38,14 @@ import org.opendolphin.core.PresentationModel;
  *
  * The generated Dolphin Bean will be registered in the {@link BeanRepositoryImpl}.
  */
-public class BeanBuilderImpl implements BeanBuilder {
+public abstract class AbstractBeanBuilder implements BeanBuilder {
 
     private final ClassRepository classRepository;
     private final BeanRepository beanRepository;
     private final ListMapper listMapper;
     private final PresentationModelBuilderFactory builderFactory;
 
-    public BeanBuilderImpl(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
+    public AbstractBeanBuilder(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
         this.classRepository = classRepository;
         this.beanRepository = beanRepository;
         this.listMapper = listMapper;
@@ -105,7 +103,7 @@ public class BeanBuilderImpl implements BeanBuilder {
             @Override
             public void call(PropertyInfo propertyInfo) {
                 final Attribute attribute = model.findAttributeByPropertyName(propertyInfo.getAttributeName());
-                final Property property = new PropertyImpl<>(attribute, propertyInfo);
+                final Property property = create(attribute, propertyInfo);
                 propertyInfo.setPriviliged(bean, property);
             }
         });
@@ -115,14 +113,14 @@ public class BeanBuilderImpl implements BeanBuilder {
         classInfo.forEachObservableList(new ClassInfo.PropertyIterator() {
             @Override
             public void call(final PropertyInfo observableListInfo) {
-                final ObservableList observableList = new ObservableArrayList() {
-                    @Override
-                    protected void notifyInternalListeners(ListChangeEvent event) {
-                        listMapper.processEvent(observableListInfo, model.getId(), event);
-                    }
-                };
+                final ObservableList observableList = create(observableListInfo, model, listMapper);
                 observableListInfo.setPriviliged(bean, observableList);
             }
         });
     }
+
+    protected abstract <T> ObservableList<T> create(final PropertyInfo observableListInfo, final PresentationModel model, final ListMapper listMapper);
+
+
+    protected abstract <T> Property<T> create(final Attribute attribute, final PropertyInfo propertyInfo);
 }

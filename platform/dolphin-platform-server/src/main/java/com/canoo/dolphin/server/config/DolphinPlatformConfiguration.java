@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.config;
 
+import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
+
 import java.util.logging.Level;
 
 /**
@@ -24,6 +26,8 @@ import java.util.logging.Level;
 public class DolphinPlatformConfiguration {
 
     private boolean useCrossSiteOriginFilter = true;
+
+    private boolean garbageCollectionActive = false;
 
     private String dolphinPlatformServletMapping = "/dolphin";
 
@@ -51,5 +55,13 @@ public class DolphinPlatformConfiguration {
 
     public void setOpenDolphinLogLevel(Level openDolphinLogLevel) {
         this.openDolphinLogLevel = openDolphinLogLevel;
+    }
+
+    public boolean isGarbageCollectionActive() {
+        return garbageCollectionActive;
+    }
+
+    public void setGarbageCollectionActive(boolean garbageCollectionActive) {
+        this.garbageCollectionActive = garbageCollectionActive;
     }
 }

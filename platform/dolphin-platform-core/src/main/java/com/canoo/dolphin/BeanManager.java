@@ -93,28 +93,40 @@ public interface BeanManager extends Serializable {
      * synced with the client.
      *
      * @param bean the bean
+     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
+     * value to null and the gc will remove the bean.
      */
+    @Deprecated
     void remove(Object bean);
 
     /**
      * Remove all beans of the given type.
      *
      * @param beanClass the class that defines the bean type.
+     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
+     * value to null and the gc will remove the bean.
      */
+    @Deprecated
     void removeAll(Class<?> beanClass);
 
     /**
      * Remove all given beans.
      *
      * @param beans the beans that should be removed.
+     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
+     * value to null and the gc will remove the bean.
      */
+    @Deprecated
     void removeAll(Object... beans);
 
     /**
      * Remove all beans of the given type.
      *
      * @param beans the beans that should be removed.
+     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
+     * value to null and the gc will remove the bean.
      */
+    @Deprecated
     void removeAll(Collection<?> beans);
 
     /**

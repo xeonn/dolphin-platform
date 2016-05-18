@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.config;
 
+import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
 import org.testng.annotations.Test;
 
 import java.util.logging.Level;

@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.mbean.beans;
+package com.canoo.dolphin.server.impl.gc;
 
-import java.util.Set;
+import com.canoo.dolphin.impl.MockedProperty;
 
 /**
- * Interface for a MBean that defines a Dolphin Platform session (see {@link com.canoo.dolphin.server.DolphinSession})
+ * Created by hendrikebbers on 20.01.16.
  */
-public interface DolphinSessionInfoMBean {
+public class PropertyWithGcSupport<T> extends MockedProperty<T> {
 
-    String getDolphinSessionId();
+    private final GarbageCollector garbageCollector;
 
-    Set<String> getAttributesNames();
+    public PropertyWithGcSupport(final GarbageCollector garbageCollector) {
+        this.garbageCollector = garbageCollector;
+    }
 
-    Object getAttribute(String name);
-
-    long getGarbageCollectionRuns();
-
-    long getGarbageCollectionRemovedBeansTotal();
-
-    int getGarbageCollectionCurrentManagedBeansCount();
+    @Override
+    public void set(final T value) {
+        final T oldValue = get();
+        super.set(value);
+        garbageCollector.onPropertyValueChanged(this, oldValue, value);
+    }
 }

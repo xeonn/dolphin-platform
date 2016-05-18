@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.mbean.beans;
-
-import java.util.Set;
+package com.canoo.dolphin.server.impl;
 
 /**
- * Interface for a MBean that defines a Dolphin Platform session (see {@link com.canoo.dolphin.server.DolphinSession})
+ * A helper class that can be used to define some feature flags for unstable features that can be activated for tests.
  */
-public interface DolphinSessionInfoMBean {
+public class UnstableFeatureFlags {
 
-    String getDolphinSessionId();
+    /**
+     * Defines if the DOlphin Bean garbage Collection should be active
+     */
+    private static boolean USE_GC = false;
 
-    Set<String> getAttributesNames();
+    public static synchronized boolean isUseGc() {
+        return USE_GC;
+    }
 
-    Object getAttribute(String name);
-
-    long getGarbageCollectionRuns();
-
-    long getGarbageCollectionRemovedBeansTotal();
-
-    int getGarbageCollectionCurrentManagedBeansCount();
+    public static synchronized void setUseGc(boolean useGc) {
+        USE_GC = useGc;
+    }
 }

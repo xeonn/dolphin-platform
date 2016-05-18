@@ -16,6 +16,8 @@
 package com.canoo.dolphin.server.mbean;
 
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.mbean.beans.DolphinControllerInfo;
 import com.canoo.dolphin.server.mbean.beans.DolphinControllerInfoMBean;
 import com.canoo.dolphin.server.mbean.beans.DolphinSessionInfo;
@@ -40,12 +42,13 @@ public class DolphinContextMBeanRegistry {
 
     /**
      * Register a new dolphin session as a MBean
-     * @param dolphinSessionId the session id
+     * @param session the session
      * @return the subscription for deregistration
      */
-    public Subscription registerDolphinContext(String dolphinSessionId) {
-        Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
-        DolphinSessionInfoMBean mBean = new DolphinSessionInfo(dolphinSessionId);
+    public Subscription registerDolphinContext(DolphinSession session, GarbageCollector garbageCollector) {
+        Assert.requireNonNull(session, "session");
+        Assert.requireNonNull(garbageCollector, "garbageCollector");
+        DolphinSessionInfoMBean mBean = new DolphinSessionInfo(session, garbageCollector);
         return MBeanRegistry.getInstance().register(mBean, new MBeanDescription("com.canoo.dolphin", "DolphinSession", "session"));
     }
 

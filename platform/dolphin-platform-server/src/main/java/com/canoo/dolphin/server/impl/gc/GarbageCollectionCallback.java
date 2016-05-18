@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.mbean.beans;
+package com.canoo.dolphin.server.impl.gc;
 
 import java.util.Set;
 
 /**
- * Interface for a MBean that defines a Dolphin Platform session (see {@link com.canoo.dolphin.server.DolphinSession})
+ * A callback that is called by the {@link GarbageCollector} after each garbage collection.
  */
-public interface DolphinSessionInfoMBean {
+public interface GarbageCollectionCallback {
 
-    String getDolphinSessionId();
+    /**
+     * The method is called by the GC to handle all instanced of the models that can be removed
+     * @param rejectedInstances set of all instances that can be removed
+     */
+    void onReject(Set<Instance> rejectedInstances);
 
-    Set<String> getAttributesNames();
-
-    Object getAttribute(String name);
-
-    long getGarbageCollectionRuns();
-
-    long getGarbageCollectionRemovedBeansTotal();
-
-    int getGarbageCollectionCurrentManagedBeansCount();
 }
