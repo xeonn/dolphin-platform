@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class manages all {@link DolphinContext} instances
@@ -122,7 +123,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
         }
 
         String userAgent = request.getHeader("user-agent");
-        LOG.debug("Handling request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId() + " from client with user-agent " + userAgent);
+        LOG.debug("receiving Request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId() + " from client with user-agent " + userAgent);
 
         currentContextThreadLocal.set(currentContext);
         try {
@@ -145,7 +146,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 throw new DolphinCommandException("Can not handle the commands (DolphinContext " + currentContext.getId() + ")", e);
             }
 
-
+            LOG.debug("Sending response for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId() + " from client with user-agent " + userAgent);
 
             try {
                 response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
@@ -193,7 +194,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     public void removeAllContextsInSession(HttpSession session) {
         Assert.requireNonNull(session, "session");
-        for (DolphinContext context : getContexts(session)) {
+        for (DolphinContext context : new CopyOnWriteArrayList<DolphinContext>(getContexts(session))) {
             context.destroy();
         }
         session.removeAttribute(DOLPHIN_CONTEXT_MAP);

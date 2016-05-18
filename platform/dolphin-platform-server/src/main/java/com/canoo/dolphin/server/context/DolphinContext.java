@@ -155,6 +155,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.INIT_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.INIT_CONTEXT_COMMAND_NAME + " for DolphinContext " + getId());
                         onInitContext();
                     }
                 });
@@ -162,6 +163,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME + " for DolphinContext " + getId());
                         onDestroyContext();
                     }
                 });
@@ -169,6 +171,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME + " for DolphinContext " + getId());
                         onRegisterController();
                     }
                 });
@@ -176,6 +179,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME + " for DolphinContext " + getId());
                         onDestroyController();
                     }
                 });
@@ -183,6 +187,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME + " for DolphinContext " + getId());
                         onCallControllerAction();
                     }
                 });
@@ -190,6 +195,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME + " for DolphinContext " + getId());
                         onPollEventBus();
                     }
                 });
@@ -197,6 +203,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME + " for DolphinContext " + getId());
                         onReleaseEventBus();
                     }
                 });
@@ -204,6 +211,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.debug("Handling " + PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME + " for DolphinContext " + getId());
                         onGarbageCollection();
                     }
                 });
@@ -213,7 +221,6 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onInitContext() {
-        LOG.debug("Initializing DolphinContext " + getId());
         platformBeanRepository = new ServerPlatformBeanRepository(dolphin, beanRepository, dispatcher, converters);
     }
 
