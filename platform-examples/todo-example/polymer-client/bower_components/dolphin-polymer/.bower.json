@@ -38,7 +38,7 @@
   "_resolution": {
     "type": "version",
     "tag": "0.8.5",
-    "commit": "5c2b188485e51979cc346021c7facaa9d2f01e39"
+    "commit": "6672c8b74390a5ae34cf5918b6a8b08ac9ec2681"
   },
   "_source": "https://github.com/canoo/dolphin-platform-polymer.git",
   "_target": "0.8.5",
