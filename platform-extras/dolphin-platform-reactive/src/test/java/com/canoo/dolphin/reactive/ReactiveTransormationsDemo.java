@@ -17,9 +17,9 @@ public class ReactiveTransormationsDemo {
 
         System.out.println("throttleLast");
 
-        Property<String> property = new MockedProperty<>();
+        final Property<String> property = new MockedProperty<>();
         property.set("");
-        Property<String> debouncedProperty = ReactiveTransormations.throttleLast(property, 200, TimeUnit.MILLISECONDS);
+        final Property<String> debouncedProperty = ReactiveTransormations.throttleLast(property, 200, TimeUnit.MILLISECONDS);
         debouncedProperty.onChanged(new ValueChangeListener<String>() {
             @Override
             public void valueChanged(ValueChangeEvent<? extends String> evt) {
@@ -35,9 +35,9 @@ public class ReactiveTransormationsDemo {
 
         System.out.println("filter");
 
-        Property<String> property2 = new MockedProperty<>();
+        final Property<String> property2 = new MockedProperty<>();
         property2.set("");
-        Property<String> debouncedProperty2 = ReactiveTransormations.filter(property2, new Func1<String, Boolean>() {
+        final Property<String> debouncedProperty2 = ReactiveTransormations.filter(property2, new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() % 2 == 0;
