@@ -4,6 +4,7 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import rx.functions.Action1;
 
 import java.util.List;
@@ -20,12 +21,13 @@ public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Actio
 
     private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
-    public TransformedPropertyImpl(Subscription subscription) {
+    public TransformedPropertyImpl(final Subscription subscription) {
+        Assert.requireNonNull(subscription, "subscription");
         this.subscription = subscription;
     }
 
     @Override
-    public void set(T value) {
+    public void set(final T value) {
         throw new RuntimeException("The transformed property is bound to another property!");
     }
 
@@ -35,7 +37,7 @@ public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Actio
     }
 
     @Override
-    public Subscription onChanged(ValueChangeListener<? super T> listener) {
+    public Subscription onChanged(final ValueChangeListener<? super T> listener) {
         listeners.add(listener);
         return new Subscription() {
             @Override
@@ -73,7 +75,7 @@ public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Actio
     }
 
     @Override
-    public void call(T t) {
+    public void call(final T t) {
         T oldValue = this.value;
         this.value = t;
         firePropertyChanged(oldValue, value);
