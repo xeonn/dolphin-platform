@@ -1,5 +1,7 @@
 package com.canoo.dolphin.reactive;
 
+import com.canoo.dolphin.event.ValueChangeEvent;
+import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.impl.MockedProperty;
 import com.canoo.dolphin.mapping.Property;
 import rx.functions.Func1;
@@ -18,7 +20,12 @@ public class ReactiveTransormationsDemo {
         Property<String> property = new MockedProperty<>();
         property.set("");
         Property<String> debouncedProperty = ReactiveTransormations.throttleLast(property, 200, TimeUnit.MILLISECONDS);
-        debouncedProperty.onChanged(e -> System.out.println(debouncedProperty.get().length()));
+        debouncedProperty.onChanged(new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                System.out.println(debouncedProperty.get().length());
+            }
+        });
 
         for(int i = 0; i < 50; i++) {
             property.set(property.get() + "A");
@@ -36,7 +43,12 @@ public class ReactiveTransormationsDemo {
                 return s.length() % 2 == 0;
             }
         });
-        debouncedProperty2.onChanged(e -> System.out.println(debouncedProperty2.get().length()));
+        debouncedProperty2.onChanged(new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                System.out.println(debouncedProperty2.get().length());
+            }
+        });
 
         for(int i = 0; i < 50; i++) {
             property2.set(property2.get() + "A");
