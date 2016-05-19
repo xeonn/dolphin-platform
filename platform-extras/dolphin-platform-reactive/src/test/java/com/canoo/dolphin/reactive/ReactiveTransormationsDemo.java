@@ -2,6 +2,7 @@ package com.canoo.dolphin.reactive;
 
 import com.canoo.dolphin.impl.MockedProperty;
 import com.canoo.dolphin.mapping.Property;
+import rx.functions.Func1;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class ReactiveTransormationsDemo {
 
     public static void main(String... args) throws Exception{
+
+        System.out.println("throttleLast");
+
         Property<String> property = new MockedProperty<>();
         property.set("");
         Property<String> debouncedProperty = ReactiveTransormations.throttleLast(property, 200, TimeUnit.MILLISECONDS);
@@ -20,7 +24,25 @@ public class ReactiveTransormationsDemo {
             property.set(property.get() + "A");
             Thread.sleep(20);
         }
-        Thread.sleep(100);
+        Thread.sleep(2000);
+
+        System.out.println("filter");
+
+        Property<String> property2 = new MockedProperty<>();
+        property2.set("");
+        Property<String> debouncedProperty2 = ReactiveTransormations.filter(property2, new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String s) {
+                return s.length() % 2 == 0;
+            }
+        });
+        debouncedProperty2.onChanged(e -> System.out.println(debouncedProperty2.get().length()));
+
+        for(int i = 0; i < 50; i++) {
+            property2.set(property2.get() + "A");
+            Thread.sleep(20);
+        }
+        Thread.sleep(500);
     }
 
 }
