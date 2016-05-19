@@ -102,7 +102,7 @@ bintray {
     key = project.bintrayApiKey
     publications = ['mavenCustom']
     pkg {
-        repo = 'maven'
+        repo = 'dolphin-platform'
         userOrg = 'canoo'
         name = project.name
         desc = project.project_description
