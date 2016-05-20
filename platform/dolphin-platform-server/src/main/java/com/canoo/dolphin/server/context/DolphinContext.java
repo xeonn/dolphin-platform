@@ -40,8 +40,9 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.gc.GarbageCollector;
+import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.util.Assert;
@@ -300,9 +301,12 @@ public class DolphinContext implements DolphinSessionProvider {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
 
-        NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
-        results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
-
+        if(UnstableFeatureFlags.isUseGc()) {
+            if(commands.size() != 1 || !PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME.equals(commands.get(0).getId())) {
+                NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
+                results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
+            }
+        }
         return results;
     }
 
