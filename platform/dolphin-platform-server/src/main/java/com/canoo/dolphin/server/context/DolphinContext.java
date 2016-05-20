@@ -108,7 +108,6 @@ public class DolphinContext implements DolphinSessionProvider {
 
         //ID
         id = UUID.randomUUID().toString();
-
         //Init Open Dolphin
         dolphin = dolphinFactory.create();
 
@@ -156,6 +155,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.INIT_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.INIT_CONTEXT_COMMAND_NAME, getId());
                         onInitContext();
                     }
                 });
@@ -163,6 +163,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME, getId());
                         onDestroyContext();
                     }
                 });
@@ -170,6 +171,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, getId());
                         onRegisterController();
                     }
                 });
@@ -177,6 +179,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, getId());
                         onDestroyController();
                     }
                 });
@@ -184,6 +187,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, getId());
                         onCallControllerAction();
                     }
                 });
@@ -191,6 +195,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, getId());
                         onPollEventBus();
                     }
                 });
@@ -198,6 +203,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, getId());
                         onReleaseEventBus();
                     }
                 });
@@ -205,6 +211,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, getId());
                         onGarbageCollection();
                     }
                 });

@@ -16,6 +16,8 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -24,6 +26,8 @@ import javax.servlet.http.HttpSessionListener;
  * A {@link HttpSessionListener} that destroys all {@link DolphinContext} instances for a session
  */
 public class DolphinContextCleaner implements HttpSessionListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinContextCleaner.class);
 
     //We can not simply pass this value in the constructor because CDI fails in this case
     private DolphinContextHandler dolphinContextHandler;
@@ -44,6 +48,9 @@ public class DolphinContextCleaner implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         Assert.requireNonNull(sessionEvent, "sessionEvent");
+
+        LOG.debug("Session " + sessionEvent.getSession().getId() + " destroyed! Will remove all DolphinContext instances for the session.");
+
         dolphinContextHandler.removeAllContextsInSession(sessionEvent.getSession());
     }
 }

@@ -115,7 +115,8 @@ public class ControllerHandler {
     }
 
     public void destroyAllControllers() {
-        for(String id : getAllControllerIds()) {
+        List<String> currentControllerIds = new ArrayList<>(getAllControllerIds());
+        for(String id : currentControllerIds) {
             destroyController(id);
         }
     }
