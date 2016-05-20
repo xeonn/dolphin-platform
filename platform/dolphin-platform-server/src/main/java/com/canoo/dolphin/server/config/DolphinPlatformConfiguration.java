@@ -25,6 +25,8 @@ import java.util.logging.Level;
  */
 public class DolphinPlatformConfiguration {
 
+    public final static int SESSION_TIMEOUT_DEFAULT_VALUE = 15*60;
+
     private boolean useCrossSiteOriginFilter = true;
 
     private boolean garbageCollectionActive = false;
@@ -32,6 +34,16 @@ public class DolphinPlatformConfiguration {
     private String dolphinPlatformServletMapping = "/dolphin";
 
     private Level openDolphinLogLevel = Level.SEVERE;
+
+    private int sessionTimeout = SESSION_TIMEOUT_DEFAULT_VALUE;
+
+    public int getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(int sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
 
     public boolean isUseCrossSiteOriginFilter() {
         return useCrossSiteOriginFilter;

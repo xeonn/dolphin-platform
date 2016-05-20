@@ -15,7 +15,11 @@
  */
 package com.canoo.dolphin.client.clientscope;
 
+import com.canoo.dolphin.client.DolphinSessionException;
+import com.canoo.dolphin.client.impl.ForwardableCallback;
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.DolphinRemotingException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -48,25 +52,24 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     private final DefaultHttpClient signalHttpClient;
 
-    private final SimpleResponseHandler responseHandler;
+    private final IdBasedResponseHandler responseHandler;
 
     private final SimpleResponseHandler signalResponseHandler;
 
+    private final ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
+
     private String clientId;
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, String servletUrl) {
-        this(clientDolphin, null, servletUrl);
-    }
-
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, CommandBatcher commandBatcher, String servletUrl) {
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) {
         super(clientDolphin, commandBatcher);
-        this.servletUrl = servletUrl;
+        this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
+        this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
 
         httpClient = new DefaultHttpClient();
         signalHttpClient = new DefaultHttpClient();
 
-        this.responseHandler = new SimpleResponseHandler(this);
-        this.signalResponseHandler = new SimpleResponseHandler(this);
+        this.responseHandler = new IdBasedResponseHandler(this);
+        this.signalResponseHandler = new SimpleResponseHandler();
     }
 
     public List<Command> transmit(List<Command> commands) {
@@ -86,7 +89,9 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
                 result = getCodec().decode(response);
             }
         } catch (Exception e) {
-            throw new DolphinRemotingException("Error in remoting layer", e);
+            DolphinRemotingException dolphinRemotingException = new DolphinRemotingException("Error in remoting layer", e);
+            remotingErrorHandler.call(dolphinRemotingException);
+            throw dolphinRemotingException;
         }
         return result;
     }
@@ -96,32 +101,64 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
     }
 
     protected void setClientId(String clientId) {
-        if(this.clientId != null && !this.clientId.equals(clientId)) {
+        if (this.clientId != null && !this.clientId.equals(clientId)) {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
         this.clientId = clientId;
     }
 }
 
-class SimpleResponseHandler implements ResponseHandler<String> {
+class IdBasedResponseHandler implements ResponseHandler<String> {
 
-    private DolphinPlatformHttpClientConnector clientConnector;
+    private final DolphinPlatformHttpClientConnector clientConnector;
 
-    SimpleResponseHandler(DolphinPlatformHttpClientConnector clientConnector) {
-        this.clientConnector = clientConnector;
+    private String lastSessionId = null;
+
+    IdBasedResponseHandler(DolphinPlatformHttpClientConnector clientConnector) {
+        this.clientConnector = Assert.requireNonNull(clientConnector, "clientConnector");
     }
 
     @Override
     public String handleResponse(HttpResponse response) throws IOException {
-        if (response == null) {
-            throw new DolphinRemotingException("No dolphin id was send from the server!");
-        }
-
         final StatusLine statusLine = response.getStatusLine();
         final HttpEntity entity = response.getEntity();
 
-        final Header dolphinHeader = response.getFirstHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
-        clientConnector.setClientId(dolphinHeader.getValue());
+        if (statusLine.getStatusCode() >= 300) {
+            EntityUtils.consume(entity);
+            throw new HttpResponseException(statusLine.getStatusCode(),
+                    statusLine.getReasonPhrase());
+        }
+
+        try {
+            final Header dolphinHeader = response.getFirstHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
+            clientConnector.setClientId(dolphinHeader.getValue());
+        } catch (Exception e) {
+            throw new DolphinSessionException("Error in handling Dolphin Session ID", e);
+        }
+
+        String sessionID = null;
+        Header cookieHeader = response.getFirstHeader("Set-Cookie");
+        if (cookieHeader != null) {
+            sessionID = cookieHeader.getValue();
+        }
+        if (lastSessionId != null && sessionID != null && sessionID != lastSessionId) {
+            throw new DolphinSessionException("Http session must not change but did. Old: " + lastSessionId + ", new: " + sessionID);
+        }
+        lastSessionId = sessionID;
+
+        return entity == null ? null : EntityUtils.toString(entity);
+    }
+}
+
+class SimpleResponseHandler implements ResponseHandler<String> {
+
+    SimpleResponseHandler() {
+    }
+
+    @Override
+    public String handleResponse(HttpResponse response) throws IOException {
+        final StatusLine statusLine = response.getStatusLine();
+        final HttpEntity entity = response.getEntity();
 
         if (statusLine.getStatusCode() >= 300) {
             EntityUtils.consume(entity);

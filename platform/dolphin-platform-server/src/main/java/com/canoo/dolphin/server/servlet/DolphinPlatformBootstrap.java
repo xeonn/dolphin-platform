@@ -19,7 +19,7 @@ import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.DolphinContext;
-import com.canoo.dolphin.server.context.DolphinContextCleaner;
+import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
 import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
@@ -111,8 +111,8 @@ public class DolphinPlatformBootstrap {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
 
-        DolphinContextCleaner contextCleaner = new DolphinContextCleaner();
-        contextCleaner.init(dolphinContextHandler);
+        DolphinHttpSessionListener contextCleaner = new DolphinHttpSessionListener();
+        contextCleaner.init(dolphinContextHandler, configuration);
         servletContext.addListener(contextCleaner);
 
         java.util.logging.Logger openDolphinLogger = Logger.getLogger("org.opendolphin");

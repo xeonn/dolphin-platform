@@ -21,9 +21,11 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientInitializationException;
 import com.canoo.dolphin.client.ControllerInitalizationException;
 import com.canoo.dolphin.client.ControllerProxy;
-import com.canoo.dolphin.client.State;
+import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.Callback;
+import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.lang.ref.WeakReference;
@@ -51,17 +53,19 @@ public class ClientContextImpl implements ClientContext {
 
     private final DolphinCommandHandler dolphinCommandHandler;
 
-    public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager) throws ExecutionException, InterruptedException {
-        Assert.requireNonNull(clientDolphin, "clientDolphin");
-        Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
-        Assert.requireNonNull(dolphinCommandHandler, "dolphinCommandHandler");
-        Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
-        Assert.requireNonNull(clientBeanManager, "clientBeanManager");
-        this.clientDolphin = clientDolphin;
-        this.controllerProxyFactory = controllerProxyFactory;
-        this.dolphinCommandHandler = dolphinCommandHandler;
-        this.platformBeanRepository = platformBeanRepository;
-        this.clientBeanManager = clientBeanManager;
+    private final ClientConfiguration clientConfiguration;
+
+    private ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
+
+    public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) throws ExecutionException, InterruptedException {
+        this.clientDolphin = Assert.requireNonNull(clientDolphin, "clientDolphin");
+        this.controllerProxyFactory = Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
+        this.dolphinCommandHandler = Assert.requireNonNull(dolphinCommandHandler, "dolphinCommandHandler");
+        this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
+        this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
+        this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
+        this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
+
         registeredWeakControllers = new CopyOnWriteArrayList<>();
         try {
             dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle((v, e) -> {
@@ -124,6 +128,22 @@ public class ClientContextImpl implements ClientContext {
         );
 
         return result;
+    }
+
+    @Override
+    public Subscription onRemotingError(final Callback<DolphinRemotingException> callback) {
+        Assert.requireNonNull(callback, "callback");
+        return remotingErrorHandler.register(new Callback<DolphinRemotingException>() {
+            @Override
+            public void call(final DolphinRemotingException e) {
+                clientConfiguration.getUiThreadHandler().executeInsideUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.call(e);
+                    }
+                });
+            }
+        });
     }
 
     private void checkForInitializedState() {

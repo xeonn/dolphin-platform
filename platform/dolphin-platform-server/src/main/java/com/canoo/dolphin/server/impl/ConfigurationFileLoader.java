@@ -51,6 +51,8 @@ public class ConfigurationFileLoader {
 
     private static final String GARBAGE_COLLECTION_ACTIVE = "garbageCollectionActive";
 
+    private static final String SESSION_TIMEOUT = "sessionTimeout";
+
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
      * can be found a default config will be returned.
@@ -118,6 +120,10 @@ public class ConfigurationFileLoader {
 
         if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
             UnstableFeatureFlags.setUseGc(Boolean.parseBoolean(prop.getProperty(GARBAGE_COLLECTION_ACTIVE)));
+        }
+
+        if(prop.containsKey(SESSION_TIMEOUT)) {
+            configuration.setSessionTimeout(Integer.parseInt(prop.getProperty(SESSION_TIMEOUT)));
         }
 
         return configuration;

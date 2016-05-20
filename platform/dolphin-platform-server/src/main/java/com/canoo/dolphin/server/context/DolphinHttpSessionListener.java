@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,32 +26,38 @@ import javax.servlet.http.HttpSessionListener;
 /**
  * A {@link HttpSessionListener} that destroys all {@link DolphinContext} instances for a session
  */
-public class DolphinContextCleaner implements HttpSessionListener {
+public class DolphinHttpSessionListener implements HttpSessionListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DolphinContextCleaner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinHttpSessionListener.class);
+
+    private int sessionTimeoutInSeconds = DolphinPlatformConfiguration.SESSION_TIMEOUT_DEFAULT_VALUE;
 
     //We can not simply pass this value in the constructor because CDI fails in this case
     private DolphinContextHandler dolphinContextHandler;
 
-    public DolphinContextCleaner() {
+    public DolphinHttpSessionListener() {
     }
 
 
-    public void init(DolphinContextHandler dolphinContextHandler) {
+    public void init(DolphinContextHandler dolphinContextHandler, DolphinPlatformConfiguration configuration) {
         this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
+        this.sessionTimeoutInSeconds = Assert.requireNonNull(configuration, "configuration").getSessionTimeout();
     }
 
     @Override
-    public void sessionCreated(HttpSessionEvent se) {
-        //Nothing to do
+    public void sessionCreated(HttpSessionEvent sessionEvent) {
+        Assert.requireNonNull(sessionEvent, "sessionEvent");
+        try {
+            sessionEvent.getSession().setMaxInactiveInterval(sessionTimeoutInSeconds);
+        } catch (Exception e) {
+            LOG.warn("Can not set the defined session timeout!");
+        }
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         Assert.requireNonNull(sessionEvent, "sessionEvent");
-
-        LOG.debug("Session " + sessionEvent.getSession().getId() + " destroyed! Will remove all DolphinContext instances for the session.");
-
+        LOG.trace("Session " + sessionEvent.getSession().getId() + " destroyed! Will remove all DolphinContext instances for the session.");
         dolphinContextHandler.removeAllContextsInSession(sessionEvent.getSession());
     }
 }
