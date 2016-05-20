@@ -20,6 +20,8 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.Message;
+import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.event.Topic;
 
 import javax.annotation.PostConstruct;
@@ -41,8 +43,11 @@ public class TestController {
 
     @PostConstruct
     public void init() {
-        eventBus.subscribe(TEST_TOPIC, e -> {
-            model.setValue(e.getData());
+        eventBus.subscribe(TEST_TOPIC, new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                model.setValue(message.getData());
+            }
         });
     }
 
