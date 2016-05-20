@@ -1,54 +1,57 @@
 package com.canoo.dolphin.test;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class JUnitDemoTest extends SpringJUnitControllerTest {
 
     @Test
     public void testCreation() {
-        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
-        Assert.assertNotNull(controller);
-        Assert.assertNotNull(controller.getModel());
+        ControllerUnderTest<TestModel> controller = createController("TestController");
+        assertNotNull(controller);
+        assertNotNull(controller.getModel());
         controller.destroy();
     }
 
     @Test
     public void testInteraction() {
-        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
-        Assert.assertEquals(null, controller.getModel().getValue());
+        ControllerUnderTest<TestModel> controller = createController("TestController");
+        assertEquals(null, controller.getModel().getValue());
         controller.invoke("action");
-        Assert.assertEquals("Hello Dolphin Test", controller.getModel().getValue());
+        assertEquals("Hello Dolphin Test", controller.getModel().getValue());
         controller.destroy();
     }
 
     @Test
     public void testDestroy() {
-        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        ControllerUnderTest<TestModel> controller = createController("TestController");
         controller.destroy();
         try {
             controller.destroy();
-            Assert.fail("Calling destroy() for a destroyed controller should throw an exception!");
+            fail("Calling destroy() for a destroyed controller should throw an exception!");
         } catch (ControllerTestException e) {}
     }
 
     @Test
     public void testInvokeUnknownAction() {
-        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        ControllerUnderTest<TestModel> controller = createController("TestController");
         try {
             controller.invoke("unknownActionName");
-            Assert.fail("Calling an unknown action should throw an exception!");
+            fail("Calling an unknown action should throw an exception!");
         } catch (ControllerTestException e) {}
         controller.destroy();
     }
 
     @Test
     public void testInvokeActionAfterDestroy() {
-        ControllerUnderTest<TestModel> controller = createControllerProxy("TestController");
+        ControllerUnderTest<TestModel> controller = createController("TestController");
         controller.destroy();
         try {
             controller.invoke("add");
-            Assert.fail("Calling an action after destroy should throw an exception!");
+            fail("Calling an action after destroy should throw an exception!");
         } catch (ControllerTestException e) {}
     }
 }

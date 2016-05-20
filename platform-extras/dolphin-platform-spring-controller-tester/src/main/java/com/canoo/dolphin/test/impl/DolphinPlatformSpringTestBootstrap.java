@@ -1,40 +1,106 @@
 package com.canoo.dolphin.test.impl;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.client.ClientConfiguration;
 import com.canoo.dolphin.client.ClientContext;
+import com.canoo.dolphin.client.impl.ClientBeanBuilderImpl;
+import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
+import com.canoo.dolphin.client.impl.ClientEventDispatcher;
+import com.canoo.dolphin.client.impl.ClientPlatformBeanRepository;
+import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
+import com.canoo.dolphin.client.impl.ControllerProxyFactory;
+import com.canoo.dolphin.client.impl.ControllerProxyFactoryImpl;
+import com.canoo.dolphin.client.impl.DolphinCommandHandler;
+import com.canoo.dolphin.impl.BeanRepositoryImpl;
+import com.canoo.dolphin.impl.ClassRepositoryImpl;
+import com.canoo.dolphin.impl.Converters;
+import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.ReflectionHelper;
-import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.container.ModelInjector;
+import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
+import com.canoo.dolphin.impl.collections.ListMapperImpl;
+import com.canoo.dolphin.internal.BeanBuilder;
+import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.internal.ClassRepository;
+import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextProvider;
+import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
-import com.canoo.dolphin.server.spring.SpringModelInjector;
+import com.canoo.dolphin.server.spring.ClientScope;
+import com.canoo.dolphin.server.spring.ClientScoped;
 import com.canoo.dolphin.test.ControllerTestException;
 import com.canoo.dolphin.util.Assert;
+import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerModelStore;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+@WebAppConfiguration
 @Configuration
 public class DolphinPlatformSpringTestBootstrap {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public ClientContext createClientContext(DefaultInMemoryConfig config, DolphinContext serverContext) throws ExecutionException, InterruptedException {
-        ControllerRepository.init();
+    public ClientContext createClientContext(DolphinTestContext dolphinContext) throws ExecutionException, InterruptedException {
+        Assert.requireNonNull(dolphinContext, "dolphinContext");
+        final ClientDolphin clientDolphin = dolphinContext.getClientDolphin();
+        final ClientConfiguration clientConfiguration = new ClientConfiguration("PIPE", new UiThreadHandler() {
+            @Override
+            public void executeInsideUiThread(Runnable runnable) {
+                runnable.run();
+            }
+        });
+        final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
+        final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
+        final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+        final Converters converters = new Converters(beanRepository);
+        final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
+        final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, converters, builderFactory);
+        final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
+        final BeanBuilder beanBuilder = new ClientBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+        final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
+        final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+        final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
+        final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager);
+        clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+        return clientContext;
+    }
 
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public DolphinTestContext createServerContext(DefaultInMemoryConfig config, WebApplicationContext context) throws ExecutionException, InterruptedException {
+        Assert.requireNonNull(config, "config");
+        Assert.requireNonNull(context, "context");
+        ControllerRepository controllerRepository = new ControllerRepository();
+        TestSpringContainerManager containerManager = new TestSpringContainerManager(context);
+        containerManager.init(context.getServletContext());
+        DolphinContextProviderMock dolphinContextProviderMock = new DolphinContextProviderMock();
+        DolphinEventBusImpl dolphinEventBus = new DolphinEventBusImpl(dolphinContextProviderMock);
+        DolphinTestContext dolphinContext = new DolphinTestContext(containerManager, controllerRepository, config, dolphinEventBus);
+        dolphinContextProviderMock.setCurrentContext(dolphinContext);
+        return dolphinContext;
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public DefaultInMemoryConfig createInMemoryConfig() throws ExecutionException, InterruptedException {
+        DefaultInMemoryConfig config = new DefaultInMemoryConfig();
         config.getServerDolphin().registerDefaultActions();
         ServerModelStore store = config.getServerDolphin().getServerModelStore();
         try {
@@ -42,58 +108,72 @@ public class DolphinPlatformSpringTestBootstrap {
         } catch (NoSuchFieldException e) {
             throw new ControllerTestException(e);
         }
-        return new ClientContextImpl(config.getClientDolphin());
+        config.getServerDolphin().getServerConnector().setCodec(new OptimizedJsonCodec());
+        config.getClientDolphin().getClientConnector().setCodec(new OptimizedJsonCodec());
+        return config;
     }
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultInMemoryConfig createInMemoryConfig() throws ExecutionException, InterruptedException {
-        return new DefaultInMemoryConfig();
+    /**
+     * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
+     * @return the instance
+     */
+    @Bean(name="beanManager")
+    @ClientScoped
+    protected BeanManager createManager(DolphinTestContext context) {
+        Assert.requireNonNull(context, "context");
+        return context.getBeanManager();
     }
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DolphinContext createDolphinContext(DefaultInMemoryConfig config, final WebApplicationContext webApplicationContext) {
-        ContainerManager containerManager = new ContainerManager() {
 
+    @Bean(name="dolphinSession")
+    @ClientScoped
+    protected DolphinSession createDolphinSession(DolphinTestContext context) {
+        Assert.requireNonNull(context, "context");
+        return context.getCurrentDolphinSession();
+    }
+
+
+    /**
+     * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
+     * @return the instance
+     */
+    @Bean(name="dolphinEventBus")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected DolphinEventBus createEventBus(DolphinTestContext context) {
+        Assert.requireNonNull(context, "context");
+        return context.getDolphinEventBus();
+    }
+
+    @Bean(name="customScopeConfigurer")
+    public CustomScopeConfigurer createClientScope(final DolphinTestContext context) {
+        Assert.requireNonNull(context, "context");
+        CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+        configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
-            public void init(ServletContext servletContext) {
+            public DolphinSession getCurrentDolphinSession() {
+                return context.getCurrentDolphinSession();
             }
-
-            @Override
-            public <T> T createManagedController(Class<T> controllerClass, ModelInjector modelInjector) {
-                Assert.requireNonNull(controllerClass, "controllerClass");
-                Assert.requireNonNull(modelInjector, "modelInjector");
-
-                // SpringBeanAutowiringSupport kann man auch nutzen
-                AutowireCapableBeanFactory beanFactory = webApplicationContext.getAutowireCapableBeanFactory();
-                SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
-                return beanFactory.createBean(controllerClass);
-            }
-
-            @Override
-            public void destroyController(Object instance, Class controllerClass) {
-                Assert.requireNonNull(instance, "instance");
-                webApplicationContext.getAutowireCapableBeanFactory().destroyBean(instance);
-            }
-        };
-
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) webApplicationContext.getAutowireCapableBeanFactory();
-        beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
-
-        return new DolphinContext(containerManager, new TestDolphinFactory(config));
+        }));
+        return configurer;
     }
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected BeanManager createManager(DolphinContext dolphinContext) {
-        return dolphinContext.getBeanManager();
-    }
+    private class DolphinContextProviderMock implements DolphinContextProvider {
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected DolphinEventBus createEventBus() {
-        return DolphinEventBusImpl.getInstance();
+        DolphinContext currentContext;
+
+        public void setCurrentContext(DolphinContext currentContext) {
+            this.currentContext = currentContext;
+        }
+
+        @Override
+        public DolphinContext getCurrentContext() {
+            return currentContext;
+        }
+
+        @Override
+        public DolphinSession getCurrentDolphinSession() {
+            return getCurrentContext().getCurrentDolphinSession();
+        }
     }
 
 }

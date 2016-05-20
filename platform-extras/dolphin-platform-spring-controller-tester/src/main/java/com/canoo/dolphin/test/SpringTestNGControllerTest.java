@@ -18,7 +18,7 @@ public abstract class SpringTestNGControllerTest extends AbstractTestNGSpringCon
     @Inject
     private ClientContext clientContext;
 
-    public <T> ControllerUnderTest<T> createControllerProxy(String controllerName) {
+    public <T> ControllerUnderTest<T> createController(String controllerName) {
         Assert.requireNonBlank(controllerName, "controllerName");
         try {
             final ControllerProxy<T> proxy = (ControllerProxy<T>) clientContext.createController(controllerName).get();

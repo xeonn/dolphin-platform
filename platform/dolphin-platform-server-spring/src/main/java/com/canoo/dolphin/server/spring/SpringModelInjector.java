@@ -34,6 +34,10 @@ public class SpringModelInjector extends InstantiationAwareBeanPostProcessorAdap
 
     private static SpringModelInjector instance = new SpringModelInjector();
 
+    public SpringModelInjector() {
+        System.out.println("TADA");
+    }
+
     public void prepare(Class controllerClass, ModelInjector injector) {
         if(controllerClass == null) {
             throw new IllegalArgumentException("controllerClass must not be null!");

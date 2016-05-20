@@ -16,11 +16,6 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.container.ModelInjector;
-import com.canoo.dolphin.util.Assert;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -31,7 +26,7 @@ import javax.servlet.ServletContext;
  *
  * @author Hendrik Ebbers
  */
-public class SpringContainerManager implements ContainerManager {
+public class SpringContainerManager extends AbstractSpringContainerManager {
 
     private ServletContext servletContext;
 
@@ -41,34 +36,7 @@ public class SpringContainerManager implements ContainerManager {
             throw new IllegalArgumentException("servletContext must not be null!");
         }
         this.servletContext = servletContext;
-        WebApplicationContext context = getContext();
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
-        beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
-    }
-
-    @Override
-    public <T> T createManagedController(final Class<T> controllerClass, final ModelInjector modelInjector) {
-        Assert.requireNonNull(controllerClass, "controllerClass");
-        Assert.requireNonNull(modelInjector, "modelInjector");
-        // SpringBeanAutowiringSupport kann man auch nutzen
-        WebApplicationContext context = getContext();
-        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-        SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
-        return beanFactory.createBean(controllerClass);
-    }
-
-    @Override
-    public <T> T createListener(Class<T> listenerClass) {
-        Assert.requireNonNull(listenerClass, "listenerClass");
-        WebApplicationContext context = getContext();
-        return context.getBean(listenerClass);
-    }
-
-    @Override
-    public void destroyController(Object instance, Class controllerClass) {
-        Assert.requireNonNull(instance, "instance");
-        ApplicationContext context = getContext();
-        context.getAutowireCapableBeanFactory().destroyBean(instance);
+        init();
     }
 
     /**
@@ -76,7 +44,7 @@ public class SpringContainerManager implements ContainerManager {
      *
      * @return the spring context
      */
-    private WebApplicationContext getContext() {
+    protected WebApplicationContext getContext() {
         return WebApplicationContextUtils.getWebApplicationContext(servletContext);
     }
 }
