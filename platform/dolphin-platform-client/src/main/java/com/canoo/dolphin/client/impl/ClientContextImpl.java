@@ -26,6 +26,7 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
+import org.apache.http.client.HttpClient;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.lang.ref.WeakReference;
@@ -55,9 +56,11 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientConfiguration clientConfiguration;
 
+    private final HttpClient httpClient;
+
     private ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
-    public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) throws ExecutionException, InterruptedException {
+    public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, HttpClient httpClient) throws ExecutionException, InterruptedException {
         this.clientDolphin = Assert.requireNonNull(clientDolphin, "clientDolphin");
         this.controllerProxyFactory = Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
         this.dolphinCommandHandler = Assert.requireNonNull(dolphinCommandHandler, "dolphinCommandHandler");
@@ -65,6 +68,7 @@ public class ClientContextImpl implements ClientContext {
         this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
         this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
+        this.httpClient = httpClient;
 
         registeredWeakControllers = new CopyOnWriteArrayList<>();
         try {
@@ -155,5 +159,10 @@ public class ClientContextImpl implements ClientContext {
             case DESTROYING:
                 throw new IllegalStateException("The client is disconnecting!");
         }
+    }
+
+    @Override
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 }

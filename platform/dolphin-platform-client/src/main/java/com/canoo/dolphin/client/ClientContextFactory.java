@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.client.clientscope.DolphinPlatformHttpClientConnector;
+import com.canoo.dolphin.client.impl.DolphinPlatformHttpClientConnector;
 import com.canoo.dolphin.client.impl.ClientBeanBuilderImpl;
 import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
@@ -39,6 +39,9 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.util.DolphinRemotingException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
@@ -79,7 +82,8 @@ public class ClientContextFactory {
                 final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-                final ClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint(), remotingErrorHandler);
+                final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
+                final ClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint(), remotingErrorHandler);
                 clientConnector.setCodec(new OptimizedJsonCodec());
                 clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
                 clientDolphin.setClientConnector(clientConnector);
@@ -94,7 +98,7 @@ public class ClientContextFactory {
                 final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
                 final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
                 final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
-                final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler);
+                final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler, httpClient);
                 clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {

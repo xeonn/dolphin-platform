@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.clientscope;
+package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.DolphinSessionException;
-import com.canoo.dolphin.client.impl.ForwardableCallback;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -29,7 +28,6 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.ClientConnector;
@@ -49,9 +47,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     private final String servletUrl;
 
-    private final DefaultHttpClient httpClient;
-
-    private final DefaultHttpClient signalHttpClient;
+    private final HttpClient httpClient;
 
     private final IdBasedResponseHandler responseHandler;
 
@@ -61,13 +57,12 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     private String clientId;
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) {
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) {
         super(clientDolphin, commandBatcher);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
 
-        httpClient = new DefaultHttpClient();
-        signalHttpClient = new DefaultHttpClient();
+        this.httpClient = httpClient;
 
         this.responseHandler = new IdBasedResponseHandler(this);
         this.signalResponseHandler = new SimpleResponseHandler();
@@ -84,7 +79,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
 
             if (commands.size() == 1 && commands.get(0) == getReleaseCommand()) {
-                signalHttpClient.execute(httpPost, signalResponseHandler);
+                httpClient.execute(httpPost, signalResponseHandler);
             } else {
                 String response = httpClient.execute(httpPost, responseHandler);
                 result = getCodec().decode(response);
@@ -106,14 +101,6 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
         this.clientId = clientId;
-    }
-
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public HttpClient getSignalHttpClient() {
-        return signalHttpClient;
     }
 }
 
