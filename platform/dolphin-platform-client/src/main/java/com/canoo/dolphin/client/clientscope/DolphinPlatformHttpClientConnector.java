@@ -24,6 +24,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -105,6 +106,14 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
         this.clientId = clientId;
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public HttpClient getSignalHttpClient() {
+        return signalHttpClient;
     }
 }
 
