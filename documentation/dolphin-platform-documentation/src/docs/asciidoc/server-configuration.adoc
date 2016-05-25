@@ -31,6 +31,11 @@ Currently the following properties are supported by the Dolphin Platform:
 |any String that defines an URL mapping
 |/dolphin
 
+|sessionTimeout
+|A int that defines the http session timeout in seconds
+|any integer value
+|900
+
 |garbageCollectionActive
 |By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an unstable feature at the moment and should only be activated for tests.
 |true, false
