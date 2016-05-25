@@ -19,7 +19,6 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.util.Assert;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 
 import java.net.URL;
 
@@ -36,7 +35,7 @@ import java.net.URL;
  */
 public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
 
-    private Node rootNode;
+    private final Node rootNode;
 
     /**
      * Constructor
@@ -57,27 +56,8 @@ public abstract class AbstractFXMLViewBinder<M> extends AbstractViewBinder<M> {
         }
     }
 
-    /**
-     * Returns the root node of the view as it's define dby the FXML.
-     * @return the root node.
-     */
+    @Override
     public Node getRootNode() {
         return rootNode;
-    }
-
-    /**
-     * Usefull helper method that returns the root node (see {@link #getRootNode()}) as a {@link Parent} if the root node
-     * extends {@link Parent} or throws an runtime exception. This can be used to simply add a {@link AbstractFXMLViewBinder}
-     * based view to a scene that needs a {@link Parent} as a root node.
-     * @return the root node
-     */
-    public Parent getParent() {
-        if(rootNode == null) {
-            throw new NullPointerException("The root node is null");
-        }
-        if(rootNode instanceof Parent) {
-            return (Parent) rootNode;
-        }
-        throw new IllegalStateException("The root node of this view is not a Parent");
     }
 }
