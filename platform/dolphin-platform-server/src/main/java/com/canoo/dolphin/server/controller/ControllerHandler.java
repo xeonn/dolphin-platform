@@ -103,7 +103,7 @@ public class ControllerHandler {
         Class controllerClass = controllerClassMapping.remove(id);
         containerManager.destroyController(controller, controllerClass);
 
-        Object model = models.get(id);
+        Object model = models.remove(id);
         if (model != null) {
             beanRepository.delete(model);
         }
