@@ -40,9 +40,6 @@ asciidoctor {
     backends = ['html5']
 
     attributes = [
-        'source-highlighter'   : 'coderay',
-        'coderay-linenums-mode': 'table',
-        icon                   : 'font',
         toc                    : 'left',
         doctype                : 'book',
         icons                  : 'font',
@@ -53,6 +50,8 @@ asciidoctor {
         linkattrs              : true,
         imagesdir              : 'images',
         linkcss                : true,
+        'source-highlighter'   : 'coderay',
+        'coderay-linenums-mode': 'table',
         'revision-number'      : project.version
     ]
 
