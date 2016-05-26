@@ -49,6 +49,8 @@ public class ConfigurationFileLoader {
 
     private static final String USE_CROSS_SITE_ORIGIN_FILTER = "useCrossSiteOriginFilter";
 
+    private static final String USE_SESSION_INVALIDATION_SERVLET= "useSessionInvalidationServlet";
+
     private static final String GARBAGE_COLLECTION_ACTIVE = "garbageCollectionActive";
 
     /**
@@ -115,6 +117,11 @@ public class ConfigurationFileLoader {
         if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
             configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
         }
+
+        if(prop.containsKey(USE_SESSION_INVALIDATION_SERVLET)) {
+            configuration.setUseSessionInvalidationServlet(Boolean.parseBoolean(prop.getProperty(USE_SESSION_INVALIDATION_SERVLET)));
+        }
+
 
         if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
             UnstableFeatureFlags.setUseGc(Boolean.parseBoolean(prop.getProperty(GARBAGE_COLLECTION_ACTIVE)));
