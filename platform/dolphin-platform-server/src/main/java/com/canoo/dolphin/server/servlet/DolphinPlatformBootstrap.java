@@ -89,9 +89,9 @@ public class DolphinPlatformBootstrap {
         Assert.requireNonNull(servletContext, "servletContext");
         Assert.requireNonNull(configuration, "configuration");
 
-        LOG.info("Dolphin Platform starts with value for useCrossSiteOriginFilter=" + configuration.isUseCrossSiteOriginFilter());
-        LOG.info("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
-        LOG.info("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
+        LOG.debug("Dolphin Platform starts with value for useCrossSiteOriginFilter=" + configuration.isUseCrossSiteOriginFilter());
+        LOG.debug("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
+        LOG.debug("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
 
         ControllerRepository controllerRepository = new ControllerRepository();
         ContainerManager containerManager = findManager();
@@ -113,8 +113,7 @@ public class DolphinPlatformBootstrap {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
 
-        DolphinHttpSessionListener contextCleaner = new DolphinHttpSessionListener();
-        contextCleaner.init(dolphinContextHandler, configuration);
+        DolphinHttpSessionListener contextCleaner = new DolphinHttpSessionListener(dolphinContextHandler, configuration);
         servletContext.addListener(contextCleaner);
 
         java.util.logging.Logger openDolphinLogger = Logger.getLogger("org.opendolphin");

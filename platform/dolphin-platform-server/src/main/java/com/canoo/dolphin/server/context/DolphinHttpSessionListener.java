@@ -35,11 +35,7 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
     //We can not simply pass this value in the constructor because CDI fails in this case
     private DolphinContextHandler dolphinContextHandler;
 
-    public DolphinHttpSessionListener() {
-    }
-
-
-    public void init(DolphinContextHandler dolphinContextHandler, DolphinPlatformConfiguration configuration) {
+    public DolphinHttpSessionListener(final DolphinContextHandler dolphinContextHandler, final DolphinPlatformConfiguration configuration) {
         this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
         this.sessionTimeoutInSeconds = Assert.requireNonNull(configuration, "configuration").getSessionTimeout();
     }
