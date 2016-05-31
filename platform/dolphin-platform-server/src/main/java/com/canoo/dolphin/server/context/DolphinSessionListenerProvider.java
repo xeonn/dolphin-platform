@@ -4,6 +4,7 @@ import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBoostrapException;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
+import com.canoo.dolphin.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,8 @@ public class DolphinSessionListenerProvider {
 
     private List<DolphinSessionListener> contextListeners;
 
-    public DolphinSessionListenerProvider(ContainerManager containerManager) {
-        this.containerManager = containerManager;
+    public DolphinSessionListenerProvider(final ContainerManager containerManager) {
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
     }
 
     public synchronized List<DolphinSessionListener> getAllListeners() {

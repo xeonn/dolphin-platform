@@ -24,15 +24,17 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final DolphinEventBusImpl dolphinEventBus;
 
-    public DefaultDolphinContextFactory(ContainerManager containerManager, DolphinEventBusImpl dolphinEventBus) {
-        this.containerManager = containerManager;
-        this.dolphinEventBus = dolphinEventBus;
+    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus) {
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
         this.controllerRepository = new ControllerRepository();
         this.dolphinFactory = new DefaultOpenDolphinFactory();
     }
 
     @Override
-    public DolphinContext create(final HttpSession httpSession, DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+    public DolphinContext create(final HttpSession httpSession, final DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+        Assert.requireNonNull(httpSession, "httpSession");
+        Assert.requireNonNull(dolphinSessionListenerProvider, "dolphinSessionListenerProvider");
 
         final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
             @Override

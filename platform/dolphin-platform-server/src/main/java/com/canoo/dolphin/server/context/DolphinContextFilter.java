@@ -30,11 +30,11 @@ public class DolphinContextFilter implements Filter {
 
     private final DolphinSessionListenerProvider dolphinSessionListenerProvider;
 
-    public DolphinContextFilter(DolphinPlatformConfiguration configuration, ContainerManager containerManager, DolphinContextFactory dolphinContextFactory, DolphinSessionListenerProvider dolphinSessionListenerProvider) {
-        this.configuration = configuration;
-        this.containerManager = containerManager;
-        this.dolphinContextFactory = dolphinContextFactory;
-        this.dolphinSessionListenerProvider = dolphinSessionListenerProvider;
+    public DolphinContextFilter(final DolphinPlatformConfiguration configuration, final ContainerManager containerManager, final DolphinContextFactory dolphinContextFactory, final DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.dolphinContextFactory = Assert.requireNonNull(dolphinContextFactory, "dolphinContextFactory");
+        this.dolphinSessionListenerProvider = Assert.requireNonNull(dolphinSessionListenerProvider, "dolphinSessionListenerProvider");
     }
 
     @Override
@@ -76,6 +76,7 @@ public class DolphinContextFilter implements Filter {
     }
 
     private DolphinContext createNewContext(final HttpSession httpSession) {
+        Assert.requireNonNull(httpSession, "httpSession");
         return dolphinContextFactory.create(httpSession, dolphinSessionListenerProvider);
     }
 
