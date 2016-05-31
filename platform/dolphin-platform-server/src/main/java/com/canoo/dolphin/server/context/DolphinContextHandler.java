@@ -25,7 +25,6 @@ import com.canoo.dolphin.server.servlet.DolphinPlatformBoostrapException;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
-import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.comm.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,11 +79,14 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
                 if(!ClientIdFilter.isNewClient()) {
                     response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
-                    LOG.error("Can not find requested client!", new DolphinContextException("Can not find requested client!"));
+                    LOG.error("Can not find requested client for id " + ClientIdFilter.getCurrentClientId(), new DolphinContextException("Can not find requested client!"));
+                    return;
                 }
 
                 if(getContexts(httpSession).size() >= configuration.getMaxClientsPerSession()) {
-                    throw new DolphinContextException("Maximum size for clients in session is reached");
+                    response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                    LOG.error("Maximum size for clients in session " + request.getSession().getId() +" is reached", new DolphinContextException("Maximum size for clients in session is reached"));
+                    return;
                 }
                 
                 final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
@@ -127,7 +129,9 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 LOG.trace("Created new DolphinContext {} in http session {}", currentContext.getId(), httpSession.getId());
             }
         } catch (Exception e) {
-            throw new DolphinContextException("Can not find or create matching dolphin context", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            LOG.error("Can not find or create matching dolphin context", e);
+            return;
         }
 
         String userAgent = request.getHeader("user-agent");
@@ -144,24 +148,29 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 }
                 commands.addAll(currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString()));
             } catch (Exception e) {
-                throw new DolphinRemotingException("Can not parse request! (DolphinContext " + currentContext.getId() + ")", e);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                LOG.error("Can not parse request! (DolphinContext " + currentContext.getId() + ")", e);
+                return;
             }
 
             final List<Command> results = new ArrayList<>();
             try {
                 results.addAll(currentContext.handle(commands));
             } catch (Exception e) {
-                throw new DolphinCommandException("Can not handle the commands (DolphinContext " + currentContext.getId() + ")", e);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                LOG.error("Can not handle the commands (DolphinContext " + currentContext.getId() + ")", e);
+                return;
             }
 
             LOG.trace("Sending response for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
 
             try {
-
                 final String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
                 response.getWriter().print(jsonResponse);
             } catch (Exception e) {
-                throw new DolphinRemotingException("Can not write response!", e);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                LOG.error("Can not write response!", e);
+                return;
             }
         } finally {
             currentContextThreadLocal.remove();
