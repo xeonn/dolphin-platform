@@ -26,6 +26,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
 
+/**
+ * Base class for TestNG based controller tests in Spring. This class can be extended to write custom controller tests.
+ */
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
 public abstract class SpringTestNGControllerTest extends AbstractTestNGSpringContextTests implements ControllerTest {

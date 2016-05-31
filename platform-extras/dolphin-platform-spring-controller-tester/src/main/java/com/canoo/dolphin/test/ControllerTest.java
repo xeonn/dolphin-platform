@@ -15,8 +15,20 @@
  */
 package com.canoo.dolphin.test;
 
+/**
+ * Basic interface for testing a Dolpgin Platform controller (see {@link com.canoo.dolphin.server.DolphinController}).
+ * The interface provides testable controllers.
+ */
 public interface ControllerTest {
 
+    /**
+     * Creates a {@link ControllerUnderTest} for the given controller name. See {@link com.canoo.dolphin.server.DolphinController}
+     * for the name definition. The {@link ControllerUnderTest} instance that is created by this method can be used to
+     * interact with the controller or access the model.
+     * @param controllerName the controller name
+     * @param <T> type of the model
+     * @return the created {@link ControllerUnderTest} instance.
+     */
     <T> ControllerUnderTest<T> createController(String controllerName);
 
 }

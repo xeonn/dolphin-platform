@@ -15,7 +15,12 @@
  */
 package com.canoo.dolphin.test;
 
+/**
+ * Exception that is used when testing controllers.
+ */
 public class ControllerTestException extends RuntimeException {
+
+    private static final long serialVersionUID = 3143922465764428023L;
 
     public ControllerTestException() {
     }

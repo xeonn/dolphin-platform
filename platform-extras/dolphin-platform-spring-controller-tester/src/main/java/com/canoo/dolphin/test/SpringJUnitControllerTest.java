@@ -26,6 +26,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
 
+/**
+ * Base class for JUnit based controller tests in Spring. This class can be extended to write custom controller tests.
+ */
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
 public class SpringJUnitControllerTest extends AbstractJUnit4SpringContextTests implements ControllerTest{
