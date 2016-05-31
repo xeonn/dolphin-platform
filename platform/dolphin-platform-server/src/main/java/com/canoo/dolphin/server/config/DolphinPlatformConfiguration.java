@@ -15,8 +15,6 @@
  */
 package com.canoo.dolphin.server.config;
 
-import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
-
 import java.util.logging.Level;
 
 /**

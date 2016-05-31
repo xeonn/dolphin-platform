@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.DolphinListener;
+import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBoostrapException;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.impl.ClasspathScanner;

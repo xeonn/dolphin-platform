@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.impl;
+package com.canoo.dolphin.server.config;
 
-import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
+import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 
 import java.io.IOException;
 import java.io.InputStream;

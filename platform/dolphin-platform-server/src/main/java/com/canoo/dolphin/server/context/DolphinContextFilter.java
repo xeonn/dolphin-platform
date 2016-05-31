@@ -1,6 +1,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.util.Assert;

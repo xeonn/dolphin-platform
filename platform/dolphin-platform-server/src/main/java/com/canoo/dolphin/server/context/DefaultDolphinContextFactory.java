@@ -1,5 +1,6 @@
 package com.canoo.dolphin.server.context;
 
+import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
