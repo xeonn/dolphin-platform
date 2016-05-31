@@ -29,7 +29,7 @@ public class ClientIdFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        newClient.set(true);
+        newClient.set(false);
         currentClientId.set(null);
         try {
             HttpServletRequest servletRequest = (HttpServletRequest) request;
@@ -49,6 +49,7 @@ public class ClientIdFilter implements Filter {
             chain.doFilter(request, response);
         } finally {
             currentClientId.set(null);
+            newClient.set(false);
         }
     }
 

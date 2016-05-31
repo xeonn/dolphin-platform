@@ -79,7 +79,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
             if (currentContext == null) {
 
                 if(!ClientIdFilter.isNewClient()) {
-                    throw new DolphinContextException("Can not find requestet client!");
+                    throw new DolphinContextException("Can not find requested client!");
                 }
 
                 if(getContexts(httpSession).size() >= configuration.getMaxClientsPerSession()) {
