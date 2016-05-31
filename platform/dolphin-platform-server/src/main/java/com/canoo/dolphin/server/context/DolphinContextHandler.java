@@ -76,8 +76,16 @@ public class DolphinContextHandler implements DolphinContextProvider {
         DolphinContext currentContext = null;
         try {
             currentContext = getContexts(httpSession).get(ClientIdFilter.getCurrentClientId());
-            if (currentContext == null && getContexts(httpSession).size() < configuration.getMaxClientsPerSession()) {
+            if (currentContext == null) {
 
+                if(!ClientIdFilter.isNewClient()) {
+                    throw new DolphinContextException("Can not find requestet client!");
+                }
+
+                if(getContexts(httpSession).size() >= configuration.getMaxClientsPerSession()) {
+                    throw new DolphinContextException("Maximum size for clients in session is reached");
+                }
+                
                 final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
                     @Override
                     public void call(DolphinContext dolphinContext) {

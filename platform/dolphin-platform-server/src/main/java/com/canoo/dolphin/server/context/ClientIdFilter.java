@@ -20,6 +20,8 @@ public class ClientIdFilter implements Filter {
 
     private static final ThreadLocal<String> currentClientId = new ThreadLocal<>();
 
+    private static final ThreadLocal<Boolean> newClient = new ThreadLocal<>();
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         //Nothing to do here
@@ -27,13 +29,16 @@ public class ClientIdFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        newClient.set(true);
+        currentClientId.set(null);
         try {
             HttpServletRequest servletRequest = (HttpServletRequest) request;
             HttpServletResponse servletResponse = (HttpServletResponse) response;
 
             String clientId = servletRequest.getHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
-            if(clientId == null || clientId.trim().isEmpty()) {
+            if (clientId == null || clientId.trim().isEmpty()) {
                 clientId = UUID.randomUUID().toString();
+                newClient.set(true);
             }
             currentClientId.set(clientId);
 
@@ -53,5 +58,9 @@ public class ClientIdFilter implements Filter {
 
     public static String getCurrentClientId() {
         return currentClientId.get();
+    }
+
+    public static boolean isNewClient() {
+        return newClient.get();
     }
 }
