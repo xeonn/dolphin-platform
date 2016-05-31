@@ -103,15 +103,14 @@ public class DolphinPlatformBootstrap {
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
 
-        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new ClientIdFilter(configuration, containerManager, controllerRepository, new DefaultOpenDolphinFactory(), dolphinEventBus)).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
-
-
-        LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
-        LOG.debug("Dolphin Platform endpoint defined as " + configuration.getDolphinPlatformServletMapping());
-
         if (configuration.isUseCrossSiteOriginFilter()) {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
+        
+        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new ClientIdFilter(configuration, containerManager, controllerRepository, new DefaultOpenDolphinFactory(), dolphinEventBus)).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
+        LOG.debug("Dolphin Platform endpoint defined as " + configuration.getDolphinPlatformServletMapping());
 
         DolphinHttpSessionListener contextCleaner = new DolphinHttpSessionListener(dolphinContextHandler, configuration);
         servletContext.addListener(contextCleaner);
