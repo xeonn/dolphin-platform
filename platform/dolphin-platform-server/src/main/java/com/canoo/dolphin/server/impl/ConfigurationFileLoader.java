@@ -53,6 +53,8 @@ public class ConfigurationFileLoader {
 
     private static final String SESSION_TIMEOUT = "sessionTimeout";
 
+    private static final String MAX_CLIENTS_PER_SESSION = "maxClientsPerSession";
+
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
      * can be found a default config will be returned.
@@ -124,6 +126,10 @@ public class ConfigurationFileLoader {
 
         if(prop.containsKey(SESSION_TIMEOUT)) {
             configuration.setSessionTimeout(Integer.parseInt(prop.getProperty(SESSION_TIMEOUT)));
+        }
+
+        if(prop.containsKey(MAX_CLIENTS_PER_SESSION)) {
+            configuration.setMaxClientsPerSession(Integer.parseInt(prop.getProperty(MAX_CLIENTS_PER_SESSION)));
         }
 
         return configuration;
