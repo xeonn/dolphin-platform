@@ -15,9 +15,9 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.comm.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,20 +28,17 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class manages all {@link DolphinContext} instances
- */
-public class DolphinContextHandler implements DolphinContextProvider {
+public class DolphinContextCommunicationHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DolphinContextHandler.class);
-
-    private static final ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinContextCommunicationHandler.class);
 
     private final DolphinPlatformConfiguration configuration;
 
+    private final DolphinContextProvider contextProvider;
 
-    public DolphinContextHandler(DolphinPlatformConfiguration configuration) {
+    public DolphinContextCommunicationHandler(final DolphinPlatformConfiguration configuration, final DolphinContextProvider contextProvider) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
+        this.contextProvider = Assert.requireNonNull(contextProvider, "contextProvider");
     }
 
     public void handle(final HttpServletRequest request, final HttpServletResponse response) {
@@ -49,18 +46,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
         Assert.requireNonNull(response, "response");
         final HttpSession httpSession = Assert.requireNonNull(request.getSession(), "request.getSession()");
 
-        DolphinContext currentContext = getCurrentContext();
-        if (currentContext == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            LOG.error("Can not find or create matching dolphin context", new DolphinContextException("Can not find or create matching dolphin context"));
-            return;
-        }
-
-        String userAgent = request.getHeader("user-agent");
-        LOG.trace("receiving Request for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
-
-        currentContextThreadLocal.set(currentContext);
         try {
+            DolphinContext currentContext = contextProvider.getCurrentContext();
+            if (currentContext == null) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                LOG.error("Can not find or create matching dolphin context", new DolphinContextException("Can not find or create matching dolphin context"));
+                return;
+            }
+
+            String userAgent = request.getHeader("user-agent");
+            LOG.trace("receiving Request for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
+
             final List<Command> commands = new ArrayList<>();
             try {
                 StringBuilder requestJson = new StringBuilder();
@@ -97,23 +93,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 LOG.error("Can not write response!", e);
                 return;
             }
-        } finally {
-            currentContextThreadLocal.remove();
+        } catch (Exception e) {
+            throw new DolphinRemotingException("Unexpected Dolphin Platform error", e);
         }
-    }
-
-    @Override
-    public DolphinSession getCurrentDolphinSession() {
-        DolphinContext context = getCurrentContext();
-        if (context == null) {
-            return null;
-        }
-        return context.getCurrentDolphinSession();
-    }
-
-
-    @Override
-    public DolphinContext getCurrentContext() {
-        return ClientIdFilter.getCurrentContext();
     }
 }

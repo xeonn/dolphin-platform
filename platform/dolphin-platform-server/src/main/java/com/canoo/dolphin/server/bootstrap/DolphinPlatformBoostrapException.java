@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.servlet;
+package com.canoo.dolphin.server.bootstrap;
 
 /**
  * Created by hendrikebbers on 18.03.16.

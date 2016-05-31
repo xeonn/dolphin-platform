@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.server.servlet;
 
-import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.server.context.DolphinContextCommunicationHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,14 +28,14 @@ import java.io.IOException;
  */
 public class DolphinPlatformServlet extends HttpServlet {
 
-    private DolphinContextHandler dolphinContextHandler;
+    private DolphinContextCommunicationHandler communicationHandler;
 
-    public DolphinPlatformServlet(DolphinContextHandler dolphinContextHandler) {
-        this.dolphinContextHandler = dolphinContextHandler;
+    public DolphinPlatformServlet(DolphinContextCommunicationHandler communicationHandler) {
+        this.communicationHandler = communicationHandler;
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        dolphinContextHandler.handle(req, resp);
+        communicationHandler.handle(req, resp);
     }
 }

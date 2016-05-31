@@ -19,7 +19,7 @@ import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;

@@ -32,11 +32,10 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
 
     private int sessionTimeoutInSeconds = DolphinPlatformConfiguration.SESSION_TIMEOUT_DEFAULT_VALUE;
 
-    //We can not simply pass this value in the constructor because CDI fails in this case
-    private DolphinContextHandler dolphinContextHandler;
+    public DolphinHttpSessionListener() {
+    }
 
-    public DolphinHttpSessionListener(final DolphinContextHandler dolphinContextHandler, final DolphinPlatformConfiguration configuration) {
-        this.dolphinContextHandler = Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
+    public void init(final DolphinPlatformConfiguration configuration) {
         this.sessionTimeoutInSeconds = Assert.requireNonNull(configuration, "configuration").getSessionTimeout();
     }
 
@@ -54,6 +53,6 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         Assert.requireNonNull(sessionEvent, "sessionEvent");
         LOG.trace("Session " + sessionEvent.getSession().getId() + " destroyed! Will remove all DolphinContext instances for the session.");
-        ClientIdFilter.removeAllContextsInSession(sessionEvent.getSession());
+        DolphinContextUtils.removeAllContextsInSession(sessionEvent.getSession());
     }
 }
