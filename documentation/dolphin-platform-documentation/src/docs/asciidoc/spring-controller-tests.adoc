@@ -101,7 +101,7 @@ public class MyControllerTest extends SpringJUnitControllerTest {
 
 Normally you will write one test class for each controller type. In addition this class will contain more than 1
 method to test the controller. By doing so you can use some of the annotations that are provided by JUnit to write
-a readable and maintainable testclass:
+a readable and maintainable test class:
 
 ----
 public class MyControllerTest extends SpringJUnitControllerTest {
@@ -144,3 +144,66 @@ test. By doing so a developer don't need to handle this in each test.
 
 
 === TestNG controller test in Spring
+
+As already said a test class should extend the `SpringTestNGControllerTest` class. By doing so a first simple test class
+will look like this:
+
+[source,java]
+----
+public class MyControllerTest extends SpringTestNGControllerTest {
+
+    @Test
+    public void test1 {
+        ControllerUnderTest<MyModel> controllerProxy = createController(MY_CONTROLLER);
+        MyModel model = controllerProxy.getModel();
+        model.setTitle("Any title");
+        controllerProxy.invoke(RESET_VALUES);
+        Assert.assertEquals(model.getTitle(), "");
+        controllerProxy.destroy();
+    }
+
+}
+----
+
+Normally you will write one test class for each controller type. In addition this class will contain more than 1
+method to test the controller. By doing so you can use some of the annotations that are provided by TestNG to write
+a readable and maintainable test class:
+
+----
+public class MyControllerTest extends SpringJUnitControllerTest {
+
+    private ControllerUnderTest<MyModel> controllerProxy;
+
+    private MyModel model;
+
+    @BeforeMethod
+    public void init() {
+        controllerProxy = createController(MY_CONTROLLER);
+        model = controllerProxy.getModel();
+    }
+
+    @AfterMethod
+    public void destroy() {
+        controllerProxy.destroy();
+    }
+
+
+    @Test
+    public void test1 {
+        model.setTitle("Any title");
+        controllerProxy.invoke(RESET_VALUES);
+        Assert.assertEquals(model.getTitle(), "");
+    }
+
+    @Test
+    public void test2 {
+        model.setTitle("Any title");
+        controllerProxy.invoke(SHOW_DEFAULTS);
+        Assert.assertEquals(model.getTitle(), "Default");
+    }
+
+}
+----
+
+In this case a new `ControllerUnderTest` instance is created for each test and will be destroyed directly after the
+test. By doing so a developer don't need to handle this in each test.
