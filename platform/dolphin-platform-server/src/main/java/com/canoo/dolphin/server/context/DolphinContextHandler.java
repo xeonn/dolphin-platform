@@ -15,16 +15,9 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
-import com.canoo.dolphin.server.container.ContainerManager;
-import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.impl.ClasspathScanner;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBoostrapException;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
 import com.canoo.dolphin.util.Assert;
-import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.comm.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class manages all {@link DolphinContext} instances
@@ -46,24 +35,12 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContextHandler.class);
 
-    private static final String DOLPHIN_CONTEXT_MAP = "DOLPHIN_CONTEXT_MAP";
-
     private static final ThreadLocal<DolphinContext> currentContextThreadLocal = new ThreadLocal<>();
-
-    private final ContainerManager containerManager;
-
-    private final ControllerRepository controllerRepository;
-
-    private final OpenDolphinFactory openDolphinFactory;
 
     private final DolphinPlatformConfiguration configuration;
 
-    private List<DolphinSessionListener> contextListeners;
 
-    public DolphinContextHandler(DolphinPlatformConfiguration configuration, OpenDolphinFactory openDolphinFactory, ContainerManager containerManager, ControllerRepository controllerRepository) {
-        this.openDolphinFactory = Assert.requireNonNull(openDolphinFactory, "openDolphinFactory");
-        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
-        this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+    public DolphinContextHandler(DolphinPlatformConfiguration configuration) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
     }
 
@@ -72,70 +49,15 @@ public class DolphinContextHandler implements DolphinContextProvider {
         Assert.requireNonNull(response, "response");
         final HttpSession httpSession = Assert.requireNonNull(request.getSession(), "request.getSession()");
 
-        DolphinContext currentContext = null;
-        try {
-            currentContext = getContexts(httpSession).get(ClientIdFilter.getCurrentClientId());
-            if (currentContext == null) {
-
-                if(!ClientIdFilter.isNewClient()) {
-                    response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
-                    LOG.error("Can not find requested client for id " + ClientIdFilter.getCurrentClientId(), new DolphinContextException("Can not find requested client!"));
-                    return;
-                }
-
-                if(getContexts(httpSession).size() >= configuration.getMaxClientsPerSession()) {
-                    response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-                    LOG.error("Maximum size for clients in session " + request.getSession().getId() +" is reached", new DolphinContextException("Maximum size for clients in session is reached"));
-                    return;
-                }
-                
-                final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
-                    @Override
-                    public void call(DolphinContext dolphinContext) {
-                        Assert.requireNonNull(dolphinContext, "dolphinContext");
-                        for(DolphinSessionListener listener : getAllListeners()) {
-                            listener.sessionDestroyed(dolphinContext.getCurrentDolphinSession());
-                        }
-                    }
-                };
-
-                final Callback<DolphinContext> onDestroyCallback = new Callback<DolphinContext>() {
-                    @Override
-                    public void call(DolphinContext dolphinContext) {
-                        Assert.requireNonNull(dolphinContext, "dolphinContext");
-                        LOG.trace("Destroying DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
-                        Object contextList = httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
-                        if (contextList == null) {
-                            return;
-                        }
-                        if (contextList instanceof List) {
-                            ((List<DolphinContext>) contextList).remove(dolphinContext);
-                        }
-                    }
-                };
-
-                currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, DolphinPlatformBootstrap.getInstance().getDolphinEventBus(), preDestroyCallback, onDestroyCallback);
-                if(httpSession.getAttribute(DOLPHIN_CONTEXT_MAP) == null) {
-                    Map<String, DolphinContext> map = new HashMap<>();
-                    httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, map);
-                }
-                Map<String, DolphinContext> map = (Map<String, DolphinContext>) httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
-                map.put(ClientIdFilter.getCurrentClientId(), currentContext);
-
-                for(DolphinSessionListener listener : getAllListeners()) {
-                    listener.sessionCreated(currentContext.getCurrentDolphinSession());
-                }
-
-                LOG.trace("Created new DolphinContext {} in http session {}", currentContext.getId(), httpSession.getId());
-            }
-        } catch (Exception e) {
+        DolphinContext currentContext = getCurrentContext();
+        if (currentContext == null) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            LOG.error("Can not find or create matching dolphin context", e);
+            LOG.error("Can not find or create matching dolphin context", new DolphinContextException("Can not find or create matching dolphin context"));
             return;
         }
 
         String userAgent = request.getHeader("user-agent");
-        LOG.trace("receiving Request for DolphinContext {} in http session {} from client with user-agent {}" , currentContext.getId(), httpSession.getId(), userAgent);
+        LOG.trace("receiving Request for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
 
         currentContextThreadLocal.set(currentContext);
         try {
@@ -162,6 +84,9 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 return;
             }
 
+            response.setHeader("Content-Type", "application/json");
+            response.setCharacterEncoding("UTF-8");
+
             LOG.trace("Sending response for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
 
             try {
@@ -177,44 +102,6 @@ public class DolphinContextHandler implements DolphinContextProvider {
         }
     }
 
-    /**
-     * Deprecated because of the client scope that will iontroduced in the next version
-     *
-     * @param session
-     * @return
-     */
-    public static Map<String, DolphinContext> getContexts(HttpSession session) {
-        Assert.requireNonNull(session, "session");
-        Object contextList = session.getAttribute(DOLPHIN_CONTEXT_MAP);
-        if (contextList == null) {
-            return Collections.emptyMap();
-        }
-        return Collections.unmodifiableMap((Map) contextList);
-    }
-
-    public DolphinContext getCurrentContext() {
-        // TODO: Maybe it's better to throw an exception if no context:
-        // throw new DolphinAccessException("This method can not be called outside of a Dolphin Platform request!");
-        return currentContextThreadLocal.get();
-    }
-
-    /**
-     * Returns true if the method is called in a thread that currently handles a Dolphin Platform request
-     * @return true if the method is called in a thread that currently handles a Dolphin Platform request
-     */
-    public boolean isDolphinRequestThread() {
-        return currentContextThreadLocal.get() != null;
-    }
-
-    public void removeAllContextsInSession(HttpSession session) {
-        Assert.requireNonNull(session, "session");
-        List<DolphinContext> currentContexts = new ArrayList<>(getContexts(session).values());
-        for (DolphinContext context : currentContexts) {
-            context.destroy();
-        }
-        session.removeAttribute(DOLPHIN_CONTEXT_MAP);
-    }
-
     @Override
     public DolphinSession getCurrentDolphinSession() {
         DolphinContext context = getCurrentContext();
@@ -224,21 +111,9 @@ public class DolphinContextHandler implements DolphinContextProvider {
         return context.getCurrentDolphinSession();
     }
 
-    private synchronized List<DolphinSessionListener> getAllListeners() {
-        if(contextListeners == null) {
-            contextListeners = new ArrayList<>();
-            Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
-            for (Class<?> listenerClass : listeners) {
-                try {
-                    if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {
-                        DolphinSessionListener listener = (DolphinSessionListener) containerManager.createListener(listenerClass);
-                        contextListeners.add(listener);
-                    }
-                } catch (Exception e) {
-                    throw new DolphinPlatformBoostrapException("Error in creating DolphinSessionListener " + listenerClass, e);
-                }
-            }
-        }
-        return contextListeners;
+
+    @Override
+    public DolphinContext getCurrentContext() {
+        return ClientIdFilter.getCurrentContext();
     }
 }

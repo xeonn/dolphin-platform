@@ -19,12 +19,11 @@ import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.ClientIdFilter;
+import com.canoo.dolphin.server.context.DefaultOpenDolphinFactory;
 import com.canoo.dolphin.server.context.DolphinContext;
-import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinContextHandler;
-import com.canoo.dolphin.server.context.DolphinContextHandlerFactory;
-import com.canoo.dolphin.server.context.DolphinContextHandlerFactoryImpl;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
+import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.util.Assert;
@@ -55,10 +54,7 @@ public class DolphinPlatformBootstrap {
 
     public static final String DOLPHIN_CLIENT_ID_FILTER_NAME = "dolphin-platform-client-id-filter";
 
-
     public static final String DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING = "/dolphininvalidate";
-
-    private DolphinContextHandlerFactory dolphinContextHandlerFactory;
 
     private DolphinContextHandler dolphinContextHandler;
 
@@ -101,13 +97,13 @@ public class DolphinPlatformBootstrap {
         ContainerManager containerManager = findManager();
         containerManager.init(servletContext);
 
-        dolphinContextHandlerFactory = new DolphinContextHandlerFactoryImpl();
-        dolphinContextHandler = dolphinContextHandlerFactory.create(configuration, controllerRepository, containerManager);
+        dolphinContextHandler = new DolphinContextHandler(configuration);
 
 
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(dolphinContextHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
         servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
-        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new ClientIdFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new ClientIdFilter(configuration, containerManager, controllerRepository, new DefaultOpenDolphinFactory(), dolphinEventBus)).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
 
         LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");

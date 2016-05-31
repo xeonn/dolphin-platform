@@ -24,9 +24,7 @@ import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
 /**
@@ -39,7 +37,7 @@ public class DolphinContextHandlerTest {
         //given:
         ControllerRepository controllerRepository = new ControllerRepository();
         OpenDolphinFactory openDolphinFactory = new DefaultOpenDolphinFactory();
-        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration(), openDolphinFactory, containerManager, controllerRepository);
+        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration());
 
         //then:
         assertNull(contextHandler.getCurrentContext());
@@ -51,15 +49,10 @@ public class DolphinContextHandlerTest {
         //given:
         ControllerRepository controllerRepository = new ControllerRepository();
         OpenDolphinFactory openDolphinFactory = new DefaultOpenDolphinFactory();
-        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration(), openDolphinFactory, containerManager, controllerRepository);
+        DolphinContextHandler contextHandler = new DolphinContextHandler(new DolphinPlatformConfiguration());
 
         //then:
         contextHandler.handle(request, response);
     }
 
-    @Test
-    public void testEmptySession(@Mocked final HttpSession session) {
-        //then:
-        assertEquals(DolphinContextHandler.getContexts(session).size(), 0);
-    }
 }

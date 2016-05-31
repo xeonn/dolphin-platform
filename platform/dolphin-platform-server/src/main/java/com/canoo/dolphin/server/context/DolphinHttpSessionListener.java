@@ -58,6 +58,6 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         Assert.requireNonNull(sessionEvent, "sessionEvent");
         LOG.trace("Session " + sessionEvent.getSession().getId() + " destroyed! Will remove all DolphinContext instances for the session.");
-        dolphinContextHandler.removeAllContextsInSession(sessionEvent.getSession());
+        ClientIdFilter.removeAllContextsInSession(sessionEvent.getSession());
     }
 }
