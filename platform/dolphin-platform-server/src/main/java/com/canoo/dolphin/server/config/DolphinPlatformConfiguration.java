@@ -37,6 +37,8 @@ public class DolphinPlatformConfiguration {
 
     private int sessionTimeout = SESSION_TIMEOUT_DEFAULT_VALUE;
 
+    private int maxClientsPerSession = 10;
+
     public int getSessionTimeout() {
         return sessionTimeout;
     }
@@ -75,5 +77,13 @@ public class DolphinPlatformConfiguration {
 
     public void setGarbageCollectionActive(boolean garbageCollectionActive) {
         this.garbageCollectionActive = garbageCollectionActive;
+    }
+
+    public int getMaxClientsPerSession() {
+        return maxClientsPerSession;
+    }
+
+    public void setMaxClientsPerSession(int maxClientsPerSession) {
+        this.maxClientsPerSession = maxClientsPerSession;
     }
 }

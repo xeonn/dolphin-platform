@@ -15,7 +15,6 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
@@ -36,7 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -74,8 +75,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
         DolphinContext currentContext = null;
         try {
-            List<DolphinContext> contextsForSession = getContexts(httpSession);
-            if (contextsForSession.isEmpty()) {
+            currentContext = getContexts(httpSession).get(ClientIdFilter.getCurrentClientId());
+            if (currentContext == null && getContexts(httpSession).size() < configuration.getMaxClientsPerSession()) {
 
                 final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
                     @Override
@@ -102,20 +103,19 @@ public class DolphinContextHandler implements DolphinContextProvider {
                     }
                 };
 
-
                 currentContext = new DolphinContext(containerManager, controllerRepository, openDolphinFactory, DolphinPlatformBootstrap.getInstance().getDolphinEventBus(), preDestroyCallback, onDestroyCallback);
-                ArrayList list = new ArrayList();
-                list.add(currentContext);
-                httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, list);
+                if(httpSession.getAttribute(DOLPHIN_CONTEXT_MAP) == null) {
+                    Map<String, DolphinContext> map = new HashMap<>();
+                    httpSession.setAttribute(DOLPHIN_CONTEXT_MAP, map);
+                }
+                Map<String, DolphinContext> map = (Map<String, DolphinContext>) httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
+                map.put(ClientIdFilter.getCurrentClientId(), currentContext);
 
                 for(DolphinSessionListener listener : getAllListeners()) {
                     listener.sessionCreated(currentContext.getCurrentDolphinSession());
                 }
 
                 LOG.trace("Created new DolphinContext {} in http session {}", currentContext.getId(), httpSession.getId());
-            } else {
-                //TODO: Curtently there is only 1 dolphin context in each session
-                currentContext = getContexts(httpSession).get(0);
             }
         } catch (Exception e) {
             throw new DolphinContextException("Can not find or create matching dolphin context", e);
@@ -148,9 +148,6 @@ public class DolphinContextHandler implements DolphinContextProvider {
             LOG.trace("Sending response for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
 
             try {
-                response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
-                response.setHeader("Content-Type", "application/json");
-                response.setCharacterEncoding("UTF-8");
 
                 final String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
                 response.getWriter().print(jsonResponse);
@@ -168,13 +165,13 @@ public class DolphinContextHandler implements DolphinContextProvider {
      * @param session
      * @return
      */
-    public static List<DolphinContext> getContexts(HttpSession session) {
+    public static Map<String, DolphinContext> getContexts(HttpSession session) {
         Assert.requireNonNull(session, "session");
         Object contextList = session.getAttribute(DOLPHIN_CONTEXT_MAP);
         if (contextList == null) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
-        return Collections.unmodifiableList((List) contextList);
+        return Collections.unmodifiableMap((Map) contextList);
     }
 
     public DolphinContext getCurrentContext() {
@@ -193,7 +190,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     public void removeAllContextsInSession(HttpSession session) {
         Assert.requireNonNull(session, "session");
-        List<DolphinContext> currentContexts = new ArrayList<>(getContexts(session));
+        List<DolphinContext> currentContexts = new ArrayList<>(getContexts(session).values());
         for (DolphinContext context : currentContexts) {
             context.destroy();
         }

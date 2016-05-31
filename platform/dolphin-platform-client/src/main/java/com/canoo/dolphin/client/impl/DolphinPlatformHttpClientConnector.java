@@ -75,9 +75,9 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             HttpPost httpPost = new HttpPost(servletUrl);
             StringEntity entity = new StringEntity(content, CHARSET);
             httpPost.setEntity(entity);
-
-            httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
-
+            if(clientId != null) {
+                httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
+            }
             if (commands.size() == 1 && commands.get(0) == getReleaseCommand()) {
                 httpClient.execute(httpPost, signalResponseHandler);
             } else {
