@@ -233,4 +233,8 @@ public abstract class AbstractViewBinder<M> {
         }
         throw new IllegalStateException("The root node of this view is not a Parent");
     }
+
+    protected ControllerProxy<M> getControllerProxy() {
+        return controllerProxy;
+    }
 }
