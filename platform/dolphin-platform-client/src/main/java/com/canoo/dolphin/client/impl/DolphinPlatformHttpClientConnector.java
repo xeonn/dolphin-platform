@@ -51,8 +51,6 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     private final IdBasedResponseHandler responseHandler;
 
-    private final SimpleResponseHandler signalResponseHandler;
-
     private final ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
     private String clientId;
@@ -65,7 +63,6 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
         this.httpClient = httpClient;
 
         this.responseHandler = new IdBasedResponseHandler(this);
-        this.signalResponseHandler = new SimpleResponseHandler();
     }
 
     public List<Command> transmit(List<Command> commands) {
@@ -79,7 +76,7 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
                 httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
             }
             if (commands.size() == 1 && commands.get(0) == getReleaseCommand()) {
-                httpClient.execute(httpPost, signalResponseHandler);
+                httpClient.execute(httpPost, responseHandler);
             } else {
                 String response = httpClient.execute(httpPost, responseHandler);
                 result = getCodec().decode(response);
@@ -136,32 +133,13 @@ class IdBasedResponseHandler implements ResponseHandler<String> {
         Header cookieHeader = response.getFirstHeader("Set-Cookie");
         if (cookieHeader != null) {
             sessionID = cookieHeader.getValue();
-        }
-        if (lastSessionId != null && sessionID != null && sessionID != lastSessionId) {
-            throw new DolphinSessionException("Http session must not change but did. Old: " + lastSessionId + ", new: " + sessionID);
-        }
-        lastSessionId = sessionID;
-
-        return entity == null ? null : EntityUtils.toString(entity);
-    }
-}
-
-class SimpleResponseHandler implements ResponseHandler<String> {
-
-    SimpleResponseHandler() {
-    }
-
-    @Override
-    public String handleResponse(HttpResponse response) throws IOException {
-        final StatusLine statusLine = response.getStatusLine();
-        final HttpEntity entity = response.getEntity();
-
-        if (statusLine.getStatusCode() >= 300) {
-            EntityUtils.consume(entity);
-            throw new HttpResponseException(statusLine.getStatusCode(),
-                    statusLine.getReasonPhrase());
+            if (lastSessionId != null) {
+                throw new DolphinSessionException("Http session must not change but did. Old: " + lastSessionId + ", new: " + sessionID);
+            }
+            lastSessionId = sessionID;
         }
         return entity == null ? null : EntityUtils.toString(entity);
     }
 }
+
 
