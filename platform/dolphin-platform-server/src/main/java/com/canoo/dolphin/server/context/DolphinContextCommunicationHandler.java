@@ -50,7 +50,7 @@ public class DolphinContextCommunicationHandler {
             DolphinContext currentContext = contextProvider.getCurrentContext();
             if (currentContext == null) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                LOG.error("Can not find or create matching dolphin context", new DolphinContextException("Can not find or create matching dolphin context"));
+                LOG.warn("Can not find or create matching dolphin context in session " + httpSession.getId());
                 return;
             }
 

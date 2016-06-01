@@ -51,7 +51,7 @@ public class DolphinContextFilter implements Filter {
             if (clientId == null || clientId.trim().isEmpty()) {
                 if(DolphinContextUtils.getOrCreateContextMapInSession(httpSession).size() >= configuration.getMaxClientsPerSession()) {
                     servletResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Maximum size for clients in session is reached");
-                    LOG.error("Maximum size for clients in session " + servletRequest.getSession().getId() +" is reached", new DolphinContextException("Maximum size for clients in session is reached"));
+                    LOG.info("Maximum size for clients in session " + servletRequest.getSession().getId() +" is reached");
                     return;
                 }
                 dolphinContext = createNewContext(httpSession);
@@ -63,7 +63,7 @@ public class DolphinContextFilter implements Filter {
             } else {
                 dolphinContext = DolphinContextUtils.getClientInSession(servletRequest.getSession(), clientId);
                 if(dolphinContext == null) {
-                    LOG.error("Can not find requested client for id " + clientId, new DolphinContextException("Can not find requested client!"));
+                    LOG.warn("Can not find requested client for id " + clientId);
                     servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client!");
                     return;
                 }
