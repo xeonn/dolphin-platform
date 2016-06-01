@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.todo.client;
 
-import com.canoo.dolphin.client.javafx.FXBinder;
+import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;

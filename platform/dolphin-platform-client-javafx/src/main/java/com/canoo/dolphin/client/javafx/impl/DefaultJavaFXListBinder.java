@@ -15,8 +15,8 @@
  */
 package com.canoo.dolphin.client.javafx.impl;
 
-import com.canoo.dolphin.client.javafx.Binding;
-import com.canoo.dolphin.client.javafx.JavaFXListBinder;
+import com.canoo.dolphin.client.javafx.binding.Binding;
+import com.canoo.dolphin.client.javafx.binding.JavaFXListBinder;
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.event.Subscription;

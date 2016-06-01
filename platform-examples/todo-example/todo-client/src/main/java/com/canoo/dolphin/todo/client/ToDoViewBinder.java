@@ -17,9 +17,9 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.client.javafx.AbstractViewBinder;
-import com.canoo.dolphin.client.javafx.FXBinder;
-import com.canoo.dolphin.client.javafx.FXWrapper;
+import com.canoo.dolphin.client.javafx.view.AbstractViewBinder;
+import com.canoo.dolphin.client.javafx.binding.FXBinder;
+import com.canoo.dolphin.client.javafx.binding.FXWrapper;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.collections.ObservableList;

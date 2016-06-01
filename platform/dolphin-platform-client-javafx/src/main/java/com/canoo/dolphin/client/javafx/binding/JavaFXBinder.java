@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
+
+import com.canoo.dolphin.mapping.Property;
 
 /**
- * Defines a function interface that is used to handle an unbind of an binding.
+ * Created by hendrikebbers on 27.09.15.
  */
-@FunctionalInterface
-public interface Binding {
+public interface JavaFXBinder<S> {
 
-    /**
-     * unbindes the binding that is defined by this {@link Binding} instance.
-     */
-    void unbind();
+    default Binding to(Property<? extends S> dolphinProperty) {
+        if (dolphinProperty == null) {
+            throw new IllegalArgumentException("dolphinProperty must not be null");
+        }
+        return to(dolphinProperty, n -> n);
+    }
+
+    <T> Binding to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter);
 
 }
