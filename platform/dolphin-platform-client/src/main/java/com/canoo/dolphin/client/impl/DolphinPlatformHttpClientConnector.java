@@ -60,9 +60,10 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
 
-        this.httpClient = httpClient;
+        this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
 
         this.responseHandler = new IdBasedResponseHandler(this);
+        setStrictMode(false);
     }
 
     public List<Command> transmit(List<Command> commands) {
