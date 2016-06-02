@@ -1,7 +1,10 @@
 
 = Server configuration
 
-The Dolphin Platform can simply be configured by a property file. To configure the server part of the Dolphin Platform a `dolphin.properties`-file must be created in the `META-INF` folder. In a Maven based project the file would be defined as `project/src/main/resources/META-INF/dolphin.properties`. This file must be defined as a regular Java property file. Here is an example how such a file might look:
+The Dolphin Platform can simply be configured by a property file. To configure the server part of the Dolphin Platform
+a `dolphin.properties`-file must be created in the `META-INF` folder. In a Maven based project the file would be defined
+as `project/src/main/resources/META-INF/dolphin.properties`. This file must be defined as a regular Java property file.
+Here is an example how such a file might look:
 [source,txt]
 ----
 openDolphinLogLevel=OFF
@@ -22,7 +25,8 @@ Currently the following properties are supported by the Dolphin Platform:
 |severe
 
 |useCrossSiteOriginFilter
-|Boolean property that defines if the HTTP filter for the cross site origin policy should be used. By default the filter will be used.
+|Boolean property that defines if the HTTP filter for the cross site origin policy should be used. By default the filter
+will be used.
 |true, false
 |true
 
@@ -32,7 +36,9 @@ Currently the following properties are supported by the Dolphin Platform:
 |/dolphin
 
 |garbageCollectionActive
-|By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an unstable feature at the moment and should only be activated for tests.
+|By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example
+in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an
+unstable feature at the moment and should only be activated for tests.
 |true, false
 |false
 |===
