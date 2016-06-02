@@ -27,6 +27,7 @@ import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
+import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +81,7 @@ public class ControllerHandler {
     }
 
     public String createController(final String name) {
+        Assert.requireNonBlank(name, "name");
         Class<?> controllerClass = controllerRepository.getControllerClassForName(name);
 
         if(controllerClass == null) {
