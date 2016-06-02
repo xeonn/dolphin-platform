@@ -27,6 +27,8 @@ import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -44,6 +46,8 @@ import java.util.UUID;
  * It defines the methods to create or destroy controllers and to interact with them.
  */
 public class ControllerHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ControllerHandler.class);
 
     private final Map<String, Object> controllers = new HashMap<>();
 
@@ -75,8 +79,12 @@ public class ControllerHandler {
         return models.get(id);
     }
 
-    public String createController(String name) {
+    public String createController(final String name) {
         Class<?> controllerClass = controllerRepository.getControllerClassForName(name);
+
+        if(controllerClass == null) {
+            throw new ControllerCreationException("Can not find controller class for name " + name);
+        }
 
         final String id = UUID.randomUUID().toString();
         Object instance = containerManager.createManagedController(controllerClass, new ModelInjector() {
@@ -94,6 +102,8 @@ public class ControllerHandler {
                 return models.get(id);
             }
         }));
+
+        LOG.trace("Created Controller of type %s and id %s for name %s", controllerClass.getName(), id, name);
 
         return id;
     }
