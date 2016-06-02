@@ -21,9 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 
-/**
- * Created by hendrikebbers on 20.05.16.
- */
 public class TestSpringContainerManager extends AbstractSpringContainerManager {
 
     private final WebApplicationContext webApplicationContext;
