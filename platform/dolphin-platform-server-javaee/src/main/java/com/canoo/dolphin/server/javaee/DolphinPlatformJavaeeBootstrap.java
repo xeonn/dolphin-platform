@@ -18,6 +18,7 @@ package com.canoo.dolphin.server.javaee;
 import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,8 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
     private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformJavaeeBootstrap.class);
 
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+    public void onStartup(final Set<Class<?>> c, final ServletContext servletContext) throws ServletException {
+        Assert.requireNonNull(servletContext, "servletContext");
         DolphinPlatformConfiguration configuration = null;
         try {
             configuration = ConfigurationFileLoader.load();
@@ -45,6 +47,6 @@ public class DolphinPlatformJavaeeBootstrap implements ServletContainerInitializ
             LOG.error("Can not read configuration! Will use default configuration!", e);
             configuration = new DolphinPlatformConfiguration();
         }
-        DolphinPlatformBootstrap.getInstance().start(ctx, configuration);
+        DolphinPlatformBootstrap.getInstance().start(servletContext, configuration);
     }
 }

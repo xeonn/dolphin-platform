@@ -21,6 +21,7 @@ import com.canoo.dolphin.client.javafx.binding.Converter;
 import com.canoo.dolphin.client.javafx.binding.DolphinBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -32,10 +33,7 @@ public class DefaultDolphinBinder<S> implements DolphinBinder<S> {
     private final Property<S> property;
 
     public DefaultDolphinBinder(final Property<S> property) {
-        if (property == null) {
-            throw new IllegalArgumentException("property must not be null");
-        }
-        this.property = property;
+        this.property = Assert.requireNonNull(property, "property");
     }
 
     @Override

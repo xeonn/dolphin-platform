@@ -69,11 +69,11 @@ public class ControllerHandler {
     private final BeanRepository beanRepository;
 
     public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, ServerBeanBuilder beanBuilder, BeanRepository beanRepository, ControllerRepository controllerRepository) {
-        this.mBeanRegistry = mBeanRegistry;
-        this.containerManager = containerManager;
-        this.beanBuilder = beanBuilder;
-        this.controllerRepository = controllerRepository;
-        this.beanRepository = beanRepository;
+        this.mBeanRegistry = Assert.requireNonNull(mBeanRegistry, "mBeanRegistry");
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.beanBuilder = Assert.requireNonNull(beanBuilder, "beanBuilder");
+        this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
     }
 
     public Object getControllerModel(String id) {

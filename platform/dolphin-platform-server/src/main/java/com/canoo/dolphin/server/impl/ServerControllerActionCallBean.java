@@ -17,6 +17,7 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.impl.AbstractControllerActionCallBean;
 import com.canoo.dolphin.impl.Converters;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
@@ -27,8 +28,8 @@ public class ServerControllerActionCallBean extends AbstractControllerActionCall
     private final PresentationModel pm;
 
     public ServerControllerActionCallBean(Converters converters, PresentationModel pm) {
-        this.converters = converters;
-        this.pm = pm;
+        this.converters = Assert.requireNonNull(converters, "converters");
+        this.pm = Assert.requireNonNull(pm, "pm");
     }
 
     public String getControllerId() {

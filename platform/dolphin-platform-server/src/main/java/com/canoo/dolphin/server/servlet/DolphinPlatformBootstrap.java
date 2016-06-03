@@ -58,7 +58,7 @@ public class DolphinPlatformBootstrap {
 
     private DolphinContextHandler dolphinContextHandler;
 
-    private DolphinEventBusImpl dolphinEventBus;
+    private final DolphinEventBusImpl dolphinEventBus;
 
     private DolphinPlatformBootstrap() {
         dolphinEventBus = new DolphinEventBusImpl(new DolphinContextProvider() {

@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.util.Assert;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class DolphinSessionImpl implements DolphinSession {
     private final String dolphinSessionId;
 
     public DolphinSessionImpl(String dolphinSessionId) {
-        this.dolphinSessionId = dolphinSessionId;
+        this.dolphinSessionId = Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
         this.store = new ConcurrentHashMap<>();
     }
 

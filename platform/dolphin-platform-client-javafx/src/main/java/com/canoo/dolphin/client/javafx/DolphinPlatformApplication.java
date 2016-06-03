@@ -19,6 +19,7 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientContextFactory;
 import com.canoo.dolphin.client.ClientInitializationException;
 import com.canoo.dolphin.client.ClientShutdownException;
+import com.canoo.dolphin.util.Assert;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -71,6 +72,7 @@ public abstract class DolphinPlatformApplication extends Application {
      */
     @Override
     public final void start(Stage primaryStage) throws Exception {
+        Assert.requireNonNull(primaryStage, "primaryStage");
         if (initializationException == null) {
             if(clientContext != null) {
                 start(primaryStage, clientContext);
@@ -100,6 +102,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * @throws Exception an error
      */
     protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
+        Assert.requireNonNull(initializationException, "initializationException");
         initializationException.printStackTrace();
         System.exit(-1);
     }
@@ -127,6 +130,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * @param shutdownException
      */
     protected void onShutdownException(ClientShutdownException shutdownException) {
+        Assert.requireNonNull(shutdownException, "shutdownException");
         shutdownException.printStackTrace();
         System.exit(-1);
     }

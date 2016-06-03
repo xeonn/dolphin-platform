@@ -21,6 +21,7 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.DolphinEventHandler;
 import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.server.ServerDolphin;
 
@@ -31,6 +32,7 @@ public class ServerPlatformBeanRepository {
     private final InternalAttributesBean internalAttributesBean;
 
     public ServerPlatformBeanRepository(ServerDolphin dolphin, BeanRepository beanRepository, EventDispatcher dispatcher, final Converters converters) {
+        Assert.requireNonNull(dispatcher, "dispatcher");
         dispatcher.addControllerActionCallBeanAddedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {

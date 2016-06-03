@@ -18,6 +18,7 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
@@ -38,7 +39,8 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringBootstrap.class);
 
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(final ServletContext servletContext) throws ServletException {
+        Assert.requireNonNull(servletContext, "servletContext");
         DolphinPlatformConfiguration configuration = null;
         try {
             configuration = ConfigurationFileLoader.load();
