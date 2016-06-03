@@ -78,9 +78,7 @@ public class ClientContextImpl implements ClientContext {
         Assert.requireNonBlank(name, "name");
         checkForInitializedState();
 
-        CompletableFuture<ControllerProxy<T>> factoryResult = controllerProxyFactory.create(name);
-
-        return factoryResult.handle((c, e) -> {
+        return controllerProxyFactory.<T>create(name).handle((c, e) -> {
             if (e != null) {
                 throw new ControllerInitalizationException(e);
             }
