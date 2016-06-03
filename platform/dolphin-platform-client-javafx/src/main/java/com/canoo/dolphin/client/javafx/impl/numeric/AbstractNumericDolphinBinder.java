@@ -15,9 +15,9 @@
  */
 package com.canoo.dolphin.client.javafx.impl.numeric;
 
-import com.canoo.dolphin.client.javafx.BidirectionalConverter;
-import com.canoo.dolphin.client.javafx.Binding;
-import com.canoo.dolphin.client.javafx.NumericDolphinBinder;
+import com.canoo.dolphin.client.javafx.binding.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.binding.Binding;
+import com.canoo.dolphin.client.javafx.binding.NumericDolphinBinder;
 import com.canoo.dolphin.client.javafx.impl.DefaultDolphinBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;

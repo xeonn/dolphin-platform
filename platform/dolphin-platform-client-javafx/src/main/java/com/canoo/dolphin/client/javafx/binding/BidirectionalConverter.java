@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
 /**
  * Defines a converter for a bidirectional binding. This converter type can be used to bind a JavaFX property

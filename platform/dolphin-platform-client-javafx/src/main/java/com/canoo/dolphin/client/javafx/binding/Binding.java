@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
-public class FxmlLoadException extends RuntimeException {
+/**
+ * Defines a function interface that is used to handle an unbind of an binding.
+ */
+@FunctionalInterface
+public interface Binding {
 
-    private static final long serialVersionUID = -586158083991150489L;
+    /**
+     * unbindes the binding that is defined by this {@link Binding} instance.
+     */
+    void unbind();
 
-    public FxmlLoadException() {
-    }
-
-    public FxmlLoadException(String message) {
-        super(message);
-    }
-
-    public FxmlLoadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FxmlLoadException(Throwable cause) {
-        super(cause);
-    }
 }

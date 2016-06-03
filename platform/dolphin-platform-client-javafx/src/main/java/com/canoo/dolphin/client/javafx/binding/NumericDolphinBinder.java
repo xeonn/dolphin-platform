@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
-import com.canoo.dolphin.mapping.Property;
+import javafx.beans.value.ObservableValue;
 
 /**
- * Created by hendrikebbers on 27.09.15.
+ * Created by hendrikebbers on 28.09.15.
  */
-public interface JavaFXBinder<S> {
+public interface NumericDolphinBinder<T extends Number> extends DolphinBinder<T> {
 
-    default Binding to(Property<? extends S> dolphinProperty) {
-        if (dolphinProperty == null) {
-            throw new IllegalArgumentException("dolphinProperty must not be null");
-        }
-        return to(dolphinProperty, n -> n);
-    }
+    Binding toNumeric(final ObservableValue<Number> observableValue);
 
-    <T> Binding to(Property<T> dolphinProperty, Converter<? super T, ? extends S> converter);
+    Binding bidirectionalToNumeric(final javafx.beans.property.Property<Number> property);
 
 }
