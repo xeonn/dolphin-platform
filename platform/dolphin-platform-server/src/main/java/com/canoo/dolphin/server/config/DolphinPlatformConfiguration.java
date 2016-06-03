@@ -27,6 +27,8 @@ public class DolphinPlatformConfiguration {
 
     private boolean useCrossSiteOriginFilter = true;
 
+    private boolean useSessionInvalidationServlet = false;
+
     private boolean garbageCollectionActive = false;
 
     private String dolphinPlatformServletMapping = "/dolphin";
@@ -63,5 +65,13 @@ public class DolphinPlatformConfiguration {
 
     public void setGarbageCollectionActive(boolean garbageCollectionActive) {
         this.garbageCollectionActive = garbageCollectionActive;
+    }
+
+    public boolean isUseSessionInvalidationServlet() {
+        return useSessionInvalidationServlet;
+    }
+
+    public void setUseSessionInvalidationServlet(boolean useSessionInvalidationServlet) {
+        this.useSessionInvalidationServlet = useSessionInvalidationServlet;
     }
 }
