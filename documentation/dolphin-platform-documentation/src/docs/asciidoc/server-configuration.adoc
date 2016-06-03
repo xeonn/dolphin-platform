@@ -35,7 +35,6 @@ will be used.
 |true, false
 |false
 
-
 |servletMapping
 |A string based property that defines the server URL endpoint for the Dolphin Platform.
 |any String that defines an URL mapping
@@ -52,6 +51,12 @@ endpoints must provide a client id in its header (Header name = dolphin_platform
 |a comma seperated list
 |/*
 
+|maxClientsPerSession
+|Defines how many clients can exist in a http session. By using the client scope you can have several clients that share
+a session but don't use the same data (by using the client scope / dolphin session). By doing so several tabs in a
+browser can handle its own clients
+|any positive integer value
+|10
 
 |garbageCollectionActive
 |By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example
