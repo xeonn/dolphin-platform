@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.server.controller;
 
-/**
- * Defines a function interface that is used to handle an unbind of an binding.
- */
-@FunctionalInterface
-public interface Binding {
+public class ControllerCreationException extends RuntimeException {
 
-    /**
-     * unbindes the binding that is defined by this {@link Binding} instance.
-     */
-    void unbind();
+    private static final long serialVersionUID = 2380863641251071460L;
 
+    public ControllerCreationException() {
+    }
+
+    public ControllerCreationException(String message) {
+        super(message);
+    }
+
+    public ControllerCreationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ControllerCreationException(Throwable cause) {
+        super(cause);
+    }
 }

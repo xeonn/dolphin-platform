@@ -29,10 +29,7 @@ import com.canoo.dolphin.util.DolphinRemotingException;
 import org.apache.http.client.HttpClient;
 import org.opendolphin.core.client.ClientDolphin;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,8 +44,6 @@ public class ClientContextImpl implements ClientContext {
     private final ClientPlatformBeanRepository platformBeanRepository;
 
     private State state = State.CREATED;
-
-    private final List<WeakReference<ControllerProxy>> registeredWeakControllers;
 
     private final ControllerProxyFactory controllerProxyFactory;
 
@@ -68,9 +63,8 @@ public class ClientContextImpl implements ClientContext {
         this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
         this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
-        this.httpClient = httpClient;
+        this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
 
-        registeredWeakControllers = new CopyOnWriteArrayList<>();
         try {
             dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle((v, e) -> {
                 if(e != null) {
@@ -91,17 +85,12 @@ public class ClientContextImpl implements ClientContext {
         Assert.requireNonBlank(name, "name");
         checkForInitializedState();
 
-        final CompletableFuture<ControllerProxy<T>> task = new CompletableFuture<>();
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                ControllerProxy<T> controllerProxy = controllerProxyFactory.create(name);
-                registeredWeakControllers.add(new WeakReference<>(controllerProxy));
-                task.complete(controllerProxy);
-            } catch (Exception e) {
-                task.completeExceptionally(new ControllerInitalizationException(e));
+        return controllerProxyFactory.<T>create(name).handle((c, e) -> {
+            if (e != null) {
+                throw new ControllerInitalizationException(e);
             }
+            return c;
         });
-        return task;
     }
 
     @Override
@@ -121,14 +110,13 @@ public class ClientContextImpl implements ClientContext {
                     state = State.DESTROYED;
                     dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME).handle((v, t) -> {
                         if (t != null) {
-                            result.completeExceptionally(new RuntimeException("Can't disconnect", t));
+                            result.completeExceptionally(new DolphinRemotingException("Can't disconnect", t));
                         } else {
                             result.complete(null);
                         }
                         return null;
                     });
                 }
-
         );
 
         return result;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,10 +36,8 @@ public class SpringContainerManager implements ContainerManager {
     private ServletContext servletContext;
 
     @Override
-    public void init(ServletContext servletContext) {
-        if(servletContext == null) {
-            throw new IllegalArgumentException("servletContext must not be null!");
-        }
+    public void init(final ServletContext servletContext) {
+        Assert.requireNonNull(servletContext, "servletContext");
         this.servletContext = servletContext;
         WebApplicationContext context = getContext();
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
@@ -58,14 +56,14 @@ public class SpringContainerManager implements ContainerManager {
     }
 
     @Override
-    public <T> T createListener(Class<T> listenerClass) {
+    public <T> T createListener(final Class<T> listenerClass) {
         Assert.requireNonNull(listenerClass, "listenerClass");
         WebApplicationContext context = getContext();
         return context.getBean(listenerClass);
     }
 
     @Override
-    public void destroyController(Object instance, Class controllerClass) {
+    public void destroyController(final Object instance, final Class controllerClass) {
         Assert.requireNonNull(instance, "instance");
         ApplicationContext context = getContext();
         context.getAutowireCapableBeanFactory().destroyBean(instance);

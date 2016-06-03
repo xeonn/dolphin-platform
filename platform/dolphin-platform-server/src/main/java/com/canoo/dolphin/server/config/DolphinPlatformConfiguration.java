@@ -23,11 +23,11 @@ import java.util.logging.Level;
  */
 public class DolphinPlatformConfiguration {
 
-    public final static int SESSION_TIMEOUT_DEFAULT_VALUE = 15*60;
+    private boolean useSessionInvalidationServlet = false;
+
+    public final static int SESSION_TIMEOUT_DEFAULT_VALUE = 15 * 60;
 
     private boolean useCrossSiteOriginFilter = true;
-
-    private boolean garbageCollectionActive = false;
 
     private String dolphinPlatformServletMapping = "/dolphin";
 
@@ -69,14 +69,6 @@ public class DolphinPlatformConfiguration {
         this.openDolphinLogLevel = openDolphinLogLevel;
     }
 
-    public boolean isGarbageCollectionActive() {
-        return garbageCollectionActive;
-    }
-
-    public void setGarbageCollectionActive(boolean garbageCollectionActive) {
-        this.garbageCollectionActive = garbageCollectionActive;
-    }
-
     public int getMaxClientsPerSession() {
         return maxClientsPerSession;
     }
@@ -84,4 +76,14 @@ public class DolphinPlatformConfiguration {
     public void setMaxClientsPerSession(int maxClientsPerSession) {
         this.maxClientsPerSession = maxClientsPerSession;
     }
+
+    public boolean isUseSessionInvalidationServlet() {
+        return useSessionInvalidationServlet;
+    }
+
+    public void setUseSessionInvalidationServlet(boolean useSessionInvalidationServlet) {
+        this.useSessionInvalidationServlet = useSessionInvalidationServlet;
+    }
+
+
 }

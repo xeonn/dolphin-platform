@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.view;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ControllerActionException;
@@ -24,6 +24,8 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -37,15 +39,15 @@ public abstract class AbstractViewBinder<M> {
 
     private ControllerProxy<M> controllerProxy;
 
-    private ReadOnlyBooleanWrapper actionInProcess;
+    private final ReadOnlyBooleanWrapper actionInProcess = new ReadOnlyBooleanWrapper(false);
 
-    private ReadOnlyObjectWrapper<M> model;
+    private final ReadOnlyObjectWrapper<M> model = new ReadOnlyObjectWrapper<>();
 
-    private ReadOnlyObjectWrapper<Throwable> initializationException;
+    private final ReadOnlyObjectWrapper<Throwable> initializationException = new ReadOnlyObjectWrapper<>();
 
-    private ReadOnlyObjectWrapper<ControllerActionException> invocationException;
+    private final ReadOnlyObjectWrapper<ControllerActionException> invocationException = new ReadOnlyObjectWrapper<>();
 
-    private ClientContext clientContext;
+    private final ClientContext clientContext;
 
     /**
      * Constructor that internally starts the Dolphin Platform workflow and triggers the controller creation on the server.
@@ -53,13 +55,8 @@ public abstract class AbstractViewBinder<M> {
      * @param controllerName name of the controller (see annotation DolphinController in the Java server lib).
      */
     public AbstractViewBinder(ClientContext clientContext, String controllerName) {
-        Assert.requireNonNull(clientContext, "clientContext");
         Assert.requireNonBlank(controllerName, "controllerName");
-        this.clientContext = clientContext;
-        model = new ReadOnlyObjectWrapper<>();
-        actionInProcess = new ReadOnlyBooleanWrapper(false);
-        initializationException = new ReadOnlyObjectWrapper<>();
-        invocationException = new ReadOnlyObjectWrapper<>();
+        this.clientContext = Assert.requireNonNull(clientContext, "clientContext");
         clientContext.<M>createController(controllerName).whenComplete((c, e) -> {
             if (e != null) {
                 initializationException.set(e);
@@ -212,5 +209,32 @@ public abstract class AbstractViewBinder<M> {
      */
     public ClientContext getClientContext() {
         return clientContext;
+    }
+
+    /**
+     * Returns the root node of the view.
+     * @return the root node.
+     */
+    public abstract Node getRootNode();
+
+    /**
+     * Usefull helper method that returns the root node (see {@link #getRootNode()}) as a {@link Parent} if the root node
+     * extends {@link Parent} or throws an runtime exception. This can be used to simply add a {@link AbstractFXMLViewBinder}
+     * based view to a scene that needs a {@link Parent} as a root node.
+     * @return the root node
+     */
+    public Parent getParent() {
+        Node rootNode = getRootNode();
+        if(rootNode == null) {
+            throw new NullPointerException("The root node is null");
+        }
+        if (!(rootNode instanceof Parent)) {
+            throw new IllegalStateException("The root node of this view is not a Parent");
+        }
+        return (Parent) rootNode;
+    }
+
+    protected ControllerProxy<M> getControllerProxy() {
+        return controllerProxy;
     }
 }

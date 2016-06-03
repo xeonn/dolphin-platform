@@ -16,7 +16,6 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.util.Assert;
-import org.opendolphin.StringUtil;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,25 +48,20 @@ public class ClientConfiguration {
 
     /**
      * Default constructor of a client configuration
-     * @param serverEndpoint the DOlphin Platform server url
+     *
+     * @param serverEndpoint  the DOlphin Platform server url
      * @param uiThreadHandler the ui thread handler
      */
     public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
-        if (StringUtil.isBlank(serverEndpoint)) {
-            throw new IllegalArgumentException("serverEndpoint must not be null");
-        }
-        if (uiThreadHandler == null) {
-            throw new IllegalArgumentException("uiThreadHandler must not be null");
-        }
-        this.serverEndpoint = serverEndpoint;
-
-        this.uiThreadHandler = uiThreadHandler;
+        this.serverEndpoint = Assert.requireNonBlank(serverEndpoint, "serverEndpoint");
+        this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
         this.dolphinLogLevel = Level.SEVERE;
         this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     }
 
     /**
      * Returns the ui thread handler
+     *
      * @return ui thread handler
      */
     public UiThreadHandler getUiThreadHandler() {
@@ -76,6 +70,7 @@ public class ClientConfiguration {
 
     /**
      * Returns the Dolphin Platform server endpoint
+     *
      * @return the server endpoint
      */
     public String getServerEndpoint() {
@@ -84,6 +79,7 @@ public class ClientConfiguration {
 
     /**
      * Returns the logging level for the remoting layer
+     *
      * @return the logging level for the remoting layer
      */
     public Level getDolphinLogLevel() {
@@ -92,6 +88,7 @@ public class ClientConfiguration {
 
     /**
      * Sets the logging level for the remoting layer
+     *
      * @param dolphinLogLevel the logging level for the remoting layer
      */
     public void setDolphinLogLevel(Level dolphinLogLevel) {
@@ -101,6 +98,7 @@ public class ClientConfiguration {
 
     /**
      * Returns the connection timeout in milliseconds
+     *
      * @return the connection timeout in milliseconds
      */
     public long getConnectionTimeout() {
@@ -109,10 +107,11 @@ public class ClientConfiguration {
 
     /**
      * Sets the connection timeout in milliseconds. if the value is < 1 it will be set to the default value {@link #DEFAULT_CONNECTION_TIMEOUT} (5000 ms)
+     *
      * @param connectionTimeout the connection timeout in milliseconds
      */
     public void setConnectionTimeout(long connectionTimeout) {
-        if(connectionTimeout > 0) {
+        if (connectionTimeout > 0) {
             this.connectionTimeout = connectionTimeout;
         } else {
             LOG.warn("Default connection timeout (" + DEFAULT_CONNECTION_TIMEOUT + " ms) is used instead of " + connectionTimeout + " ms");

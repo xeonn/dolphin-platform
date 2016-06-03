@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ package com.canoo.dolphin.server.spring;
 import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
@@ -38,7 +39,8 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
     private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringBootstrap.class);
 
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(final ServletContext servletContext) throws ServletException {
+        Assert.requireNonNull(servletContext, "servletContext");
         DolphinPlatformConfiguration configuration = null;
         try {
             configuration = ConfigurationFileLoader.load();

@@ -28,7 +28,7 @@ import java.io.IOException;
  */
 public class DolphinPlatformServlet extends HttpServlet {
 
-    private DolphinContextCommunicationHandler communicationHandler;
+    private final DolphinContextCommunicationHandler communicationHandler;
 
     public DolphinPlatformServlet(DolphinContextCommunicationHandler communicationHandler) {
         this.communicationHandler = communicationHandler;

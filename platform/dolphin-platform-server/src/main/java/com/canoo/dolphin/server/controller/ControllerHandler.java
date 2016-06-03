@@ -27,6 +27,9 @@ import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.server.mbean.beans.ModelProvider;
+import com.canoo.dolphin.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -44,6 +47,8 @@ import java.util.UUID;
  * It defines the methods to create or destroy controllers and to interact with them.
  */
 public class ControllerHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ControllerHandler.class);
 
     private final Map<String, Object> controllers = new HashMap<>();
 
@@ -64,19 +69,24 @@ public class ControllerHandler {
     private final BeanRepository beanRepository;
 
     public ControllerHandler(DolphinContextMBeanRegistry mBeanRegistry, ContainerManager containerManager, ServerBeanBuilder beanBuilder, BeanRepository beanRepository, ControllerRepository controllerRepository) {
-        this.mBeanRegistry = mBeanRegistry;
-        this.containerManager = containerManager;
-        this.beanBuilder = beanBuilder;
-        this.controllerRepository = controllerRepository;
-        this.beanRepository = beanRepository;
+        this.mBeanRegistry = Assert.requireNonNull(mBeanRegistry, "mBeanRegistry");
+        this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.beanBuilder = Assert.requireNonNull(beanBuilder, "beanBuilder");
+        this.controllerRepository = Assert.requireNonNull(controllerRepository, "controllerRepository");
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
     }
 
     public Object getControllerModel(String id) {
         return models.get(id);
     }
 
-    public String createController(String name) {
+    public String createController(final String name) {
+        Assert.requireNonBlank(name, "name");
         Class<?> controllerClass = controllerRepository.getControllerClassForName(name);
+
+        if(controllerClass == null) {
+            throw new ControllerCreationException("Can not find controller class for name " + name);
+        }
 
         final String id = UUID.randomUUID().toString();
         Object instance = containerManager.createManagedController(controllerClass, new ModelInjector() {
@@ -95,6 +105,8 @@ public class ControllerHandler {
             }
         }));
 
+        LOG.trace("Created Controller of type %s and id %s for name %s", controllerClass.getName(), id, name);
+
         return id;
     }
 
@@ -103,7 +115,7 @@ public class ControllerHandler {
         Class controllerClass = controllerClassMapping.remove(id);
         containerManager.destroyController(controller, controllerClass);
 
-        Object model = models.get(id);
+        Object model = models.remove(id);
         if (model != null) {
             beanRepository.delete(model);
         }

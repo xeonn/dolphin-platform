@@ -87,10 +87,10 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         DolphinSessionListenerProvider dolphinSessionListenerProvider = new DolphinSessionListenerProvider(containerManager);
 
         DolphinContextFactory dolphinContextFactory = new DefaultDolphinContextFactory(containerManager, dolphinEventBus);
-
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(communicationHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
-        servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
-
+        if (configuration.isUseSessionInvalidationServlet()) {
+            servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
+        }
         if (configuration.isUseCrossSiteOriginFilter()) {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }

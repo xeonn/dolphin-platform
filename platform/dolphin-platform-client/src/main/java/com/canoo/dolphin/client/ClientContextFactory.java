@@ -38,6 +38,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -71,6 +72,7 @@ public class ClientContextFactory {
      * @return the future
      */
     public static CompletableFuture<ClientContext> connect(final ClientConfiguration clientConfiguration) {
+        Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
 
         Level openDolphinLogLevel = clientConfiguration.getDolphinLogLevel();

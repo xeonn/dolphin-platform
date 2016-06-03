@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,13 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.client.javafx.AbstractViewBinder;
-import com.canoo.dolphin.client.javafx.FXBinder;
-import com.canoo.dolphin.client.javafx.FXWrapper;
+import com.canoo.dolphin.client.javafx.view.AbstractViewBinder;
+import com.canoo.dolphin.client.javafx.binding.FXBinder;
+import com.canoo.dolphin.client.javafx.binding.FXWrapper;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -53,11 +54,6 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
         itemList.setCellFactory(c -> new ToDoItemCell(i -> invoke("markChanged", new Param("itemName", i.getText()))));
     }
 
-
-    public StackPane getRoot() {
-        return root;
-    }
-
     @Override
     protected void init() {
         FXBinder.bind(createField.textProperty()).bidirectionalTo(getModel().getNewItemText());
@@ -65,6 +61,11 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
         itemList.setItems(items);
         createButton.setDisable(false);
         createButton.setOnAction(event -> invoke("add"));
+    }
+
+    @Override
+    public Node getRootNode() {
+        return root;
     }
 
 }

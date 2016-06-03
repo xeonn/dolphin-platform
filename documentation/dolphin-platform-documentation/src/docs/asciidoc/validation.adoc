@@ -1,8 +1,9 @@
 
 = Validation Support
 
-The Dolphin Platform provides the optional `dolphin-platform-bean-validation` module that adds Java Bean Validation (JSR 303)
- support to the model layer of the Dolphin Platform. To use the validation support the module must be added as a dependency to your project:
+The Dolphin Platform provides the optional `dolphin-platform-bean-validation` module that adds Java Bean Validation
+(JSR 303) support to the model layer of the Dolphin Platform. To use the validation support the module must be added as
+a dependency to your project:
 
 [source,xml]
 [subs="verbatim,attributes"]
