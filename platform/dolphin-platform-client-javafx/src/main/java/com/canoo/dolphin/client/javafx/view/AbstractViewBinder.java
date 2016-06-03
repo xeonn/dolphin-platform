@@ -228,10 +228,10 @@ public abstract class AbstractViewBinder<M> {
         if(rootNode == null) {
             throw new NullPointerException("The root node is null");
         }
-        if(rootNode instanceof Parent) {
-            return (Parent) rootNode;
+        if (!(rootNode instanceof Parent)) {
+            throw new IllegalStateException("The root node of this view is not a Parent");
         }
-        throw new IllegalStateException("The root node of this view is not a Parent");
+        return (Parent) rootNode;
     }
 
     protected ControllerProxy<M> getControllerProxy() {

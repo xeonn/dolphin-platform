@@ -25,12 +25,7 @@ public class DolphinWindowUtils {
         Assert.requireNonNull(viewBinder, "viewBinder");
         final EventHandler<WindowEvent> handler = e -> viewBinder.destroy();
         window.addEventFilter(WindowEvent.WINDOW_HIDDEN, handler);
-        return new Subscription() {
-            @Override
-            public void unsubscribe() {
-                window.removeEventFilter(WindowEvent.WINDOW_HIDDEN, handler);
-            }
-        };
+        return () -> window.removeEventFilter(WindowEvent.WINDOW_HIDDEN, handler);
     }
 
 }
