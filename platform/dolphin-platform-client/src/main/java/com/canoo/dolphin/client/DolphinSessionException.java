@@ -1,9 +1,8 @@
 package com.canoo.dolphin.client;
 
-/**
- * Created by hendrikebbers on 20.05.16.
- */
 public class DolphinSessionException extends RuntimeException {
+
+    private static final long serialVersionUID = -661120767433339452L;
 
     public DolphinSessionException() {
     }
