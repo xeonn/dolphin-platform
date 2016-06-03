@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.servlet;
 
 import com.canoo.dolphin.server.context.DolphinContextHandler;
+import com.canoo.dolphin.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,9 +29,10 @@ import java.io.IOException;
  */
 public class DolphinPlatformServlet extends HttpServlet {
 
-    private DolphinContextHandler dolphinContextHandler;
+    private final DolphinContextHandler dolphinContextHandler;
 
     public DolphinPlatformServlet(DolphinContextHandler dolphinContextHandler) {
+        Assert.requireNonNull(dolphinContextHandler, "dolphinContextHandler");
         this.dolphinContextHandler = dolphinContextHandler;
     }
 

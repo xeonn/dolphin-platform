@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+
+import static com.canoo.dolphin.util.Assert.requireNonNull;
 
 /**
  * A util class that can be used to create JavaFX properties and lists as wrapper around Dolphin Platform properties and lists.
@@ -41,6 +44,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final DoubleProperty property = new SimpleDoubleProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -53,6 +57,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static FloatProperty wrapFloatProperty(final Property<Float> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final FloatProperty property = new SimpleFloatProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -65,6 +70,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final IntegerProperty property = new SimpleIntegerProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -77,6 +83,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static LongProperty wrapLongProperty(final Property<Long> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final LongProperty property = new SimpleLongProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -89,6 +96,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static BooleanProperty wrapBooleanProperty(final Property<Boolean> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final BooleanProperty property = new SimpleBooleanProperty();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -101,6 +109,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static StringProperty wrapStringProperty(final Property<String> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         StringProperty property = new SimpleStringProperty();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -113,6 +122,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static <T> ObjectProperty<T> wrapObjectProperty(final Property<T> dolphinProperty) {
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final ObjectProperty<T> property = new SimpleObjectProperty<>();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -126,6 +136,7 @@ public class FXWrapper {
      * @return the JavaFX list
      */
     public static <T> ObservableList<T> wrapList(com.canoo.dolphin.collections.ObservableList<T> dolphinList) {
+        Assert.requireNonNull(dolphinList, "dolphinList");
         final ObservableList<T> list = FXCollections.observableArrayList(dolphinList);
 
         list.addListener((ListChangeListener<T>) c -> {

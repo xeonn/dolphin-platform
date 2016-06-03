@@ -1,16 +1,21 @@
 
 = The Model API
 
-One of the core features and maybe the most important concept of Dolphin Platform is the model synchronization between client and server. For each view in the client a controller instance "lives" in the server that defines all the logic of the view. A model is automatically shared and synchronized between the client view and the controller on the server.
+One of the core features and maybe the most important concept of Dolphin Platform is the model synchronization between
+client and server. For each view in the client a controller instance "lives" in the server that defines all the logic of
+the view. A model is automatically shared and synchronized between the client view and the controller on the server.
 
 .Synchronization of the model
 image::model-sync.png[]
 
-Such a model can be a bean or a hierarchy of several beans. Dolphin Platform provides an API to create full observable beans for the model layer.
+Such a model can be a bean or a hierarchy of several beans. Dolphin Platform provides an API to create full observable
+beans for the model layer.
 
 == Creating a bean
 
-A model for the Dolphin Platform can simply be defined as a Java bean but instead of using primitive date types for all the attributes of the bean Dolphin Platform provides the `Property<V>` interface that should be used to define attributes. Based on this a definition for a bean with only one String attribute will look like this:
+A model for the Dolphin Platform can simply be defined as a Java bean but instead of using primitive date types for all
+the attributes of the bean Dolphin Platform provides the `Property<V>` interface that should be used to define
+attributes. Based on this a definition for a bean with only one String attribute will look like this:
 
 [source,java]
 ----
@@ -57,7 +62,8 @@ Currently Dolphin Platform properties and collections support the following type
 * Enums _(since version 0.8.4)_
 * Dolphin Platform Bean <<bean-hierarchies, (see description)>>
 
-CAUTION: As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it will be converted.
+CAUTION: As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it
+will be converted.
 
 == Using collections
 
@@ -138,3 +144,84 @@ TODO
 The Dolphin Platform contains a garbage collection on the server that will automatically remove all bean instances from
 the remoting layer that aren't referenced anymore by other beans. Currently the garbage collection is an experimental
 feature and it's active by default. If you want to use the garbage collection you need to activate it in the `dolphin.properties` file.
+
+== How to work with the Model API
+
+To get a better overview of the API that helps you to define presentation models in Dolphin Platform we added a small
+example.
+Let's say we have the following view that can be part of a photo library app:
+
+.Example Application
+image::model-example-1.png[]
+
+In this view, we have several elements that need a data model. If the data of this app is stored on a server the data
+model must be shared between the client and the server. When having a look at the screen we can see 3 different elements
+that need data from the data model to visualize itself or provide user interaction:
+
+* The title of the screen needs a String as its content. We can display the title of a photo album or an internationalized
+string.
+* The slider that defines a value. Let's imagine that the interaction with the slider changes the size of the pictures in
+the main area. Maybe the last value of the slider should be stored on the server to automatically save user preferences
+* All pictures in the main area. As you can see each card in this area contains an image and maybe a badge in the top
+right corner. A badge element in the top right corner visualizes if the photo is flagged.
+
+Based on this definition we would create a presentation model that might look like this one:
+
+.The presentation model
+image::model-example-2.png[]
+
+When defining such a model in JavaFX, you can use the cool property API and the observable collections that are part of
+JavaFX. Modern JavaScript frameworks like AngularJS or Polymer provide a similar behavior and therefore we decided to
+offer the same benefits when defining models with the Dolphin Platform. In Dolphin Platform you work with properties and
+observable collections, too. Therefore it really easy to define a hierarchical model for your view. A model for the
+shown view might look like this:
+
+[source,java]
+----
+@DolphinBean
+public class PhotoOverviewModel {
+
+  private Property<String> title;
+
+  private Property<Double> sliderValue;
+
+  private ObservableList<PhotoModel> photos;
+
+  //getter & setter
+
+}
+
+@DolphinBean
+public class PhotoModel {
+
+  private Property<String> imageUrl;
+
+  private Property<Boolean> flagged;
+
+  //getter & setter
+
+}
+----
+
+All properties and collections in the Dolphin Platform are observable and therefore it's quite easy to observe them on
+the client and the server:
+
+[source,java]
+----
+myModel.getTitleProperty().onChange(e -> System.out.println("New title: " + e.getNewValue()));
+----
+
+For all client APIs we support first class support for the Dolphin Platform properties. When working with JavaFX for
+example it's quite easy and intuitive to bind a synchronized Dolphin Platform property to a JavaFX property:
+
+[source,java]
+----
+FXBinder.bind(booleanJavaFXProperty).bidirectionalTo(booleanDolphinProperty);
+----
+
+On JavaScript clients the handling is even more elegant as you can bind the Dolphin Platform model directly in HTML.
+
+The main benefit of this concept is that you can use the same model classes on the server and the client. Because the
+model will automatically be synchronized between the view and the server controller it feels like you work with the same
+instance. By doing so you can simply bind a string property to a textfield in the view and observe it's value on the
+server. The change events will automatically be fired on the server when you start typing in the textfield.

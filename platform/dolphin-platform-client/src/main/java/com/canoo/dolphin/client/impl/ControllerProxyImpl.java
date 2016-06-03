@@ -20,7 +20,7 @@ import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.InternalAttributesBean;
 import com.canoo.dolphin.impl.PlatformConstants;
-import org.opendolphin.StringUtil;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
@@ -41,19 +41,10 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
     private volatile boolean destroyed = false;
 
     public ControllerProxyImpl(String controllerId, T model, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository) {
-        if (StringUtil.isBlank(controllerId)) {
-            throw new NullPointerException("controllerId must not be null");
-        }
-        if (dolphin == null) {
-            throw new NullPointerException("dolphin must not be null");
-        }
-        if (platformBeanRepository == null) {
-            throw new NullPointerException("platformBeanRepository must not be null");
-        }
-        this.dolphin = dolphin;
-        this.controllerId = controllerId;
+        this.dolphin = Assert.requireNonNull(dolphin, "dolphin");
+        this.controllerId = Assert.requireNonBlank(controllerId, "controllerId");
         this.model = model;
-        this.platformBeanRepository = platformBeanRepository;
+        this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
     }
 
     public String getControllerId() {

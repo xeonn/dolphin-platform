@@ -71,7 +71,7 @@ public class SpringBeanFactory {
     }
 
     @Bean(name="customScopeConfigurer")
-    public CustomScopeConfigurer createClientScope() {
+    public static CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override

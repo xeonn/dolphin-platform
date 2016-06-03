@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
-public class FxmlLoadException extends RuntimeException {
+import javafx.beans.value.ObservableValue;
 
-    private static final long serialVersionUID = -586158083991150489L;
+/**
+ * Created by hendrikebbers on 28.09.15.
+ */
+public interface NumericDolphinBinder<T extends Number> extends DolphinBinder<T> {
 
-    public FxmlLoadException() {
-    }
+    Binding toNumeric(final ObservableValue<Number> observableValue);
 
-    public FxmlLoadException(String message) {
-        super(message);
-    }
+    Binding bidirectionalToNumeric(final javafx.beans.property.Property<Number> property);
 
-    public FxmlLoadException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FxmlLoadException(Throwable cause) {
-        super(cause);
-    }
 }

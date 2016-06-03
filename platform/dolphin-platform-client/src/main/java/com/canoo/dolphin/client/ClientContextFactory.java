@@ -36,6 +36,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
@@ -60,17 +61,19 @@ public class ClientContextFactory {
      * Create a {@link ClientContext} based on the given configuration. This method doesn't block and returns a
      * {@link CompletableFuture} to receive its result. If the {@link ClientContext} can't be created the
      * {@link CompletableFuture#get()} will throw a {@link ClientInitializationException}.
+     *
      * @param clientConfiguration the configuration
      * @return the future
      */
     public static CompletableFuture<ClientContext> connect(final ClientConfiguration clientConfiguration) {
+        Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         final CompletableFuture<ClientContext> result = new CompletableFuture<>();
-        
+
         Level openDolphinLogLevel = clientConfiguration.getDolphinLogLevel();
         Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(openDolphinLogLevel);
 
-Executors.newSingleThreadExecutor().execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
             try {
 
                 final ClientDolphin clientDolphin = createClientDolphin(clientConfiguration);
@@ -99,6 +102,7 @@ Executors.newSingleThreadExecutor().execute(() -> {
     }
 
     private static ClientDolphin createClientDolphin(final ClientConfiguration clientConfiguration) {
+        Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         final ClientDolphin clientDolphin = new ClientDolphin();
         clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
         final HttpClientConnector clientConnector = new HttpClientConnector(clientDolphin, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint());

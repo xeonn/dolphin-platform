@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.javafx;
+package com.canoo.dolphin.client.javafx.binding;
 
 /**
- * Defines a converter that can convert a data type into a different data type. This converters are normally used to bind
- * JavaFX properties unidirectional to Dolphin Platform properties of a different type. For bidiertional bindings see {@link BidirectionalConverter}
- * @param <T> type of the first data type
- * @param <U> type of the second data type
+ * Defines a function interface that is used to handle an unbind of an binding.
  */
-public interface Converter<T, U> {
+@FunctionalInterface
+public interface Binding {
 
     /**
-     * Converts the given value to another data gtype
-     * @param value the value that should be converted
-     * @return the converted value
+     * unbindes the binding that is defined by this {@link Binding} instance.
      */
-    U convert(T value);
+    void unbind();
 
 }

@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.servlet;
 
+import com.canoo.dolphin.util.Assert;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,8 +31,9 @@ public class CrossSiteOriginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
+        HttpServletRequest req = (HttpServletRequest) Assert.requireNonNull(request, "request");
+        HttpServletResponse resp = (HttpServletResponse) Assert.requireNonNull(response, "response");
+        Assert.requireNonNull(chain, "chain");
 
         String clientOrigin = req.getHeader("origin");
         resp.setHeader("Access-Control-Allow-Origin", clientOrigin);

@@ -60,6 +60,8 @@ public class ServerBeanBuilderImpl extends AbstractBeanBuilder implements Server
     }
 
     protected <T> ObservableList<T> create(final PropertyInfo observableListInfo, final PresentationModel model, final ListMapper listMapper) {
+        Assert.requireNonNull(model, "model");
+        Assert.requireNonNull(listMapper, "listMapper");
         final ObservableList<T> list = new ObservableArrayList<T>() {
             @Override
             protected void notifyInternalListeners(ListChangeEvent<T> event) {

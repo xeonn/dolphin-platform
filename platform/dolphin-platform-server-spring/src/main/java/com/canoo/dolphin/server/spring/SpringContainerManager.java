@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -32,10 +33,7 @@ public class SpringContainerManager extends AbstractSpringContainerManager {
 
     @Override
     public void init(ServletContext servletContext) {
-        if(servletContext == null) {
-            throw new IllegalArgumentException("servletContext must not be null!");
-        }
-        this.servletContext = servletContext;
+        this.servletContext = Assert.requireNonNull(servletContext, "servletContext");
         init();
     }
 
