@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.client;
 
-import org.opendolphin.StringUtil;
+import com.canoo.dolphin.util.Assert;
 
 /**
  * The class defines a param that can be used as a action param when calling a action on the server side
@@ -34,10 +34,7 @@ public class Param {
      * @param value value of the param
      */
     public Param(String name, Object value) {
-        if (StringUtil.isBlank(name)) {
-            throw new IllegalArgumentException("name must not be null");
-        }
-        this.name = name;
+        this.name = Assert.requireNonBlank(name, "name");
         this.value = value;
     }
 

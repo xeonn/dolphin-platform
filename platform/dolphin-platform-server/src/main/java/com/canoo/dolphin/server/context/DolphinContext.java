@@ -40,8 +40,9 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.gc.GarbageCollector;
+import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
 import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.util.Assert;
@@ -108,7 +109,6 @@ public class DolphinContext implements DolphinSessionProvider {
 
         //ID
         id = UUID.randomUUID().toString();
-
         //Init Open Dolphin
         dolphin = dolphinFactory.create();
 
@@ -156,6 +156,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.INIT_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.INIT_CONTEXT_COMMAND_NAME, getId());
                         onInitContext();
                     }
                 });
@@ -163,6 +164,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME, getId());
                         onDestroyContext();
                     }
                 });
@@ -170,6 +172,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME, getId());
                         onRegisterController();
                     }
                 });
@@ -177,6 +180,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.DESTROY_CONTROLLER_COMMAND_NAME, getId());
                         onDestroyController();
                     }
                 });
@@ -184,6 +188,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.CALL_CONTROLLER_ACTION_COMMAND_NAME, getId());
                         onCallControllerAction();
                     }
                 });
@@ -191,6 +196,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, getId());
                         onPollEventBus();
                     }
                 });
@@ -198,6 +204,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, getId());
                         onReleaseEventBus();
                     }
                 });
@@ -205,6 +212,7 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, getId());
                         onGarbageCollection();
                     }
                 });
@@ -238,6 +246,9 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onRegisterController() {
+        if (platformBeanRepository == null) {
+            throw new IllegalStateException("An action was called before the init-command was sent.");
+        }
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         String controllerId = controllerHandler.createController(bean.getControllerName());
         bean.setControllerId(controllerId);
@@ -248,6 +259,9 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onDestroyController() {
+        if (platformBeanRepository == null) {
+            throw new IllegalStateException("An action was called before the init-command was sent.");
+        }
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         controllerHandler.destroyController(bean.getControllerId());
     }
@@ -300,9 +314,12 @@ public class DolphinContext implements DolphinSessionProvider {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
 
-        NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
-        results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
-
+        if(UnstableFeatureFlags.isUseGc()) {
+            if(commands.size() != 1 || !PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME.equals(commands.get(0).getId())) {
+                NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
+                results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
+            }
+        }
         return results;
     }
 

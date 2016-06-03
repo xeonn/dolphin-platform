@@ -27,6 +27,7 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
@@ -40,6 +41,8 @@ public class ClientBeanBuilderImpl extends AbstractBeanBuilder {
     }
 
     protected ObservableList create(final PropertyInfo observableListInfo, final PresentationModel model, final ListMapper listMapper) {
+        Assert.requireNonNull(model, "model");
+        Assert.requireNonNull(listMapper, "listMapper");
         return new ObservableArrayList() {
             @Override
             protected void notifyInternalListeners(ListChangeEvent event) {

@@ -27,10 +27,10 @@
             <paper-input label="Task name" value="{{model.newItemText}}"></paper-input>
             <paper-button raised class="colorful" on-tap="_onAddClicked">add</paper-button>
 
-            <template is='dom-repeat' items='{{model.items}}'>
+            <template is="dom-repeat" items="[[model.items]]">
                 <paper-item>
                     <paper-item-body>[[item.text]]</paper-item-body>
-                    <paper-checkbox checked="{{item.completed}}"></paper-checkbox>
+                    <paper-checkbox checked="[[item.completed]]" on-tap="_onCheckboxClicked"></paper-checkbox>
                 </paper-item>
             </template>
 
@@ -50,6 +50,10 @@
 
         _onAddClicked: function() {
             this.invoke('add');
+        },
+
+        _onCheckboxClicked: function(e) {
+            this.invoke('markChanged', {itemName: e.model.item.text});
         }
     });
 </script>

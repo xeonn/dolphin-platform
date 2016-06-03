@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,11 @@
  */
 package com.canoo.dolphin.client.javafx;
 
+import com.canoo.dolphin.client.javafx.binding.BidirectionalConverter;
+import com.canoo.dolphin.client.javafx.binding.Binding;
+import com.canoo.dolphin.client.javafx.binding.Converter;
+import com.canoo.dolphin.client.javafx.binding.DefaultBidirectionalConverter;
+import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.impl.MockedProperty;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;

@@ -15,8 +15,6 @@
  */
 package com.canoo.dolphin.server;
 
-import com.canoo.dolphin.server.context.DolphinSessionListener;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.server.container;
 
-import com.canoo.dolphin.server.context.DolphinSessionListener;
+import com.canoo.dolphin.server.DolphinSessionListener;
 
 import javax.servlet.ServletContext;
 

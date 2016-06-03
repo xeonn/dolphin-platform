@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -71,7 +71,7 @@ public class SpringBeanFactory {
     }
 
     @Bean(name="customScopeConfigurer")
-    public CustomScopeConfigurer createClientScope() {
+    public static CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override

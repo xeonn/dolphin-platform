@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientInitializationException;
+import com.canoo.dolphin.client.DolphinSessionException;
 import com.canoo.dolphin.client.javafx.DolphinPlatformApplication;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -26,6 +27,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import org.apache.http.client.HttpResponseException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,23 +43,32 @@ public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
+        clientContext.onRemotingError(e -> {
+            if(e.getCause() != null && e.getCause() instanceof DolphinSessionException) {
+                showError("A remoting error happened", "Looks like we ended in a session timeout :(", e);
+            } else if(e.getCause() != null && e.getCause() instanceof HttpResponseException) {
+                showError("A remoting error happened", "Looks like the server sended a bad response :(", e);
+            } else {
+                showError("A remoting error happened", "Looks like we have a big problem :(", e);
+            }
+        });
+
         ToDoViewBinder viewController = new ToDoViewBinder(clientContext);
-        primaryStage.setScene(new Scene(viewController.getRoot()));
+        primaryStage.setScene(new Scene(viewController.getParent()));
         primaryStage.show();
     }
 
-    @Override
-    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
-        initializationException.printStackTrace();
+    private void showError(String header, String content, Exception e) {
+        e.printStackTrace();
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Client initialization error");
-        alert.setContentText("An unexpected error has occurred");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        initializationException.printStackTrace(pw);
+        e.printStackTrace(pw);
         String exceptionText = sw.toString();
 
         Label label = new Label("The exception stacktrace was:");
@@ -79,6 +90,11 @@ public class ToDoClient extends DolphinPlatformApplication {
         alert.getDialogPane().setExpandableContent(expContent);
         alert.showAndWait();
         System.exit(-1);
+    }
+
+    @Override
+    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
+        showError("Error on initialization", "A error happened while initializing the Client and Connection", initializationException);
     }
 
     public static void main(String[] args) {

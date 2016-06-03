@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.javaee;
 
+import com.canoo.dolphin.util.Assert;
+
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
@@ -24,10 +26,12 @@ import java.io.Serializable;
 public class ClientScopeExtension implements Extension, Serializable {
 
     public void addScope(@Observes final BeforeBeanDiscovery event) {
+        Assert.requireNonNull(event, "event");
         event.addScope(ClientScoped.class, true, false);
     }
 
     public void registerContext(@Observes final AfterBeanDiscovery event) {
+        Assert.requireNonNull(event, "event");
         event.addContext(new ClientScopeContext());
     }
 }

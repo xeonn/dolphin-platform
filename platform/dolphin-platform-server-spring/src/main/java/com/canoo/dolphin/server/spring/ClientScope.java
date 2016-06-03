@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
+import com.canoo.dolphin.util.Assert;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
@@ -34,14 +35,17 @@ public class ClientScope implements Scope {
 
     private final static String CLIENT_STORE_ATTRIBUTE = "DolphinPlatformSpringClientScopeStore";
 
-    private DolphinSessionProvider dolphinSessionProvider;
+    private final DolphinSessionProvider dolphinSessionProvider;
 
-    public ClientScope(DolphinSessionProvider dolphinSessionProvider) {
+    public ClientScope(final DolphinSessionProvider dolphinSessionProvider) {
+        Assert.requireNonNull(dolphinSessionProvider, "dolphinSessionProvider");
         this.dolphinSessionProvider = dolphinSessionProvider;
     }
 
     @Override
-    public Object get(String name, ObjectFactory<?> objectFactory) {
+    public Object get(final String name, final ObjectFactory<?> objectFactory) {
+        Assert.requireNonBlank(name, "name");
+        Assert.requireNonNull(objectFactory, "objectFactory");
         Map<String, Object> localStore = getLocalStore();
         if (!localStore.containsKey(name)) {
             localStore.put(name, objectFactory.getObject());
@@ -50,17 +54,17 @@ public class ClientScope implements Scope {
     }
 
     @Override
-    public Object remove(String name) {
+    public Object remove(final String name) {
         return getLocalStore().remove(name);
     }
 
     @Override
-    public void registerDestructionCallback(String name, Runnable callback) {
+    public void registerDestructionCallback(final String name, final Runnable callback) {
 
     }
 
     @Override
-    public Object resolveContextualObject(String key) {
+    public Object resolveContextualObject(final String key) {
         return null;
     }
 

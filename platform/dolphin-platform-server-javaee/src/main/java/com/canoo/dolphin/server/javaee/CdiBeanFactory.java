@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ package com.canoo.dolphin.server.javaee;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -39,7 +39,7 @@ public class CdiBeanFactory {
     @Produces
     @ClientScoped
     public DolphinSession createDolphinSession() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentContext().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
     }
 
     @Produces

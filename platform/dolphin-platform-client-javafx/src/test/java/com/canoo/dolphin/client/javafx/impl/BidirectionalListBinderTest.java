@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.client.javafx.impl;
 
-import com.canoo.dolphin.client.javafx.FXBinder;
+import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.impl.collections.ObservableArrayList;
 import javafx.collections.FXCollections;
