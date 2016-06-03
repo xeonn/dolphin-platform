@@ -23,19 +23,15 @@ import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.DefaultServerDolphin;
 
-/**
- * Created by hendrikebbers on 20.05.16.
- */
 public class DolphinTestContext extends DolphinContext {
 
-    private final DefaultInMemoryConfig config;
+    private final TestInMemoryConfiguration config;
 
     private final DolphinEventBusImpl dolphinEventBus;
 
-    public DolphinTestContext(ContainerManager containerManager, ControllerRepository controllerRepository, DefaultInMemoryConfig config, DolphinEventBusImpl dolphinEventBus) {
+    public DolphinTestContext(ContainerManager containerManager, ControllerRepository controllerRepository, TestInMemoryConfiguration config, DolphinEventBusImpl dolphinEventBus) {
         super(containerManager, controllerRepository, createServerDolphinFactory(config), dolphinEventBus, createEmptyCallback(), createEmptyCallback());
         this.config = Assert.requireNonNull(config, "config");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
@@ -50,7 +46,7 @@ public class DolphinTestContext extends DolphinContext {
         };
     }
 
-    private static OpenDolphinFactory createServerDolphinFactory(final DefaultInMemoryConfig config) {
+    private static OpenDolphinFactory createServerDolphinFactory(final TestInMemoryConfiguration config) {
         Assert.requireNonNull(config, "config");
         return new OpenDolphinFactory(){
 

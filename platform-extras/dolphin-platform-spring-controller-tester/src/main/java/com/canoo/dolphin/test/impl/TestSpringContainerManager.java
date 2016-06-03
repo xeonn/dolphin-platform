@@ -17,15 +17,15 @@ package com.canoo.dolphin.test.impl;
 
 import com.canoo.dolphin.server.spring.AbstractSpringContainerManager;
 import com.canoo.dolphin.util.Assert;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.ServletContext;
 
 public class TestSpringContainerManager extends AbstractSpringContainerManager {
 
-    private final WebApplicationContext webApplicationContext;
+    private final ApplicationContext webApplicationContext;
 
-    public TestSpringContainerManager(WebApplicationContext webApplicationContext) {
+    public TestSpringContainerManager(ApplicationContext webApplicationContext) {
         this.webApplicationContext = Assert.requireNonNull(webApplicationContext, "webApplicationContext");
     }
 
@@ -35,7 +35,7 @@ public class TestSpringContainerManager extends AbstractSpringContainerManager {
     }
 
     @Override
-    protected WebApplicationContext getContext() {
+    protected ApplicationContext getContext() {
         return webApplicationContext;
     }
 

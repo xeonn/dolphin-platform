@@ -21,7 +21,6 @@ import com.canoo.dolphin.util.Assert;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 
@@ -30,7 +29,7 @@ public abstract class AbstractSpringContainerManager implements ContainerManager
     private ServletContext servletContext;
 
     protected void init() {
-        WebApplicationContext context = getContext();
+        ApplicationContext context = getContext();
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getAutowireCapableBeanFactory();
         beanFactory.addBeanPostProcessor(SpringModelInjector.getInstance());
     }
@@ -40,7 +39,7 @@ public abstract class AbstractSpringContainerManager implements ContainerManager
         Assert.requireNonNull(controllerClass, "controllerClass");
         Assert.requireNonNull(modelInjector, "modelInjector");
         // SpringBeanAutowiringSupport kann man auch nutzen
-        WebApplicationContext context = getContext();
+        ApplicationContext context = getContext();
         AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
         SpringModelInjector.getInstance().prepare(controllerClass, modelInjector);
         return beanFactory.createBean(controllerClass);
@@ -49,7 +48,7 @@ public abstract class AbstractSpringContainerManager implements ContainerManager
     @Override
     public <T> T createListener(Class<T> listenerClass) {
         Assert.requireNonNull(listenerClass, "listenerClass");
-        WebApplicationContext context = getContext();
+        ApplicationContext context = getContext();
         return context.getBean(listenerClass);
     }
 
@@ -65,5 +64,5 @@ public abstract class AbstractSpringContainerManager implements ContainerManager
      *
      * @return the spring context
      */
-    protected abstract WebApplicationContext getContext();
+    protected abstract ApplicationContext getContext();
 }

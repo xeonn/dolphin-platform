@@ -17,11 +17,27 @@ package com.canoo.dolphin.test;
 
 import com.canoo.dolphin.client.Param;
 
+/**
+ * Provides acces to a controller (see {@link com.canoo.dolphin.server.DolphinController}) and its model for tests
+ * @param <T> type of the model
+ */
 public interface ControllerUnderTest<T> {
 
+    /**
+     * Returns the model of the controller (see {@link com.canoo.dolphin.mapping.DolphinBean})
+     * @return the model
+     */
     T getModel();
 
+    /**
+     * Invokes an action on the controller. See {@link com.canoo.dolphin.server.DolphinAction}
+     * @param actionName
+     * @param params
+     */
     void invoke(String actionName, Param... params);
 
+    /**
+     * Destroys the controller
+     */
     void destroy();
 }
