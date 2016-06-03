@@ -21,6 +21,8 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
 
     private final ClientPlatformBeanRepository platformBeanRepository;
@@ -39,13 +41,13 @@ public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
     }
 
     @Override
-    public <T> ControllerProxy<T> create(String name)throws Exception{
+    public <T> CompletableFuture<ControllerProxy<T>> create(String name) {
         Assert.requireNonBlank(name, "name");
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         bean.setControllerName(name);
 
         return dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).thenApply((v) -> {
             return new ControllerProxyImpl<>(bean.getControllerId(), (T) bean.getModel(), clientDolphin, platformBeanRepository);
-        }).get();
+        });
     }
 }
