@@ -17,6 +17,7 @@ package com.canoo.dolphin.client.javafx.binding;
 
 import com.canoo.dolphin.collections.ListChangeEvent;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -43,7 +44,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static DoubleProperty wrapDoubleProperty(final Property<Double> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final DoubleProperty property = new SimpleDoubleProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -56,7 +57,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static FloatProperty wrapFloatProperty(final Property<Float> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final FloatProperty property = new SimpleFloatProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -69,7 +70,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static IntegerProperty wrapIntProperty(final Property<Integer> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final IntegerProperty property = new SimpleIntegerProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -82,7 +83,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static LongProperty wrapLongProperty(final Property<Long> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final LongProperty property = new SimpleLongProperty();
         FXBinder.bind(property).bidirectionalToNumeric(dolphinProperty);
         return property;
@@ -95,7 +96,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static BooleanProperty wrapBooleanProperty(final Property<Boolean> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final BooleanProperty property = new SimpleBooleanProperty();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -108,7 +109,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static StringProperty wrapStringProperty(final Property<String> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         StringProperty property = new SimpleStringProperty();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -121,7 +122,7 @@ public class FXWrapper {
      * @return the JavaFX property
      */
     public static <T> ObjectProperty<T> wrapObjectProperty(final Property<T> dolphinProperty) {
-        requireNonNull(dolphinProperty, "dolphinProperty");
+        Assert.requireNonNull(dolphinProperty, "dolphinProperty");
         final ObjectProperty<T> property = new SimpleObjectProperty<>();
         FXBinder.bind(property).bidirectionalTo(dolphinProperty);
         return property;
@@ -135,7 +136,7 @@ public class FXWrapper {
      * @return the JavaFX list
      */
     public static <T> ObservableList<T> wrapList(com.canoo.dolphin.collections.ObservableList<T> dolphinList) {
-        requireNonNull(dolphinList, "dolphinList");
+        Assert.requireNonNull(dolphinList, "dolphinList");
         final ObservableList<T> list = FXCollections.observableArrayList(dolphinList);
 
         list.addListener((ListChangeListener<T>) c -> {

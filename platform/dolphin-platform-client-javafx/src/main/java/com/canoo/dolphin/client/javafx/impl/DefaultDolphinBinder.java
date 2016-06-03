@@ -33,7 +33,7 @@ public class DefaultDolphinBinder<S> implements DolphinBinder<S> {
     private final Property<S> property;
 
     public DefaultDolphinBinder(final Property<S> property) {
-        this.property = Assert.requireNonNull(property, "property");;
+        this.property = Assert.requireNonNull(property, "property");
     }
 
     @Override

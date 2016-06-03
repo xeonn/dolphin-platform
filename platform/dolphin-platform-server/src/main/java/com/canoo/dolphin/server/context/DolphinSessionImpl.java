@@ -33,8 +33,7 @@ public class DolphinSessionImpl implements DolphinSession {
     private final String dolphinSessionId;
 
     public DolphinSessionImpl(String dolphinSessionId) {
-        Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
-        this.dolphinSessionId = dolphinSessionId;
+        this.dolphinSessionId = Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
         this.store = new ConcurrentHashMap<>();
     }
 
