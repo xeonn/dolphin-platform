@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.spring;
+package com.canoo.dolphin.test.impl;
 
-import com.canoo.dolphin.server.container.ContainerManager;
+import com.canoo.dolphin.server.spring.AbstractSpringContainerManager;
 import com.canoo.dolphin.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
 
-/**
- * Spring specific implementation of the {@link ContainerManager} interface
- *
- * @author Hendrik Ebbers
- */
-public class SpringContainerManager extends AbstractSpringContainerManager {
+public class TestSpringContainerManager extends AbstractSpringContainerManager {
 
-    private ServletContext servletContext;
+    private final WebApplicationContext webApplicationContext;
+
+    public TestSpringContainerManager(WebApplicationContext webApplicationContext) {
+        this.webApplicationContext = Assert.requireNonNull(webApplicationContext, "webApplicationContext");
+    }
 
     @Override
     public void init(ServletContext servletContext) {
-        this.servletContext = Assert.requireNonNull(servletContext, "servletContext");
         init();
     }
 
-    /**
-     * Returns the Spring {@link org.springframework.context.ApplicationContext} for the current {@link javax.servlet.ServletContext}
-     *
-     * @return the spring context
-     */
+    @Override
     protected WebApplicationContext getContext() {
-        return WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        return webApplicationContext;
     }
+
+
 }
