@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ public class ToDoClient extends DolphinPlatformApplication {
     @Override
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
         ToDoViewBinder viewController = new ToDoViewBinder(clientContext);
-        primaryStage.setScene(new Scene(viewController.getRoot()));
+        primaryStage.setScene(new Scene(viewController.getParent()));
         primaryStage.show();
     }
 

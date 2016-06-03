@@ -15,9 +15,9 @@
  */
 package com.canoo.dolphin.client.javafx.impl;
 
-import com.canoo.dolphin.client.javafx.Binding;
-import com.canoo.dolphin.client.javafx.Converter;
-import com.canoo.dolphin.client.javafx.JavaFXBinder;
+import com.canoo.dolphin.client.javafx.binding.Binding;
+import com.canoo.dolphin.client.javafx.binding.Converter;
+import com.canoo.dolphin.client.javafx.binding.JavaFXBinder;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;

@@ -190,11 +190,11 @@ public class GarbageCollector {
      */
     public synchronized void gc() {
         if(!UnstableFeatureFlags.isUseGc()) {
-            LOG.debug("GC deactivated, no beans will be removed!");
+            LOG.trace("GC deactivated, no beans will be removed!");
             return;
         }
 
-        LOG.debug("GC will remove " + removeOnGC.size() + " beans!");
+        LOG.trace("Garbage collection started! GC will remove {} beans!", removeOnGC.size());
 
         onRemoveCallback.onReject(removeOnGC.keySet());
         for (Instance removedInstance : removeOnGC.keySet()) {
@@ -266,11 +266,11 @@ public class GarbageCollector {
 
     private void addToGC(Instance instance, Object value) {
 
-        LOG.debug("Bean of type " + value.getClass() + " added to GC and will be removed on next GC run");
+        LOG.trace("Bean of type {} added to GC and will be removed on next GC run", value.getClass());
 
         removeOnGC.put(instance, value);
 
-        LOG.debug("GC will remove " + removeOnGC.size() + " beans at next GC run");
+        LOG.trace("GC will remove {} beans at next GC run", removeOnGC.size());
 
 
         for (Property property : instance.getProperties()) {
@@ -295,11 +295,11 @@ public class GarbageCollector {
     }
 
     private void removeFromGC(Instance instance) {
-        LOG.debug("Bean of type " + instance.getBean().getClass() + " removed to GC and will not be removed on next GC run");
+        LOG.trace("Bean of type {} removed to GC and will not be removed on next GC run", instance.getBean().getClass());
 
         Object removed = removeOnGC.remove(instance);
 
-        LOG.debug("GC will remove " + removeOnGC.size() + " beans at next GC run");
+        LOG.trace("GC will remove {} beans at next GC run", removeOnGC.size());
 
 
         if (removed != null) {

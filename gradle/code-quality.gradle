@@ -26,4 +26,5 @@ license {
     }
     ext.year = '2015-2016'
     exclude '**/META-INF/services/*'
+    exclude '**/banner.txt'
 }

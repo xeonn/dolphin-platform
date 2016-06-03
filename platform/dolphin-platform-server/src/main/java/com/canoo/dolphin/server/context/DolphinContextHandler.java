@@ -91,7 +91,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
                     @Override
                     public void call(DolphinContext dolphinContext) {
                         Assert.requireNonNull(dolphinContext, "dolphinContext");
-                        LOG.info("Destroying DolphinContext " + dolphinContext.getId() + " in http session " + httpSession.getId());
+                        LOG.trace("Destroying DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
                         Object contextList = httpSession.getAttribute(DOLPHIN_CONTEXT_MAP);
                         if (contextList == null) {
                             return;
@@ -112,7 +112,7 @@ public class DolphinContextHandler implements DolphinContextProvider {
                     listener.sessionCreated(currentContext.getCurrentDolphinSession());
                 }
 
-                LOG.info("Created new DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
+                LOG.trace("Created new DolphinContext {} in http session {}", currentContext.getId(), httpSession.getId());
             } else {
                 //TODO: Curtently there is only 1 dolphin context in each session
                 currentContext = getContexts(httpSession).get(0);
@@ -121,7 +121,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
             throw new DolphinContextException("Can not find or create matching dolphin context", e);
         }
 
-        LOG.debug("Handling request for DolphinContext " + currentContext.getId() + " in http session " + httpSession.getId());
+        String userAgent = request.getHeader("user-agent");
+        LOG.trace("receiving Request for DolphinContext {} in http session {} from client with user-agent {}" , currentContext.getId(), httpSession.getId(), userAgent);
 
         currentContextThreadLocal.set(currentContext);
         try {
@@ -134,15 +135,17 @@ public class DolphinContextHandler implements DolphinContextProvider {
                 }
                 commands.addAll(currentContext.getDolphin().getServerConnector().getCodec().decode(requestJson.toString()));
             } catch (Exception e) {
-                throw new DolphinRemotingException("Can not parse request!", e);
+                throw new DolphinRemotingException("Can not parse request! (DolphinContext " + currentContext.getId() + ")", e);
             }
 
             final List<Command> results = new ArrayList<>();
             try {
                 results.addAll(currentContext.handle(commands));
             } catch (Exception e) {
-                throw new DolphinCommandException("Can not handle the commands", e);
+                throw new DolphinCommandException("Can not handle the commands (DolphinContext " + currentContext.getId() + ")", e);
             }
+
+            LOG.trace("Sending response for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
 
             try {
                 response.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, currentContext.getId());
@@ -190,7 +193,8 @@ public class DolphinContextHandler implements DolphinContextProvider {
 
     public void removeAllContextsInSession(HttpSession session) {
         Assert.requireNonNull(session, "session");
-        for (DolphinContext context : getContexts(session)) {
+        List<DolphinContext> currentContexts = new ArrayList<>(getContexts(session));
+        for (DolphinContext context : currentContexts) {
             context.destroy();
         }
         session.removeAttribute(DOLPHIN_CONTEXT_MAP);

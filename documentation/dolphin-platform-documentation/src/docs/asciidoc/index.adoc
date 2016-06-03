@@ -13,5 +13,7 @@ include::controller.adoc[]
 include::event-bus.adoc[]
 include::javaee-integration.adoc[]
 include::spring-integration.adoc[]
+include::server-configuration.adoc[]
+include::javafx-client.adoc[]
 include::validation.adoc[]
 
