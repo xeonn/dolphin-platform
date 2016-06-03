@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.server.config;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -30,6 +32,8 @@ public class DolphinPlatformConfiguration {
     private boolean useCrossSiteOriginFilter = true;
 
     private String dolphinPlatformServletMapping = "/dolphin";
+
+    private List<String> idFilterUrlMappings = Arrays.asList("/*");
 
     private Level openDolphinLogLevel = Level.SEVERE;
 
@@ -85,5 +89,11 @@ public class DolphinPlatformConfiguration {
         this.useSessionInvalidationServlet = useSessionInvalidationServlet;
     }
 
+    public List<String> getIdFilterUrlMappings() {
+        return idFilterUrlMappings;
+    }
 
+    public void setIdFilterUrlMappings(List<String> idFilterUrlMappings) {
+        this.idFilterUrlMappings = idFilterUrlMappings;
+    }
 }

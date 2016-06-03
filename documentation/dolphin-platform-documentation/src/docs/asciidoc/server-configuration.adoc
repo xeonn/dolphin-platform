@@ -46,6 +46,13 @@ will be used.
 |any integer value
 |900
 
+|idFilterUrlMappings
+|A list that contains all endpoint that will be filtered by the id filter. This means that all requests for this
+endpoints must provide a client id in its header (Header name = dolphin_platform_intern_dolphinClientId).
+|a comma seperated list
+|/*
+
+
 |garbageCollectionActive
 |By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example
 in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an

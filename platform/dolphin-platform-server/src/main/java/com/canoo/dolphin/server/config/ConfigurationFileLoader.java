@@ -19,6 +19,7 @@ import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -56,6 +57,8 @@ public class ConfigurationFileLoader {
     private static final String SESSION_TIMEOUT = "sessionTimeout";
 
     private static final String MAX_CLIENTS_PER_SESSION = "maxClientsPerSession";
+
+    private static final String ID_FILTER_URL_MAPPINGS = "idFilterUrlMappings";
 
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
@@ -137,6 +140,12 @@ public class ConfigurationFileLoader {
 
         if(prop.containsKey(MAX_CLIENTS_PER_SESSION)) {
             configuration.setMaxClientsPerSession(Integer.parseInt(prop.getProperty(MAX_CLIENTS_PER_SESSION)));
+        }
+
+
+        if(prop.containsKey(ID_FILTER_URL_MAPPINGS)) {
+            String content = prop.getProperty(ID_FILTER_URL_MAPPINGS);
+            configuration.setIdFilterUrlMappings(Arrays.asList(content.split(",")));
         }
 
         return configuration;

@@ -95,7 +95,7 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
             servletContext.addFilter(DOLPHIN_CROSS_SITE_FILTER_NAME, new CrossSiteOriginFilter()).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
 
-        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new DolphinContextFilter(configuration, containerManager, dolphinContextFactory, dolphinSessionListenerProvider)).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        servletContext.addFilter(DOLPHIN_CLIENT_ID_FILTER_NAME, new DolphinContextFilter(configuration, containerManager, dolphinContextFactory, dolphinSessionListenerProvider)).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, configuration.getIdFilterUrlMappings().toArray(new String[configuration.getIdFilterUrlMappings().size()]));
 
         LOG.debug("Dolphin Platform initialized under context \"" + servletContext.getContextPath() + "\"");
         LOG.debug("Dolphin Platform endpoint defined as " + configuration.getDolphinPlatformServletMapping());
