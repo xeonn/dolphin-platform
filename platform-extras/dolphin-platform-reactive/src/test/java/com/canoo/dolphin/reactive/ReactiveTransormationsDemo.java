@@ -9,7 +9,7 @@ import rx.functions.Func1;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by hendrikebbers on 18.05.16.
+ * Since we do not have tests for the module this class can be started to see the functionallity.
  */
 public class ReactiveTransormationsDemo {
 

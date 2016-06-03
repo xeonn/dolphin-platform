@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Created by hendrikebbers on 18.05.16.
+ * Default implementation for {@link TransformedProperty}
+ * @param <T> type of the property
  */
 public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Action1<T> {
 
