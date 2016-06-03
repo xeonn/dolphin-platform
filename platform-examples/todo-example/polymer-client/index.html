@@ -5,7 +5,6 @@
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="bower_components/paper-styles/paper-styles.html">
     <link rel="import" href="bower_components/font-roboto/roboto.html">
-    <script src="bower_components/open-dolphin-js/dist/opendolphin.js"></script>
     <script src="bower_components/dolphin-polymer/dist/dolphin-polymer.js"></script>
     <style>
         body {
@@ -17,6 +16,7 @@
     </style>
     <script>
         clientContext = dolphin.connect('http://localhost:8080/todo-app/dolphin');
+        clientContext.on('error', function(error) {console.log('error', error)});
     </script>
     <link href="todo-view.html" rel="import">
 </head>

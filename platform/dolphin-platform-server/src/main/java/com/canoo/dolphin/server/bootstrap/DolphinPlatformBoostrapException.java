@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.client.clientscope;
+package com.canoo.dolphin.server.bootstrap;
 
 /**
- * Created by hendrikebbers on 22.09.15.
+ * Created by hendrikebbers on 18.03.16.
  */
-public class DolphinRemotingException extends RuntimeException {
+public class DolphinPlatformBoostrapException extends RuntimeException {
 
-    private static final long serialVersionUID = -4733020160511218297L;
+    private static final long serialVersionUID = 235126969040697596L;
 
-    public DolphinRemotingException() {
+    public DolphinPlatformBoostrapException() {
     }
 
-    public DolphinRemotingException(String message) {
+    public DolphinPlatformBoostrapException(String message) {
         super(message);
     }
 
-    public DolphinRemotingException(String message, Throwable cause) {
+    public DolphinPlatformBoostrapException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DolphinRemotingException(Throwable cause) {
+    public DolphinPlatformBoostrapException(Throwable cause) {
         super(cause);
     }
 }
