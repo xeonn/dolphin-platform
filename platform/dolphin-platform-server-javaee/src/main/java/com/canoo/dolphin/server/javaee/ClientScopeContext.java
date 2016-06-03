@@ -16,7 +16,7 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.servlet.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.util.Assert;
 
 import javax.enterprise.context.spi.Context;

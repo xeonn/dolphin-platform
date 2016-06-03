@@ -15,8 +15,8 @@
  */
 package com.canoo.dolphin.server.config;
 
-import com.canoo.dolphin.server.impl.ConfigurationFileLoader;
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -25,15 +25,29 @@ import java.util.logging.Level;
  */
 public class DolphinPlatformConfiguration {
 
-    private boolean useCrossSiteOriginFilter = true;
-
     private boolean useSessionInvalidationServlet = false;
 
-    private boolean garbageCollectionActive = false;
+    public final static int SESSION_TIMEOUT_DEFAULT_VALUE = 15 * 60;
+
+    private boolean useCrossSiteOriginFilter = true;
 
     private String dolphinPlatformServletMapping = "/dolphin";
 
+    private List<String> idFilterUrlMappings = Arrays.asList("/*");
+
     private Level openDolphinLogLevel = Level.SEVERE;
+
+    private int sessionTimeout = SESSION_TIMEOUT_DEFAULT_VALUE;
+
+    private int maxClientsPerSession = 10;
+
+    public int getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(int sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
 
     public boolean isUseCrossSiteOriginFilter() {
         return useCrossSiteOriginFilter;
@@ -59,12 +73,12 @@ public class DolphinPlatformConfiguration {
         this.openDolphinLogLevel = openDolphinLogLevel;
     }
 
-    public boolean isGarbageCollectionActive() {
-        return garbageCollectionActive;
+    public int getMaxClientsPerSession() {
+        return maxClientsPerSession;
     }
 
-    public void setGarbageCollectionActive(boolean garbageCollectionActive) {
-        this.garbageCollectionActive = garbageCollectionActive;
+    public void setMaxClientsPerSession(int maxClientsPerSession) {
+        this.maxClientsPerSession = maxClientsPerSession;
     }
 
     public boolean isUseSessionInvalidationServlet() {
@@ -73,5 +87,13 @@ public class DolphinPlatformConfiguration {
 
     public void setUseSessionInvalidationServlet(boolean useSessionInvalidationServlet) {
         this.useSessionInvalidationServlet = useSessionInvalidationServlet;
+    }
+
+    public List<String> getIdFilterUrlMappings() {
+        return idFilterUrlMappings;
+    }
+
+    public void setIdFilterUrlMappings(List<String> idFilterUrlMappings) {
+        this.idFilterUrlMappings = idFilterUrlMappings;
     }
 }

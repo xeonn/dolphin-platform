@@ -246,6 +246,9 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onRegisterController() {
+        if (platformBeanRepository == null) {
+            throw new IllegalStateException("An action was called before the init-command was sent.");
+        }
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         String controllerId = controllerHandler.createController(bean.getControllerName());
         bean.setControllerId(controllerId);
@@ -256,6 +259,9 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onDestroyController() {
+        if (platformBeanRepository == null) {
+            throw new IllegalStateException("An action was called before the init-command was sent.");
+        }
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         controllerHandler.destroyController(bean.getControllerId());
     }

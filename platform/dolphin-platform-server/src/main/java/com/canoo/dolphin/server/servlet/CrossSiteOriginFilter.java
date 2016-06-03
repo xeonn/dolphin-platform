@@ -15,9 +15,14 @@
  */
 package com.canoo.dolphin.server.servlet;
 
-import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.impl.PlatformConstants;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,14 +36,14 @@ public class CrossSiteOriginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) Assert.requireNonNull(request, "request");
-        HttpServletResponse resp = (HttpServletResponse) Assert.requireNonNull(response, "response");
-        Assert.requireNonNull(chain, "chain");
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
 
         String clientOrigin = req.getHeader("origin");
         resp.setHeader("Access-Control-Allow-Origin", clientOrigin);
         resp.setHeader("Access-Control-Allow-Methods", "*");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type," + PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
+        resp.setHeader("Access-Control-Expose-Headers", PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
         resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Access-Control-Max-Age", "86400");
 

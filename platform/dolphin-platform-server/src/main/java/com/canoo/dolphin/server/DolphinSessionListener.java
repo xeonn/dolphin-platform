@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.context;
-
-import com.canoo.dolphin.server.DolphinSession;
+package com.canoo.dolphin.server;
 
 /**
  * A listener interface to observe the lifecycle of a {@link DolphinSession}. Each implemenetation of this

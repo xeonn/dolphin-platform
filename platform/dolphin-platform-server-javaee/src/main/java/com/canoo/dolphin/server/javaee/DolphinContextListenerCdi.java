@@ -17,7 +17,7 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinListener;
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.context.DolphinSessionListener;
+import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.util.Assert;
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 

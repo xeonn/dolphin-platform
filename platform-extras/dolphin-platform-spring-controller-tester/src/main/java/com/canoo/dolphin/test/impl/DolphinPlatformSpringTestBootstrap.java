@@ -27,6 +27,7 @@ import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
 import com.canoo.dolphin.client.impl.ControllerProxyFactory;
 import com.canoo.dolphin.client.impl.ControllerProxyFactoryImpl;
 import com.canoo.dolphin.client.impl.DolphinCommandHandler;
+import com.canoo.dolphin.client.impl.ForwardableCallback;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.Converters;
@@ -92,7 +93,7 @@ public class DolphinPlatformSpringTestBootstrap {
         final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
         final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
         final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
-        final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager);
+        final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback(), new HttpClientMock());
         clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
         return clientContext;
     }
