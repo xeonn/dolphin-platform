@@ -18,14 +18,12 @@ package com.canoo.dolphin.test;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.test.impl.ClientTestFactory;
 import com.canoo.dolphin.test.impl.DolphinPlatformSpringTestBootstrap;
-import com.canoo.dolphin.test.impl.DolphinTestContext;
 import com.canoo.dolphin.util.Assert;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
 
 import javax.inject.Inject;
 
@@ -34,24 +32,13 @@ import javax.inject.Inject;
  */
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class SpringTestNGControllerTest extends AbstractTestNGSpringContextTests implements ControllerTest {
 
     @Inject
-    private DolphinTestContext dolphinTestContext;
-
     private ClientContext clientContext;
 
-    @BeforeClass(alwaysRun = true)
-    protected void initClientContext() {
-        try {
-            clientContext = ClientTestFactory.createClientContext(dolphinTestContext);
-        } catch (Exception e) {
-            throw new ControllerTestException("Can not create client context!", e);
-        }
-    }
-
-    @AfterClass(alwaysRun = true)
+    @AfterMethod(alwaysRun = true)
     protected void disconnectClientContext() {
         try {
             clientContext.disconnect().get();

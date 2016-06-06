@@ -18,7 +18,6 @@ package com.canoo.dolphin.test;
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.test.impl.ClientTestFactory;
 import com.canoo.dolphin.test.impl.DolphinPlatformSpringTestBootstrap;
-import com.canoo.dolphin.test.impl.DolphinTestContext;
 import com.canoo.dolphin.util.Assert;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
@@ -34,23 +33,16 @@ import javax.inject.Inject;
  */
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SpringJUnitControllerTest extends AbstractJUnit4SpringContextTests implements ControllerTest {
 
     @Inject
-    private DolphinTestContext dolphinTestContext;
-
     private ClientContext clientContext;
 
     @Rule
     public ExternalResource clientConnector = new ExternalResource() {
         @Override
         protected void before() throws Throwable {
-            try {
-                clientContext = ClientTestFactory.createClientContext(dolphinTestContext);
-            } catch (Exception e) {
-                throw new ControllerTestException("Can not create client context!", e);
-            }
             super.before();
         }
 
