@@ -93,6 +93,7 @@ public class DolphinPlatformSpringTestBootstrap {
         final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
         final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback(), new HttpClientMock());
 
+        //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
         //    clientExecutor.submit(() -> {
         //        clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
         //    }).get();
