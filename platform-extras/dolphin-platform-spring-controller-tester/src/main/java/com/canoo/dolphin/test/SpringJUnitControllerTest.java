@@ -34,7 +34,7 @@ import javax.inject.Inject;
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = DolphinPlatformSpringTestBootstrap.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class SpringJUnitControllerTest extends AbstractJUnit4SpringContextTests implements ControllerTest {
+public abstract class SpringJUnitControllerTest extends AbstractJUnit4SpringContextTests implements ControllerTest {
 
     @Inject
     private ClientContext clientContext;

@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.client.impl;
 
+import com.canoo.dolphin.client.AbstractConnector;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -22,8 +23,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.CommandBatcher;
+import org.opendolphin.core.client.comm.UiThreadHandler;
+import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ import java.util.List;
 /**
  * This class is used to sync the unique client scope id of the current dolphin
  */
-public class DolphinPlatformHttpClientConnector extends ClientConnector {
+public class DolphinPlatformHttpClientConnector extends AbstractConnector {
 
     private static final String CHARSET = "UTF-8";
 
@@ -46,15 +48,18 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
 
     private String clientId;
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) {
-        super(clientDolphin, commandBatcher);
+    private Codec codec;
+
+
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
+        super(commandBatcher, clientDolphin, uiThreadHandler);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
 
         this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
 
         this.responseHandler = new IdBasedResponseHandler(this);
-        setStrictMode(false);
+        //setStrictMode(false);
     }
 
     public List<Command> transmit(List<Command> commands) {
@@ -90,6 +95,14 @@ public class DolphinPlatformHttpClientConnector extends ClientConnector {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
         this.clientId = clientId;
+    }
+
+    public Codec getCodec() {
+        return codec;
+    }
+
+    public void setCodec(Codec codec) {
+        this.codec = codec;
     }
 }
 

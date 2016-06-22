@@ -23,5 +23,5 @@ import java.util.List;
  * interface for setting handler executed after command completion
  */
 public interface OnFinishedHandler {
-    public void onFinished(List<ClientPresentationModel> presentationModels);
+    void onFinished(List<ClientPresentationModel> presentationModels);
 }

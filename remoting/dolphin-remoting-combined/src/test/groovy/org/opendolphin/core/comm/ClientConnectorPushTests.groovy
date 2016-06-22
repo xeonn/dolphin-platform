@@ -101,7 +101,7 @@ class ClientConnectorPushTests extends Specification {
             spoofCounter.countDown()
         }
         then:
-        spoofCounter.await(1, TimeUnit.SECONDS)
+        spoofCounter.await(2, TimeUnit.SECONDS)
     }
 
 }

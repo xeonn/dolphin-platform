@@ -21,7 +21,7 @@ import org.opendolphin.core.comm.Command
 import org.opendolphin.core.server.ServerConnector
 
 @Log
-class InMemoryClientConnector extends ClientConnector {
+class InMemoryClientConnector extends AbstractClientConnector {
 
     def sleepMillis = 0
     final ServerConnector serverConnector // must be injected since the class is only available in a "combined" context
@@ -51,5 +51,4 @@ class InMemoryClientConnector extends ClientConnector {
         }
         result
     }
-
 }

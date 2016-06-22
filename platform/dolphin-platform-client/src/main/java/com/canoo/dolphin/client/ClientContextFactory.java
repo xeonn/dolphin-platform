@@ -15,7 +15,6 @@
  */
 package com.canoo.dolphin.client;
 
-import com.canoo.dolphin.client.impl.DolphinPlatformHttpClientConnector;
 import com.canoo.dolphin.client.impl.ClientBeanBuilderImpl;
 import com.canoo.dolphin.client.impl.ClientBeanManagerImpl;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
@@ -25,6 +24,7 @@ import com.canoo.dolphin.client.impl.ClientPresentationModelBuilderFactory;
 import com.canoo.dolphin.client.impl.ControllerProxyFactory;
 import com.canoo.dolphin.client.impl.ControllerProxyFactoryImpl;
 import com.canoo.dolphin.client.impl.DolphinCommandHandler;
+import com.canoo.dolphin.client.impl.DolphinPlatformHttpClientConnector;
 import com.canoo.dolphin.client.impl.ForwardableCallback;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
@@ -46,7 +46,6 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
-import org.opendolphin.core.client.comm.ClientConnector;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -85,9 +84,8 @@ public class ClientContextFactory {
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
                 final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
-                final ClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint(), remotingErrorHandler);
+                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
                 clientConnector.setCodec(new OptimizedJsonCodec());
-                clientConnector.setUiThreadHandler(clientConfiguration.getUiThreadHandler());
                 clientDolphin.setClientConnector(clientConnector);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
                 final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);

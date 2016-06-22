@@ -409,7 +409,7 @@ class ClientConnectorTests extends GroovyTestCase {
 }
 
 @Log
-class TestClientConnector extends ClientConnector {
+class TestClientConnector extends AbstractClientConnector {
 
 	List<Command> transmittedCommands = []
 
@@ -447,7 +447,6 @@ class TestClientConnector extends ClientConnector {
 	List construct(ResetPresentationModelCommand command) {
 		[new PresentationModelResetedCommand(pmId: command.pmId)]
 	}
-
 }
 
 class ExtendedAttribute extends ClientAttribute {
