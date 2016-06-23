@@ -112,10 +112,6 @@ public abstract class AbstractConnector implements ClientConnector {
             commands.forEach(c -> LOG.trace("Sending {}", c));
         }
 
-        releaseExecutor.execute(() -> {
-
-        });
-
         List<Command> answer = transmit(commands);
 
         LOG.trace("Received response with {} commands");
