@@ -16,6 +16,9 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.util.Assert;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,8 @@ public class ClientConfiguration {
 
     private long connectionTimeout;
 
+    private HttpClient httpClient;
+
     private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
 
     /**
@@ -57,6 +62,8 @@ public class ClientConfiguration {
         this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
         this.dolphinLogLevel = Level.SEVERE;
         this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+
+        httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
     }
 
     /**
@@ -117,5 +124,13 @@ public class ClientConfiguration {
             LOG.warn("Default connection timeout (" + DEFAULT_CONNECTION_TIMEOUT + " ms) is used instead of " + connectionTimeout + " ms");
             this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
         }
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient =  Assert.requireNonNull(httpClient, "httpClient");
     }
 }
