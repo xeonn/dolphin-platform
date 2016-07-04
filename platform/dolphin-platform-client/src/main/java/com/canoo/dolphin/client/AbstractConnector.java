@@ -1,5 +1,7 @@
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
@@ -7,10 +9,11 @@ import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.ClientPresentationModel;
+import org.opendolphin.core.client.comm.BlindCommandBatcher;
 import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.CommandAndHandler;
-import org.opendolphin.core.client.comm.ICommandBatcher;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
+import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
 import org.opendolphin.core.comm.CallNamedActionCommand;
@@ -35,9 +38,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class AbstractConnector implements ClientConnector {
@@ -46,66 +46,43 @@ public abstract class AbstractConnector implements ClientConnector {
 
     private boolean running = true;
 
-    private Lock communicationLock = new ReentrantLock();
-
-    final Condition waitingCommands = communicationLock.newCondition();
-
-    private final AtomicBoolean waiting = new AtomicBoolean(false);
-
-    private final AtomicBoolean needsRelease = new AtomicBoolean(false);
+    private boolean pushEnabled;
 
     private SignalCommand releaseCommand;
 
     private NamedCommand pushListener;
 
-    private final ICommandBatcher commandBatcher;
+    private final BlindCommandBatcher commandBatcher = new BlindCommandBatcher();
 
     private final ClientDolphin clientDolphin;
 
     private final UiThreadHandler uiThreadHandler;
 
+    private final AtomicBoolean waiting = new AtomicBoolean();
+
+    private final ExecutorService releaseHandler = Executors.newSingleThreadExecutor();
+
     private final ExecutorService baseExecutor = Executors.newSingleThreadExecutor();
 
-    private final ExecutorService communicationExecutor = Executors.newSingleThreadExecutor();
-
-    private final ExecutorService releaseExecutor = Executors.newSingleThreadExecutor();
-
-    private List<CommandAndHandler> commands = new ArrayList<>();
-
-    public AbstractConnector(ICommandBatcher commandBatcher, ClientDolphin clientDolphin, UiThreadHandler uiThreadHandler) {
-        this.commandBatcher = commandBatcher;
-        this.clientDolphin = clientDolphin;
-        this.uiThreadHandler = uiThreadHandler;
+    public AbstractConnector(ClientDolphin clientDolphin, UiThreadHandler uiThreadHandler) {
+        this.clientDolphin = Assert.requireNonNull(clientDolphin, "clientDolphin");
+        this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
 
         baseExecutor.execute(() -> {
             while (running) {
-                processCommunication();
+                try {
+                    processCommunication();
+                } catch (Exception e) {
+                    running = false;
+                    throw new DolphinRemotingException("Error in Communication! Client broken!", e);
+                }
             }
         });
     }
 
-    private void processCommunication() {
-        List<CommandAndHandler> toProcess = new ArrayList<>();
-
-        communicationLock.lock();
-        try {
-            while (commands.isEmpty()) {
-                waitingCommands.await();
-            }
-            toProcess.addAll(commands);
-            commands.clear();
-        } catch (InterruptedException e) {
-            //TODO
-            e.printStackTrace();
-        } finally {
-            communicationLock.unlock();
-        }
-
+    private void processCommunication() throws InterruptedException {
+        List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
         List<Command> commands = toProcess.stream().map(t -> t.getCommand()).collect(Collectors.toList());
-
-        if (pushListener != null) {
-            commands.add(pushListener);
-        }
 
         LOG.trace("Sending batch of size {0}", commands.size());
         if (LOG.isTraceEnabled()) {
@@ -127,9 +104,10 @@ public abstract class AbstractConnector implements ClientConnector {
     protected abstract List<Command> transmit(List<Command> commands);
 
     protected void processResults(List<Command> response, List<CommandAndHandler> commandsAndHandlers) {
+        Assert.requireNonNull(response, "response");
+        Assert.requireNonNull(commandsAndHandlers, "commandsAndHandlers");
 
         response.forEach(c -> handleResponseCommand(c));
-
         commandsAndHandlers.forEach(t -> {
             OnFinishedHandler callback = t.getHandler();
             if (callback != null) {
@@ -159,7 +137,13 @@ public abstract class AbstractConnector implements ClientConnector {
                         attr.get("propertyName").toString(),
                         attr.get("value"),
                         Optional.ofNullable(attr.get("qualifier")).map(o -> o.toString()).orElse(null),
-                        Optional.ofNullable(attr.get("tag")).map(t -> Tag.tagFor.get(t)).orElse(Tag.VALUE));
+                        Optional.ofNullable(attr.get("tag")).map(t -> {
+                            if(t instanceof Tag) {
+                                return (Tag) t;
+                            } else {
+                                return Tag.tagFor.get(t);
+                            }
+                        }).orElse(Tag.VALUE));
 
                 Optional.ofNullable(attr.get("id")).map(i -> i.toString()).filter(i -> i.endsWith("S")).ifPresent(i -> attribute.setId(i));
 
@@ -283,16 +267,24 @@ public abstract class AbstractConnector implements ClientConnector {
 
     @Override
     public void send(final Command command, final OnFinishedHandler callback) {
-        communicationLock.lock();
-        try {
-            CommandAndHandler tuple = new CommandAndHandler();
-            tuple.setCommand(command);
-            tuple.setHandler(callback);
-            commands.add(tuple);
-        } finally {
-            communicationLock.unlock();
+        if (command != pushListener) {
+            release();
         }
+        // we are inside the UI thread and events calls come in strict order as received by the UI toolkit
+        CommandAndHandler commandAndHandler = new CommandAndHandler();
+        commandAndHandler.setCommand(command);
+        commandAndHandler.setHandler(callback);
+        commandBatcher.batch(commandAndHandler);
+    }
 
+    private void release() {
+        if (!waiting.get()) {
+            return;      // there is no point in releasing if we do not wait. Avoid excessive releasing.
+        }
+        waiting.set(false); // release is under way
+        releaseHandler.submit(() -> {
+            transmit(Collections.singletonList(releaseCommand));
+        });
     }
 
     @Override
@@ -303,6 +295,10 @@ public abstract class AbstractConnector implements ClientConnector {
     @Override
     public void setPushListener(NamedCommand pushListener) {
         this.pushListener = pushListener;
+    }
+
+    public NamedCommand getPushListener() {
+        return pushListener;
     }
 
     @Override
@@ -316,15 +312,31 @@ public abstract class AbstractConnector implements ClientConnector {
 
     @Override
     public void setPushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
     }
 
     @Override
     public boolean isPushEnabled() {
-        return true;
+        return pushEnabled;
     }
 
     @Override
     public void listen() {
+        if (!pushEnabled) {
+            return;
+        }
+        if (waiting.get()) {
+            return;
+        }
+        waiting.set(true);
+
+        send(pushListener, new OnFinishedHandlerAdapter() {
+            @Override
+            public void onFinished(List<ClientPresentationModel> presentationModels) {
+                waiting.set(false);
+                listen();
+            }
+        });
     }
 
     protected ClientModelStore getClientModelStore() {

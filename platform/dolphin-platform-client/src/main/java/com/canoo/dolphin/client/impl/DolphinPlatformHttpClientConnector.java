@@ -23,7 +23,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.comm.CommandBatcher;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
@@ -51,8 +50,8 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
     private Codec codec;
 
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, CommandBatcher commandBatcher, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
-        super(commandBatcher, clientDolphin, uiThreadHandler);
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
+        super(clientDolphin, uiThreadHandler);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
 

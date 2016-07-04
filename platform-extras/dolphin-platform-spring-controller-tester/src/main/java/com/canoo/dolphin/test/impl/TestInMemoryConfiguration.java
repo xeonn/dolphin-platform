@@ -3,7 +3,6 @@ package com.canoo.dolphin.test.impl;
 import com.canoo.dolphin.client.AbstractConnector;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
-import org.opendolphin.core.client.comm.BlindCommandBatcher;
 import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
 import org.opendolphin.core.client.comm.UiThreadHandler;
@@ -36,7 +35,7 @@ public class TestInMemoryConfiguration {
 
         clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
 
-        ClientConnector inMemoryClientConnector = new AbstractConnector(new BlindCommandBatcher(), clientDolphin, threadHandler) {
+        ClientConnector inMemoryClientConnector = new AbstractConnector(clientDolphin, threadHandler) {
 
             @Override
             public void send(Command command, OnFinishedHandler callback) {

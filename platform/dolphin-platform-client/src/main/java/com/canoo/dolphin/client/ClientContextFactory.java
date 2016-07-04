@@ -45,7 +45,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
-import org.opendolphin.core.client.comm.BlindCommandBatcher;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -84,7 +83,7 @@ public class ClientContextFactory {
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
                 final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
-                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, new BlindCommandBatcher(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
+                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
                 clientConnector.setCodec(new OptimizedJsonCodec());
                 clientDolphin.setClientConnector(clientConnector);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);

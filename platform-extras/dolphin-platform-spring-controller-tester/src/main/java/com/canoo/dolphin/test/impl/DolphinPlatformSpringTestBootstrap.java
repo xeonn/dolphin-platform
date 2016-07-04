@@ -94,16 +94,20 @@ public class DolphinPlatformSpringTestBootstrap {
         final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback(), new HttpClientMock());
 
         //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
-        config.getClientExecutor().submit(() -> {
+        config.getClientExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
                 clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
-            }).get();
+            }
 
+        }).get();
         return clientContext;
     }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DolphinTestContext createServerContext(final TestInMemoryConfiguration config, final WebApplicationContext context) throws ExecutionException, InterruptedException {
+    public DolphinTestContext createServerContext(final TestInMemoryConfiguration config,
+                                                  final WebApplicationContext context) throws ExecutionException, InterruptedException {
         Assert.requireNonNull(config, "config");
         Assert.requireNonNull(context, "context");
         ControllerRepository controllerRepository = new ControllerRepository();
