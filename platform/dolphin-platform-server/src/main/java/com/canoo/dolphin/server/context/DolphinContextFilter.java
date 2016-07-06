@@ -41,12 +41,12 @@ public class DolphinContextFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         DolphinContextUtils.setContextForCurrentThread(null);
-        try {
-            final HttpServletRequest servletRequest = (HttpServletRequest) request;
-            final HttpServletResponse servletResponse = (HttpServletResponse) response;
-            final HttpSession httpSession = Assert.requireNonNull(servletRequest.getSession(), "request.getSession()");
+        final HttpServletRequest servletRequest = (HttpServletRequest) request;
+        final HttpServletResponse servletResponse = (HttpServletResponse) response;
+        final HttpSession httpSession = Assert.requireNonNull(servletRequest.getSession(), "request.getSession()");
 
-            DolphinContext dolphinContext = null;
+        try {
+            DolphinContext dolphinContext;
             final String clientId = servletRequest.getHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
             if (clientId == null || clientId.trim().isEmpty()) {
                 if(DolphinContextUtils.getOrCreateContextMapInSession(httpSession).size() >= configuration.getMaxClientsPerSession()) {
@@ -69,8 +69,8 @@ public class DolphinContextFilter implements Filter {
                 }
             }
             DolphinContextUtils.setContextForCurrentThread(dolphinContext);
-            chain.doFilter(request, response);
             servletResponse.setHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, dolphinContext.getId());
+            chain.doFilter(request, response);
         } finally {
             DolphinContextUtils.setContextForCurrentThread(null);
         }

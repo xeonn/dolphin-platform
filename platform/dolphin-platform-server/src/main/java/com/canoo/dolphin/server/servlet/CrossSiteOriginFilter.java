@@ -42,7 +42,7 @@ public class CrossSiteOriginFilter implements Filter {
         String clientOrigin = req.getHeader("origin");
         resp.setHeader("Access-Control-Allow-Origin", clientOrigin);
         resp.setHeader("Access-Control-Allow-Methods", "*");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type," + PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, " + PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
         resp.setHeader("Access-Control-Expose-Headers", PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
         resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Access-Control-Max-Age", "86400");
