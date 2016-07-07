@@ -1,6 +1,6 @@
 {
   "name": "polymer-client",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "authors": [
     "Hendrik Ebbers <hendrik.ebbers@web.de>"
   ],
@@ -17,6 +17,6 @@
     "jquery-ui": "1.11.x",
     "paper-elements": "PolymerElements/paper-elements#1.0.x",
     "polymer": "Polymer/polymer#1.4.x",
-    "dolphin-polymer": "0.8.5"
+    "dolphin-polymer": "0.8.6"
   }
 }
