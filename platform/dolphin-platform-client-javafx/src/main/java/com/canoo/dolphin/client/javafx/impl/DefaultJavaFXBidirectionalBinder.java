@@ -16,7 +16,7 @@
 package com.canoo.dolphin.client.javafx.impl;
 
 import com.canoo.dolphin.client.javafx.binding.BidirectionalConverter;
-import com.canoo.dolphin.client.javafx.binding.Binding;
+import com.canoo.dolphin.binding.Binding;
 import com.canoo.dolphin.client.javafx.binding.JavaFXBidirectionalBinder;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;

@@ -17,6 +17,7 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -90,7 +91,19 @@ public class ReflectionHelper {
         });
     }
 
+    public static Field getInheritedDeclaredField(Class<?> type, String name) {
+        Assert.requireNonNull(type, "type");
+        Assert.requireNonNull(name, "name");
+        for(Field field : getInheritedDeclaredFields(type)) {
+            if(field.getName().equals(name)) {
+                return field;
+            }
+        }
+        return null;
+    }
+
     public static List<Field> getInheritedDeclaredFields(Class<?> type) {
+        Assert.requireNonNull(type, "type");
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
@@ -101,6 +114,7 @@ public class ReflectionHelper {
     }
 
     public static List<Method> getInheritedDeclaredMethods(Class<?> type) {
+        Assert.requireNonNull(type, "type");
         List<Method> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
