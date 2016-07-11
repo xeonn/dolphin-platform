@@ -35,10 +35,10 @@ public class PropertyBinderImpl implements PropertyBinder {
                     }
                 };
             } catch (Exception e) {
-                throw new BindingException("Can not bind this property!", e);
+                throw new BindingException("Can not bind the given property to the qualifier! Property: " + property + ", qualifier: " + qualifier , e);
             }
         } else {
-            throw new BindingException("Can not bind this property!");
+            throw new BindingException("Can not bind the given property to the qualifier! Property: " + property + ", qualifier: " + qualifier);
         }
     }
 
