@@ -6,13 +6,13 @@ import com.canoo.dolphin.impl.PropertyImpl;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.server.binding.Qualifier;
-import com.canoo.dolphin.server.binding.QualifierBinder;
+import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.server.ServerAttribute;
 
 import java.lang.reflect.Field;
 
-public class QualifierBinderImpl implements QualifierBinder {
+public class PropertyBinderImpl implements PropertyBinder {
 
     public <T> Binding bind(final Property<T> property, final Qualifier<T> qualifier) {
         Assert.requireNonNull(property, "property");

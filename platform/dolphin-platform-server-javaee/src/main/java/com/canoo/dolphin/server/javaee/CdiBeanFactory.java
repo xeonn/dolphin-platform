@@ -17,8 +17,8 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.binding.QualifierBinder;
-import com.canoo.dolphin.server.binding.impl.QualifierBinderImpl;
+import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 
@@ -52,7 +52,7 @@ public class CdiBeanFactory {
 
     @Produces
     @ApplicationScoped
-    public QualifierBinder createQualifierBinder() {
-        return new QualifierBinderImpl();
+    public PropertyBinder createPropertyBinder() {
+        return new PropertyBinderImpl();
     }
 }

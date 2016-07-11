@@ -5,7 +5,7 @@ import com.canoo.dolphin.binding.Binding;
 import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
-import com.canoo.dolphin.server.binding.QualifierBinder;
+import com.canoo.dolphin.server.binding.PropertyBinder;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ public class QualifierTestController {
     private BeanManager beanManager;
 
     @Inject
-    private QualifierBinder binder;
+    private PropertyBinder binder;
 
     private List<Binding> bindings = new ArrayList<>();
 
