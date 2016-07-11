@@ -34,11 +34,12 @@ public class ClasspathScannerTest {
     @Test
     public void testSimpleScan() {
         //There can't be a class that is annotated with Inject
-        Set<Class<?>> classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(Inject.class);
+        ClasspathScanner scanner = new ClasspathScanner();
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 0);
 
-        classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
+        classes = scanner.getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 1);
         assertTrue(classes.contains(AnnotatedClassForClasspathScan.class));
@@ -46,7 +47,8 @@ public class ClasspathScannerTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testNullArgument() {
-        Set<Class<?>> classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(null);
+        ClasspathScanner scanner = new ClasspathScanner();
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(null);
     }
 
 }
