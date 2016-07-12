@@ -45,6 +45,19 @@ public class ClasspathScannerTest {
         assertTrue(classes.contains(AnnotatedClassForClasspathScan.class));
     }
 
+    @Test
+    public void testScanOtherPackage() {
+        //There can't be a class that is annotated with Inject
+        ClasspathScanner scanner = new ClasspathScanner("com.canoo.dolphin.server.impl.special");
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 0);
+
+        classes = scanner.getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 0);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void testNullArgument() {
         ClasspathScanner scanner = new ClasspathScanner();
