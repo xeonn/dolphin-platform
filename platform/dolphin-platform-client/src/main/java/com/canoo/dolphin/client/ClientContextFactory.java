@@ -84,6 +84,7 @@ public class ClientContextFactory {
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
                 final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
                 final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), httpClient, clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
+
                 clientDolphin.setClientConnector(clientConnector);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
                 final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
@@ -96,7 +97,7 @@ public class ClientContextFactory {
                 final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
                 final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
                 final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
-                final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler, httpClient);
+                final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler);
                 clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
             } catch (Exception e) {
