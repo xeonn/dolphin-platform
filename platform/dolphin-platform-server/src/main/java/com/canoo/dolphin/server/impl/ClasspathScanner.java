@@ -17,7 +17,9 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.util.Assert;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -45,6 +47,8 @@ public class ClasspathScanner {
 
         if(rootPackage != null && !rootPackage.trim().isEmpty()) {
             configuration = configuration.forPackages(rootPackage);
+            configuration = configuration.setUrls(ClasspathHelper.forPackage(rootPackage));
+            configuration = configuration.filterInputsBy(new FilterBuilder().includePackage(rootPackage));
         }
 
         //Special case for JBOSS Application server to get all classes
