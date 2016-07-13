@@ -44,7 +44,7 @@ public abstract class AbstractConnector implements ClientConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractConnector.class);
 
-    private boolean running = true;
+    private final AtomicBoolean running;
 
     private boolean pushEnabled;
 
@@ -67,16 +67,19 @@ public abstract class AbstractConnector implements ClientConnector {
     public AbstractConnector(ClientDolphin clientDolphin, UiThreadHandler uiThreadHandler) {
         this.clientDolphin = Assert.requireNonNull(clientDolphin, "clientDolphin");
         this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
-
+        running = new AtomicBoolean(true);
         baseExecutor.execute(() -> {
-            while (running) {
+            while (running.get()) {
                 try {
                     processCommunication();
+                } catch (InterruptedException e) {
+                    //Looks like I was kiled...
                 } catch (Exception e) {
-                    running = false;
+                    running.set(false);
                     throw new DolphinRemotingException("Error in Communication! Client broken!", e);
                 }
             }
+            LOG.debug("Communication stopped!");
         });
     }
 
@@ -138,7 +141,7 @@ public abstract class AbstractConnector implements ClientConnector {
                         attr.get("value"),
                         Optional.ofNullable(attr.get("qualifier")).map(o -> o.toString()).orElse(null),
                         Optional.ofNullable(attr.get("tag")).map(t -> {
-                            if(t instanceof Tag) {
+                            if (t instanceof Tag) {
                                 return (Tag) t;
                             } else {
                                 return Tag.tagFor.get(t);
@@ -267,6 +270,9 @@ public abstract class AbstractConnector implements ClientConnector {
 
     @Override
     public void send(final Command command, final OnFinishedHandler callback) {
+        if(!running.get()) {
+            throw new DolphinRemotingException("Communication has stopped. No command can be send to the server!");
+        }
         if (command != pushListener) {
             release();
         }
@@ -337,6 +343,12 @@ public abstract class AbstractConnector implements ClientConnector {
                 listen();
             }
         });
+    }
+
+    public void kill() {
+        running.set(false);
+        baseExecutor.shutdownNow();
+        releaseHandler.shutdownNow();
     }
 
     protected ClientModelStore getClientModelStore() {

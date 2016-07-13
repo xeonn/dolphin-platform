@@ -116,6 +116,12 @@ public class ClientContextImpl implements ClientContext {
                         }
                         return null;
                     });
+
+
+
+                    //TODO: Hack will change in future version
+                    ((DolphinPlatformHttpClientConnector)clientDolphin.getClientConnector()).kill();
+
                 }
         );
 

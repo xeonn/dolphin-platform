@@ -45,26 +45,24 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
 
     private final ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
+    private final Codec codec;
+
     private String clientId;
 
-    private Codec codec;
-
-
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, HttpClient httpClient, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
         super(clientDolphin, uiThreadHandler);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
+        this.codec = Assert.requireNonNull(codec, "codec");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
-
         this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
-
         this.responseHandler = new IdBasedResponseHandler(this);
-        //setStrictMode(false);
     }
 
     public List<Command> transmit(List<Command> commands) {
+        Assert.requireNonNull(commands, "commands");
         List<Command> result = new ArrayList<>();
         try {
-            String content = getCodec().encode(commands);
+            String content = codec.encode(commands);
             HttpPost httpPost = new HttpPost(servletUrl);
             StringEntity entity = new StringEntity(content, CHARSET);
             httpPost.setEntity(entity);
@@ -75,7 +73,7 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
                 httpClient.execute(httpPost, responseHandler);
             } else {
                 String response = httpClient.execute(httpPost, responseHandler);
-                result = getCodec().decode(response);
+                result = codec.decode(response);
             }
         } catch (Exception e) {
             DolphinRemotingException dolphinRemotingException = new DolphinRemotingException("Error in remoting layer", e);
@@ -96,12 +94,10 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
         this.clientId = clientId;
     }
 
-    public Codec getCodec() {
-        return codec;
-    }
-
-    public void setCodec(Codec codec) {
-        this.codec = codec;
+    @Override
+    public void kill() {
+        super.kill();
+        this.clientId = null;
     }
 }
 

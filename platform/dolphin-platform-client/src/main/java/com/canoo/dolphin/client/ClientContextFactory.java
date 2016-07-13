@@ -83,8 +83,7 @@ public class ClientContextFactory {
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
                 final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
-                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, httpClient, clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
-                clientConnector.setCodec(new OptimizedJsonCodec());
+                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), httpClient, clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
                 clientDolphin.setClientConnector(clientConnector);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
                 final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
