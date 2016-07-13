@@ -30,6 +30,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
@@ -71,7 +72,7 @@ public abstract class AbstractDolphinBasedTest {
     protected DolphinTestConfiguration createDolphinTestConfiguration() {
         DefaultInMemoryConfig config = new DefaultInMemoryConfig();
         config.getServerDolphin().registerDefaultActions();
-        ServerModelStore store = config.getServerDolphin().getServerModelStore();
+        ModelStore store = config.getServerDolphin().getModelStore();
         try {
             ReflectionHelper.setPrivileged(ServerModelStore.class.getDeclaredField("currentResponse"), store, new ArrayList<>());
         } catch (NoSuchFieldException e) {

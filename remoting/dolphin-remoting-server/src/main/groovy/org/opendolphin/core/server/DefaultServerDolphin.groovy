@@ -14,37 +14,19 @@
  * limitations under the License.
  */
 package org.opendolphin.core.server
-
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
 import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.BaseAttribute
-import org.opendolphin.core.ModelStore
 import org.opendolphin.core.Tag
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand
-import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
-import org.opendolphin.core.comm.DeletePresentationModelCommand
-import org.opendolphin.core.comm.InitializeAttributeCommand
-import org.opendolphin.core.comm.PresentationModelResetedCommand
-import org.opendolphin.core.comm.ValueChangedCommand
-import org.opendolphin.core.server.action.ClosureServerAction
-import org.opendolphin.core.server.action.CreatePresentationModelAction
-import org.opendolphin.core.server.action.DeletePresentationModelAction
-import org.opendolphin.core.server.action.DeletedAllPresentationModelsOfTypeAction
-import org.opendolphin.core.server.action.DolphinServerAction
-import org.opendolphin.core.server.action.EmptyAction
-import org.opendolphin.core.server.action.NamedServerAction
-import org.opendolphin.core.server.action.StoreAttributeAction
-import org.opendolphin.core.server.action.StoreValueChangeAction
+import org.opendolphin.core.comm.*
+import org.opendolphin.core.server.action.*
 import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 import static org.opendolphin.StringUtil.isBlank
-
 /**
  * The default implementation of the Dolphin facade on the server side.
  * Responsibility: single access point for dolphin capabilities.
@@ -75,7 +57,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     }
 
     @Override
-    ModelStore getModelStore() {
+    public ServerModelStore getModelStore() {
         serverModelStore
     }
 

@@ -46,7 +46,7 @@ public abstract class AbstractDolphinBasedTest {
         DefaultInMemoryConfig config = new DefaultInMemoryConfig();
         config.getServerDolphin().registerDefaultActions();
 
-        ServerModelStore store = config.getServerDolphin().getServerModelStore();
+        ServerModelStore store = config.getServerDolphin().getModelStore();
         try {
             ReflectionHelper.setPrivileged(ServerModelStore.class.getDeclaredField("currentResponse"), store, new ArrayList<>());
         } catch (NoSuchFieldException e) {

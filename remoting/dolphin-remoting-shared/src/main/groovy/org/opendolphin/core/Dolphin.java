@@ -26,6 +26,8 @@ import java.util.Set;
  */
 public interface Dolphin<A extends Attribute, P extends PresentationModel<A>> {
 
+    ModelStore<A, P> getModelStore();
+
     boolean add(P model);
 
     boolean remove(P model);
