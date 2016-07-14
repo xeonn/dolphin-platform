@@ -28,6 +28,7 @@ import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinSessionListenerProvider;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.mbean.MBeanRegistry;
 import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
 import com.canoo.dolphin.server.servlet.DolphinPlatformServlet;
 import com.canoo.dolphin.util.Assert;
@@ -78,6 +79,8 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         LOG.debug("Dolphin Platform starts with value for useCrossSiteOriginFilter=" + configuration.isUseCrossSiteOriginFilter());
         LOG.debug("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
         LOG.debug("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
+
+        MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration());
 
         ContainerManager containerManager = findManager();
         containerManager.init(servletContext);
