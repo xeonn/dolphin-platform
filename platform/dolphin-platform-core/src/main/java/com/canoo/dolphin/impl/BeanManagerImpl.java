@@ -38,22 +38,27 @@ public class BeanManagerImpl implements Serializable, BeanManager {
 
     @Override
     public boolean isManaged(Object bean) {
+        BeanUtils.checkBean(bean);
         return beanRepository.isManaged(bean);
     }
 
     @Override
     public <T> T create(Class<T> beanClass) {
+        BeanUtils.checkClass(beanClass);
         return beanBuilder.create(beanClass);
     }
 
     @Override
     public void remove(Object bean) {
+        BeanUtils.checkBean(bean);
         beanRepository.delete(bean);
     }
 
     @Override
     public void removeAll(Class<?> beanClass) {
+        BeanUtils.checkClass(beanClass);
         for (Object bean : findAll(beanClass)) {
+            BeanUtils.checkBean(bean);
             beanRepository.delete(bean);
         }
     }
@@ -61,6 +66,7 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     @Override
     public void removeAll(Object... beans) {
         for (final Object bean : beans) {
+            BeanUtils.checkBean(bean);
             remove(bean);
         }
     }
@@ -68,17 +74,20 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     @Override
     public void removeAll(Collection<?> beans) {
         for (final Object bean : beans) {
+            BeanUtils.checkBean(bean);
             remove(bean);
         }
     }
 
     @Override
     public <T> List<T> findAll(Class<T> beanClass) {
+        BeanUtils.checkClass(beanClass);
         return beanRepository.findAll(beanClass);
     }
 
     @Override
     public <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener) {
+        BeanUtils.checkClass(beanClass);
         return beanRepository.addOnAddedListener(beanClass, listener);
     }
 
@@ -89,6 +98,7 @@ public class BeanManagerImpl implements Serializable, BeanManager {
 
     @Override
     public <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
+        BeanUtils.checkClass(beanClass);
         return beanRepository.addOnRemovedListener(beanClass, listener);
     }
 

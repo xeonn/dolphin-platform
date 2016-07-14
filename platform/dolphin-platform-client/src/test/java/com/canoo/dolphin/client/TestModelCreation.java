@@ -17,6 +17,7 @@ package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.impl.BeanDefinitionException;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
 import mockit.Mocked;
@@ -165,6 +166,21 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         ));
     }
 
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithWrongModelType(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(String.class);
+    }
+
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithNull(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(null);
+    }
 
     @Test
     public void testWithAllPrimitiveDatatypes(@Mocked HttpClientConnector connector) {

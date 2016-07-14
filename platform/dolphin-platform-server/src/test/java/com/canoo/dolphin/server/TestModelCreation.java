@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.impl.BeanDefinitionException;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
@@ -26,10 +27,13 @@ import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import com.canoo.dolphin.server.util.SingleReferenceModel;
+import mockit.Mocked;
 import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
+import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -169,6 +173,22 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         )
                 ))
         ));
+    }
+
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithWrongModelType() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(String.class);
+    }
+
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithNull() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(null);
     }
 
 

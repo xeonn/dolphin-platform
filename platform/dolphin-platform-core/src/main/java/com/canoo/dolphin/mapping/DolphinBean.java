@@ -52,6 +52,7 @@ public @interface DolphinBean {
      * Defines the type of the underlying Open Dolphin presentation model
      * @return type of the underlying Open Dolphin presentation model
      */
+    @Deprecated
     String value() default "";
 
 }

@@ -78,7 +78,7 @@ class ClientConnectorPushTests extends Specification {
         when:
         clientDolphin.startPushListening("PushAction", "ReleaseAction")
         then:
-        pushWasCalled.await(1, TimeUnit.SECONDS)
+        pushWasCalled.await(2, TimeUnit.SECONDS)
     }
 
     void "autorelease: sending any client-side command releases the read lock"() {
@@ -101,7 +101,7 @@ class ClientConnectorPushTests extends Specification {
             spoofCounter.countDown()
         }
         then:
-        spoofCounter.await(1, TimeUnit.SECONDS)
+        spoofCounter.await(2, TimeUnit.SECONDS)
     }
 
 }
