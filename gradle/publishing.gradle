@@ -62,6 +62,9 @@ modifyPom {
     project(pomConfig)
 }
 
+if (!project.hasProperty('nexusReleaseDeployURL')) ext.nexusReleaseDeployURL = ''
+if (!project.hasProperty('nexusSnapshotDeployURL')) ext.nexusSnapshotDeployURL = ''
+
 nexus {
     sign = true
     repositoryUrl = nexusReleaseDeployURL
