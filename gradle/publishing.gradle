@@ -17,10 +17,10 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'net.nemerosa.versioning'
+apply plugin: 'com.bmuschko.nexus'
 
 def pomConfig = {
     name project.name
-    description project.project_description
     url project.project_website
     inceptionYear '2015'
     licenses {
@@ -52,6 +52,22 @@ def pomConfig = {
     }
 }
 
+extraArchive {
+    sources = false
+    tests   = false
+    javadoc = false
+}
+
+modifyPom {
+    project(pomConfig)
+}
+
+nexus {
+    sign = true
+    repositoryUrl = nexusReleaseDeployURL
+    snapshotRepositoryUrl = nexusSnapshotDeployURL
+}
+
 publishing {
     publications {
         mavenCustom(MavenPublication) {
@@ -73,6 +89,7 @@ publishing {
         }
     }
 }
+
 jar {
     manifest {
         attributes(
