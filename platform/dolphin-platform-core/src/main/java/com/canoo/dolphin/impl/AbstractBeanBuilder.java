@@ -27,6 +27,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
@@ -54,7 +55,10 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
         dispatcher.addAddedHandler(new DolphinEventHandler() {
             @Override
             public void onEvent(PresentationModel model) {
+                Assert.requireNonNull(model, "model");
                 final ClassInfo classInfo = classRepository.getClassInfo(model.getPresentationModelType());
+
+                Assert.requireNonNull(classInfo, "classInfo");
                 final Class<?> beanClass = classInfo.getBeanClass();
 
                 createInstanceForClass(classInfo, beanClass, model, UpdateSource.OTHER);
