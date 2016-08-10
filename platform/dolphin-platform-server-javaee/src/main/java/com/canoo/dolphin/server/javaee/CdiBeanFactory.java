@@ -21,6 +21,7 @@ import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 
 /**
@@ -28,6 +29,7 @@ import javax.enterprise.inject.Produces;
  *
  * @author Hendrik Ebbers
  */
+@Dependent
 public class CdiBeanFactory {
 
     @Produces
