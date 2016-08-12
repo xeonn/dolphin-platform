@@ -263,8 +263,7 @@ public abstract class AbstractConnector implements ClientConnector {
             CallNamedActionCommand serverCommand = (CallNamedActionCommand) command;
             clientDolphin.send(serverCommand.getActionName());
         } else {
-            //TODO
-            LOG.warn("TODO");
+            throw new IllegalArgumentException("Command of type " + command.getClass() + " is unknown and can not be handled!");
         }
     }
 
