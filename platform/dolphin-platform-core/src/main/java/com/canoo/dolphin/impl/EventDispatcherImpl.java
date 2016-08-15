@@ -17,6 +17,7 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.internal.DolphinEventHandler;
 import com.canoo.dolphin.internal.EventDispatcher;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.PresentationModel;
@@ -69,6 +70,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
 
     @Override
     public void modelStoreChanged(ModelStoreEvent event) {
+        Assert.requireNonNull(event, "event");
         final PresentationModel model = event.getPresentationModel();
         if (!isLocalChange(model)) {
             if (ModelStoreEvent.Type.ADDED == event.getType()) {
@@ -80,6 +82,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     private void onAddedHandler(PresentationModel model) {
+        Assert.requireNonNull(model, "model");
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
@@ -110,6 +113,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     private void onRemovedHandler(PresentationModel model) {
+        Assert.requireNonNull(model, "model");
         final String type = model.getPresentationModelType();
         switch (type) {
             case PlatformConstants.DOLPHIN_BEAN:
@@ -131,6 +135,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
     }
 
     private boolean isLocalChange(PresentationModel model) {
+        Assert.requireNonNull(model, "model");
         final Object value = model.findAttributeByPropertyName(PlatformConstants.SOURCE_SYSTEM).getValue();
         return getLocalSystemIdentifier().equals(value);
     }

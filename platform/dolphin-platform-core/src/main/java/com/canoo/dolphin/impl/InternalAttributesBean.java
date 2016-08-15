@@ -17,6 +17,7 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
@@ -31,17 +32,18 @@ public class InternalAttributesBean {
     private final Attribute controllerId;
     private final Attribute model;
 
-    public InternalAttributesBean(BeanRepository beanRepository, PresentationModel pm) {
-        this.beanRepository = beanRepository;
+    public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModel pm) {
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
+        Assert.requireNonNull(pm, "pm");
         controllerName = pm.findAttributeByPropertyName(CONTROLLER_NAME);
         controllerId = pm.findAttributeByPropertyName(CONTROLLER_ID);
         model = pm.findAttributeByPropertyName(MODEL);
     }
 
-    public InternalAttributesBean(BeanRepository beanRepository, PresentationModelBuilder builder) {
+    public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModelBuilder builder) {
         this(
             beanRepository,
-            builder.withType(PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME)
+                Assert.requireNonNull(builder, "builder").withType(PlatformConstants.INTERNAL_ATTRIBUTES_BEAN_NAME)
                 .withAttribute(CONTROLLER_NAME)
                 .withAttribute(CONTROLLER_ID)
                 .withAttribute(MODEL)

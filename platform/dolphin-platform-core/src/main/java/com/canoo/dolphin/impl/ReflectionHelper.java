@@ -17,6 +17,7 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -32,8 +33,10 @@ import java.util.List;
 
 public class ReflectionHelper {
 
+    private ReflectionHelper() {}
 
     public static <T> T getPrivileged(final Field field, final Object bean) {
+        Assert.requireNonNull(field, "field");
         return (T) AccessController.doPrivileged(new PrivilegedAction<Object>() {
             @Override
             public Object run() {
@@ -53,6 +56,7 @@ public class ReflectionHelper {
 
     public static void setPrivileged(final Field field, final Object bean,
                                      final Object value) {
+        Assert.requireNonNull(field, "field");
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {
@@ -72,6 +76,7 @@ public class ReflectionHelper {
     }
 
     public static void invokePrivileged(final Method method, final Object obj, final Object... args) {
+        Assert.requireNonNull(method, "method");
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {
@@ -90,7 +95,8 @@ public class ReflectionHelper {
         });
     }
 
-    public static List<Field> getInheritedDeclaredFields(Class<?> type) {
+    public static List<Field> getInheritedDeclaredFields(final Class<?> type) {
+        Assert.requireNonNull(type, "type");
         List<Field> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
@@ -100,7 +106,8 @@ public class ReflectionHelper {
         return result;
     }
 
-    public static List<Method> getInheritedDeclaredMethods(Class<?> type) {
+    public static List<Method> getInheritedDeclaredMethods(final Class<?> type) {
+        Assert.requireNonNull(type, "type");
         List<Method> result = new ArrayList<>();
         Class<?> i = type;
         while (i != null && i != Object.class) {
@@ -110,35 +117,40 @@ public class ReflectionHelper {
         return result;
     }
 
-    public static boolean isProperty(PropertyDescriptor descriptor) {
+    public static boolean isProperty(final PropertyDescriptor descriptor) {
+        Assert.requireNonNull(descriptor, "descriptor");
         return isProperty(descriptor.getPropertyType());
     }
 
-    public static boolean isProperty(Class<?> propertyType) {
+    public static boolean isProperty(final Class<?> propertyType) {
         return Property.class.isAssignableFrom(propertyType);
     }
 
-    public static boolean isObservableList(Class<?> propertyType) {
+    public static boolean isObservableList(final Class<?> propertyType) {
         return ObservableList.class.isAssignableFrom(propertyType);
     }
 
-    public static boolean isEnumType(Class<?> cls) {
+    public static boolean isEnumType(final Class<?> cls) {
+        Assert.requireNonNull(cls, "cls");
         return cls.isEnum();
     }
 
-    public static boolean isAllowedForUnmanaged(Class<?> cls) {
+    public static boolean isAllowedForUnmanaged(final Class<?> cls) {
         return isBasicType(cls) || isProperty(cls) || isEnumType(cls);
     }
 
-    public static boolean isBasicType(Class<?> cls) {
+    public static boolean isBasicType(final Class<?> cls) {
+        Assert.requireNonNull(cls, "cls");
         return cls.isPrimitive() || cls.equals(String.class) || cls.equals(Boolean.class) || cls.equals(Byte.class) || Number.class.isAssignableFrom(cls);
     }
 
-    public static boolean isProxyInstance(Object bean) {
+    public static boolean isProxyInstance(final Object bean) {
+        Assert.requireNonNull(bean, "bean");
         return Proxy.isProxyClass(bean.getClass());
     }
 
     public static Class getTypeParameter(Field field) {
+        Assert.requireNonNull(field, "field");
         try {
             ParameterizedType pType = (ParameterizedType) field.getGenericType();
             if (pType.getActualTypeArguments().length > 0) {
