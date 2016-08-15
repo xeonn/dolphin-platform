@@ -53,17 +53,20 @@ public class ClassRepositoryImpl implements ClassRepository {
     private final Map<Class<?>, ClassInfo> classToClassInfoMap = new HashMap<>();
     private final Map<String, ClassInfo> modelTypeToClassInfoMap = new HashMap<>();
 
-    public ClassRepositoryImpl(Dolphin dolphin, Converters converters, PresentationModelBuilderFactory builderFactory) {
-        this.converters = converters;
-        this.builderFactory = builderFactory;
+    public ClassRepositoryImpl(final Dolphin dolphin, final Converters converters, final PresentationModelBuilderFactory builderFactory) {
+        Assert.requireNonNull(dolphin, "dolphin");
+        this.converters = Assert.requireNonNull(converters, "converters");
+        this.builderFactory = Assert.requireNonNull(builderFactory, "builderFactory");
 
         dolphin.addModelStoreListener(PlatformConstants.DOLPHIN_BEAN, new ModelStoreListener() {
             @Override
-            public void modelStoreChanged(ModelStoreEvent event) {
+            public void modelStoreChanged(final ModelStoreEvent event) {
+                Assert.requireNonNull(event, "event");
                 try {
                     final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
                     final ClassInfo classInfo = createClassInfoForClass(beanClass);
+                    Assert.requireNonNull(classInfo, "classInfo");
                     classToClassInfoMap.put(beanClass, classInfo);
                     modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
                 } catch (ClassNotFoundException e) {
@@ -73,7 +76,7 @@ public class ClassRepositoryImpl implements ClassRepository {
         });
     }
 
-    public ClassInfo getClassInfo(String modelType) {
+    public ClassInfo getClassInfo(final String modelType) {
         return modelTypeToClassInfoMap.get(modelType);
     }
 
@@ -88,7 +91,7 @@ public class ClassRepositoryImpl implements ClassRepository {
         return classToClassInfoMap.get(beanClass);
     }
 
-    private void createPresentationModelForClass(Class<?> beanClass) {
+    private void createPresentationModelForClass(final Class<?> beanClass) {
         Assert.requireNonNull(beanClass, "beanClass");
         final String id = DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass);
         final PresentationModelBuilder builder = builderFactory.createBuilder()
@@ -111,7 +114,7 @@ public class ClassRepositoryImpl implements ClassRepository {
         builder.create();
     }
 
-    private ClassInfo createClassInfoForClass(Class<?> beanClass) {
+    private ClassInfo createClassInfoForClass(final Class<?> beanClass) {
         final List<PropertyInfo> propertyInfos = new ArrayList<>();
         final List<PropertyInfo> observableListInfos = new ArrayList<>();
 

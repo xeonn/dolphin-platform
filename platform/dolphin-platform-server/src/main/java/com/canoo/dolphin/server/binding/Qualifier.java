@@ -10,7 +10,7 @@ import java.util.UUID;
  * @param <T> generic type of the property that can be bound by using the qualifier
  * @see PropertyBinder
  */
-public class Qualifier<T> {
+public final class Qualifier<T> {
 
     private final String identifier;
 
