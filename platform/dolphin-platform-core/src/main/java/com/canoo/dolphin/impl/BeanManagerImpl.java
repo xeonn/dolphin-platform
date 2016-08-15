@@ -21,6 +21,7 @@ import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.util.Assert;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,31 +32,31 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     protected final BeanRepository beanRepository;
     private final BeanBuilder beanBuilder;
 
-    public BeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder) {
-        this.beanRepository = beanRepository;
-        this.beanBuilder = beanBuilder;
+    public BeanManagerImpl(final BeanRepository beanRepository, final BeanBuilder beanBuilder) {
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
+        this.beanBuilder = Assert.requireNonNull(beanBuilder, "beanBuilder");
     }
 
     @Override
-    public boolean isManaged(Object bean) {
+    public boolean isManaged(final Object bean) {
         BeanUtils.checkBean(bean);
         return beanRepository.isManaged(bean);
     }
 
     @Override
-    public <T> T create(Class<T> beanClass) {
+    public <T> T create(final Class<T> beanClass) {
         BeanUtils.checkClass(beanClass);
         return beanBuilder.create(beanClass);
     }
 
     @Override
-    public void remove(Object bean) {
+    public void remove(final Object bean) {
         BeanUtils.checkBean(bean);
         beanRepository.delete(bean);
     }
 
     @Override
-    public void removeAll(Class<?> beanClass) {
+    public void removeAll(final Class<?> beanClass) {
         BeanUtils.checkClass(beanClass);
         for (Object bean : findAll(beanClass)) {
             BeanUtils.checkBean(bean);
@@ -64,7 +65,8 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     }
 
     @Override
-    public void removeAll(Object... beans) {
+    public void removeAll(final Object... beans) {
+        Assert.requireNonNull(beans, "beans");
         for (final Object bean : beans) {
             BeanUtils.checkBean(bean);
             remove(bean);
@@ -72,7 +74,8 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     }
 
     @Override
-    public void removeAll(Collection<?> beans) {
+    public void removeAll(final Collection<?> beans) {
+        Assert.requireNonNull(beans, "beans");
         for (final Object bean : beans) {
             BeanUtils.checkBean(bean);
             remove(bean);
@@ -80,30 +83,30 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     }
 
     @Override
-    public <T> List<T> findAll(Class<T> beanClass) {
+    public <T> List<T> findAll(final Class<T> beanClass) {
         BeanUtils.checkClass(beanClass);
         return beanRepository.findAll(beanClass);
     }
 
     @Override
-    public <T> Subscription onAdded(Class<T> beanClass, BeanAddedListener<? super T> listener) {
+    public <T> Subscription onAdded(final Class<T> beanClass, final BeanAddedListener<? super T> listener) {
         BeanUtils.checkClass(beanClass);
         return beanRepository.addOnAddedListener(beanClass, listener);
     }
 
     @Override
-    public Subscription onAdded(BeanAddedListener<Object> listener) {
+    public Subscription onAdded(final BeanAddedListener<Object> listener) {
         return beanRepository.addOnAddedListener(listener);
     }
 
     @Override
-    public <T> Subscription onRemoved(Class<T> beanClass, BeanRemovedListener<? super T> listener) {
+    public <T> Subscription onRemoved(final Class<T> beanClass, final BeanRemovedListener<? super T> listener) {
         BeanUtils.checkClass(beanClass);
         return beanRepository.addOnRemovedListener(beanClass, listener);
     }
 
     @Override
-    public Subscription onRemoved(BeanRemovedListener<Object> listener) {
+    public Subscription onRemoved(final BeanRemovedListener<Object> listener) {
         return beanRepository.addOnRemovedListener(listener);
     }
 

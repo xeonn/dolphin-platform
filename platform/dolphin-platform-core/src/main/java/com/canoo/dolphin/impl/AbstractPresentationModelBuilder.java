@@ -31,13 +31,13 @@ public abstract class AbstractPresentationModelBuilder<T extends PresentationMod
     }
 
     @Override
-    public PresentationModelBuilder<T> withType(String type) {
+    public PresentationModelBuilder<T> withType(final String type) {
         this.type = type;
         return this;
     }
 
     @Override
-    public PresentationModelBuilder<T> withId(String id) {
+    public PresentationModelBuilder<T> withId(final String id) {
         this.id = id;
         return this;
     }

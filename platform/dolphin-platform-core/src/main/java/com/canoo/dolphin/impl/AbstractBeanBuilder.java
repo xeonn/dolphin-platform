@@ -27,6 +27,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
@@ -45,16 +46,19 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
     private final ListMapper listMapper;
     private final PresentationModelBuilderFactory builderFactory;
 
-    public AbstractBeanBuilder(final ClassRepository classRepository, final BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {
-        this.classRepository = classRepository;
-        this.beanRepository = beanRepository;
+    public AbstractBeanBuilder(final ClassRepository classRepository, final BeanRepository beanRepository, final ListMapper listMapper, final PresentationModelBuilderFactory builderFactory, final EventDispatcher dispatcher) {
+        this.classRepository = Assert.requireNonNull(classRepository, "classRepository");
+        this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
         this.listMapper = listMapper;
-        this.builderFactory = builderFactory;
+        this.builderFactory = Assert.requireNonNull(builderFactory, "builderFactory");;
 
         dispatcher.addAddedHandler(new DolphinEventHandler() {
             @Override
-            public void onEvent(PresentationModel model) {
+            public void onEvent(final PresentationModel model) {
+                Assert.requireNonNull(model, "model");
                 final ClassInfo classInfo = classRepository.getClassInfo(model.getPresentationModelType());
+
+                Assert.requireNonNull(classInfo, "classInfo");
                 final Class<?> beanClass = classInfo.getBeanClass();
 
                 createInstanceForClass(classInfo, beanClass, model, UpdateSource.OTHER);
@@ -62,14 +66,15 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
         });
     }
 
-    public <T> T create(Class<T> beanClass) {
+    public <T> T create(final Class<T> beanClass) {
         final ClassInfo classInfo = classRepository.getOrCreateClassInfo(beanClass);
         final PresentationModel model = buildPresentationModel(classInfo);
 
         return createInstanceForClass(classInfo, beanClass, model, UpdateSource.SELF);
     }
 
-    private <T> T createInstanceForClass(ClassInfo classInfo, Class<T> beanClass, PresentationModel model, UpdateSource source) {
+    private <T> T createInstanceForClass(final ClassInfo classInfo, final Class<T> beanClass, final PresentationModel model, final UpdateSource source) {
+        Assert.requireNonNull(beanClass, "beanClass");
         try {
             final T bean = beanClass.newInstance();
 
@@ -84,13 +89,15 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
         }
     }
 
-    private PresentationModel buildPresentationModel(ClassInfo classInfo) {
+    private PresentationModel buildPresentationModel(final ClassInfo classInfo) {
+        Assert.requireNonNull(classInfo, "classInfo");
         final PresentationModelBuilder builder = builderFactory.createBuilder()
                 .withType(classInfo.getModelType());
 
         classInfo.forEachProperty(new ClassInfo.PropertyIterator() {
             @Override
-            public void call(PropertyInfo propertyInfo) {
+            public void call(final PropertyInfo propertyInfo) {
+                Assert.requireNonNull(propertyInfo, "propertyInfo");
                 builder.withAttribute(propertyInfo.getAttributeName());
             }
         });
@@ -98,10 +105,13 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
         return builder.create();
     }
 
-    private void setupProperties(ClassInfo classInfo, final Object bean, final PresentationModel model) {
+    private void setupProperties(final ClassInfo classInfo, final Object bean, final PresentationModel model) {
+        Assert.requireNonNull(classInfo, "classInfo");
+        Assert.requireNonNull(model, "model");
         classInfo.forEachProperty(new ClassInfo.PropertyIterator() {
             @Override
-            public void call(PropertyInfo propertyInfo) {
+            public void call(final PropertyInfo propertyInfo) {
+                Assert.requireNonNull(propertyInfo, "propertyInfo");
                 final Attribute attribute = model.findAttributeByPropertyName(propertyInfo.getAttributeName());
                 final Property property = create(attribute, propertyInfo);
                 propertyInfo.setPriviliged(bean, property);
@@ -109,10 +119,12 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
         });
     }
 
-    private void setupObservableLists(ClassInfo classInfo, final Object bean, final PresentationModel model) {
+    private void setupObservableLists(final ClassInfo classInfo, final Object bean, final PresentationModel model) {
+        Assert.requireNonNull(classInfo, "classInfo");
         classInfo.forEachObservableList(new ClassInfo.PropertyIterator() {
             @Override
             public void call(final PropertyInfo observableListInfo) {
+                Assert.requireNonNull(observableListInfo, "observableListInfo");
                 final ObservableList observableList = create(observableListInfo, model, listMapper);
                 observableListInfo.setPriviliged(bean, observableList);
             }
