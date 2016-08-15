@@ -17,8 +17,10 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.event.DolphinEventBus;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -48,4 +50,9 @@ public class CdiBeanFactory {
         return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
     }
 
+    @Produces
+    @ApplicationScoped
+    public PropertyBinder createPropertyBinder() {
+        return new PropertyBinderImpl();
+    }
 }

@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.client.javafx.binding;
 
+import com.canoo.dolphin.binding.Binding;
 import com.canoo.dolphin.collections.ObservableList;
 
 import java.util.function.Function;
