@@ -18,7 +18,7 @@ By doing so you can create enterprise application with a single server and sever
 ![Model sync](http://www.dolphin-platform.io/assets/img/features/pm1.png)
 
 
-For more information visit [our website](http://www.dolphin-platform.io).
+For more information visit [our website](http://www.dolphin-platform.io) or the [documentation](https://canoo.github.io/dolphin-platform/).
 
 ## How to use it
 You can simply integrate Dolphin Platform in a Spring based application. To do so you only need to add our Spring plugin:
@@ -58,7 +58,7 @@ mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:
 ```
 Currently the projects contains only a JavaFX based client but it’s planned to add a Polymer based client to the archetypes with the next release.
 
-A complete "Getting started" documentation can be found [here](http://www.dolphin-platform.io/documentation/getting-started.html).
+A complete "Getting started" documentation can be found [here](https://canoo.github.io/dolphin-platform/).
 
 ## Useful links
 * [Dolphin Platform website](http://www.dolphin-platform.io)
