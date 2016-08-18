@@ -41,6 +41,8 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
@@ -164,6 +166,12 @@ public class DolphinPlatformSpringTestBootstrap {
     protected DolphinEventBus createEventBus(final DolphinTestContext context) {
         Assert.requireNonNull(context, "context");
         return context.getDolphinEventBus();
+    }
+
+    @Bean(name="propertyBinder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected PropertyBinder createPropertyBinder() {
+        return new PropertyBinderImpl();
     }
 
     @Bean(name = "customScopeConfigurer")

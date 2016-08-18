@@ -58,6 +58,12 @@ browser can handle its own clients
 |any positive integer value
 |10
 
+|mBeanRegistration
+|Defines if the Dolphin Platform will register custom MBeans to provide information about the platform and the sessions
+|true, false
+|true
+
+
 |garbageCollectionActive
 |By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example
 in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an

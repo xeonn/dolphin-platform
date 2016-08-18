@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.canoo.dolphin.binding;
 
-apply from: rootProject.file('gradle/javafx.gradle')
+/**
+ * Defines a function interface that is used to handle an unbind of an binding.
+ */
+public interface Binding {
 
-dependencies {
-    compile project(':dolphin-remoting-client')
-    compileOnly project.files(project.jfxrtLocation)
-    testCompile project.files(project.jfxrtLocation)
+    /**
+     * unbindes the binding that is defined by this {@link Binding} instance.
+     */
+    void unbind();
+
 }
