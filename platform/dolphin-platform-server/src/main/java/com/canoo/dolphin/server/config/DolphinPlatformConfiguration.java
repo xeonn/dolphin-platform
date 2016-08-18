@@ -31,6 +31,8 @@ public class DolphinPlatformConfiguration {
 
     private boolean useCrossSiteOriginFilter = true;
 
+    private boolean mBeanRegistration = true;
+
     private String dolphinPlatformServletMapping = "/dolphin";
 
     private String rootPackageForClasspathScan = null;
@@ -99,11 +101,20 @@ public class DolphinPlatformConfiguration {
         this.idFilterUrlMappings = idFilterUrlMappings;
     }
 
-    public String getRootPackageForClasspathScan() {
+    public boolean isMBeanRegistration() {
+        return mBeanRegistration;
+    }
+
+    public void setMBeanRegistration(boolean mBeanRegistration) {
+        this.mBeanRegistration = mBeanRegistration;
+    }
+
+   public String getRootPackageForClasspathScan() {
         return rootPackageForClasspathScan;
     }
 
     public void setRootPackageForClasspathScan(String rootPackageForClasspathScan) {
         this.rootPackageForClasspathScan = rootPackageForClasspathScan;
     }
+
 }

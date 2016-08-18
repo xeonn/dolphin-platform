@@ -62,7 +62,7 @@ public class ConfigurationFileLoader {
 
     private static final String ROOT_PACKAGE_FOR_CLASSPATH_SCAN = "rootPackageForClasspathScan";
 
-
+    private static final String MBEAN_REGISTRATION = "mBeanRegistration";
 
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
@@ -129,15 +129,18 @@ public class ConfigurationFileLoader {
             configuration.setRootPackageForClasspathScan(prop.getProperty(ROOT_PACKAGE_FOR_CLASSPATH_SCAN));
         }
 
-        if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
-            configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
+        if(prop.containsKey(MBEAN_REGISTRATION)) {
+            configuration.setMBeanRegistration(Boolean.parseBoolean(prop.getProperty(MBEAN_REGISTRATION)));
         }
 
+if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
+            configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
+        }
         if(prop.containsKey(USE_SESSION_INVALIDATION_SERVLET)) {
             configuration.setUseSessionInvalidationServlet(Boolean.parseBoolean(prop.getProperty(USE_SESSION_INVALIDATION_SERVLET)));
         }
 
-        if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
+if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
             UnstableFeatureFlags.setUseGc(Boolean.parseBoolean(prop.getProperty(GARBAGE_COLLECTION_ACTIVE)));
         }
 

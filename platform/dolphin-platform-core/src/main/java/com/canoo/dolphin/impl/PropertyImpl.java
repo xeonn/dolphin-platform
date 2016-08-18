@@ -20,6 +20,7 @@ import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 
 import java.beans.PropertyChangeEvent;
@@ -39,14 +40,15 @@ public class PropertyImpl<T> implements Property<T> {
     private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
 
-    public PropertyImpl(Attribute attribute, final PropertyInfo propertyInfo) {
-        this.attribute = attribute;
-        this.propertyInfo = propertyInfo;
+    public PropertyImpl(final Attribute attribute, final PropertyInfo propertyInfo) {
+        this.attribute = Assert.requireNonNull(attribute, "attribute");
+        this.propertyInfo = Assert.requireNonNull(propertyInfo, "propertyInfo");
 
         attribute.addPropertyChangeListener(Attribute.VALUE, new PropertyChangeListener() {
             @SuppressWarnings("unchecked")
             @Override
-            public void propertyChange(PropertyChangeEvent evt) {
+            public void propertyChange(final PropertyChangeEvent evt) {
+                Assert.requireNonNull(evt, "evt");
                 final T oldValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getOldValue());
                 final T newValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getNewValue());
                 firePropertyChanged(oldValue, newValue);

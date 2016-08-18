@@ -16,5 +16,5 @@
 
 dependencies {
     compile project(':dolphin-platform-core')
-    compile 'io.reactivex:rxjava:1.1.5'
+    compile "io.reactivex:rxjava:$rxjavaVersion"
 }
