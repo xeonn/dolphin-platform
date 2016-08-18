@@ -35,6 +35,8 @@ public class DolphinPlatformConfiguration {
 
     private String dolphinPlatformServletMapping = "/dolphin";
 
+    private String rootPackageForClasspathScan = null;
+
     private List<String> idFilterUrlMappings = Arrays.asList("/*");
 
     private Level openDolphinLogLevel = Level.SEVERE;
@@ -106,4 +108,13 @@ public class DolphinPlatformConfiguration {
     public void setMBeanRegistration(boolean mBeanRegistration) {
         this.mBeanRegistration = mBeanRegistration;
     }
+
+   public String getRootPackageForClasspathScan() {
+        return rootPackageForClasspathScan;
+    }
+
+    public void setRootPackageForClasspathScan(String rootPackageForClasspathScan) {
+        this.rootPackageForClasspathScan = rootPackageForClasspathScan;
+    }
+
 }

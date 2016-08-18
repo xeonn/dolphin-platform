@@ -20,14 +20,17 @@ public class DolphinSessionListenerProvider {
 
     private List<DolphinSessionListener> contextListeners;
 
-    public DolphinSessionListenerProvider(final ContainerManager containerManager) {
+    private final ClasspathScanner classpathScanner;
+
+    public DolphinSessionListenerProvider(final ContainerManager containerManager, ClasspathScanner classpathScanner) {
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.classpathScanner = Assert.requireNonNull(classpathScanner, "classpathScanner");
     }
 
     public synchronized List<DolphinSessionListener> getAllListeners() {
         if(contextListeners == null) {
             contextListeners = new ArrayList<>();
-            Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
+            Set<Class<?>> listeners = classpathScanner.getTypesAnnotatedWith(DolphinListener.class);
             for (Class<?> listenerClass : listeners) {
                 try {
                     if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {
