@@ -46,7 +46,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         manager.remove(model);
 
-        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName());
         assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
@@ -99,7 +99,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.remove("I'm a String");
     }
 
-    @Test(expectedExceptions = BeanDefinitionException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testWithNull() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanManager manager = createBeanManager(dolphin);

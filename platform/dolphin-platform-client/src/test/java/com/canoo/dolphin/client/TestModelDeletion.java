@@ -76,7 +76,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         manager.remove("I'm a String");
     }
 
-    @Test(expectedExceptions = BeanDefinitionException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testWithNull(@Mocked HttpClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);

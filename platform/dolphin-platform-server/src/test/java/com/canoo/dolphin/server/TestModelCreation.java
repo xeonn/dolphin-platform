@@ -27,13 +27,10 @@ import com.canoo.dolphin.server.util.PrimitiveDataTypesModel;
 import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.server.util.SimpleTestModel;
 import com.canoo.dolphin.server.util.SingleReferenceModel;
-import mockit.Mocked;
 import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.Tag;
-import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.comm.HttpClientConnector;
 import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -42,7 +39,15 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.testng.Assert.fail;
 
 public class TestModelCreation extends AbstractDolphinBasedTest {
@@ -55,11 +60,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
         assertThat(model, notNullValue());
-        assertThat(model.getTextProperty(), notNullValue());
-        assertThat(model.getTextProperty().get(), nullValue());
+        assertThat(model.getMyProperty(), notNullValue());
+        assertThat(model.getMyProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         ServerPresentationModel dolphinModel = dolphinModels.get(0);
@@ -68,7 +73,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(
-                        hasProperty("propertyName", is("text_property")),
+                        hasProperty("propertyName", is("myProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
                         hasProperty("qualifier", nullValue()),
@@ -94,7 +99,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
-                                hasProperty("propertyName", is("text_property")),
+                                hasProperty("propertyName", is("myProperty")),
                                 hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
@@ -183,11 +188,10 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         String model = manager.create(String.class);
     }
 
-    @Test(expectedExceptions = BeanDefinitionException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testWithNull() {
         final ServerDolphin dolphin = createServerDolphin();
         final BeanManager manager = createBeanManager(dolphin);
-
         String model = manager.create(null);
     }
 

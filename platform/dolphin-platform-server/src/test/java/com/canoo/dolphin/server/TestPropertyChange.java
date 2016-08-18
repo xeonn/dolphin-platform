@@ -42,32 +42,32 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
             @SuppressWarnings("unchecked")
             @Override
             public void valueChanged(ValueChangeEvent<? extends String> evt) {
-                assertThat((Property<String>)evt.getSource(), is(model.getTextProperty()));
+                assertThat((Property<String>)evt.getSource(), is(model.getMyProperty()));
                 results.newValue = evt.getNewValue();
                 results.oldValue = evt.getOldValue();
                 results.listenerCalls++;
             }
         };
 
-        final Subscription subscription = model.getTextProperty().onChanged(myListener);
+        final Subscription subscription = model.getMyProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
 
-        model.getTextProperty().set("Hallo Property");
+        model.getMyProperty().set("Hallo Property");
         assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property"));
         assertThat(results.oldValue, nullValue());
 
         results.listenerCalls = 0;
-        model.getTextProperty().set("Hallo Property2");
+        model.getMyProperty().set("Hallo Property2");
         assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
 
         results.listenerCalls = 0;
         subscription.unsubscribe();
-        model.getTextProperty().set("Hallo Property3");
+        model.getMyProperty().set("Hallo Property3");
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));

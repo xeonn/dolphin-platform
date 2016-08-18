@@ -24,10 +24,10 @@ import com.canoo.dolphin.mapping.Property;
 @DolphinBean
 public class SimpleAnnotatedTestModel {
 
-    private Property<String> skdjfhksdjhf;
+    private Property<String> myProperty;
 
-    public Property<String> getTextProperty() {
-        return skdjfhksdjhf;
+    public Property<String> myProperty() {
+        return myProperty;
     }
 
 }
