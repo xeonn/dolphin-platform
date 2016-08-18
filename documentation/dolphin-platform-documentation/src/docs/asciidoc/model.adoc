@@ -39,10 +39,11 @@ public class MyModel {
 }
 ----
 
-NOTE: Maybe you ask yourself why the `@DolphinBean` annotation is needed. Currently the Dolphin Platform don't need the
-annotation and don't evaluate the annotation. We plan to add some features based on the annotation in the future. One
-example can be an annotation processor that checks if all classes that are defined as Dolphin Platform beans (by adding
-the `@DolphinBean` annotation) are valid Dolphin Platform beans.
+NOTE: Maybe you ask yourself why the `@DolphinBean` annotation is needed. Internally the Dolphin Platform checks if a bean
+class is annotated with `@DolphinBean` and will trow a `BeanDefinitionException` if the annotation is not present. By
+doing so it will be easy to check if you use the right model classes. We plan to add some additional features based on
+the annotation in the future. One example can be an annotation processor that checks if all classes that are defined as
+the Dolphin Platform beans (by adding the `@DolphinBean` annotation) are valid Dolphin Platform beans.
 
 [[supported-types]]
 == Supported types

@@ -16,7 +16,13 @@
 package com.canoo.dolphin.server;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.util.*;
+import com.canoo.dolphin.impl.BeanDefinitionException;
+import com.canoo.dolphin.server.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.server.util.ChildModel;
+import com.canoo.dolphin.server.util.ListReferenceModel;
+import com.canoo.dolphin.server.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.server.util.SimpleTestModel;
+import com.canoo.dolphin.server.util.SingleReferenceModel;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
@@ -25,7 +31,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class TestModelDeletion extends AbstractDolphinBasedTest {
 
@@ -38,7 +46,7 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
 
         manager.remove(model);
 
-        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
+        List<ServerPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName());
         assertThat(dolphinModels, empty());
 
         Collection<ServerPresentationModel> allDolphinModels = dolphin.listPresentationModels();
@@ -81,6 +89,22 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         assertThat(allDolphinModels, hasSize(1));
 
         assertThat(manager.isManaged(model), is(false));
+    }
+
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithWrongModelType() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        manager.remove("I'm a String");
+    }
+
+    @Test(expectedExceptions = NullPointerException.class)
+    public void testWithNull() {
+        final ServerDolphin dolphin = createServerDolphin();
+        final BeanManager manager = createBeanManager(dolphin);
+
+        manager.remove(null);
     }
 
     @Test

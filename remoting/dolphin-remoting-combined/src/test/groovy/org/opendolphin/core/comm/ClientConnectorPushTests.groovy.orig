@@ -70,7 +70,6 @@ class ClientConnectorPushTests extends Specification {
         clientDolphin.isPushListening() == false
     }
 
-    @Ignore
     void "core push: server-side commands are immediately processed when listening"() {
         given:
         CountDownLatch pushWasCalled = new CountDownLatch(1)
@@ -80,7 +79,7 @@ class ClientConnectorPushTests extends Specification {
         when:
         clientDolphin.startPushListening("PushAction", "ReleaseAction")
         then:
-        pushWasCalled.await(1, TimeUnit.SECONDS)
+        pushWasCalled.await(2, TimeUnit.SECONDS)
     }
 
     @Ignore
@@ -104,8 +103,12 @@ class ClientConnectorPushTests extends Specification {
             spoofCounter.countDown()
         }
         then:
+<<<<<<< HEAD
+        spoofCounter.await(2, TimeUnit.SECONDS)
+=======
         //TODO: This test is not working on Travis.
         spoofCounter.await(1, TimeUnit.SECONDS)
+>>>>>>> master
     }
 
 }

@@ -15,8 +15,10 @@
  */
 package com.canoo.dolphin.client.util;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
+@DolphinBean
 public class PrimitiveDataTypesModel {
 
     private Property<String> textProperty;

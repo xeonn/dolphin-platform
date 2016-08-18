@@ -17,6 +17,7 @@ package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.impl.BeanDefinitionException;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
 import mockit.Mocked;
@@ -45,11 +46,11 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
         assertThat(model, notNullValue());
-        assertThat(model.getTextProperty(), notNullValue());
-        assertThat(model.getTextProperty().get(), nullValue());
+        assertThat(model.myProperty(), notNullValue());
+        assertThat(model.myProperty().get(), nullValue());
         assertThat(manager.isManaged(model), is(true));
 
-        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType("simple_test_model");
+        List<ClientPresentationModel> dolphinModels = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName());
         assertThat(dolphinModels, hasSize(1));
 
         PresentationModel dolphinModel = dolphinModels.get(0);
@@ -58,7 +59,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         assertThat(attributes, containsInAnyOrder(
                 allOf(
-                        hasProperty("propertyName", is("text_property")),
+                        hasProperty("propertyName", is("myProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
                         hasProperty("qualifier", nullValue()),
@@ -84,7 +85,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
-                                hasProperty("propertyName", is("text_property")),
+                                hasProperty("propertyName", is("myProperty")),
                                 hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
                                 hasProperty("qualifier", nullValue()),
@@ -165,6 +166,21 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
         ));
     }
 
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithWrongModelType(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(String.class);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class)
+    public void testWithNull(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        String model = manager.create(null);
+    }
 
     @Test
     public void testWithAllPrimitiveDatatypes(@Mocked HttpClientConnector connector) {

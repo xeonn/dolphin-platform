@@ -17,6 +17,7 @@ package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.impl.BeanDefinitionException;
 import mockit.Mocked;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
@@ -65,6 +66,22 @@ public class TestModelDeletion extends AbstractDolphinBasedTest {
         assertThat(allDolphinModels, hasSize(1));
 
         assertThat(manager.isManaged(model), is(false));
+    }
+
+    @Test(expectedExceptions = BeanDefinitionException.class)
+    public void testWithWrongModelType(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        manager.remove("I'm a String");
+    }
+
+    @Test(expectedExceptions = NullPointerException.class)
+    public void testWithNull(@Mocked HttpClientConnector connector) {
+        final ClientDolphin dolphin = createClientDolphin(connector);
+        final BeanManager manager = createBeanManager(dolphin);
+
+        manager.remove(null);
     }
 
     @Test

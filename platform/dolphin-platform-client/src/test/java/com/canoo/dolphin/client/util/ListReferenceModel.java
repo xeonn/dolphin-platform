@@ -16,7 +16,9 @@
 package com.canoo.dolphin.client.util;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.mapping.DolphinBean;
 
+@DolphinBean
 public class ListReferenceModel {
 
     public enum DataType {LIST_VALUE_1, LIST_VALUE_2}
