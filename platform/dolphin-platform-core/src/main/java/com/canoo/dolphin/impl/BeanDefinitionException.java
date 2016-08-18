@@ -10,6 +10,10 @@ public class BeanDefinitionException extends RuntimeException {
     public BeanDefinitionException() {
     }
 
+    public BeanDefinitionException(Class<?> notValidBeanClass) {
+        throw new BeanDefinitionException("Class " + beanClass + " is not a valid Dolphin Platform bean class!", e);
+    }
+
     public BeanDefinitionException(String message) {
         super(message);
     }

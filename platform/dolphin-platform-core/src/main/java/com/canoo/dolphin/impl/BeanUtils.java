@@ -8,24 +8,18 @@ import com.canoo.dolphin.util.Assert;
  */
 public class BeanUtils {
 
-    public static void checkBean(Object bean) {
-        try {
-            Assert.requireNonNull(bean, "bean");
-            checkClass(bean.getClass());
-        } catch (Exception e) {
-            throw new BeanDefinitionException("Object " + bean + " is not a valid Dolphin Platform bean!", e);
-        }
+    public static <T> T checkBean(T bean) {
+        Assert.requireNonNull(bean, "bean");
+        checkClass(bean.getClass());
+        return bean;
     }
 
-    public static void checkClass(Class<?> beanClass) {
-        try {
-            Assert.requireNonNull(beanClass, "beanClass");
-            DolphinBean annotation = beanClass.getAnnotation(DolphinBean.class);
-            if(annotation == null) {
-                throw new BeanDefinitionException("The class " + beanClass + " is not annotated by " + DolphinBean.class);
-            }
-        } catch (Exception e) {
-            throw new BeanDefinitionException("Class " + beanClass + " is not a valid Dolphin Platform bean class!", e);
+    public static <T> Class<T> checkClass(Class<T> beanClass) {
+        Assert.requireNonNull(beanClass, "beanClass");
+        DolphinBean annotation = beanClass.getAnnotation(DolphinBean.class);
+        if (annotation == null) {
+            throw new BeanDefinitionException(beanClass);
         }
+        return beanClass;
     }
 }
