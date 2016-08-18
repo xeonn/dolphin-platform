@@ -62,6 +62,7 @@ A complete "Getting started" documentation can be found [here](https://canoo.git
 
 ## Useful links
 * [Dolphin Platform website](http://www.dolphin-platform.io)
+* [Documentation](https://canoo.github.io/dolphin-platform/)
 * [Getting started](http://www.dolphin-platform.io/documentation/getting-started.html)
 * [Tutorial](http://www.dolphin-platform.io/documentation/tutorial.html)
 * [JavaDoc](http://www.dolphin-platform.io/javadoc/index.html)
