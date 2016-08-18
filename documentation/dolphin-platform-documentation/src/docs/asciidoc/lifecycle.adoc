@@ -2,20 +2,20 @@
 = The Dolphin Platform Lifecycle
 
 The Dolphin Platform provides lifecycles that defines the communication between client and server and the internal
-lifecycle of a view (MVC group).
+lifecycle of a MVC group.
 
 == The Lifecycle for one client
 
 Each clients that is connected to the Dolphin Platform server has its own lifecycle. This lifecycle starts with the
-inital connection and will end with the disconnection. The Dolphin Platform provides several classes in its public
-API that wrap the lifecycle and by doing so make it quite easy to create an application that is based on the Dolphin
+inital connection and will end when the client disconnects from the server. The Dolphin Platform provides several classes in its public
+API that wrap the lifecycle and make it quite easy to create an application that is based on the Dolphin
 Platform.
 
 == Creating a JavaFX clients that supports the Dolphin Platform Lifecycle
 
 The `dolphin-platform-client-javafx` module provides the abstract `DolphinPlatformApplication` class that can easily be used
 to create a JavaFX based client for the Dolphin Platform. Internally the class already defines the Dolphin Platform
-lifecycle and by extending the class for a custom client a developer only need to define some general information.
+lifecycle and by extending the class for a custom client a developer only needs to define some general information.
  The following code shows how a basic implementation might look like:
 
 [source,java]
@@ -44,7 +44,7 @@ doing so you already have a connection to the Dolphin Platform server once this 
 the JavaFX Platform thread.
 
 The given example already creates a connection to the Dolphin Platform server and shows an UI once the connection is
-estemblished and JavaFX is ready. In addition this client already provides a disconnect once the UI will be closed by a
+established and JavaFX is ready. In addition this client already provides a disconnect once the UI will be closed by a
 user and some raw error handling. All this is defined in the `DolphinPlatformApplication` class but can simply be overwritten.
 If you want more control of the error handling you can simply provide a custom implementation for the methods
 `void onInitializationError(Stage primaryStage, ClientInitializationException initializationException)` and
@@ -99,9 +99,9 @@ implementation since a clear shutdown is already defined in the `DolphinPlatform
 should call the super method in a custom implementation since a clear shutdown is already defined in the
 `DolphinPlatformApplication` class.
 
-To be true this are not the only moments in that the Dolphin Platform can throw an exception. Maybe someone shuts down
-the server at runtime when a client is still connected to the server. In this case the `DolphinPlatformApplication` class
-provides an additional method that can be overridden to handle this kind of remoting exceptions:
+To be true these are not the only moments in that the Dolphin Platform can throw an exception. Maybe the server shuts
+down when a client is still connected to the server. In this case the `DolphinPlatformApplication` class
+provides an additional method that can be overridden to handle this kind of remoting exception:
 
 [source,java]
 ----
