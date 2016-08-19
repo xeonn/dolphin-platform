@@ -30,9 +30,9 @@ import org.opendolphin.core.server.ServerDolphinFactory;
  */
 public class DefaultInMemoryConfig {
 
-    private final ClientDolphin clientDolphin;
+    private ClientDolphin clientDolphin;
 
-    private final ServerDolphin serverDolphin;
+    private ServerDolphin serverDolphin;
 
     private final InMemoryClientConnector clientConnector;
 
@@ -60,5 +60,13 @@ public class DefaultInMemoryConfig {
 
     public InMemoryClientConnector getClientConnector() {
         return clientConnector;
+    }
+
+    public void setClientDolphin(ClientDolphin clientDolphin) {
+        this.clientDolphin = clientDolphin;
+    }
+
+    public void setServerDolphin(ServerDolphin serverDolphin) {
+        this.serverDolphin = serverDolphin;
     }
 }

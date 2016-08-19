@@ -21,6 +21,12 @@ import java.util.concurrent.CountDownLatch;
 
 public class TestInMemoryConfig extends DefaultInMemoryConfig {
 
+
+    /**
+     * needed since tests should run fully asynchronous but we have to wait at the end of the test
+     */
+    private CountDownLatch done = new CountDownLatch(1);
+
     public TestInMemoryConfig() {
         getServerDolphin().registerDefaultActions();
         getClientConnector().setSleepMillis(0);
@@ -64,8 +70,11 @@ public class TestInMemoryConfig extends DefaultInMemoryConfig {
         }
     }
 
-    /**
-     * needed since tests should run fully asynchronous but we have to wait at the end of the test
-     */
-    private CountDownLatch done = new CountDownLatch(1);
+    public CountDownLatch getDone() {
+        return done;
+    }
+
+    public void setDone(CountDownLatch done) {
+        this.done = done;
+    }
 }
