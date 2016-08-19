@@ -15,11 +15,13 @@
  */
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.server.impl.special.SpecialAnnotatedClass;
 import com.canoo.dolphin.server.impl.util.AnnotatedClassForClasspathScan;
 import com.canoo.dolphin.server.impl.util.AnnotationForClasspathScanTest;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
+import java.lang.annotation.Documented;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
@@ -34,19 +36,53 @@ public class ClasspathScannerTest {
     @Test
     public void testSimpleScan() {
         //There can't be a class that is annotated with Inject
-        Set<Class<?>> classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(Inject.class);
+        ClasspathScanner scanner = new ClasspathScanner();
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 0);
 
-        classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
+        classes = scanner.getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 1);
         assertTrue(classes.contains(AnnotatedClassForClasspathScan.class));
     }
 
+    @Test
+    public void testInPackageScan() {
+        //There can't be a class that is annotated with Inject
+        ClasspathScanner scanner = new ClasspathScanner("com.canoo.dolphin");
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 0);
+
+        classes = scanner.getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 1);
+        assertTrue(classes.contains(AnnotatedClassForClasspathScan.class));
+    }
+
+    @Test
+    public void testScanOtherPackage() {
+        //There can't be a class that is annotated with Inject
+        ClasspathScanner scanner = new ClasspathScanner("com.canoo.dolphin.server.impl.special");
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 0);
+
+        classes = scanner.getTypesAnnotatedWith(AnnotationForClasspathScanTest.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 0);
+
+        classes = scanner.getTypesAnnotatedWith(Documented.class);
+        assertNotNull(classes);
+        assertEquals(classes.size(), 1);
+        assertTrue(classes.contains(SpecialAnnotatedClass.class));
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void testNullArgument() {
-        Set<Class<?>> classes = ClasspathScanner.getInstance().getTypesAnnotatedWith(null);
+        ClasspathScanner scanner = new ClasspathScanner();
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(null);
     }
 
 }

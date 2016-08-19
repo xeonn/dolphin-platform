@@ -16,8 +16,6 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
-import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;
 
@@ -42,17 +40,11 @@ public class DolphinUtils {
     }
 
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {
-        String attributeName = propertyField.getName();
-        DolphinProperty propertyAnnotation = propertyField.getAnnotation(DolphinProperty.class);
-        if (propertyAnnotation != null && !propertyAnnotation.value().isEmpty()) {
-            attributeName = propertyAnnotation.value();
-        }
-        return attributeName;
+        return propertyField.getName();
     }
 
     public static String getDolphinPresentationModelTypeForClass(Class<?> beanClass) {
-        final DolphinBean beanAnnotation = beanClass.getAnnotation(DolphinBean.class);
-        return beanAnnotation == null || beanAnnotation.value().isEmpty() ? beanClass.getName() : beanAnnotation.value();
+        return BeanUtils.checkClass(beanClass).getName();
     }
 
     public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {

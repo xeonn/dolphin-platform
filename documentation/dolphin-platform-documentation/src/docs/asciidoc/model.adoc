@@ -39,10 +39,11 @@ public class MyModel {
 }
 ----
 
-NOTE: Maybe you ask yourself why the `@DolphinBean` annotation is needed. Currently the Dolphin Platform don't need the
-annotation and don't evaluate the annotation. We plan to add some features based on the annotation in the future. One
-example can be an annotation processor that checks if all classes that are defined as Dolphin Platform beans (by adding
-the `@DolphinBean` annotation) are valid Dolphin Platform beans.
+NOTE: Maybe you ask yourself why the `@DolphinBean` annotation is needed. Internally the Dolphin Platform checks if a bean
+class is annotated with `@DolphinBean` and will trow a `BeanDefinitionException` if the annotation is not present. By
+doing so it will be easy to check if you use the right model classes. We plan to add some additional features based on
+the annotation in the future. One example can be an annotation processor that checks if all classes that are defined as
+the Dolphin Platform beans (by adding the `@DolphinBean` annotation) are valid Dolphin Platform beans.
 
 [[supported-types]]
 == Supported types
@@ -225,3 +226,46 @@ The main benefit of this concept is that you can use the same model classes on t
 model will automatically be synchronized between the view and the server controller it feels like you work with the same
 instance. By doing so you can simply bind a string property to a textfield in the view and observe it's value on the
 server. The change events will automatically be fired on the server when you start typing in the textfield.
+
+== Property Binding
+
+The Dolphin Platform provides an easy way to create a bidirectinal binding between 2 properties of the same generic type.
+Currently the binding API only supports properties that are defined in the same client session. If you want to sync
+properties on several clients the event bus is currently the best way to do this.
+To create a binding between 2 properties in the same client session you need the `PropertyBinder` class. An instance of
+this class can simply be injected in any controller:
+
+[source,java]
+----
+@DolphinController
+public class MyController {
+
+    @Inject
+    private PropertyBinder binder;
+
+}
+----
+
+All binding are definied by qualifiers that are representated by the `Qualifier` class. For a new binding you need to
+define a `Qualifier` instance that defines the generic type of the properties that should be bound. Since you can reuse
+the `Qualifier` instance for all bindings of that type it's best practice to create a static instance:
+
+[source,java]
+----
+public interface MyConstants {
+
+    public final static Qualifier<String> userNameQualifier = Qualifier<String>.create();
+
+}
+----
+
+Once you have the `PropertyBinder` instance and the `Qualifier` you can defining bindings. To do so you define the same
+qualifier for all properties that should be bound:
+
+[source,java]
+----
+propertyBinder.bind(model.userNameProperty(), MyConstants.userNameQualifier);
+----
+
+By using the same qualifier in several controller classes you can simply bind properties in a client scope without doing
+manual updates.

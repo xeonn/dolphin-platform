@@ -17,7 +17,9 @@ package com.canoo.dolphin.server.impl;
 
 import com.canoo.dolphin.util.Assert;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -34,12 +36,20 @@ import java.util.Set;
  */
 public class ClasspathScanner {
 
-    private Reflections reflections;
+    private final Reflections reflections;
 
-    private static ClasspathScanner instance = new ClasspathScanner();
+    public ClasspathScanner() {
+        this(null);
+    }
 
-    private ClasspathScanner() {
+    public ClasspathScanner(final String rootPackage) {
         ConfigurationBuilder configuration = ConfigurationBuilder.build(ClasspathScanner.class.getClassLoader());
+
+        if(rootPackage != null && !rootPackage.trim().isEmpty()) {
+            configuration = configuration.forPackages(rootPackage);
+            configuration = configuration.setUrls(ClasspathHelper.forPackage(rootPackage));
+            configuration = configuration.filterInputsBy(new FilterBuilder().includePackage(rootPackage));
+        }
 
         //Special case for JBOSS Application server to get all classes
         try {
@@ -73,13 +83,5 @@ public class ClasspathScanner {
     public synchronized Set<Class<?>> getTypesAnnotatedWith(final Class<? extends Annotation> annotation) {
         Assert.requireNonNull(annotation, "annotation");
         return reflections.getTypesAnnotatedWith(annotation);
-    }
-
-    /**
-     * Returns the single instance
-     * @return the instance
-     */
-    public static ClasspathScanner getInstance() {
-        return instance;
     }
 }

@@ -41,12 +41,15 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.spring.ClientScope;
 import com.canoo.dolphin.test.ControllerTestException;
 import com.canoo.dolphin.util.Assert;
@@ -107,7 +110,7 @@ public class DolphinPlatformSpringTestBootstrap {
     public DolphinTestContext createServerContext(final TestInMemoryConfiguration config, final WebApplicationContext context) throws ExecutionException, InterruptedException {
         Assert.requireNonNull(config, "config");
         Assert.requireNonNull(context, "context");
-        ControllerRepository controllerRepository = new ControllerRepository();
+        ControllerRepository controllerRepository = new ControllerRepository(new ClasspathScanner());
         TestSpringContainerManager containerManager = new TestSpringContainerManager(context);
         containerManager.init(context.getServletContext());
         DolphinContextProviderMock dolphinContextProviderMock = new DolphinContextProviderMock();
@@ -164,6 +167,12 @@ public class DolphinPlatformSpringTestBootstrap {
     protected DolphinEventBus createEventBus(final DolphinTestContext context) {
         Assert.requireNonNull(context, "context");
         return context.getDolphinEventBus();
+    }
+
+    @Bean(name="propertyBinder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected PropertyBinder createPropertyBinder() {
+        return new PropertyBinderImpl();
     }
 
     @Bean(name = "customScopeConfigurer")

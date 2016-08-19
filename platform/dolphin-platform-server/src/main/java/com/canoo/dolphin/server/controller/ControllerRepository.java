@@ -34,10 +34,11 @@ public class ControllerRepository {
     /**
      * Constructor
      */
-    public ControllerRepository() {
-        controllersClasses = new HashMap<>();
+    public ControllerRepository(final ClasspathScanner scanner) {
+        Assert.requireNonNull(scanner, "scanner");
 
-        Set<Class<?>> foundControllerClasses = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinController.class);
+        controllersClasses = new HashMap<>();
+        Set<Class<?>> foundControllerClasses = scanner.getTypesAnnotatedWith(DolphinController.class);
         for (Class<?> controllerClass : foundControllerClasses) {
             String name = controllerClass.getName();
             if (controllerClass.getAnnotation(DolphinController.class).value() != null && !controllerClass.getAnnotation(DolphinController.class).value().trim().isEmpty()) {

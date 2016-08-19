@@ -24,11 +24,11 @@ import java.util.List;
 
 public interface BeanRepository {
 
-    <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener);
+    <T> Subscription addOnAddedListener(final Class<T> beanClass, final BeanAddedListener<? super T> listener);
 
     Subscription addOnAddedListener(final BeanAddedListener<Object> listener);
 
-    <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener);
+    <T> Subscription addOnRemovedListener(final Class<T> beanClass, final BeanRemovedListener<? super T> listener);
 
     Subscription addOnRemovedListener(final BeanRemovedListener<Object> listener);
 

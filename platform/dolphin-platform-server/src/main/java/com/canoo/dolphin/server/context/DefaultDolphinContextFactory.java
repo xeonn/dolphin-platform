@@ -19,6 +19,7 @@ import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,10 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final DolphinEventBusImpl dolphinEventBus;
 
-    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus) {
+    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus, final ClasspathScanner scanner) {
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
-        this.controllerRepository = new ControllerRepository();
+        this.controllerRepository = new ControllerRepository(scanner);
         this.dolphinFactory = new DefaultOpenDolphinFactory();
     }
 

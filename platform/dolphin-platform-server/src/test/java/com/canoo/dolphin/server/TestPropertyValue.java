@@ -51,18 +51,18 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
         SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
-        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType("simple_test_model").get(0);
+        ServerPresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName()).get(0);
 
-        Attribute textAttribute = dolphinModel.findAttributeByPropertyName("text_property");
+        Attribute textAttribute = dolphinModel.findAttributeByPropertyName("myProperty");
         assertThat(textAttribute.getValue(), nullValue());
 
-        model.getTextProperty().set("Hallo Platform");
+        model.getMyProperty().set("Hallo Platform");
         assertThat((String) textAttribute.getValue(), is("Hallo Platform"));
-        assertThat(model.getTextProperty().get(), is("Hallo Platform"));
+        assertThat(model.getMyProperty().get(), is("Hallo Platform"));
 
         textAttribute.setValue("Hallo Dolphin");
         assertThat((String) textAttribute.getValue(), is("Hallo Dolphin"));
-        assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
+        assertThat(model.getMyProperty().get(), is("Hallo Dolphin"));
     }
 
     @Test

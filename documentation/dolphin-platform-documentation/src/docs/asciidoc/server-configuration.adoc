@@ -58,6 +58,19 @@ browser can handle its own clients
 |any positive integer value
 |10
 
+|rootPackageForClasspathScan
+|Defines the root package that should be used to scan the classpath for Dolphin Platform controllers. By default all
+classes in the classpath will be scanned but this might take some time in big projects. By defining a root package all
+classes that are located in this package or any subpackage of the root package will be scanned.
+|a String that matches the java package structure like "com.canoo" or a empty string if the complete classpath should be
+scanned.
+|NULL (scan complete classpath)
+
+|mBeanRegistration
+|Defines if the Dolphin Platform will register custom MBeans to provide information about the platform and the sessions
+|true, false
+|true
+
 |garbageCollectionActive
 |By activating the garbage collection the Dolphin Platform checks internally if Dolphin beans are referenced (for example
 in a Dolphin Bean hierarchy). If not this beans will automatically be removed on the server and the client. This is an

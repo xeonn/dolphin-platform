@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.controller;
 
+import com.canoo.dolphin.server.impl.ClasspathScanner;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -27,7 +28,7 @@ public class ControllerRepositoryTest {
 
     @Test
     public void testExistingControllers() {
-        ControllerRepository controllerRepository = new ControllerRepository();
+        ControllerRepository controllerRepository = new ControllerRepository(new ClasspathScanner());
         Class<?> controllerClass = controllerRepository.getControllerClassForName(TestController.class.getName());
         assertNotNull(controllerClass);
         assertEquals(controllerClass, TestController.class);
@@ -35,7 +36,7 @@ public class ControllerRepositoryTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testWrongControllersName() {
-        ControllerRepository controllerRepository = new ControllerRepository();
+        ControllerRepository controllerRepository = new ControllerRepository(new ClasspathScanner());
         Class<?> controllerClass = controllerRepository.getControllerClassForName("WrongControllerName");
     }
 
