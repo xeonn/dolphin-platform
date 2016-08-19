@@ -40,9 +40,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public abstract class AbstractConnector implements ClientConnector {
+public abstract class PlatformAbstractConnector implements ClientConnector {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractConnector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlatformAbstractConnector.class);
 
     private final AtomicBoolean running;
 
@@ -64,7 +64,7 @@ public abstract class AbstractConnector implements ClientConnector {
 
     private final ExecutorService baseExecutor = Executors.newSingleThreadExecutor();
 
-    public AbstractConnector(ClientDolphin clientDolphin, UiThreadHandler uiThreadHandler) {
+    public PlatformAbstractConnector(ClientDolphin clientDolphin, UiThreadHandler uiThreadHandler) {
         this.clientDolphin = Assert.requireNonNull(clientDolphin, "clientDolphin");
         this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
         running = new AtomicBoolean(true);

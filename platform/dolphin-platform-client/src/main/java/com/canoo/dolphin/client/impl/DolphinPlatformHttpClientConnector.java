@@ -15,7 +15,6 @@
  */
 package com.canoo.dolphin.client.impl;
 
-import com.canoo.dolphin.client.AbstractConnector;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -23,6 +22,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.comm.AbstractClientConnector;
+import org.opendolphin.core.client.comm.BlindCommandBatcher;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
@@ -33,7 +34,7 @@ import java.util.List;
 /**
  * This class is used to sync the unique client scope id of the current dolphin
  */
-public class DolphinPlatformHttpClientConnector extends AbstractConnector {
+public class DolphinPlatformHttpClientConnector extends AbstractClientConnector {
 
     private static final String CHARSET = "UTF-8";
 
@@ -50,7 +51,8 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
     private String clientId;
 
     public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
-        super(clientDolphin, uiThreadHandler);
+        super(clientDolphin, new BlindCommandBatcher());
+        setUiThreadHandler(uiThreadHandler);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
         this.codec = Assert.requireNonNull(codec, "codec");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
@@ -94,11 +96,6 @@ public class DolphinPlatformHttpClientConnector extends AbstractConnector {
         this.clientId = clientId;
     }
 
-    @Override
-    public void kill() {
-        super.kill();
-        this.clientId = null;
-    }
 }
 
 
