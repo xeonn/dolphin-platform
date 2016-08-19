@@ -16,20 +16,18 @@
 package com.canoo.dolphin.client.util;
 
 import com.canoo.dolphin.mapping.DolphinBean;
-import com.canoo.dolphin.mapping.DolphinProperty;
 import com.canoo.dolphin.mapping.Property;
 
 /**
  * Created by hendrikebbers on 30.03.15.
  */
-@DolphinBean("simple_test_model")
+@DolphinBean
 public class SimpleAnnotatedTestModel {
 
-    @DolphinProperty("text_property")
-    private Property<String> skdjfhksdjhf;
+    private Property<String> myProperty;
 
-    public Property<String> getTextProperty() {
-        return skdjfhksdjhf;
+    public Property<String> myProperty() {
+        return myProperty;
     }
 
 }

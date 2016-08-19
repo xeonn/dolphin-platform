@@ -72,12 +72,13 @@ public class BeanRepositoryImpl implements BeanRepository{
     }
 
     @Override
-    public <T> Subscription addOnAddedListener(final Class<T> clazz, final BeanAddedListener<? super T> listener) {
-        beanAddedListenerMap.put(clazz, listener);
+    public <T> Subscription addOnAddedListener(final Class<T> beanClass, final BeanAddedListener<? super T> listener) {
+        BeanUtils.checkClass(beanClass);
+        beanAddedListenerMap.put(beanClass, listener);
         return new Subscription() {
             @Override
             public void unsubscribe() {
-                beanAddedListenerMap.remove(clazz, listener);
+                beanAddedListenerMap.remove(beanClass, listener);
             }
         };
     }
@@ -94,12 +95,13 @@ public class BeanRepositoryImpl implements BeanRepository{
     }
 
     @Override
-    public <T> Subscription addOnRemovedListener(final Class<T> clazz, final BeanRemovedListener<? super T> listener) {
-        beanRemovedListenerMap.put(clazz, listener);
+    public <T> Subscription addOnRemovedListener(final Class<T> beanClass, final BeanRemovedListener<? super T> listener) {
+        BeanUtils.checkClass(beanClass);
+        beanRemovedListenerMap.put(beanClass, listener);
         return new Subscription() {
             @Override
             public void unsubscribe() {
-                beanRemovedListenerMap.remove(clazz, listener);
+                beanRemovedListenerMap.remove(beanClass, listener);
             }
         };
     }
@@ -117,11 +119,13 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public boolean isManaged(Object bean) {
+        BeanUtils.checkBean(bean);
         return objectPmToDolphinPm.containsKey(bean);
     }
 
     @Override
     public <T> void delete(T bean) {
+        BeanUtils.checkBean(bean);
         final PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
             dolphinIdToObjectPm.remove(model.getId());
@@ -132,6 +136,7 @@ public class BeanRepositoryImpl implements BeanRepository{
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> beanClass) {
+        BeanUtils.checkClass(beanClass);
         final List<T> result = new ArrayList<>();
         final List<PresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass));
         for (PresentationModel model : presentationModels) {
@@ -150,6 +155,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         if (bean == null) {
             return null;
         }
+        BeanUtils.checkBean(bean);
         try {
             return objectPmToDolphinPm.get(bean).getId();
         } catch (NullPointerException ex) {
@@ -160,6 +166,7 @@ public class BeanRepositoryImpl implements BeanRepository{
     @Override
     @SuppressWarnings("unchecked")
     public void registerBean(Object bean, PresentationModel model, UpdateSource source) {
+        BeanUtils.checkBean(bean);
         objectPmToDolphinPm.put(bean, model);
         dolphinIdToObjectPm.put(model.getId(), bean);
 

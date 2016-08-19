@@ -1,9 +1,25 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import org.slf4j.LoggerFactory;
@@ -25,10 +41,10 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final DolphinEventBusImpl dolphinEventBus;
 
-    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus) {
+    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus, final ClasspathScanner scanner) {
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
-        this.controllerRepository = new ControllerRepository();
+        this.controllerRepository = new ControllerRepository(scanner);
         this.dolphinFactory = new DefaultOpenDolphinFactory();
     }
 

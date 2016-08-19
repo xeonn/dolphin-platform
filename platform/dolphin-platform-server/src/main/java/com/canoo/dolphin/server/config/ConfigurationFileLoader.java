@@ -60,6 +60,10 @@ public class ConfigurationFileLoader {
 
     private static final String ID_FILTER_URL_MAPPINGS = "idFilterUrlMappings";
 
+    private static final String ROOT_PACKAGE_FOR_CLASSPATH_SCAN = "rootPackageForClasspathScan";
+
+    private static final String MBEAN_REGISTRATION = "mBeanRegistration";
+
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file
      * can be found a default config will be returned.
@@ -121,16 +125,22 @@ public class ConfigurationFileLoader {
             configuration.setDolphinPlatformServletMapping(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING));
         }
 
-        if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
-            configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
+        if(prop.containsKey(ROOT_PACKAGE_FOR_CLASSPATH_SCAN)) {
+            configuration.setRootPackageForClasspathScan(prop.getProperty(ROOT_PACKAGE_FOR_CLASSPATH_SCAN));
         }
 
+        if(prop.containsKey(MBEAN_REGISTRATION)) {
+            configuration.setMBeanRegistration(Boolean.parseBoolean(prop.getProperty(MBEAN_REGISTRATION)));
+        }
+
+if(prop.containsKey(USE_CROSS_SITE_ORIGIN_FILTER)) {
+            configuration.setUseCrossSiteOriginFilter(Boolean.parseBoolean(prop.getProperty(DOLPHIN_PLATFORM_SERVLET_MAPPING)));
+        }
         if(prop.containsKey(USE_SESSION_INVALIDATION_SERVLET)) {
             configuration.setUseSessionInvalidationServlet(Boolean.parseBoolean(prop.getProperty(USE_SESSION_INVALIDATION_SERVLET)));
         }
 
-
-        if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
+if(prop.containsKey(GARBAGE_COLLECTION_ACTIVE)) {
             UnstableFeatureFlags.setUseGc(Boolean.parseBoolean(prop.getProperty(GARBAGE_COLLECTION_ACTIVE)));
         }
 
@@ -141,8 +151,7 @@ public class ConfigurationFileLoader {
         if(prop.containsKey(MAX_CLIENTS_PER_SESSION)) {
             configuration.setMaxClientsPerSession(Integer.parseInt(prop.getProperty(MAX_CLIENTS_PER_SESSION)));
         }
-
-
+        
         if(prop.containsKey(ID_FILTER_URL_MAPPINGS)) {
             String content = prop.getProperty(ID_FILTER_URL_MAPPINGS);
             configuration.setIdFilterUrlMappings(Arrays.asList(content.split(",")));

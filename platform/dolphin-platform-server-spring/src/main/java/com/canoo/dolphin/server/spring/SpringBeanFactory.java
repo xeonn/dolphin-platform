@@ -17,9 +17,11 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import org.opendolphin.core.server.ServerDolphin;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -68,6 +70,12 @@ public class SpringBeanFactory {
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
         return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
+    }
+
+    @Bean(name="propertyBinder")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected PropertyBinder createPropertyBinder() {
+        return new PropertyBinderImpl();
     }
 
     @Bean(name="customScopeConfigurer")

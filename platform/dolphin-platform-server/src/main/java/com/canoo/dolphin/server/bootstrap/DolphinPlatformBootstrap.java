@@ -28,6 +28,8 @@ import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinSessionListenerProvider;
 import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.impl.ClasspathScanner;
+import com.canoo.dolphin.server.mbean.MBeanRegistry;
 import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
 import com.canoo.dolphin.server.servlet.DolphinPlatformServlet;
 import com.canoo.dolphin.util.Assert;
@@ -79,14 +81,18 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         LOG.debug("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
         LOG.debug("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
 
-        ContainerManager containerManager = findManager();
+final ClasspathScanner classpathScanner = new ClasspathScanner(configuration.getRootPackageForClasspathScan());
+
+MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration());
+
+        final ContainerManager containerManager = findManager();
         containerManager.init(servletContext);
 
-        DolphinContextCommunicationHandler communicationHandler = new DolphinContextCommunicationHandler(configuration, this);
+        final DolphinContextCommunicationHandler communicationHandler = new DolphinContextCommunicationHandler(configuration, this);
 
-        DolphinSessionListenerProvider dolphinSessionListenerProvider = new DolphinSessionListenerProvider(containerManager);
+        final DolphinSessionListenerProvider dolphinSessionListenerProvider = new DolphinSessionListenerProvider(containerManager, classpathScanner);
 
-        DolphinContextFactory dolphinContextFactory = new DefaultDolphinContextFactory(containerManager, dolphinEventBus);
+        DolphinContextFactory dolphinContextFactory = new DefaultDolphinContextFactory(containerManager, dolphinEventBus, classpathScanner);
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(communicationHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
         if (configuration.isUseSessionInvalidationServlet()) {
             servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);

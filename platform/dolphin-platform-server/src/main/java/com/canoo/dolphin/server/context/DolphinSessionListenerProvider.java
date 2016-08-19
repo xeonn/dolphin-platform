@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.DolphinListener;
@@ -20,14 +35,17 @@ public class DolphinSessionListenerProvider {
 
     private List<DolphinSessionListener> contextListeners;
 
-    public DolphinSessionListenerProvider(final ContainerManager containerManager) {
+    private final ClasspathScanner classpathScanner;
+
+    public DolphinSessionListenerProvider(final ContainerManager containerManager, ClasspathScanner classpathScanner) {
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.classpathScanner = Assert.requireNonNull(classpathScanner, "classpathScanner");
     }
 
     public synchronized List<DolphinSessionListener> getAllListeners() {
         if(contextListeners == null) {
             contextListeners = new ArrayList<>();
-            Set<Class<?>> listeners = ClasspathScanner.getInstance().getTypesAnnotatedWith(DolphinListener.class);
+            Set<Class<?>> listeners = classpathScanner.getTypesAnnotatedWith(DolphinListener.class);
             for (Class<?> listenerClass : listeners) {
                 try {
                     if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {

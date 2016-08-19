@@ -15,8 +15,10 @@
  */
 package com.canoo.dolphin.server.util;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
+@DolphinBean
 public class ChildModel extends ParentModel {
 
     private Property<String> childProperty;

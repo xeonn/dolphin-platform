@@ -20,7 +20,9 @@ import com.canoo.dolphin.client.ClientContextFactory;
 import com.canoo.dolphin.client.ClientInitializationException;
 import com.canoo.dolphin.client.ClientShutdownException;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.DolphinRemotingException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
@@ -71,10 +73,11 @@ public abstract class DolphinPlatformApplication extends Application {
      * @throws Exception in case of an error
      */
     @Override
-    public final void start(Stage primaryStage) throws Exception {
+    public final void start(final Stage primaryStage) throws Exception {
         Assert.requireNonNull(primaryStage, "primaryStage");
         if (initializationException == null) {
             if(clientContext != null) {
+                clientContext.onRemotingError(e -> onRemotingError(primaryStage, e));
                 start(primaryStage, clientContext);
             } else {
                 onInitializationError(primaryStage, new ClientInitializationException("No clientContext was created!"));
@@ -89,7 +92,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * the JavaFX Platform thread after the connection to the DOlphin Platform server has been created.
      * @param primaryStage the primary stage
      * @param clientContext the Dolphin Platform context
-     * @throws Exception
+     * @throws Exception in case of an error
      */
     protected abstract void start(Stage primaryStage, ClientContext clientContext) throws Exception;
 
@@ -99,9 +102,8 @@ public abstract class DolphinPlatformApplication extends Application {
      * By default the methods prints the exception in the log an call {@link System#exit(int)}
      * @param primaryStage the primary stage
      * @param initializationException the exception
-     * @throws Exception an error
      */
-    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
+    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) {
         Assert.requireNonNull(initializationException, "initializationException");
         initializationException.printStackTrace();
         System.exit(-1);
@@ -134,6 +136,20 @@ public abstract class DolphinPlatformApplication extends Application {
         shutdownException.printStackTrace();
         System.exit(-1);
     }
+
+    /**
+     * This method is called if the connection to the Dolphin Platform server throws an exception at runtime. This can
+     * for example happen if the server is shut down while the client is still running or if the server responses with
+     * an error code.
+     * @param primaryStage the primary stage
+     * @param remotingException the exception
+     */
+    protected void onRemotingError(final Stage primaryStage, final DolphinRemotingException remotingException) {
+        Assert.requireNonNull(remotingException, "remotingException");
+        remotingException.printStackTrace();
+        Platform.exit();
+    }
+
 
     /**
      * This method will be called in the {@link Application#stop()} method after the connection to the Dolphin

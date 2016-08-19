@@ -33,7 +33,8 @@ import java.util.List;
 
 public class ReflectionHelper {
 
-    private ReflectionHelper() {}
+    private ReflectionHelper() {
+    }
 
     public static <T> T getPrivileged(final Field field, final Object bean) {
         Assert.requireNonNull(field, "field");
@@ -95,6 +96,21 @@ public class ReflectionHelper {
         });
     }
 
+    public static Field getInheritedDeclaredField(final Class<?> type, final String name) {
+        Assert.requireNonNull(type, "type");
+        Assert.requireNonNull(name, "name");
+
+        Class<?> i = type;
+        while (i != null && i != Object.class) {
+            for (Field field : Arrays.asList(i.getDeclaredFields())) {
+                if (field.getName().equals(name)) {
+                    return field;
+                }
+            }
+        }
+        return null;
+    }
+
     public static List<Field> getInheritedDeclaredFields(final Class<?> type) {
         Assert.requireNonNull(type, "type");
         List<Field> result = new ArrayList<>();
@@ -149,7 +165,7 @@ public class ReflectionHelper {
         return Proxy.isProxyClass(bean.getClass());
     }
 
-    public static Class getTypeParameter(Field field) {
+    public static Class getTypeParameter(final Field field) {
         Assert.requireNonNull(field, "field");
         try {
             ParameterizedType pType = (ParameterizedType) field.getGenericType();

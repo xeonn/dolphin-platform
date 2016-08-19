@@ -93,7 +93,7 @@ public class ToDoClient extends DolphinPlatformApplication {
     }
 
     @Override
-    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) throws Exception {
+    protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) {
         showError("Error on initialization", "A error happened while initializing the Client and Connection", initializationException);
     }
 

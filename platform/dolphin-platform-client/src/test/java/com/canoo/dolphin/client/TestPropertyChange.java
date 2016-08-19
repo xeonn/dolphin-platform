@@ -43,37 +43,37 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
 
         final ListerResults<String> results = new ListerResults<>();
         ValueChangeListener<String> myListener = evt -> {
-            assertThat(evt.getSource(), is(model.getTextProperty()));
+            assertThat(evt.getSource(), is(model.myProperty()));
             results.newValue = evt.getNewValue();
             results.oldValue = evt.getOldValue();
             results.listenerCalls++;
         };
 
-        final Subscription subscription = model.getTextProperty().onChanged(myListener);
+        final Subscription subscription = model.myProperty().onChanged(myListener);
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, nullValue());
 
-        model.getTextProperty().set("Hallo Property");
+        model.myProperty().set("Hallo Property");
         assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property"));
         assertThat(results.oldValue, nullValue());
 
         results.listenerCalls = 0;
-        model.getTextProperty().set("Hallo Property2");
+        model.myProperty().set("Hallo Property2");
         assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, is("Hallo Property2"));
         assertThat(results.oldValue, is("Hallo Property"));
 
         results.listenerCalls = 0;
-        model.getTextProperty().set(null);
+        model.myProperty().set(null);
         assertThat(results.listenerCalls, is(1));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, is("Hallo Property2"));
 
         results.listenerCalls = 0;
         subscription.unsubscribe();
-        model.getTextProperty().set("Hallo Property3");
+        model.myProperty().set("Hallo Property3");
         assertThat(results.listenerCalls, is(0));
         assertThat(results.newValue, nullValue());
         assertThat(results.oldValue, is("Hallo Property2"));

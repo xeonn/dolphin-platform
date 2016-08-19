@@ -15,11 +15,13 @@
  */
 package com.canoo.dolphin.server.util;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
 import java.util.Calendar;
 import java.util.Date;
 
+@DolphinBean
 public class ComplexDataTypesModel {
 
     public enum EnumValues { VALUE_1, VALUE_2 }
