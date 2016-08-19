@@ -35,15 +35,12 @@ public class TestInMemoryConfiguration {
     private final ExecutorService clientExecutor = Executors.newSingleThreadExecutor();
 
     public TestInMemoryConfiguration() {
-
         clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
 
         InMemoryClientConnector inMemoryClientConnector = new SynchronousInMemoryClientConnector(clientDolphin, serverDolphin.getServerConnector());
 
         inMemoryClientConnector.setSleepMillis(0);
-        clientDolphin.setClientConnector(inMemoryClientConnector);
-        clientDolphin.getClientConnector().setStrictMode(false);
-
+        inMemoryClientConnector.setStrictMode(false);
         inMemoryClientConnector.setUiThreadHandler(new UiThreadHandler() {
 
             @Override
@@ -51,6 +48,8 @@ public class TestInMemoryConfiguration {
                 clientExecutor.execute(runnable);
             }
         });
+
+        clientDolphin.setClientConnector(inMemoryClientConnector);
     }
 
     public ExecutorService getClientExecutor() {

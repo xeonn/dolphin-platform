@@ -51,18 +51,17 @@ public class TestNGDemoTest extends SpringTestNGControllerTest {
         assertEquals(controller.getModel().getInternModels().get(0).getValue(), "I'm a subbean");
     }
 
-    //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
-    //@Test
-    public void testEventBus() {
-        controller.invoke("sendEvent");
+   // @Test
+   // public void testEventBus() {
+   //     controller.invoke("sendEvent");
 
         //Still a workaround to wait till next request
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+   //     try {
+   //         Thread.sleep(1000);
+   //     } catch (InterruptedException e) {
+   //         e.printStackTrace();
+   //     }
 
-        assertEquals(controller.getModel().getValue(), "changed by eventBus!");
-    }
+   //     assertEquals(controller.getModel().getValue(), "changed by eventBus!");
+   // }
 }

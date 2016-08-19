@@ -49,7 +49,7 @@ import java.util.logging.Level
 import static groovyx.gpars.GParsPool.withPool
 
 @Log
-abstract class ClientConnector {
+abstract class AbstractClientConnector implements ClientConnector {
     boolean strictMode = true // disallow value changes that are based on improper old values
     Codec codec
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
@@ -57,18 +57,18 @@ abstract class ClientConnector {
     Closure onException = { Throwable up ->
         def out = new StringWriter()
         up.printStackTrace(new PrintWriter(out))
-        log.severe("onException reached, rethrowing in UI Thread, consider setting ClientConnector.onException\n${out.buffer}")
+        log.severe("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
         uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
     }
 
     protected final ClientDolphin clientDolphin
     protected final ICommandBatcher commandBatcher
 
-    ClientConnector(ClientDolphin clientDolphin) {
+    AbstractClientConnector(ClientDolphin clientDolphin) {
         this(clientDolphin, null)
     }
 
-    ClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
+    AbstractClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
         this.clientDolphin = clientDolphin
         this.commandBatcher = commandBatcher ?: new CommandBatcher()
 
@@ -112,7 +112,7 @@ abstract class ClientConnector {
     abstract List<Command> transmit(List<Command> commands)
 
     @CompileStatic
-    void send(Command command, OnFinishedHandler callback = null) {
+    public void send(Command command, OnFinishedHandler callback = null) {
         // we have some change so regardless of the batching we may have to release a push
         if (command != pushListener) {
             release()
@@ -346,7 +346,7 @@ abstract class ClientConnector {
     protected boolean waiting = false;
 
     /** listens for the pushListener to return. The pushListener must be set and pushEnabled must be true. */
-    protected void listen() {
+    public void listen() {
         if (!pushEnabled) return // allow the loop to end
         if (waiting) return      // avoid second call while already waiting (?) -> two different push actions not supported
         waiting = true
@@ -373,5 +373,15 @@ abstract class ClientConnector {
             def transmitAsynchronously = this.&transmit.asyncFun()
             transmitAsynchronously([releaseCommand]) // sneaks by the strict command sequence
         }
+    }
+
+    @Override
+    void setPushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
+    }
+
+    @Override
+    boolean isPushEnabled() {
+        return this.pushEnabled;
     }
 }

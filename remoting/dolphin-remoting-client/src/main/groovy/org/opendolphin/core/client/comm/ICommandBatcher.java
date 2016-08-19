@@ -15,7 +15,15 @@
  */
 package org.opendolphin.core.client.comm;
 
-interface ICommandBatcher {
+import groovyx.gpars.dataflow.DataflowQueue;
+
+import java.util.List;
+
+public interface ICommandBatcher {
+
     void batch(CommandAndHandler commandAndHandler);
+
 	boolean isEmpty();
+
+    DataflowQueue<List<CommandAndHandler>> getWaitingBatches();
 }

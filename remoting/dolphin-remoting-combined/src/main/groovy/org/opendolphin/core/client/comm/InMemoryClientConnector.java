@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryClientConnector extends ClientConnector {
+public class InMemoryClientConnector extends AbstractClientConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryClientConnector.class);
 

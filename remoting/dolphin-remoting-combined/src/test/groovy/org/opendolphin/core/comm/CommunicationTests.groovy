@@ -20,7 +20,7 @@ import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.client.comm.ClientConnector
+import org.opendolphin.core.client.comm.AbstractClientConnector
 import org.opendolphin.core.server.ServerConnector
 
 import java.util.concurrent.TimeUnit
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 class CommunicationTests extends GroovyTestCase {
 
 	ServerConnector     serverConnector
-	ClientConnector     clientConnector
+	AbstractClientConnector clientConnector
     ClientModelStore    clientModelStore
     ClientDolphin       clientDolphin
     TestInMemoryConfig  config
