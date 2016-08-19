@@ -1,4 +1,4 @@
-package com.canoo.dolphin.client;
+package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
@@ -40,6 +40,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+/**
+ * This class will replace {@link org.opendolphin.core.client.comm.AbstractClientConnector} in a future release
+ */
 public abstract class PlatformAbstractConnector implements ClientConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlatformAbstractConnector.class);
