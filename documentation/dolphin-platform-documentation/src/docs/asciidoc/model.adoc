@@ -144,7 +144,8 @@ TODO
 
 The Dolphin Platform contains a garbage collection on the server that will automatically remove all bean instances from
 the remoting layer that aren't referenced anymore by other beans. Currently the garbage collection is an experimental
-feature and it's active by default. If you want to use the garbage collection you need to activate it in the `dolphin.properties` file.
+feature and it's not active by default. If you want to use the garbage collection you need to add
+`garbageCollectionActive=true` to the `dolphin.properties` file (see chapter *Server configuration*).
 
 == How to work with the Model API
 
