@@ -30,7 +30,7 @@ import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.comm.Command
 
 @Log
-class HttpClientConnector extends ClientConnector {
+class HttpClientConnector extends AbstractClientConnector {
 
     String servletUrl = "http://localhost:8080/dolphin-grails/dolphin/"
     String charset = "UTF-8"

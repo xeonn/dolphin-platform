@@ -116,6 +116,7 @@ public class ClientContextImpl implements ClientContext {
                         }
                         return null;
                     });
+                    //TODO: Stop communication in client connector
                 }
         );
 

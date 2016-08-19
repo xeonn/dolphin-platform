@@ -33,7 +33,6 @@ import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.ReflectionHelper;
-import com.canoo.dolphin.impl.codec.OptimizedJsonCodec;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
@@ -98,16 +97,20 @@ public class DolphinPlatformSpringTestBootstrap {
         final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback());
 
         //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
-        //    clientExecutor.submit(() -> {
-        //        clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
-        //    }).get();
-
+     //   config.getClientExecutor().submit(new Runnable() {
+     //       @Override
+     //       public void run() {
+     //           clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+     //       }
+//
+  //      }).get();
         return clientContext;
     }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DolphinTestContext createServerContext(final TestInMemoryConfiguration config, final WebApplicationContext context) throws ExecutionException, InterruptedException {
+    public DolphinTestContext createServerContext(final TestInMemoryConfiguration config,
+                                                  final WebApplicationContext context) throws ExecutionException, InterruptedException {
         Assert.requireNonNull(config, "config");
         Assert.requireNonNull(context, "context");
         ControllerRepository controllerRepository = new ControllerRepository(new ClasspathScanner());
@@ -131,8 +134,6 @@ public class DolphinPlatformSpringTestBootstrap {
         } catch (NoSuchFieldException e) {
             throw new ControllerTestException(e);
         }
-        config.getServerDolphin().getServerConnector().setCodec(new OptimizedJsonCodec());
-        config.getClientDolphin().getClientConnector().setCodec(new OptimizedJsonCodec());
         return config;
     }
 
