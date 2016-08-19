@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm
+package org.opendolphin;
 
-/**
- * interface for data point handler
- */
-interface OnFinishedData extends OnFinishedHandler {
-    void onFinishedData(List<Map> data);
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
+
+public class ShortFormatter extends SimpleFormatter {
+
+    public synchronized String format(LogRecord record) {
+        return "[" + record.getLevel() + "] " + record.getMessage() + "\n";
+    }
+
 }

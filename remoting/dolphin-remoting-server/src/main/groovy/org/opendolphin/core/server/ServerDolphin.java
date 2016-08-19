@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.server
+package org.opendolphin.core.server;
 
-import org.opendolphin.core.Dolphin
-import org.opendolphin.core.server.action.DolphinServerAction
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.Dolphin;
+import org.opendolphin.core.server.action.DolphinServerAction;
+import org.opendolphin.core.server.comm.NamedCommandHandler;
 
 public interface ServerDolphin extends Dolphin<ServerAttribute, ServerPresentationModel> {
+
     ServerConnector getServerConnector();
 
-    void registerDefaultActions()
+    void registerDefaultActions();
 
-    void register(DolphinServerAction action)
+    void register(DolphinServerAction action);
 
-    void action(String name, NamedCommandHandler namedCommandHandler)
+    void action(String name, NamedCommandHandler namedCommandHandler);
 
-    ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto)
+    ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto);
 
-    void removeAllPresentationModelsOfType(String type)
+    void removeAllPresentationModelsOfType(String type);
 }

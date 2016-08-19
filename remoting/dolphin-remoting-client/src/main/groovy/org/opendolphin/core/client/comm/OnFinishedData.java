@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.comm
+package org.opendolphin.core.client.comm;
 
-public interface Codec {
+import java.util.List;
+import java.util.Map;
 
-    String encode(List<Command> commands)
+/**
+ * interface for data point handler
+ */
+public interface OnFinishedData extends OnFinishedHandler {
 
-    List<Command> decode(String transmitted)
+    void onFinishedData(List<Map> data);
 
 }
