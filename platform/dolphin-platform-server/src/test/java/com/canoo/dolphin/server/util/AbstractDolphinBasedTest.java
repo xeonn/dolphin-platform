@@ -32,11 +32,13 @@ import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
 import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
+import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractDolphinBasedTest {
@@ -46,7 +48,8 @@ public abstract class AbstractDolphinBasedTest {
         config.getServerDolphin().registerDefaultActions();
 
         ServerModelStore store = config.getServerDolphin().getModelStore();
-        store.setCurrentResponse(new ArrayList<>());
+        List<Command> commands = new ArrayList<>();
+        store.setCurrentResponse(commands);
 
         return config.getServerDolphin();
     }
