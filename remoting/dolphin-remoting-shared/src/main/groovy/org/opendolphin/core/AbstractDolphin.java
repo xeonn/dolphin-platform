@@ -25,8 +25,6 @@ import static org.codehaus.groovy.runtime.DefaultGroovyMethods.asType;
 
 public abstract class AbstractDolphin<A extends Attribute, P extends PresentationModel<A>> implements Dolphin<A, P> {
 
-    protected abstract ModelStore<A, P> getModelStore();
-
     /**
      * Adds a presentation model to the model store.<br/>
      * Presentation model ids should be unique. This method guarantees this condition by disallowing

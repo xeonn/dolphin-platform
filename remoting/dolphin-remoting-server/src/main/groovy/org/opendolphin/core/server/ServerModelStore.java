@@ -54,7 +54,7 @@ public class ServerModelStore extends ModelStore {
     }
 
     /** A shared mutable state that is safe to use since we are thread-confined */
-    protected void setCurrentResponse(List<Command> currentResponse) {
+    public void setCurrentResponse(List<Command> currentResponse) {
         this.currentResponse = currentResponse;
     }
 

@@ -27,9 +27,11 @@ public interface ServerDolphin extends Dolphin<ServerAttribute, ServerPresentati
 
     void register(DolphinServerAction action);
 
+    ServerModelStore getModelStore();
+
     void action(String name, NamedCommandHandler namedCommandHandler);
 
-    ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto);
+     ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto);
 
     void removeAllPresentationModelsOfType(String type);
 }

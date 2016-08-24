@@ -30,7 +30,7 @@ class DolphinTest extends Specification {
         }
         def dolphin = new AbstractDolphin() {
             @Override
-            protected ModelStore getModelStore() {
+            public ModelStore getModelStore() {
                 return storeStub
             }
         }

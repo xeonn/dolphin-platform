@@ -21,10 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by hendrikebbers on 20.01.15.
- */
 public interface Dolphin<A extends Attribute, P extends PresentationModel<A>> {
+
+    ModelStore<A, P> getModelStore();
 
     boolean add(P model);
 

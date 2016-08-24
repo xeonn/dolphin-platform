@@ -21,7 +21,6 @@ import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
-import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
 import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.ClassRepository;
@@ -30,14 +29,16 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.impl.ServerBeanBuilderImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
+import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
+import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractDolphinBasedTest {
@@ -46,12 +47,9 @@ public abstract class AbstractDolphinBasedTest {
         DefaultInMemoryConfig config = new DefaultInMemoryConfig();
         config.getServerDolphin().registerDefaultActions();
 
-        ServerModelStore store = config.getServerDolphin().getServerModelStore();
-        try {
-            ReflectionHelper.setPrivileged(ServerModelStore.class.getDeclaredField("currentResponse"), store, new ArrayList<>());
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        ServerModelStore store = config.getServerDolphin().getModelStore();
+        List<Command> commands = new ArrayList<>();
+        store.setCurrentResponse(commands);
 
         return config.getServerDolphin();
     }
