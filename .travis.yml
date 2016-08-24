@@ -14,13 +14,17 @@ before_install:
 
 script:
   - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S
-  - ./gradlew :dolphin-platform-documentation:asciidoctor
 
 after_success:
   - ./gradlew coveralls
-  - cd documentation/dolphin-platform-documentation/build/asciidoc/html5/
-  - git init
-  - git config user.name "${GH_USER_NAME}"
-  - git config user.email "{GH_USER_EMAIL}"
-  - git add . ; git commit -m "Deploy to GitHub Pages"
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    ./gradlew :dolphin-platform-documentation:asciidoctor
+    cd documentation/dolphin-platform-documentation/build/asciidoc/html5/
+    git init
+    git config user.name "${GH_USER_NAME}"
+    git config user.email "{GH_USER_EMAIL}"
+    git add . ; git commit -m "Deploy to GitHub Pages"
+    git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+    fi
+
+
