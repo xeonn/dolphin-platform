@@ -1,4 +1,5 @@
-= Dolphin Platform
+
+= How to build the Dolphin Platform
 :gradle-version: 2.12
 
 The Dolphin Platform build requires link:http://gradle.org/[Gradle] to build itself. The following

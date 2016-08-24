@@ -17,4 +17,4 @@ include::spring-integration.adoc[]
 include::server-configuration.adoc[]
 include::javafx-client.adoc[]
 include::validation.adoc[]
-
+include::build.adoc[]
