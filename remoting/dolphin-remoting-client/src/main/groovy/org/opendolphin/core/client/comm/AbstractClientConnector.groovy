@@ -25,13 +25,18 @@ import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.comm.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.logging.Level
 
 @Log
 abstract class AbstractClientConnector implements ClientConnector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractClientConnector.class);
+
+
     boolean strictMode = true // disallow value changes that are based on improper old values
     Codec codec
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
@@ -41,8 +46,13 @@ abstract class AbstractClientConnector implements ClientConnector {
     Closure onException = { Throwable up ->
         def out = new StringWriter()
         up.printStackTrace(new PrintWriter(out))
-        log.severe("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
-        uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
+        LOG.error("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
+
+        if (uiThreadHandler) {
+            uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
+        } else {
+            LOG.error("UI Thread not defined...", up)
+        }
     }
 
     protected final ClientDolphin clientDolphin
@@ -70,19 +80,19 @@ abstract class AbstractClientConnector implements ClientConnector {
                             List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
                             List<Command> commands = toProcess.collect { it.command }
 
-                            if (log.isLoggable(Level.INFO)) {
-                                log.info "C: sending batch of size " + commands.size()
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("C: sending batch of size {}", commands.size());
                                 for (command in commands) {
-                                    log.info("C:           -> " + command)
+                                    LOG.debug("C:           -> " + command);
                                 }
                             }
 
                             List<Command> answer = transmit(commands);
 
-                            if (log.isLoggable(Level.INFO)) {
-                                log.info "C: received batch of size " + answer.size()
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug "C: received batch of size " + answer.size()
                                 for (command in answer) {
-                                    log.info("C: received " + command)
+                                    LOG.debug("C: received " + command)
                                 }
                             }
 
@@ -143,7 +153,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     void info(Object message) {
-        log.info message
+        LOG.debug(message);
     }
 
     Object dispatchHandle(Command command) {
@@ -176,7 +186,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     def handle(Command serverCommand) {
-        log.severe "C: cannot handle unknown command '$serverCommand'"
+        LOG.error "C: cannot handle unknown command '$serverCommand'"
     }
 
     Map handle(DataCommand serverCommand) {
@@ -226,7 +236,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     ClientPresentationModel handle(ValueChangedCommand serverCommand) {
         Attribute attribute = clientModelStore.findAttributeById(serverCommand.attributeId)
         if (!attribute) {
-            log.warning "C: attribute with id '$serverCommand.attributeId' not found, cannot update old value '$serverCommand.oldValue' to new value '$serverCommand.newValue'"
+            LOG.warn "C: attribute with id '$serverCommand.attributeId' not found, cannot update old value '$serverCommand.oldValue' to new value '$serverCommand.newValue'"
             return null
         }
         if (attribute.value?.toString() == serverCommand.newValue?.toString()) {
@@ -234,10 +244,10 @@ abstract class AbstractClientConnector implements ClientConnector {
         }
         if (strictMode && attribute.value?.toString() != serverCommand.oldValue?.toString()) {
             // todo dk: think about sending a RejectCommand here to tell the server about a possible lost update
-            log.warning "C: attribute with id '$serverCommand.attributeId' and value '$attribute.value' cannot be set to new value '$serverCommand.newValue' because the change was based on an outdated old value of '$serverCommand.oldValue'."
+            LOG.warn "C: attribute with id '$serverCommand.attributeId' and value '$attribute.value' cannot be set to new value '$serverCommand.newValue' because the change was based on an outdated old value of '$serverCommand.oldValue'."
             return null
         }
-        log.info "C: updating '$attribute.propertyName' id '$serverCommand.attributeId' from '$attribute.value' to '$serverCommand.newValue'"
+        LOG.debug "C: updating '$attribute.propertyName' id '$serverCommand.attributeId' from '$attribute.value' to '$serverCommand.newValue'"
         attribute.value = serverCommand.newValue
         return null // this command is not expected to be sent explicitly, so no pm needs to be returned
     }
@@ -245,12 +255,12 @@ abstract class AbstractClientConnector implements ClientConnector {
     ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
         def switchPm = clientModelStore.findPresentationModelById(serverCommand.pmId)
         if (!switchPm) {
-            log.warning "C: switch pm with id '$serverCommand.pmId' not found, cannot switch"
+            LOG.warn "C: switch pm with id '$serverCommand.pmId' not found, cannot switch"
             return null
         }
         def sourcePm = clientModelStore.findPresentationModelById(serverCommand.sourcePmId)
         if (!sourcePm) {
-            log.warning "C: source pm with id '$serverCommand.sourcePmId' not found, cannot switch"
+            LOG.warn "C: source pm with id '$serverCommand.sourcePmId' not found, cannot switch"
             return null
         }
         switchPm.syncWith sourcePm                  // ==  clientDolphin.apply sourcePm to switchPm
@@ -297,7 +307,7 @@ abstract class AbstractClientConnector implements ClientConnector {
         if (!serverCommand.pmId) return null
         ClientPresentationModel model = clientModelStore.findPresentationModelById(serverCommand.pmId)
         if (null == model) {
-            log.warning("model with id '$serverCommand.pmId' not found, cannot rebase")
+            LOG.warn("model with id '$serverCommand.pmId' not found, cannot rebase")
             return null
         }
         model.attributes*.rebase() // rebase sends update command if needed through PCL
