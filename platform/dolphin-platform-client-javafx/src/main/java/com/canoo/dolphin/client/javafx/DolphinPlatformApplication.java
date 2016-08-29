@@ -48,7 +48,7 @@ public abstract class DolphinPlatformApplication extends Application {
     private Stage primaryStage;
 
     /**
-     * Creates the connection to the DOlphin Platform server. If this method will be overridden always call the super method.
+     * Creates the connection to the Dolphin Platform server. If this method will be overridden always call the super method.
      *
      * @throws Exception a exception if the connection can't be created
      */
