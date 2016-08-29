@@ -62,9 +62,13 @@ public abstract class AbstractViewBinder<M> {
                 initializationException.set(e);
                 onInitializationException(e);
             } else {
-                controllerProxy = c;
-                model.set(c.getModel());
-                init();
+                try {
+                    controllerProxy = c;
+                    model.set(c.getModel());
+                    init();
+                } catch (Exception exception) {
+                    onInitializationException(exception);
+                }
             }
         });
     }
