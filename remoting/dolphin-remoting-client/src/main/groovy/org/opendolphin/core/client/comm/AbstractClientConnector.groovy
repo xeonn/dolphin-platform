@@ -64,29 +64,34 @@ abstract class AbstractClientConnector implements ClientConnector {
             @Override
             void run() {
                 while (true) {
-                    List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
-                    List<Command> commands = toProcess.collect { it.command }
-
-                    if (log.isLoggable(Level.INFO)) {
-                        log.info "C: sending batch of size " + commands.size()
-                        for (command in commands) {
-                            log.info("C:           -> " + command)
-                        }
-                    }
-
-                    List<Command> answer = transmit(commands);
-
-                    if (log.isLoggable(Level.INFO)) {
-                        log.info "C: received batch of size " + answer.size()
-                        for (command in answer) {
-                            log.info("C: received " + command)
-                        }
-                    }
-
-                    uiThreadHandler.executeInsideUiThread(new Runnable() {
+                    doExceptionSafe(new Runnable() {
                         @Override
                         void run() {
-                            processResults(answer, toProcess);
+                            List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
+                            List<Command> commands = toProcess.collect { it.command }
+
+                            if (log.isLoggable(Level.INFO)) {
+                                log.info "C: sending batch of size " + commands.size()
+                                for (command in commands) {
+                                    log.info("C:           -> " + command)
+                                }
+                            }
+
+                            List<Command> answer = transmit(commands);
+
+                            if (log.isLoggable(Level.INFO)) {
+                                log.info "C: received batch of size " + answer.size()
+                                for (command in answer) {
+                                    log.info("C: received " + command)
+                                }
+                            }
+
+                            doSafelyInsideUiThread(new Runnable() {
+                                @Override
+                                void run() {
+                                    processResults(answer, toProcess);
+                                }
+                            });
                         }
                     });
                 }
