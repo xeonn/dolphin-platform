@@ -24,6 +24,8 @@ import com.canoo.dolphin.util.DolphinRemotingException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +34,8 @@ import java.util.concurrent.TimeUnit;
  * class. Next to the general {@link Application} class of JavaFX this class supports the DOlphin Platform connecttion lifecycle.
  */
 public abstract class DolphinPlatformApplication extends Application {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformApplication.class);
 
     private ClientContext clientContext;
 
@@ -105,8 +109,8 @@ public abstract class DolphinPlatformApplication extends Application {
      */
     protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) {
         Assert.requireNonNull(initializationException, "initializationException");
-        initializationException.printStackTrace();
-        System.exit(-1);
+        LOG.error("Dolphin Platform initialization error", initializationException);
+        Platform.exit();
     }
 
     /**
@@ -117,8 +121,7 @@ public abstract class DolphinPlatformApplication extends Application {
     public final void stop() throws Exception {
         if(clientContext != null) {
             try {
-                clientContext.disconnect().get(2, TimeUnit.SECONDS);
-                onShutdown();
+                clientContext.disconnect().get(getClientConfiguration().getConnectionTimeout(), TimeUnit.SECONDS);
             } catch (Exception e) {
                 onShutdownException(new ClientShutdownException(e));
             }
@@ -147,18 +150,7 @@ public abstract class DolphinPlatformApplication extends Application {
     protected void onRemotingError(final Stage primaryStage, final DolphinRemotingException remotingException) {
         Assert.requireNonNull(remotingException, "remotingException");
         remotingException.printStackTrace();
+        LOG.error("Dolphin Platform remoting error", remotingException);
         Platform.exit();
     }
-
-
-    /**
-     * This method will be called in the {@link Application#stop()} method after the connection to the Dolphin
-     * Platform server is closed. Application developers can define some kind of close handling here.
-     *
-     *  By default the methods calls {@link System#exit(int)}
-     */
-    protected void onShutdown() {
-        System.exit(0);
-    }
-
 }
