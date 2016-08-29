@@ -24,7 +24,7 @@ import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
@@ -40,13 +40,13 @@ import java.util.logging.Level;
  */
 public class ClientConfiguration {
 
-    private final static long DEFAULT_CONNECTION_TIMEOUT = 5000;
+    private final static long DEFAULT_CONNECTION_TIMEOUT = 15000;
 
     private final String serverEndpoint;
 
     private final UiThreadHandler uiThreadHandler;
 
-    private final Executor backgroundExecutor;
+    private final ExecutorService backgroundExecutor;
 
     private final DolphinPlatformThreadFactory dolphinPlatformThreadFactory;
 
@@ -143,7 +143,7 @@ public class ClientConfiguration {
         this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
     }
 
-    public Executor getBackgroundExecutor() {
+    public ExecutorService getBackgroundExecutor() {
         return backgroundExecutor;
     }
 

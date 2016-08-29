@@ -41,15 +41,11 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import groovy.lang.Closure;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,14 +75,12 @@ public class ClientContextFactory {
         Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(openDolphinLogLevel);
 
-        Executors.newSingleThreadExecutor().execute(() -> {
+        clientConfiguration.getBackgroundExecutor().execute(() -> {
             try {
                 final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-                final HttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
-                final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), httpClient, clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
-
+                final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
                 Closure closure = new Closure(null) {
 
                     @Override
