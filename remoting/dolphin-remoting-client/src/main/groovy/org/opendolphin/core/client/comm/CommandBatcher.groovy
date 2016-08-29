@@ -15,18 +15,54 @@
  */
 package org.opendolphin.core.client.comm
 
-import groovyx.gpars.dataflow.DataflowQueue
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 class CommandBatcher implements ICommandBatcher {
 
-    final DataflowQueue<List<CommandAndHandler>> waitingBatches = new DataflowQueue<>()
+    private final DataflowQueue<List<CommandAndHandler>> waitingBatches;
 
-	void batch(CommandAndHandler commandAndHandler) {
-        waitingBatches << [commandAndHandler]
-	}
+    private List<CommandAndHandler> internalQueue = new LinkedList<>();
 
-	boolean isEmpty() {
-		true
-	}
+    private final Lock queueLock = new ReentrantLock();
 
+    CommandBatcher() {
+        this.waitingBatches = new DataflowQueue<List<CommandAndHandler>>() {
+
+            @Override
+            List<CommandAndHandler> getVal() throws InterruptedException {
+                queueLock.lock();
+                try {
+                    List<CommandAndHandler> ret = new ArrayList<>();
+                    ret.addAll(internalQueue);
+                    internalQueue.clear();
+                    return ret
+                } finally {
+                    queueLock.unlock()
+                }
+            }
+        };
+    }
+
+    void batch(CommandAndHandler commandAndHandler) {
+        queueLock.lock();
+        try {
+            internalQueue.add(commandAndHandler);
+        } finally {
+            queueLock.unlock()
+        }
+    }
+
+    boolean isEmpty() {
+        queueLock.lock();
+        try {
+            return internalQueue.isEmpty();
+        } finally {
+            queueLock.unlock()
+        }
+    }
+
+    DataflowQueue<List<CommandAndHandler>> getWaitingBatches() {
+        return waitingBatches
+    }
 }

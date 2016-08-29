@@ -15,14 +15,15 @@
  */
 package org.opendolphin.core.client.comm
 
-import groovyx.gpars.agent.Agent
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-class RunLaterUiThreadHandler implements UiThreadHandler{
+class RunLaterUiThreadHandler implements UiThreadHandler {
 
-    protected final runner = Agent.agent(1)
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
-    void executeInsideUiThread(Runnable runnable) {
-        runner << { runnable.run() }
+    void executeInsideUiThread(final Runnable runnable) {
+        executorService.execute(runnable);
     }
 }

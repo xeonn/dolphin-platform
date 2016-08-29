@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 package org.opendolphin.core.client.comm
-
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
-import groovyx.gpars.dataflow.KanbanFlow
-import groovyx.gpars.dataflow.KanbanTray
-import groovyx.gpars.dataflow.ProcessingNode
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
@@ -28,31 +24,19 @@ import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand
-import org.opendolphin.core.comm.CallNamedActionCommand
-import org.opendolphin.core.comm.Codec
-import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.comm.DataCommand
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
-import org.opendolphin.core.comm.DeletePresentationModelCommand
-import org.opendolphin.core.comm.InitializeAttributeCommand
-import org.opendolphin.core.comm.NamedCommand
-import org.opendolphin.core.comm.PresentationModelResetedCommand
-import org.opendolphin.core.comm.SavedPresentationModelNotification
-import org.opendolphin.core.comm.SignalCommand
-import org.opendolphin.core.comm.SwitchPresentationModelCommand
-import org.opendolphin.core.comm.ValueChangedCommand
+import org.opendolphin.core.comm.*
 
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.logging.Level
-
-import static groovyx.gpars.GParsPool.withPool
 
 @Log
 abstract class AbstractClientConnector implements ClientConnector {
     boolean strictMode = true // disallow value changes that are based on improper old values
     Codec codec
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
+
+    private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
     Closure onException = { Throwable up ->
         def out = new StringWriter()
@@ -76,33 +60,38 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     protected void startCommandProcessing() {
+        backgroundExecutor.execute(new Runnable() {
+            @Override
+            void run() {
+                while (true) {
+                    List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
+                    List<Command> commands = toProcess.collect { it.command }
 
-        def transmitter = ProcessingNode.node { trayOut ->
-            def commandsAndHandlers = commandBatcher.waitingBatches.val
-            List<Command> commands = commandsAndHandlers.collect { it.command }
-            if (log.isLoggable(Level.INFO)) {
-                log.info "C: sending batch of size " + commands.size()
-                for (command in commands) { log.info("C:           -> " + command) }
+                    if (log.isLoggable(Level.INFO)) {
+                        log.info "C: sending batch of size " + commands.size()
+                        for (command in commands) {
+                            log.info("C:           -> " + command)
+                        }
+                    }
+
+                    List<Command> answer = transmit(commands);
+
+                    if (log.isLoggable(Level.INFO)) {
+                        log.info "C: received batch of size " + answer.size()
+                        for (command in answer) {
+                            log.info("C: received " + command)
+                        }
+                    }
+
+                    uiThreadHandler.executeInsideUiThread(new Runnable() {
+                        @Override
+                        void run() {
+                            processResults(answer, toProcess);
+                        }
+                    });
+                }
             }
-
-            def answer = null
-
-            Runnable transmitter = { answer = transmit(commands) }
-            Runnable postWorker  = { trayOut << [response: answer, request: commandsAndHandlers] }
-            doExceptionSafe(transmitter, postWorker)
-        }
-
-        def worker = ProcessingNode.node { KanbanTray trayIn ->
-            Map got = trayIn.take()
-            if (got.response == null) return // we cannot ignore empty responses. They may have an onFinished handler
-
-            Runnable postWork = { processResults(got.response, got.request) }
-            doSafelyInsideUiThread postWork
-        }
-
-        KanbanFlow flow = new KanbanFlow()
-        flow.link transmitter to worker
-        flow.start(1)
+        });
     }
 
     protected ClientModelStore getClientModelStore() {
@@ -369,10 +358,12 @@ abstract class AbstractClientConnector implements ClientConnector {
             return      // there is no point in releasing if we do not wait. Avoid excessive releasing.
         }
         waiting = false // release is under way
-        withPool {
-            def transmitAsynchronously = this.&transmit.asyncFun()
-            transmitAsynchronously([releaseCommand]) // sneaks by the strict command sequence
-        }
+        backgroundExecutor.execute(new Runnable() {
+            @Override
+            void run() {
+                transmit([releaseCommand]);
+            }
+        });
     }
 
     @Override

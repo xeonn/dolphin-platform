@@ -15,8 +15,6 @@
  */
 package org.opendolphin.core.client.comm;
 
-import groovyx.gpars.dataflow.DataflowQueue;
-
 import java.util.List;
 
 public interface ICommandBatcher {

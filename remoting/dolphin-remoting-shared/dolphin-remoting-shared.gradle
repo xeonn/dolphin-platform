@@ -16,5 +16,5 @@
 
 dependencies {
     compile "org.codehaus.groovy:groovy-json:$groovyVersion"
-    compile "org.codehaus.gpars:gpars:$gparsVersion"
+    //compile "org.codehaus.gpars:gpars:$gparsVersion"
 }
