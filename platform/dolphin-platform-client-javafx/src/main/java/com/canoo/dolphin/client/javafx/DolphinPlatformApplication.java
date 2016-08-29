@@ -78,7 +78,11 @@ public abstract class DolphinPlatformApplication extends Application {
         if (initializationException == null) {
             if(clientContext != null) {
                 clientContext.onRemotingError(e -> onRemotingError(primaryStage, e));
-                start(primaryStage, clientContext);
+                try {
+                    start(primaryStage, clientContext);
+                } catch (Exception e) {
+                    onInitializationError(primaryStage, new ClientInitializationException("Error in application start!", e));
+                }
             } else {
                 onInitializationError(primaryStage, new ClientInitializationException("No clientContext was created!"));
             }
