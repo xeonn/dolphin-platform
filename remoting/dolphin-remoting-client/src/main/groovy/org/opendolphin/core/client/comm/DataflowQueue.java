@@ -6,4 +6,8 @@ package org.opendolphin.core.client.comm;
 public interface DataflowQueue<T> {
 
     T getVal() throws InterruptedException;
+
+    void add(T value);
+
+    int length();
 }

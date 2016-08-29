@@ -41,6 +41,26 @@ class CommandBatcher implements ICommandBatcher {
                     queueLock.unlock()
                 }
             }
+
+            @Override
+            void add(List<CommandAndHandler> value) {
+                queueLock.lock();
+                try {
+                    internalQueue.addAll(value);
+                } finally {
+                    queueLock.unlock()
+                }
+            }
+
+            @Override
+            int length() {
+                queueLock.lock();
+                try {
+                    return internalQueue.size();
+                } finally {
+                    queueLock.unlock()
+                }
+            }
         };
     }
 
