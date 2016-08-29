@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.client.comm
 
+import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
@@ -26,6 +27,8 @@ class CommandBatcher implements ICommandBatcher {
 
     private final Lock queueLock = new ReentrantLock();
 
+    private final Condition emptyCondition = queueLock.newCondition();
+
     CommandBatcher() {
         this.waitingBatches = new DataflowQueue<List<CommandAndHandler>>() {
 
@@ -33,6 +36,9 @@ class CommandBatcher implements ICommandBatcher {
             List<CommandAndHandler> getVal() throws InterruptedException {
                 queueLock.lock();
                 try {
+                    if(internalQueue.isEmpty()) {
+                        emptyCondition.await();
+                    }
                     List<CommandAndHandler> ret = new ArrayList<>();
                     ret.addAll(internalQueue);
                     internalQueue.clear();
@@ -47,6 +53,7 @@ class CommandBatcher implements ICommandBatcher {
                 queueLock.lock();
                 try {
                     internalQueue.addAll(value);
+                    emptyCondition.signal();
                 } finally {
                     queueLock.unlock()
                 }
@@ -65,12 +72,7 @@ class CommandBatcher implements ICommandBatcher {
     }
 
     void batch(CommandAndHandler commandAndHandler) {
-        queueLock.lock();
-        try {
-            internalQueue.add(commandAndHandler);
-        } finally {
-            queueLock.unlock()
-        }
+        waitingBatches.add(Collections.singletonList(commandAndHandler));
     }
 
     boolean isEmpty() {
