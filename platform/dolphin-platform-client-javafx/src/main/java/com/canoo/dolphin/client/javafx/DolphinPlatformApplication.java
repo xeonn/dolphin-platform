@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Defines a basic application class for Dolphin Platform based applications that can be used like the {@link Application}
@@ -58,14 +59,20 @@ public abstract class DolphinPlatformApplication extends Application {
      * @return The Dolphin Platform configuration for this client
      */
     protected JavaFXConfiguration getClientConfiguration() {
-        return new JavaFXConfiguration(getServerEndpoint());
+        JavaFXConfiguration configuration = null;
+        try {
+            configuration = new JavaFXConfiguration(getServerEndpoint());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Malformed URL exception while creating configuration", e);
+        }
+        return configuration;
     }
 
     /**
      * Returns the server url of the Dolphin Platform server endpoint.
      * @return the server url
      */
-    protected abstract URL getServerEndpoint();
+    protected abstract URL getServerEndpoint() throws MalformedURLException;
 
     /**
      * This methods defines parts of the Dolphin Platform lifecyycle and is therefore defined as final.

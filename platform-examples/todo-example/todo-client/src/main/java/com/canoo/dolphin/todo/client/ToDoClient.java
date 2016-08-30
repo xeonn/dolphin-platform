@@ -39,14 +39,8 @@ import java.net.URL;
 public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
-    protected URL getServerEndpoint() {
-        URL url = null;
-        try {
-            url = new URL("http://localhost:8080/todo-app/dolphin");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Exception while creating URL", e);
-        }
-        return url;
+    protected URL getServerEndpoint() throws MalformedURLException {
+        return new URL("http://localhost:8080/todo-app/dolphin");
     }
 
     @Override
