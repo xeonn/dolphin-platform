@@ -37,7 +37,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     Codec codec
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
 
-    private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+    ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
     Closure onException = { Throwable up ->
         def out = new StringWriter()
