@@ -63,7 +63,7 @@ public abstract class DolphinPlatformApplication extends Application {
         try {
             configuration = new JavaFXConfiguration(getServerEndpoint());
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Malformed URL exception while creating configuration", e);
+            throw new ClientInitializationException("Client configuration cannot be created", e);
         }
         return configuration;
     }
@@ -84,7 +84,7 @@ public abstract class DolphinPlatformApplication extends Application {
     public final void start(final Stage primaryStage) throws Exception {
         Assert.requireNonNull(primaryStage, "primaryStage");
         if (initializationException == null) {
-            if(clientContext != null) {
+            if (clientContext != null) {
                 clientContext.onRemotingError(e -> onRemotingError(primaryStage, e));
                 start(primaryStage, clientContext);
             } else {
@@ -123,7 +123,7 @@ public abstract class DolphinPlatformApplication extends Application {
      */
     @Override
     public final void stop() throws Exception {
-        if(clientContext != null) {
+        if (clientContext != null) {
             try {
                 clientContext.disconnect().get(2, TimeUnit.SECONDS);
                 onShutdown();
@@ -163,7 +163,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * This method will be called in the {@link Application#stop()} method after the connection to the Dolphin
      * Platform server is closed. Application developers can define some kind of close handling here.
      *
-     *  By default the methods calls {@link System#exit(int)}
+     * By default the methods calls {@link System#exit(int)}
      */
     protected void onShutdown() {
         System.exit(0);
