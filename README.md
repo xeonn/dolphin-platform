@@ -6,17 +6,21 @@
 
 This repository contains all Java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories ([JavaScript](https://github.com/canoo/dolphin-platform-js), AngularJS, [Polymer](https://github.com/canoo/dolphin-platform-polymer)).
 
-![Dolphin Platform Logo](http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png)
+<p align="center">
+<img src="http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png"/>
+</p>
 
 The Dolphin Platform is a framework that implements the presentation model pattern and provides a modern way to create enterprise applications. The Platform provides several client implementations that all can be used in combination with a general sever API.
 
-![Several clients](http://www.dolphin-platform.io/assets/img/features/clients.png)
-
+<p align="center">
+<img src="http://www.dolphin-platform.io/assets/img/features/clients.png"/>
+</p>
 
 By doing so you can create enterprise application with a single server and several desktop, web and mobile client implementations. Here the Dolphin Platforms define a mechanism to automatically snchronize models between the server and the client.
 
-![Model sync](http://www.dolphin-platform.io/assets/img/features/pm1.png)
-
+<p align="center">
+<img src="http://www.dolphin-platform.io/assets/img/features/pm1.png"/>
+</p>
 
 For more information visit [our website](http://www.dolphin-platform.io) or the [documentation](https://canoo.github.io/dolphin-platform/).
 
