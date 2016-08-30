@@ -83,7 +83,7 @@ public class ToDoClient extends DolphinPlatformApplication {
         expContent.add(textArea, 0, 1);
 
         ButtonType reconnect = new ButtonType("reconnect");
-        alert.getButtonTypes().addAll(reconnect);
+        //alert.getButtonTypes().addAll(reconnect);
 
         alert.getDialogPane().setExpandableContent(expContent);
         ButtonType result = alert.showAndWait().orElse(null);
