@@ -26,6 +26,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
+import java.net.URL;
 
 /**
  * Defines a basic application class for Dolphin Platform based applications that can be used like the {@link Application}
@@ -64,7 +65,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * Returns the server url of the Dolphin Platform server endpoint.
      * @return the server url
      */
-    protected abstract String getServerEndpoint();
+    protected abstract URL getServerEndpoint();
 
     /**
      * This methods defines parts of the Dolphin Platform lifecyycle and is therefore defined as final.
