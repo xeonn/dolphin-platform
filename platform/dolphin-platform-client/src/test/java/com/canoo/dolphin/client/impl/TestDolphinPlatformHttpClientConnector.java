@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class TestDolphinPlatformHttpClientConnector {
 
@@ -35,7 +37,8 @@ public class TestDolphinPlatformHttpClientConnector {
                 return (T) "[{\"pmId\":\"p1\",\"clientSideOnly\":false,\"id\":\"CreatePresentationModel\",\"attributes\":[],\"pmType\":null,\"className\":\"org.opendolphin.core.comm.CreatePresentationModelCommand\"}]";
             }
         };
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, "noUrl", new ForwardableCallback<>(), new DummyUiThreadHandler());
+
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
 
         CreatePresentationModelCommand command = new CreatePresentationModelCommand();
         command.setPmId("p1");
@@ -43,7 +46,7 @@ public class TestDolphinPlatformHttpClientConnector {
 
         Assert.assertEquals(result.size(), 1);
         Assert.assertTrue(result.get(0) instanceof CreatePresentationModelCommand);
-        Assert.assertEquals(((CreatePresentationModelCommand)result.get(0)).getPmId(), "p1");
+        Assert.assertEquals(((CreatePresentationModelCommand) result.get(0)).getPmId(), "p1");
     }
 
     @Test(expectedExceptions = DolphinRemotingException.class)
@@ -78,15 +81,22 @@ public class TestDolphinPlatformHttpClientConnector {
                 return (T) "[]";
             }
         };
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, "noUrl", new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
 
         connector.transmit(Collections.singletonList(new Command()));
     }
 
     @Test(expectedExceptions = DolphinRemotingException.class)
     public void testCallWithException() {
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), new DefaultHttpClient(), "noUrl", new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), new DefaultHttpClient(), getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
         connector.transmit(Collections.singletonList(new Command()));
     }
 
+    private URL getDummyURL() {
+        try {
+            return new URL("http://dummyURL");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Exception occurred while creating URL", e);
+        }
+    }
 }

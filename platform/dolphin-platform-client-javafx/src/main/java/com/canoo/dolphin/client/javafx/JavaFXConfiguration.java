@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.client.javafx;
 
+import java.net.URL;
+
 import com.canoo.dolphin.client.ClientConfiguration;
 import javafx.application.Platform;
 
@@ -23,7 +25,7 @@ import javafx.application.Platform;
  */
 public class JavaFXConfiguration extends ClientConfiguration {
 
-    public JavaFXConfiguration(String serverEndpoint) {
+    public JavaFXConfiguration(URL serverEndpoint) {
         super(serverEndpoint, r -> Platform.runLater(r));
     }
 }

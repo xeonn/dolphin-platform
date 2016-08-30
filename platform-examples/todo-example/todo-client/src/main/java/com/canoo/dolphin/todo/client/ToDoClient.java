@@ -33,20 +33,22 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
-    protected String getServerEndpoint() {
-        return "http://localhost:8080/todo-app/dolphin";
+    protected URL getServerEndpoint() throws MalformedURLException {
+        return new URL("http://localhost:8080/todo-app/dolphin");
     }
 
     @Override
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
         clientContext.onRemotingError(e -> {
-            if(e.getCause() != null && e.getCause() instanceof DolphinSessionException) {
+            if (e.getCause() != null && e.getCause() instanceof DolphinSessionException) {
                 showError("A remoting error happened", "Looks like we ended in a session timeout :(", e);
-            } else if(e.getCause() != null && e.getCause() instanceof HttpResponseException) {
+            } else if (e.getCause() != null && e.getCause() instanceof HttpResponseException) {
                 showError("A remoting error happened", "Looks like the server sended a bad response :(", e);
             } else {
                 showError("A remoting error happened", "Looks like we have a big problem :(", e);

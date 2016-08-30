@@ -30,6 +30,7 @@ import org.opendolphin.core.comm.Command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.net.URL;
 
 /**
  * This class is used to sync the unique client scope id of the current dolphin
@@ -38,7 +39,7 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
     private static final String CHARSET = "UTF-8";
 
-    private final String servletUrl;
+    private final URL servletUrl;
 
     private final HttpClient httpClient;
 
@@ -50,7 +51,7 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
     private String clientId;
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, String servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
+    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, URL servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
         super(clientDolphin, new BlindCommandBatcher());
         setUiThreadHandler(uiThreadHandler);
         this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
@@ -65,7 +66,7 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
         List<Command> result = new ArrayList<>();
         try {
             String content = codec.encode(commands);
-            HttpPost httpPost = new HttpPost(servletUrl);
+            HttpPost httpPost = new HttpPost(servletUrl.toString());
             StringEntity entity = new StringEntity(content, CHARSET);
             httpPost.setEntity(entity);
             if(clientId != null) {

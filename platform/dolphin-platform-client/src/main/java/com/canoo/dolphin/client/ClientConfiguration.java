@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.logging.Level;
+import java.net.URL;
 
 /**
  * Configuration class for a Dolphin Platform client. A configuration is needed to create a {@link ClientContext} by
@@ -39,7 +40,7 @@ public class ClientConfiguration {
 
     private final static long DEFAULT_CONNECTION_TIMEOUT = 5000;
 
-    private final String serverEndpoint;
+    private final URL serverEndpoint;
 
     private final UiThreadHandler uiThreadHandler;
 
@@ -54,11 +55,11 @@ public class ClientConfiguration {
     /**
      * Default constructor of a client configuration
      *
-     * @param serverEndpoint  the DOlphin Platform server url
+     * @param serverEndpoint the DOlphin Platform server url
      * @param uiThreadHandler the ui thread handler
      */
-    public ClientConfiguration(String serverEndpoint, UiThreadHandler uiThreadHandler) {
-        this.serverEndpoint = Assert.requireNonBlank(serverEndpoint, "serverEndpoint");
+    public ClientConfiguration(URL serverEndpoint, UiThreadHandler uiThreadHandler) {
+        this.serverEndpoint = Assert.requireNonNull(serverEndpoint, "serverEndpoint");
         this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
         this.dolphinLogLevel = Level.SEVERE;
         this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
@@ -80,7 +81,7 @@ public class ClientConfiguration {
      *
      * @return the server endpoint
      */
-    public String getServerEndpoint() {
+    public URL getServerEndpoint() {
         return serverEndpoint;
     }
 
@@ -131,6 +132,6 @@ public class ClientConfiguration {
     }
 
     public void setHttpClient(HttpClient httpClient) {
-        this.httpClient =  Assert.requireNonNull(httpClient, "httpClient");
+        this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
     }
 }
