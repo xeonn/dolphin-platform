@@ -37,11 +37,11 @@ import java.util.concurrent.locks.ReentrantLock
 @CompileStatic
 class BlindCommandBatcher extends CommandBatcher {
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    ExecutorService executorService = Executors.newCachedThreadPool();
 
-    private final LinkedList<CommandAndHandler> commandsAndHandlers = new LinkedList<>();
+    LinkedList<CommandAndHandler> commandsAndHandlers = new LinkedList<>();
 
-    private final Lock commandsAndHandlersLock = new ReentrantLock();
+    Lock commandsAndHandlersLock = new ReentrantLock();
 
     /** Time allowed to fill the queue before a batch is assembled */
     long deferMillis = 10
@@ -50,10 +50,9 @@ class BlindCommandBatcher extends CommandBatcher {
     /** when attribute x changes its value from 0 to 1 and then from 1 to 2, merge this into one change from 0 to 2 */
     boolean mergeValueChanges = false
 
-    protected final AtomicBoolean inProcess = new AtomicBoolean(false) // whether we started to batch up commands
-    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false)
-    // whether we need to give commands the opportunity to enter the queue
-    protected boolean shallWeEvenTryToMerge = false // do not even try if there is no value change cmd in the batch
+    protected final AtomicBoolean inProcess      = new AtomicBoolean(false) // whether we started to batch up commands
+    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false) // whether we need to give commands the opportunity to enter the queue
+    protected boolean shallWeEvenTryToMerge      = false // do not even try if there is no value change cmd in the batch
 
     @Override
     boolean isEmpty() {
@@ -62,24 +61,19 @@ class BlindCommandBatcher extends CommandBatcher {
 
     @Override
     void batch(CommandAndHandler commandWithHandler) {
-        log.finest "batching $commandWithHandler.command with${commandWithHandler.handler ? '' : 'out'} handler"
+        log.finest "batching $commandWithHandler.command with${commandWithHandler.handler ? '' : 'out' } handler"
 
         if (canBeDropped(commandWithHandler)) {
             log.finest "dropping duplicate GetPresentationModelCommand"
             return
         }
 
-        executorService.execute(new Runnable() {
-            @Override
-            void run() {
                 commandsAndHandlersLock.lock();
                 try {
                     commandsAndHandlers.add(commandWithHandler);
                 } finally {
                     commandsAndHandlersLock.unlock();
                 }
-            }
-        });
 
         if (commandWithHandler.isBatchable()) {
             deferralNeeded.set(true)
@@ -137,7 +131,7 @@ class BlindCommandBatcher extends CommandBatcher {
                     def last = batchBlinds(commandsAndHandlers) // always send leading blinds first
                     if (last) {
                         // we do have a trailing command with handler and batch it separately
-                        waitingBatches.add([last]);
+                waitingBatches.add([last])
                     }
                     if (!commandsAndHandlers.empty) {
                         processBatch()

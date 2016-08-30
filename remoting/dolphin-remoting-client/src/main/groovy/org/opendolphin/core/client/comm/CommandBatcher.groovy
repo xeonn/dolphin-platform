@@ -15,19 +15,20 @@
  */
 package org.opendolphin.core.client.comm
 
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
 class CommandBatcher implements ICommandBatcher {
 
-    private final DataflowQueue<List<CommandAndHandler>> waitingBatches;
+    DataflowQueue<List<CommandAndHandler>> waitingBatches;
 
-    private List<CommandAndHandler> internalQueue = new LinkedList<>();
+    List<List<CommandAndHandler>> internalQueue = new LinkedList<>();
 
-    private final Lock queueLock = new ReentrantLock();
+    Lock queueLock = new ReentrantLock();
 
-    private final Condition emptyCondition = queueLock.newCondition();
+    Condition emptyCondition = queueLock.newCondition();
 
     CommandBatcher() {
         this.waitingBatches = new DataflowQueue<List<CommandAndHandler>>() {
@@ -39,10 +40,26 @@ class CommandBatcher implements ICommandBatcher {
                     if(internalQueue.isEmpty()) {
                         emptyCondition.await();
                     }
-                    List<CommandAndHandler> ret = new ArrayList<>();
-                    ret.addAll(internalQueue);
-                    internalQueue.clear();
-                    return ret
+                    if(internalQueue.isEmpty()) {
+                        return null;
+                    }
+                    return internalQueue.remove(0);
+                } finally {
+                    queueLock.unlock()
+                }
+            }
+
+            @Override
+            List<CommandAndHandler> getVal(long value, TimeUnit timeUnit) throws InterruptedException {
+                queueLock.lock();
+                try {
+                    if(internalQueue.isEmpty()) {
+                        emptyCondition.await(value, timeUnit);
+                    }
+                    if(internalQueue.isEmpty()) {
+                        return null;
+                    }
+                    return internalQueue.remove(0);
                 } finally {
                     queueLock.unlock()
                 }
@@ -52,7 +69,7 @@ class CommandBatcher implements ICommandBatcher {
             void add(List<CommandAndHandler> value) {
                 queueLock.lock();
                 try {
-                    internalQueue.addAll(value);
+                    internalQueue.add(value);
                     emptyCondition.signal();
                 } finally {
                     queueLock.unlock()
