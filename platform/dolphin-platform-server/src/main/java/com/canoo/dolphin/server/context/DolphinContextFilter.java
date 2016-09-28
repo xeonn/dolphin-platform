@@ -72,26 +72,26 @@ public class DolphinContextFilter implements Filter {
                     return;
                 }
                 dolphinContext = createNewContext(httpSession);
-                DolphinContextUtils.storeInSession(servletRequest.getSession(), dolphinContext);
+                DolphinContextUtils.storeInSession(httpSession, dolphinContext);
                 for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
                     listener.sessionCreated(dolphinContext.getCurrentDolphinSession());
                 }
                 LOG.trace("Created new DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
 
-                Object init = servletRequest.getSession().getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
+                Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
                 if(init == null) {
-                    servletRequest.getSession().setAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION, true);
+                    httpSession.setAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION, true);
                 }
-
             } else {
-                dolphinContext = DolphinContextUtils.getClientInSession(servletRequest.getSession(), clientId);
+                LOG.trace("Trying to find DolphinContext {} in http session {}", clientId, httpSession.getId());
+                dolphinContext = DolphinContextUtils.getClientInSession(httpSession, clientId);
                 if(dolphinContext == null) {
-                    Object init = servletRequest.getSession().getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
+                    Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
                     if(init == null) {
-                        LOG.warn("Can not find requested client for id {} in session {} (session timeout)", clientId, servletRequest.getSession().getId());
+                        LOG.warn("Can not find requested client for id {} in session {} (session timeout)", clientId, httpSession.getId());
                         servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client (session timeout)!");
                     } else {
-                        LOG.warn("Can not find requested client for id {} in session {} (unknown error)", clientId, servletRequest.getSession().getId());
+                        LOG.warn("Can not find requested client for id {} in session {} (unknown error)", clientId, httpSession.getId());
                         servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not find requested client (unknown error)!");
                     }
                     return;
