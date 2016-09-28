@@ -1,19 +1,21 @@
-package org.opendolphin.core.client.comm;
-
-import groovy.util.logging.Log;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.server.ServerConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+package org.opendolphin.core.client.comm
+import groovy.util.logging.Log
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
+import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.comm.Command
+import org.opendolphin.core.server.ServerConnector
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @Log
 public class InMemoryClientConnector extends AbstractClientConnector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryClientConnector.class);
+
+    private final ServerConnector serverConnector;
+
+    private long sleepMillis = 0;
+
     public InMemoryClientConnector(ClientDolphin clientDolphin, ServerConnector serverConnector) {
         super(clientDolphin);
         this.serverConnector = serverConnector;
@@ -32,7 +34,6 @@ public class InMemoryClientConnector extends AbstractClientConnector {
             return Collections.EMPTY_LIST;
         }
 
-
         if (sleepMillis > 0) {
             try {
                 Thread.sleep(sleepMillis);
@@ -42,13 +43,11 @@ public class InMemoryClientConnector extends AbstractClientConnector {
 
         }
 
-
         List<Command> result = new LinkedList<Command>();
         for (Command command : commands) {
             LOGGER.trace("processing {}", command);
-            ((LinkedList<Command>) result).addAll(serverConnector.receive(command));// there is no need for encoding since we are in-memory
+            result.addAll(serverConnector.receive(command));// there is no need for encoding since we are in-memory
         }
-
 
         return result;
     }
@@ -60,8 +59,4 @@ public class InMemoryClientConnector extends AbstractClientConnector {
     public void setSleepMillis(long sleepMillis) {
         this.sleepMillis = sleepMillis;
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryClientConnector.class);
-    private long sleepMillis = 0;
-    private final ServerConnector serverConnector;
 }

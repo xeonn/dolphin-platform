@@ -15,93 +15,24 @@
  */
 package org.opendolphin.core.client.comm
 
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.Condition
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
+public class CommandBatcher implements ICommandBatcher {
 
-class CommandBatcher implements ICommandBatcher {
+    private final DataflowQueue<List<CommandAndHandler>> waitingBatches;
 
-    DataflowQueue<List<CommandAndHandler>> waitingBatches;
 
-    List<List<CommandAndHandler>> internalQueue = new LinkedList<>();
-
-    Lock queueLock = new ReentrantLock();
-
-    Condition emptyCondition = queueLock.newCondition();
-
-    CommandBatcher() {
-        this.waitingBatches = new DataflowQueue<List<CommandAndHandler>>() {
-
-            @Override
-            List<CommandAndHandler> getVal() throws InterruptedException {
-                queueLock.lock();
-                try {
-                    if(internalQueue.isEmpty()) {
-                        emptyCondition.await();
-                    }
-                    if(internalQueue.isEmpty()) {
-                        return null;
-                    }
-                    return internalQueue.remove(0);
-                } finally {
-                    queueLock.unlock()
-                }
-            }
-
-            @Override
-            List<CommandAndHandler> getVal(long value, TimeUnit timeUnit) throws InterruptedException {
-                queueLock.lock();
-                try {
-                    if(internalQueue.isEmpty()) {
-                        emptyCondition.await(value, timeUnit);
-                    }
-                    if(internalQueue.isEmpty()) {
-                        return null;
-                    }
-                    return internalQueue.remove(0);
-                } finally {
-                    queueLock.unlock()
-                }
-            }
-
-            @Override
-            void add(List<CommandAndHandler> value) {
-                queueLock.lock();
-                try {
-                    internalQueue.add(value);
-                    emptyCondition.signal();
-                } finally {
-                    queueLock.unlock()
-                }
-            }
-
-            @Override
-            int length() {
-                queueLock.lock();
-                try {
-                    return internalQueue.size();
-                } finally {
-                    queueLock.unlock()
-                }
-            }
-        };
+    public CommandBatcher() {
+        this.waitingBatches = new CommandBatcherQueue();
     }
 
-    void batch(CommandAndHandler commandAndHandler) {
+    public void batch(CommandAndHandler commandAndHandler) {
         waitingBatches.add(Collections.singletonList(commandAndHandler));
     }
 
-    boolean isEmpty() {
-        queueLock.lock();
-        try {
-            return internalQueue.isEmpty();
-        } finally {
-            queueLock.unlock()
-        }
+    public boolean isEmpty() {
+        return waitingBatches.length() == 0;
     }
 
-    DataflowQueue<List<CommandAndHandler>> getWaitingBatches() {
-        return waitingBatches
+    public DataflowQueue<List<CommandAndHandler>> getWaitingBatches() {
+        return waitingBatches;
     }
 }
