@@ -17,7 +17,7 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientInitializationException;
-import com.canoo.dolphin.client.DolphinRumtimeException;
+import com.canoo.dolphin.client.DolphinRuntimeException;
 import com.canoo.dolphin.client.javafx.DolphinPlatformApplication;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -101,7 +101,7 @@ public class ToDoClient extends DolphinPlatformApplication {
     }
 
     @Override
-    protected void onRuntimeError(Stage primaryStage, DolphinRumtimeException runtimeException) {
+    protected void onRuntimeError(Stage primaryStage, DolphinRuntimeException runtimeException) {
         showError(primaryStage, "Error at runtime", "A error happened at runtime", runtimeException);
     }
 

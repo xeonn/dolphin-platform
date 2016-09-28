@@ -20,7 +20,7 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientContextFactory;
 import com.canoo.dolphin.client.ClientInitializationException;
 import com.canoo.dolphin.client.ClientShutdownException;
-import com.canoo.dolphin.client.DolphinRumtimeException;
+import com.canoo.dolphin.client.DolphinRuntimeException;
 import com.canoo.dolphin.client.impl.ClientContextImpl;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.util.Assert;
@@ -60,7 +60,7 @@ public abstract class DolphinPlatformApplication extends Application {
                 clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> {
                     Assert.requireNonNull(thread, "thread");
                     Assert.requireNonNull(exception, "exception");
-                    onRuntimeError(primaryStage, new DolphinRumtimeException(thread, "Unhandled error in Dolphin Platform background thread", exception));
+                    onRuntimeError(primaryStage, new DolphinRuntimeException(thread, "Unhandled error in Dolphin Platform background thread", exception));
                 });
             });
             clientContext = ClientContextFactory.connect(clientConfiguration).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
@@ -104,7 +104,7 @@ public abstract class DolphinPlatformApplication extends Application {
         this.primaryStage = primaryStage;
         if (initializationException == null) {
             if (clientContext != null) {
-                clientContext.onRemotingError(e -> onRuntimeError(primaryStage, new DolphinRumtimeException("Dolphin Platform remoting error!", e)));
+                clientContext.onRemotingError(e -> onRuntimeError(primaryStage, new DolphinRuntimeException("Dolphin Platform remoting error!", e)));
                 try {
                     start(primaryStage, clientContext);
                 } catch (Exception e) {
@@ -199,7 +199,7 @@ public abstract class DolphinPlatformApplication extends Application {
      * @param primaryStage     the primary stage
      * @param runtimeException the exception
      */
-    protected void onRuntimeError(final Stage primaryStage, final DolphinRumtimeException runtimeException) {
+    protected void onRuntimeError(final Stage primaryStage, final DolphinRuntimeException runtimeException) {
         Assert.requireNonNull(runtimeException, "runtimeException");
         LOG.error("Dolphin Platform runtime error in thread " + runtimeException.getThread().getName(), runtimeException);
         Platform.exit();
