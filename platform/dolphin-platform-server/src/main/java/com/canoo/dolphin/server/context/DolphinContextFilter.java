@@ -78,7 +78,7 @@ public class DolphinContextFilter implements Filter {
             } else {
                 dolphinContext = DolphinContextUtils.getClientInSession(servletRequest.getSession(), clientId);
                 if(dolphinContext == null) {
-                    LOG.warn("Can not find requested client for id " + clientId);
+                    LOG.warn("Can not find requested client for id {} in session {}", clientId, servletRequest.getSession().getId());
                     servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client!");
                     return;
                 }
