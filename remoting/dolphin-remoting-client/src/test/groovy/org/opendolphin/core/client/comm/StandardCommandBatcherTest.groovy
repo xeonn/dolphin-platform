@@ -39,7 +39,7 @@ class StandardCommandBatcherTest extends GroovyTestCase {
 
 		list.each { cwh -> batcher.batch(cwh) }
 
-        assert batcher.waitingBatches.val == [list[0] ]
+        assert batcher.waitingBatches.val == [list[0]]
         assert batcher.waitingBatches.val == [list[1]]
         assert batcher.waitingBatches.val == [list[2]]
 	}
