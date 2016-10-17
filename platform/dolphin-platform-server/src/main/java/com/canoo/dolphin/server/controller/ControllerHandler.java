@@ -155,10 +155,13 @@ public class ControllerHandler {
     }
 
     public void invokeAction(ServerControllerActionCallBean bean) throws InvokeActionException {
+        Assert.requireNonNull(bean, "bean");
+        Assert.requireNonBlank(bean.getControllerId(), "bean.getControllerId()");
+        Assert.requireNonBlank(bean.getActionName(), "bean.getActionName()");
         try {
             final Object controller = controllers.get(bean.getControllerId());
             final Class controllerClass = controllerClassMapping.get(bean.getControllerId());
-            final Method actionMethod = getActionMethod(controller, controllerClass, bean.getActionName());
+            final Method actionMethod = getActionMethod(controllerClass, bean.getActionName());
             final List<Object> args = getArgs(actionMethod, bean);
             ReflectionHelper.invokePrivileged(actionMethod, controller, args.toArray());
         } catch (Exception e) {
@@ -167,6 +170,9 @@ public class ControllerHandler {
     }
 
     private List<Object> getArgs(Method method, ServerControllerActionCallBean bean) {
+        Assert.requireNonNull(method, "method");
+        Assert.requireNonNull(bean, "bean");
+
         final int n = method.getParameterTypes().length;
         final List<Object> args = new ArrayList<>(n);
 
@@ -190,7 +196,10 @@ public class ControllerHandler {
         return Collections.unmodifiableSet(controllers.keySet());
     }
 
-    private <T> Method getActionMethod(T controller, Class<T> controllerClass, String actionName) {
+    private <T> Method getActionMethod(Class<T> controllerClass, String actionName) {
+        Assert.requireNonNull(controllerClass, "controllerClass");
+        Assert.requireNonNull(actionName, "actionName");
+
         List<Method> allMethods = ReflectionHelper.getInheritedDeclaredMethods(controllerClass);
         Method foundMethod = null;
         for (Method method : allMethods) {
@@ -202,7 +211,7 @@ public class ControllerHandler {
                 }
                 if (currentActionName.equals(actionName)) {
                     if (foundMethod != null) {
-                        throw new RuntimeException("More than one method for action " + actionName + " found in " + controller.getClass());
+                        throw new RuntimeException("More than one method for action " + actionName + " found in " + controllerClass);
                     }
                     foundMethod = method;
                 }

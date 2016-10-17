@@ -38,6 +38,8 @@ public class DolphinContextFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContextFilter.class);
 
+    private static final String DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION = "DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION";
+
     private final DolphinPlatformConfiguration configuration;
 
     private final ContainerManager containerManager;
@@ -66,20 +68,32 @@ public class DolphinContextFilter implements Filter {
             if (clientId == null || clientId.trim().isEmpty()) {
                 if(DolphinContextUtils.getOrCreateContextMapInSession(httpSession).size() >= configuration.getMaxClientsPerSession()) {
                     servletResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Maximum size for clients in session is reached");
-                    LOG.info("Maximum size for clients in session " + servletRequest.getSession().getId() +" is reached");
+                    LOG.info("Maximum size for clients in session {} is reached", servletRequest.getSession().getId());
                     return;
                 }
                 dolphinContext = createNewContext(httpSession);
-                DolphinContextUtils.storeInSession(servletRequest.getSession(), dolphinContext);
+                DolphinContextUtils.storeInSession(httpSession, dolphinContext);
                 for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
                     listener.sessionCreated(dolphinContext.getCurrentDolphinSession());
                 }
                 LOG.trace("Created new DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
+
+                Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
+                if(init == null) {
+                    httpSession.setAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION, true);
+                }
             } else {
-                dolphinContext = DolphinContextUtils.getClientInSession(servletRequest.getSession(), clientId);
+                LOG.trace("Trying to find DolphinContext {} in http session {}", clientId, httpSession.getId());
+                dolphinContext = DolphinContextUtils.getClientInSession(httpSession, clientId);
                 if(dolphinContext == null) {
-                    LOG.warn("Can not find requested client for id " + clientId);
-                    servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client!");
+                    Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
+                    if(init == null) {
+                        LOG.warn("Can not find requested client for id {} in session {} (session timeout)", clientId, httpSession.getId());
+                        servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client (session timeout)!");
+                    } else {
+                        LOG.warn("Can not find requested client for id {} in session {} (unknown error)", clientId, httpSession.getId());
+                        servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Can not find requested client (unknown error)!");
+                    }
                     return;
                 }
             }
