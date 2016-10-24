@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 Canoo Engineering AG.
+ * Copyright 2015-2016 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.canoo.dolphin.client;
 
-apply plugin: 'application'
+import java.util.concurrent.ThreadFactory;
 
-mainClassName = 'com.canoo.dolphin.todo.client.ToDoClient'
+public interface DolphinPlatformThreadFactory extends ThreadFactory {
 
-dependencies {
-  compile project(':todo-common')
-  compile project(':dolphin-platform-client-javafx')
-  runtime "org.slf4j:slf4j-simple:$slf4jVersion"
+    void setUncaughtExceptionHandler(Thread.UncaughtExceptionHandler uncaughtExceptionHandler);
 }

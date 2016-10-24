@@ -58,7 +58,7 @@ public class ControllerRepository {
         Assert.requireNonBlank(name, "name");
         Class<?> foundClass = controllersClasses.get(name);
         if(foundClass == null) {
-            throw new IllegalArgumentException("Can't find controller with name " + name);
+            throw new IllegalArgumentException("Can't find controller type with name " + name);
         }
         return foundClass;
     }

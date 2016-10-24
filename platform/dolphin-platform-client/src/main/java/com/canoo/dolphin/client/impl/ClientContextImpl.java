@@ -33,7 +33,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class ClientContextImpl implements ClientContext {
 
@@ -64,7 +63,6 @@ public class ClientContextImpl implements ClientContext {
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
         this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         this.httpClient = clientConfiguration.getHttpClient();
-
         try {
             dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle((v, e) -> {
                 if(e != null) {
@@ -75,7 +73,7 @@ public class ClientContextImpl implements ClientContext {
                 }
                 return null;
             }).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
+        } catch (Exception e) {
             throw new ClientInitializationException("Can not connect to server!", e);
         }
     }

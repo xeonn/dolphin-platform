@@ -17,26 +17,30 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientInitializationException;
-import com.canoo.dolphin.client.DolphinSessionException;
+import com.canoo.dolphin.client.DolphinRuntimeException;
 import com.canoo.dolphin.client.javafx.DolphinPlatformApplication;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import org.apache.http.client.HttpResponseException;
+import javafx.stage.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ToDoClient extends DolphinPlatformApplication {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ToDoClient.class);
 
     @Override
     protected URL getServerEndpoint() throws MalformedURLException {
@@ -45,23 +49,14 @@ public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
-        clientContext.onRemotingError(e -> {
-            if (e.getCause() != null && e.getCause() instanceof DolphinSessionException) {
-                showError("A remoting error happened", "Looks like we ended in a session timeout :(", e);
-            } else if (e.getCause() != null && e.getCause() instanceof HttpResponseException) {
-                showError("A remoting error happened", "Looks like the server sended a bad response :(", e);
-            } else {
-                showError("A remoting error happened", "Looks like we have a big problem :(", e);
-            }
-        });
-
         ToDoViewBinder viewController = new ToDoViewBinder(clientContext);
         primaryStage.setScene(new Scene(viewController.getParent()));
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.show();
     }
 
-    private void showError(String header, String content, Exception e) {
-        e.printStackTrace();
+    private void showError(Window parent, String header, String content, Exception e) {
+        LOG.error("Dolphin Platform error!", e);
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -89,20 +84,31 @@ public class ToDoClient extends DolphinPlatformApplication {
         expContent.add(label, 0, 0);
         expContent.add(textArea, 0, 1);
 
+        ButtonType reconnect = new ButtonType("reconnect");
+        //alert.getButtonTypes().addAll(reconnect);
+
         alert.getDialogPane().setExpandableContent(expContent);
-        alert.showAndWait();
-        System.exit(-1);
+        ButtonType result = alert.showAndWait().orElse(null);
+
+        if(result != null && reconnect.equals(result)) {
+            reconnect(new Stage());
+        } else {
+            Platform.exit();
+        }
     }
 
     @Override
     protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) {
-        showError("Error on initialization", "A error happened while initializing the Client and Connection", initializationException);
+        showError(primaryStage, "Error on initialization", "A error happened while initializing the Client and Connection", initializationException);
+    }
+
+    @Override
+    protected void onRuntimeError(Stage primaryStage, DolphinRuntimeException runtimeException) {
+        showError(primaryStage, "Error at runtime", "A error happened at runtime", runtimeException);
     }
 
     public static void main(String[] args) {
-        Logger OD_LOGGER = Logger.getLogger("org.opendolphin");
-        OD_LOGGER.setLevel(Level.SEVERE);
-
+        Platform.setImplicitExit(false);
         Application.launch(args);
     }
 
