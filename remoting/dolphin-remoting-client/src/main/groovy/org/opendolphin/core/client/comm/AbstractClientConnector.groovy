@@ -39,17 +39,7 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
-    Closure onException = { Throwable up ->
-        def out = new StringWriter()
-        up.printStackTrace(new PrintWriter(out))
-        log.severe("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
-
-        if (uiThreadHandler) {
-            uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
-        } else {
-            log.severe("UI Thread not defined...", up)
-        }
-    }
+    Closure onException;
 
     protected final ClientDolphin clientDolphin
     protected final ICommandBatcher commandBatcher
@@ -62,10 +52,26 @@ abstract class AbstractClientConnector implements ClientConnector {
         this.clientDolphin = clientDolphin
         this.commandBatcher = commandBatcher ?: new CommandBatcher()
 
+        // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
+        def log = log;
+        onException = { Throwable up ->
+            def out = new StringWriter()
+            up.printStackTrace(new PrintWriter(out))
+            log.severe("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
+
+            if (uiThreadHandler) {
+                uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
+            } else {
+                log.severe("UI Thread not defined...", up)
+            }
+        }
+
         startCommandProcessing()
     }
 
     protected void startCommandProcessing() {
+        // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
+        def log = log;
         backgroundExecutor.execute(new Runnable() {
             @Override
             void run() {
@@ -163,11 +169,13 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     @CompileStatic
     void doSafelyInsideUiThread(Runnable whatToDo) {
+        // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
+        def log = log;
         Runnable doInside = {
             if (uiThreadHandler) {
                 uiThreadHandler.executeInsideUiThread whatToDo
             } else {
-                println "please provide howToProcessInsideUI handler"
+                log.warning "please provide howToProcessInsideUI handler"
                 whatToDo.run()
             }
         }

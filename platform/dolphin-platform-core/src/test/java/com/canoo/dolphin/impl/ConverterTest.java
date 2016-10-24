@@ -25,7 +25,7 @@ public class ConverterTest {
     @Test
     public void testDateConversions() {
         Converters converters = new Converters(null);
-        Converters.Converter converter = converters.getConverter(Date.class);
+        Converter converter = converters.getConverter(Date.class);
 
         Date testDate1 = new Date();
         checkConversion(converter, testDate1);
@@ -46,7 +46,7 @@ public class ConverterTest {
     @Test
     public void testStringConversions() {
         Converters converters = new Converters(null);
-        Converters.Converter converter = converters.getConverter(String.class);
+        Converter converter = converters.getConverter(String.class);
 
         checkConversion(converter, "");
         checkConversion(converter, null);
@@ -56,7 +56,7 @@ public class ConverterTest {
     @Test
     public void testDoubleConversions() {
         Converters converters = new Converters(null);
-        Converters.Converter converter = converters.getConverter(Double.class);
+        Converter converter = converters.getConverter(Double.class);
 
         checkConversion(converter, 2.9d);
         checkConversion(converter, null);
@@ -65,7 +65,7 @@ public class ConverterTest {
         checkConversion(converter, Double.MIN_VALUE);
     }
 
-    private void checkConversion(Converters.Converter converter, Object val) {
+    private void checkConversion(Converter converter, Object val) {
         Object converted = converter.convertToDolphin(val);
         Object reconverted = converter.convertFromDolphin(converted);
         Assert.assertEquals(reconverted, val);
