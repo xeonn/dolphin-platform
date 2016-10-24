@@ -125,11 +125,6 @@ public class Converters {
         }
     }
 
-    public interface Converter {
-        Object convertFromDolphin(Object value);
-        Object convertToDolphin(Object value);
-    }
-
     private static class BaseConverter implements Converter {
         @Override
         public Object convertFromDolphin(Object value) {

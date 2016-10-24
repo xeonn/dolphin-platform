@@ -129,7 +129,7 @@ public class ClassRepositoryImpl implements ClassRepository {
 
             if (type != null && parameterType != null) {
                 final String attributeName = DolphinUtils.getDolphinAttributePropertyNameForField(field);
-                final Converters.Converter converter = converters.getConverter(parameterType);
+                final Converter converter = converters.getConverter(parameterType);
                 final PropertyInfo propertyInfo = new ClassPropertyInfo(attributeName, converter, field);
                 if (type == PropertyType.PROPERTY) {
                     propertyInfos.add(propertyInfo);
