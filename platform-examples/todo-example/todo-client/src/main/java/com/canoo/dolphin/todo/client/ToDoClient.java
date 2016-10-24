@@ -35,14 +35,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ToDoClient extends DolphinPlatformApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(ToDoClient.class);
 
     @Override
-    protected String getServerEndpoint() {
-        return "http://localhost:8080/todo-app/dolphin";
+    protected URL getServerEndpoint() throws MalformedURLException {
+        return new URL("http://localhost:8080/todo-app/dolphin");
     }
 
     @Override

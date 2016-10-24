@@ -64,17 +64,20 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Configuration
 public class DolphinPlatformSpringTestBootstrap {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public ClientContext createClientContext(final DolphinTestContext dolphinContext, final TestInMemoryConfiguration config) throws ExecutionException, InterruptedException {
+    public ClientContext createClientContext(final DolphinTestContext dolphinContext, final TestInMemoryConfiguration config) throws ExecutionException, InterruptedException, MalformedURLException {
         Assert.requireNonNull(dolphinContext, "dolphinContext");
         final ClientDolphin clientDolphin = dolphinContext.getClientDolphin();
 
-        final ClientConfiguration clientConfiguration = new ClientConfiguration("PIPE", new UiThreadHandler() {
+        final URL dummyURL = new URL("http://dummyURL");
+        final ClientConfiguration clientConfiguration = new ClientConfiguration(dummyURL, new UiThreadHandler() {
 
             @Override
             public void executeInsideUiThread(Runnable runnable) {
@@ -97,13 +100,13 @@ public class DolphinPlatformSpringTestBootstrap {
         final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback());
 
         //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
-     //   config.getClientExecutor().submit(new Runnable() {
-     //       @Override
-     //       public void run() {
-     //           clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
-     //       }
+        //   config.getClientExecutor().submit(new Runnable() {
+        //       @Override
+        //       public void run() {
+        //           clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+        //       }
 //
-  //      }).get();
+        //      }).get();
         return clientContext;
     }
 
@@ -170,7 +173,7 @@ public class DolphinPlatformSpringTestBootstrap {
         return context.getDolphinEventBus();
     }
 
-    @Bean(name="propertyBinder")
+    @Bean(name = "propertyBinder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected PropertyBinder createPropertyBinder() {
         return new PropertyBinderImpl();

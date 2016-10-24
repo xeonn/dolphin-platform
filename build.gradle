@@ -78,6 +78,11 @@ subprojects { subprj ->
         targetCompatibility = subprj.targetCompatibility
     }
 
+    subprj.tasks.withType(GroovyCompile) {
+        sourceCompatibility = subprj.sourceCompatibility
+        targetCompatibility = subprj.targetCompatibility
+    }
+
     repositories {
         mavenLocal()
         jcenter()

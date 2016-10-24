@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm;
-
-import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.server.ServerConnector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+package org.opendolphin.core.client.comm
+import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.comm.Command
+import org.opendolphin.core.server.ServerConnector
 /**
  * An in-memory client connector without any asynchronous calls such that
  * technologies like GWT, Vaadin, or ULC can use it safely on the server side

@@ -76,15 +76,16 @@ public class ReflectionHelper {
         });
     }
 
-    public static void invokePrivileged(final Method method, final Object obj, final Object... args) {
+    public static void invokePrivileged(final Method method, final Object instance, final Object... args) {
         Assert.requireNonNull(method, "method");
+        Assert.requireNonNull(instance, "instance");
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {
                 boolean wasAccessible = method.isAccessible();
                 try {
                     method.setAccessible(true);
-                    method.invoke(obj, args);
+                    method.invoke(instance, args);
                     return null; // return nothing...
                 } catch (InvocationTargetException | IllegalAccessException ex) {
                     throw new IllegalStateException("Cannot invoke method: "

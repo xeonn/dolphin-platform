@@ -34,4 +34,6 @@ public interface ClientConnector {
     boolean isPushEnabled();
 
     void listen();
+
+    void setUiThreadHandler(UiThreadHandler uiThreadHandler);
 }

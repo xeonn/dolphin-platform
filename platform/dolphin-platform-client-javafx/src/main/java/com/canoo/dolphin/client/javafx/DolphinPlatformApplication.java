@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Defines a basic application class for Dolphin Platform based applications that can be used like the {@link Application}
@@ -77,7 +79,13 @@ public abstract class DolphinPlatformApplication extends Application {
      * @return The Dolphin Platform configuration for this client
      */
     protected JavaFXConfiguration getClientConfiguration() {
-        return new JavaFXConfiguration(getServerEndpoint());
+        JavaFXConfiguration configuration = null;
+        try {
+            configuration = new JavaFXConfiguration(getServerEndpoint());
+        } catch (MalformedURLException e) {
+            throw new ClientInitializationException("Client configuration cannot be created", e);
+        }
+        return configuration;
     }
 
     /**
@@ -85,7 +93,7 @@ public abstract class DolphinPlatformApplication extends Application {
      *
      * @return the server url
      */
-    protected abstract String getServerEndpoint();
+    protected abstract URL getServerEndpoint() throws MalformedURLException;
 
     /**
      * This methods defines parts of the Dolphin Platform lifecyycle and is therefore defined as final.

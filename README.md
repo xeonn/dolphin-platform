@@ -10,13 +10,15 @@ This repository contains all Java related sources of the Dolphin Platform. Clien
 
 The Dolphin Platform is a framework that implements the presentation model pattern and provides a modern way to create enterprise applications. The Platform provides several client implementations that all can be used in combination with a general sever API.
 
-![Several clients](http://www.dolphin-platform.io/assets/img/features/clients.png)
-
+<p align="center">
+<img src="http://www.dolphin-platform.io/assets/img/features/clients.png"/>
+</p>
 
 By doing so you can create enterprise application with a single server and several desktop, web and mobile client implementations. Here the Dolphin Platforms define a mechanism to automatically snchronize models between the server and the client.
 
-![Model sync](http://www.dolphin-platform.io/assets/img/features/pm1.png)
-
+<p align="center">
+<img src="http://www.dolphin-platform.io/assets/img/features/pm1.png"/>
+</p>
 
 For more information visit [our website](http://www.dolphin-platform.io) or the [documentation](https://canoo.github.io/dolphin-platform/).
 
