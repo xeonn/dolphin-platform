@@ -18,8 +18,18 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.client.util.*;
 import com.canoo.dolphin.impl.BeanDefinitionException;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.impl.converters.BooleanConverterFactory;
+import com.canoo.dolphin.impl.converters.ByteConverterFactory;
+import com.canoo.dolphin.impl.converters.DateConverterFactory;
+import com.canoo.dolphin.impl.converters.DolphinBeanConverterFactory;
+import com.canoo.dolphin.impl.converters.DoubleConverterFactory;
+import com.canoo.dolphin.impl.converters.EnumConverterFactory;
+import com.canoo.dolphin.impl.converters.FloatConverterFactory;
+import com.canoo.dolphin.impl.converters.IntegerConverterFactory;
+import com.canoo.dolphin.impl.converters.LongConverterFactory;
+import com.canoo.dolphin.impl.converters.ShortConverterFactory;
+import com.canoo.dolphin.impl.converters.StringConverterFactory;
 import mockit.Mocked;
 import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
@@ -86,8 +96,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("myProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
+                                hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -150,8 +160,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("text")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
+                                hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -232,36 +242,36 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
             } else {
                 switch (attribute.getPropertyName()) {
                     case "byteProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.BYTE.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.BYTE.ordinal()));
+                        assertThat(attribute.getValue(), is(ByteConverterFactory.FIELD_TYPE_BYTE));
+                        assertThat(attribute.getBaseValue(), is(ByteConverterFactory.FIELD_TYPE_BYTE));
                         break;
                     case "shortProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.SHORT.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.SHORT.ordinal()));
+                        assertThat(attribute.getValue(), is(ShortConverterFactory.FIELD_TYPE_SHORT));
+                        assertThat(attribute.getBaseValue(), is(ShortConverterFactory.FIELD_TYPE_SHORT));
                         break;
                     case "integerProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.INT.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.INT.ordinal()));
+                        assertThat(attribute.getValue(), is(IntegerConverterFactory.FIELD_TYPE_INT));
+                        assertThat(attribute.getBaseValue(), is(IntegerConverterFactory.FIELD_TYPE_INT));
                         break;
                     case "longProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.LONG.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.LONG.ordinal()));
+                        assertThat(attribute.getValue(), is(LongConverterFactory.FIELD_TYPE_LONG));
+                        assertThat(attribute.getBaseValue(), is(LongConverterFactory.FIELD_TYPE_LONG));
                         break;
                     case "floatProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.FLOAT.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.FLOAT.ordinal()));
+                        assertThat(attribute.getValue(), is(FloatConverterFactory.FIELD_TYPE_FLOAT));
+                        assertThat(attribute.getBaseValue(), is(FloatConverterFactory.FIELD_TYPE_FLOAT));
                         break;
                     case "doubleProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.DOUBLE.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.DOUBLE.ordinal()));
+                        assertThat(attribute.getValue(), is(DoubleConverterFactory.FIELD_TYPE_DOUBLE));
+                        assertThat(attribute.getBaseValue(), is(DoubleConverterFactory.FIELD_TYPE_DOUBLE));
                         break;
                     case "booleanProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.BOOLEAN.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.BOOLEAN.ordinal()));
+                        assertThat(attribute.getValue(), is(BooleanConverterFactory.FIELD_TYPE_BOOLEAN));
+                        assertThat(attribute.getBaseValue(), is(BooleanConverterFactory.FIELD_TYPE_BOOLEAN));
                         break;
                     case "textProperty":
-                        assertThat(attribute.getValue(), is(ClassRepositoryImpl.FieldType.STRING.ordinal()));
-                        assertThat(attribute.getBaseValue(), is(ClassRepositoryImpl.FieldType.STRING.ordinal()));
+                        assertThat(attribute.getValue(), is(StringConverterFactory.FIELD_TYPE_STRING));
+                        assertThat(attribute.getBaseValue(), is(StringConverterFactory.FIELD_TYPE_STRING));
                         break;
                     default:
                         fail("Unknown attribute found: " + attribute);
@@ -340,22 +350,22 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("dateProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("value", is(DateConverterFactory.FIELD_TYPE_DATE)),
+                                hasProperty("baseValue", is(DateConverterFactory.FIELD_TYPE_DATE)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("calendarProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DATE.ordinal())),
+                                hasProperty("value", is(DateConverterFactory.FIELD_TYPE_DATE)),
+                                hasProperty("baseValue", is(DateConverterFactory.FIELD_TYPE_DATE)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("enumProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.ENUM.ordinal())),
+                                hasProperty("value", is(EnumConverterFactory.FIELD_TYPE_ENUM)),
+                                hasProperty("baseValue", is(EnumConverterFactory.FIELD_TYPE_ENUM)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -419,8 +429,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("referenceProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
+                                hasProperty("value", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
+                                hasProperty("baseValue", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -475,15 +485,15 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("objectList")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN.ordinal())),
+                                hasProperty("value", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
+                                hasProperty("baseValue", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("primitiveList")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
+                                hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
@@ -556,15 +566,15 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("childProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
+                                hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),
                         allOf(
                                 hasProperty("propertyName", is("parentProperty")),
-                                hasProperty("value", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
-                                hasProperty("baseValue", is(ClassRepositoryImpl.FieldType.STRING.ordinal())),
+                                hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
+                                hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),

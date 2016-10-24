@@ -66,7 +66,7 @@ public abstract class AbstractDolphinBasedTest {
             public void onReject(Set<Instance> instances) {
 
             }
-        });
+        }, converters);
         final BeanBuilder beanBuilder = new ServerBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher, garbageCollector);
         return new BeanManagerImpl(beanRepository, beanBuilder);
     }

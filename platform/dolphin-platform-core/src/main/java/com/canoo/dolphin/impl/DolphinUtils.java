@@ -15,7 +15,17 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
+import com.canoo.dolphin.impl.converters.BooleanConverterFactory;
+import com.canoo.dolphin.impl.converters.ByteConverterFactory;
+import com.canoo.dolphin.impl.converters.DateConverterFactory;
+import com.canoo.dolphin.impl.converters.DolphinBeanConverterFactory;
+import com.canoo.dolphin.impl.converters.DoubleConverterFactory;
+import com.canoo.dolphin.impl.converters.EnumConverterFactory;
+import com.canoo.dolphin.impl.converters.FloatConverterFactory;
+import com.canoo.dolphin.impl.converters.IntegerConverterFactory;
+import com.canoo.dolphin.impl.converters.LongConverterFactory;
+import com.canoo.dolphin.impl.converters.ShortConverterFactory;
+import com.canoo.dolphin.impl.converters.StringConverterFactory;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;
 
@@ -31,6 +41,11 @@ public class DolphinUtils {
 
     private DolphinUtils() {
     }
+
+    public static boolean isDolphinBean(Class cls) {
+        return DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN.equals(DolphinUtils.getFieldType(cls));
+    }
+
 
     public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
         if (ReflectionHelper.isProperty(descriptor)) {
@@ -56,38 +71,38 @@ public class DolphinUtils {
         return null;
     }
 
-    public static FieldType getFieldType(Class<?> clazz) {
+    public static String getFieldType(Class<?> clazz) {
         Assert.requireNonNull(clazz, "clazz");
         if (String.class.equals(clazz)) {
-            return FieldType.STRING;
+            return StringConverterFactory.FIELD_TYPE_STRING;
         }
         if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
-            return FieldType.INT;
+            return IntegerConverterFactory.FIELD_TYPE_INT;
         }
         if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
-            return FieldType.BOOLEAN;
+            return BooleanConverterFactory.FIELD_TYPE_BOOLEAN;
         }
         if (long.class.equals(clazz) || Long.class.equals(clazz)) {
-            return FieldType.LONG;
+            return LongConverterFactory.FIELD_TYPE_LONG;
         }
         if (double.class.equals(clazz) || Double.class.equals(clazz)) {
-            return FieldType.DOUBLE;
+            return DoubleConverterFactory.FIELD_TYPE_DOUBLE;
         }
         if (float.class.equals(clazz) || Float.class.equals(clazz)) {
-            return FieldType.FLOAT;
+            return FloatConverterFactory.FIELD_TYPE_FLOAT;
         }
         if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
-            return FieldType.BYTE;
+            return ByteConverterFactory.FIELD_TYPE_BYTE;
         }
         if (short.class.equals(clazz) || Short.class.equals(clazz)) {
-            return FieldType.SHORT;
+            return ShortConverterFactory.FIELD_TYPE_SHORT;
         }
         if (Enum.class.isAssignableFrom(clazz)) {
-            return FieldType.ENUM;
+            return EnumConverterFactory.FIELD_TYPE_ENUM;
         }
         if (Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz)) {
-            return FieldType.DATE;
+            return DateConverterFactory.FIELD_TYPE_DATE;
         }
-        return FieldType.DOLPHIN_BEAN;
+        return DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN;
     }
 }

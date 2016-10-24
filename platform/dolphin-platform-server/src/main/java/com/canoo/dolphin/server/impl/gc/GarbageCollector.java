@@ -16,7 +16,6 @@
 package com.canoo.dolphin.server.impl.gc;
 
 import com.canoo.dolphin.collections.ObservableList;
-import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.DolphinUtils;
 import com.canoo.dolphin.impl.IdentitySet;
 import com.canoo.dolphin.impl.ReflectionHelper;
@@ -40,7 +39,6 @@ import java.util.List;
 public class GarbageCollector {
 
     private static final Logger LOG = LoggerFactory.getLogger(GarbageCollector.class);
-
 
     private final IdentityHashMap<Instance, Object> removeOnGC = new IdentityHashMap<>();
 
@@ -140,7 +138,7 @@ public class GarbageCollector {
         }
         removeReferenceAndCheckForGC(property, oldValue);
 
-        if (newValue != null && !isBasicType(newValue.getClass())) {
+        if (newValue != null && DolphinUtils.isDolphinBean(newValue.getClass())) {
             Instance instance = getInstance(newValue);
             Reference reference = new PropertyReference(propertyToParent.get(property), property, instance);
             if (reference.hasCircularReference()) {
@@ -160,7 +158,7 @@ public class GarbageCollector {
         if(!UnstableFeatureFlags.isUseGc()) {
             return;
         }
-        if (value != null && !isBasicType(value.getClass())) {
+        if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
             Instance instance = getInstance(value);
             Reference reference = new ListReference(listToParent.get(list), list, instance);
             if (reference.hasCircularReference()) {
@@ -218,7 +216,7 @@ public class GarbageCollector {
 
     private void removeReferenceAndCheckForGC(ObservableList list, Object value) {
         Assert.requireNonNull(list, "list");
-        if (value != null && !isBasicType(value.getClass())) {
+        if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
             Instance instance = getInstance(value);
             Reference toRemove = null;
             for (Reference reference : instance.getReferences()) {
@@ -242,7 +240,7 @@ public class GarbageCollector {
 
     private void removeReferenceAndCheckForGC(Property property, Object value) {
         Assert.requireNonNull(property, "property");
-        if(value != null && !isBasicType(value.getClass())) {
+        if(value != null && DolphinUtils.isDolphinBean(value.getClass())) {
             Instance instance = getInstance(value);
             Reference toRemove = null;
             for (Reference reference : instance.getReferences()) {
@@ -275,7 +273,7 @@ public class GarbageCollector {
 
         for (Property property : instance.getProperties()) {
             Object propertyValue = property.get();
-            if (propertyValue != null && !isBasicType(propertyValue.getClass())) {
+            if (propertyValue != null && DolphinUtils.isDolphinBean(propertyValue.getClass())) {
                 Instance childInstance = getInstance(propertyValue);
                 if (!childInstance.isReferencedByRoot()) {
                     addToGC(childInstance, propertyValue);
@@ -284,7 +282,7 @@ public class GarbageCollector {
         }
         for (ObservableList list : instance.getLists()) {
             for (Object listValue : list) {
-                if (listValue != null && !isBasicType(listValue.getClass())) {
+                if (listValue != null && DolphinUtils.isDolphinBean(listValue.getClass())) {
                     Instance childInstance = getInstance(listValue);
                     if (!childInstance.isReferencedByRoot()) {
                         addToGC(childInstance, listValue);
@@ -305,14 +303,14 @@ public class GarbageCollector {
         if (removed != null) {
             for (Property property : instance.getProperties()) {
                 Object value = property.get();
-                if (value != null && !isBasicType(value.getClass())) {
+                if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
                     Instance childInstance = getInstance(value);
                     removeFromGC(childInstance);
                 }
             }
             for (ObservableList list : instance.getLists()) {
                 for (Object value : list) {
-                    if (value != null && !isBasicType(value.getClass())) {
+                    if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
                         Instance childInstance = getInstance(value);
                         removeFromGC(childInstance);
                     }
@@ -365,14 +363,6 @@ public class GarbageCollector {
             throw new IllegalArgumentException("Can't find reference for " + bean);
         }
         return instance;
-    }
-
-    private boolean isBasicType(Class cls) {
-        ClassRepositoryImpl.FieldType fieldType = DolphinUtils.getFieldType(cls);
-        if(fieldType.equals(ClassRepositoryImpl.FieldType.DOLPHIN_BEAN)) {
-            return false;
-        }
-        return true;
     }
 
     public long getGcCalls() {

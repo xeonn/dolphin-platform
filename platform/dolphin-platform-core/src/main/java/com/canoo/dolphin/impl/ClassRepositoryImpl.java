@@ -45,8 +45,6 @@ public class ClassRepositoryImpl implements ClassRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
 
-    public enum FieldType {DOLPHIN_BEAN, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, STRING, DATE, ENUM}
-
     private final PresentationModelBuilderFactory builderFactory;
     private final Converters converters;
 
@@ -106,8 +104,8 @@ public class ClassRepositoryImpl implements ClassRepository {
                 if(clazz == null) {
                     throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
                 }
-                final FieldType type = DolphinUtils.getFieldType(clazz);
-                builder.withAttribute(attributeName, type.ordinal(), Tag.VALUE);
+                final String type = DolphinUtils.getFieldType(clazz);
+                builder.withAttribute(attributeName, type, Tag.VALUE);
             }
         }
 
