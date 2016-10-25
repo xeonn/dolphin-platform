@@ -101,8 +101,10 @@ abstract class AbstractClientConnector implements ClientConnector {
                         @Override
                         void run() {
                             List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
-                            List<Command> commands = toProcess.collect { it.command }
-
+                            List<Command> commands = new ArrayList<>();
+                            for(CommandAndHandler c : toProcess) {
+                                commands.add(c.command);
+                            }
                             if (log.isLoggable(Level.INFO)) {
                                 log.info("C: sending batch of size " + commands.size());
                                 for (command in commands) {
@@ -150,7 +152,7 @@ abstract class AbstractClientConnector implements ClientConnector {
         List<ClientPresentationModel> touchedPresentationModels = new LinkedList<ClientPresentationModel>();
         List<Map> touchedDataMaps = new LinkedList<Map>();
         for (Command serverCommand in response) {
-            def touched = me.dispatchHandle serverCommand;
+            def touched = me.dispatchHandle(serverCommand);
             if (touched && touched instanceof ClientPresentationModel) {
                 touchedPresentationModels << (ClientPresentationModel) touched;
             } else if (touched && touched instanceof Map) {
@@ -168,7 +170,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     Object dispatchHandle(Command command) {
-        handle command;
+        handle(command);
     }
 
     @CompileStatic
@@ -191,7 +193,7 @@ abstract class AbstractClientConnector implements ClientConnector {
         def log = LOG;
         Runnable doInside = {
             if (uiThreadHandler) {
-                uiThreadHandler.executeInsideUiThread whatToDo;
+                uiThreadHandler.executeInsideUiThread(whatToDo);
             } else {
                 log.warning("please provide howToProcessInsideUI handler");
                 whatToDo.run();
