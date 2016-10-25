@@ -40,10 +40,10 @@ import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import groovy.lang.Closure;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
+import org.opendolphin.core.client.comm.ExceptionHandler;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -81,16 +81,15 @@ public class ClientContextFactory {
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
                 final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
-                Closure closure = new Closure(null) {
+                ExceptionHandler exceptionHandler = new ExceptionHandler() {
 
                     @Override
-                    public Object call(Object... args) {
-                        result.completeExceptionally(new DolphinRemotingException("Internal Exception", (Throwable) args[0]));
-                        return null;
+                    public void handle(Throwable e) {
+                        result.completeExceptionally(new DolphinRemotingException("Internal Exception", e));
                     }
                 };
 
-                clientConnector.setOnException(closure);
+                clientConnector.setOnException(exceptionHandler);
                 clientDolphin.setClientConnector(clientConnector);
                 final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
                 final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);

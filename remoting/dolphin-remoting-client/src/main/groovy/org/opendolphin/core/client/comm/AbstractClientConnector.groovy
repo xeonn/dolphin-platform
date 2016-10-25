@@ -30,22 +30,24 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     private static final Logger LOG = Logger.getLogger(AbstractClientConnector.class.getName());
 
-    Codec codec
+    Codec codec;
 
-    UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
+    UiThreadHandler uiThreadHandler; // must be set from the outside - toolkit specific
 
     ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
-    Closure onException;
+    ExceptionHandler onException;
 
     ClientResponseHandler responseHandler;
 
-    protected final ClientDolphin clientDolphin
-    protected final ICommandBatcher commandBatcher
+    protected final ClientDolphin clientDolphin;
+
+    protected final ICommandBatcher commandBatcher;
 
 
     /** The named command that waits for pushes on the server side */
     NamedCommand  pushListener   = null;
+
     /** The signal command that publishes a "release" event on the respective bus */
     SignalCommand releaseCommand = null;
 
@@ -57,29 +59,35 @@ abstract class AbstractClientConnector implements ClientConnector {
 
 
     AbstractClientConnector(ClientDolphin clientDolphin) {
-        this(clientDolphin, null)
+        this(clientDolphin, null);
     }
 
     AbstractClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
-        this.clientDolphin = clientDolphin
-        this.commandBatcher = commandBatcher ?: new CommandBatcher()
+        this.clientDolphin = clientDolphin;
+        this.commandBatcher = commandBatcher ?: new CommandBatcher();
         this.responseHandler = new ClientResponseHandler(clientDolphin);
 
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
         def log = LOG;
-        onException = { Throwable up ->
-            def out = new StringWriter()
-            up.printStackTrace(new PrintWriter(out))
-            log.log(Level.SEVERE, "onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException", up);
+        onException = new ExceptionHandler() {
 
-            if (uiThreadHandler) {
-                uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
-            } else {
-                log.log(Level.SEVERE, "UI Thread not defined...", up)
+            @Override
+            void handle(Throwable e) {
+                log.log(Level.SEVERE, "onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException", e);
+
+                if (uiThreadHandler) {
+                    uiThreadHandler.executeInsideUiThread(new Runnable() {
+                        @Override
+                        void run() {
+                            throw e;
+                        }
+                    });
+                } else {
+                    log.log(Level.SEVERE, "UI Thread not defined...", e);
+                }
             }
-        }
-
-        startCommandProcessing()
+        };
+        startCommandProcessing();
     }
 
     protected void startCommandProcessing() {
@@ -97,13 +105,12 @@ abstract class AbstractClientConnector implements ClientConnector {
 
                             if (log.isLoggable(Level.INFO)) {
                                 log.info("C: sending batch of size " + commands.size());
-                                for (command in commands) { log.info("C:           -> " + command) }
+                                for (command in commands) {
+                                    log.info("C:           -> " + command) ;
+                                }
                             }
 
                             List<Command> answer = transmit(commands);
-
-
-
                             doSafelyInsideUiThread(new Runnable() {
                                 @Override
                                 void run() {
@@ -118,7 +125,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     protected ClientModelStore getClientModelStore() {
-        clientDolphin.clientModelStore
+        return clientDolphin.clientModelStore;
     }
 
     abstract List<Command> transmit(List<Command> commands)
@@ -127,52 +134,54 @@ abstract class AbstractClientConnector implements ClientConnector {
     public void send(Command command, OnFinishedHandler callback = null) {
         // we have some change so regardless of the batching we may have to release a push
         if (command != pushListener) {
-            release()
+            release();
         }
         // we are inside the UI thread and events calls come in strict order as received by the UI toolkit
-        commandBatcher.batch(new CommandAndHandler(command: command, handler: callback))
+        commandBatcher.batch(new CommandAndHandler(command: command, handler: callback));
     }
 
     @CompileStatic
     void processResults(List<Command> response, List<CommandAndHandler> commandsAndHandlers) {
-        def me = this
+        def me = this;
         // see http://jira.codehaus.org/browse/GROOVY-6946
-        def commands = response?.id
+        def commands = response?.id;
         LOG.info("C: server responded with ${response?.size()} command(s): ${commands}");
 
-        List<ClientPresentationModel> touchedPresentationModels = new LinkedList<ClientPresentationModel>()
-        List<Map> touchedDataMaps = new LinkedList<Map>()
+        List<ClientPresentationModel> touchedPresentationModels = new LinkedList<ClientPresentationModel>();
+        List<Map> touchedDataMaps = new LinkedList<Map>();
         for (Command serverCommand in response) {
-            def touched = me.dispatchHandle serverCommand
+            def touched = me.dispatchHandle serverCommand;
             if (touched && touched instanceof ClientPresentationModel) {
-                touchedPresentationModels << (ClientPresentationModel) touched
+                touchedPresentationModels << (ClientPresentationModel) touched;
             } else if (touched && touched instanceof Map) {
-                touchedDataMaps << (Map) touched
+                touchedDataMaps << (Map) touched;
             }
         }
-        def callback = commandsAndHandlers.first().handler // there can only be one relevant handler anyway
+        def callback = commandsAndHandlers.first().handler; // there can only be one relevant handler anyway
         // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
         if (callback !=null) {
-            callback.onFinished((List<ClientPresentationModel>) touchedPresentationModels.unique { ((ClientPresentationModel) it).id })
+            callback.onFinished((List<ClientPresentationModel>) touchedPresentationModels.unique { ((ClientPresentationModel) it).id });
             if (callback instanceof OnFinishedData) {
-                callback.onFinishedData(touchedDataMaps)
+                callback.onFinishedData(touchedDataMaps);
             }
         }
     }
 
     Object dispatchHandle(Command command) {
-        handle command
+        handle command;
     }
 
     @CompileStatic
     void doExceptionSafe(Runnable processing, Runnable atLeast = null) {
         try {
-            processing.run()
-        } catch (e) {
-            StackTraceUtils.deepSanitize(e)
-            onException e
+            processing.run();
+        } catch (Exception e) {
+            StackTraceUtils.deepSanitize(e);
+            onException.handle(e);
         } finally {
-            if (atLeast) atLeast.run()
+            if (atLeast != null) {
+                atLeast.run();
+            }
         }
     }
 
@@ -182,13 +191,13 @@ abstract class AbstractClientConnector implements ClientConnector {
         def log = LOG;
         Runnable doInside = {
             if (uiThreadHandler) {
-                uiThreadHandler.executeInsideUiThread whatToDo
+                uiThreadHandler.executeInsideUiThread whatToDo;
             } else {
                 log.warning("please provide howToProcessInsideUI handler");
-                whatToDo.run()
+                whatToDo.run();
             }
         }
-        doExceptionSafe doInside
+        doExceptionSafe doInside;
     }
 
 
@@ -198,16 +207,16 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     /** listens for the pushListener to return. The pushListener must be set and pushEnabled must be true. */
     public void listen() {
-        if (!pushEnabled) return // allow the loop to end
-        if (waiting) return      // avoid second call while already waiting (?) -> two different push actions not supported
-        waiting = true
+        if (!pushEnabled) return; // allow the loop to end
+        if (waiting) return;      // avoid second call while already waiting (?) -> two different push actions not supported
+        waiting = true;
         send(pushListener, new OnFinishedHandlerAdapter() {
             @Override
             void onFinished(List<ClientPresentationModel> presentationModels) {
                 // we do nothing here nor do we register a special handler.
                 // The server may have sent commands, though, even CallNamedActionCommand.
-                waiting = false
-                listen() // not a real recursion; is added to event queue
+                waiting = false;
+                listen(); // not a real recursion; is added to event queue
             }
         })
     }
@@ -217,9 +226,9 @@ abstract class AbstractClientConnector implements ClientConnector {
      * */
     protected void release() {
         if (!waiting) {
-            return      // there is no point in releasing if we do not wait. Avoid excessive releasing.
+            return;      // there is no point in releasing if we do not wait. Avoid excessive releasing.
         }
-        waiting = false // release is under way
+        waiting = false; // release is under way
         backgroundExecutor.execute(new Runnable() {
             @Override
             void run() {
