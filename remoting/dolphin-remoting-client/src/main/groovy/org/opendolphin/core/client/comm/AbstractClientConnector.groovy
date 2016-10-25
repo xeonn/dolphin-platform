@@ -35,7 +35,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     UiThreadHandler uiThreadHandler; // must be set from the outside - toolkit specific
 
-    ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+    private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
     ExceptionHandler onException;
 
@@ -56,7 +56,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     /** whether we currently wait for push events (internal state) and may need to release */
     protected boolean waiting = false;
-
 
     public AbstractClientConnector(ClientDolphin clientDolphin) {
         this(clientDolphin, null);
@@ -128,7 +127,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return clientDolphin.clientModelStore;
     }
 
-    abstract List<Command> transmit(List<Command> commands)
+    protected abstract List<Command> transmit(List<Command> commands)
 
     @CompileStatic
     public void send(Command command, OnFinishedHandler callback = null) {
