@@ -15,16 +15,10 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.ConverterFactory;
-import com.canoo.dolphin.internal.BeanRepository;
+import com.canoo.dolphin.impl.Converter;
 
 /**
- * Created by hendrikebbers on 24.10.16.
+ * Created by hendrikebbers on 25.10.16.
  */
-public abstract class AbstractConverterFactory implements ConverterFactory {
-
-    @Override
-    public void init(BeanRepository beanRepository) {
-
-    }
+public abstract class AbstractBooleanConverter<B> implements Converter<B, Boolean> {
 }

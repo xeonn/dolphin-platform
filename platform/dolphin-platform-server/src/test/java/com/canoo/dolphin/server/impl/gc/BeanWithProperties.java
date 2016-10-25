@@ -15,11 +15,10 @@
  */
 package com.canoo.dolphin.server.impl.gc;
 
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.mapping.Property;
 
-/**
- * Created by hendrikebbers on 20.01.16.
- */
+@DolphinBean
 public class BeanWithProperties {
 
     private Property<String> stringProperty;

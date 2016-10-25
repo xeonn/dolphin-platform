@@ -16,11 +16,19 @@
 package com.canoo.dolphin.client;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.client.util.*;
+import com.canoo.dolphin.client.util.AbstractDolphinBasedTest;
+import com.canoo.dolphin.client.util.ChildModel;
+import com.canoo.dolphin.client.util.ComplexDataTypesModel;
+import com.canoo.dolphin.client.util.ListReferenceModel;
+import com.canoo.dolphin.client.util.PrimitiveDataTypesModel;
+import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
+import com.canoo.dolphin.client.util.SimpleTestModel;
+import com.canoo.dolphin.client.util.SingleReferenceModel;
 import com.canoo.dolphin.impl.BeanDefinitionException;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.converters.BooleanConverterFactory;
 import com.canoo.dolphin.impl.converters.ByteConverterFactory;
+import com.canoo.dolphin.impl.converters.CalendarConverterFactory;
 import com.canoo.dolphin.impl.converters.DateConverterFactory;
 import com.canoo.dolphin.impl.converters.DolphinBeanConverterFactory;
 import com.canoo.dolphin.impl.converters.DoubleConverterFactory;
@@ -43,7 +51,15 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.testng.Assert.fail;
 
 public class TestModelCreation extends AbstractDolphinBasedTest {
@@ -357,8 +373,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("calendarProperty")),
-                                hasProperty("value", is(DateConverterFactory.FIELD_TYPE_DATE)),
-                                hasProperty("baseValue", is(DateConverterFactory.FIELD_TYPE_DATE)),
+                                hasProperty("value", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
+                                hasProperty("baseValue", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),

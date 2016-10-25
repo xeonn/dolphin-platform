@@ -15,10 +15,10 @@
  */
 package com.canoo.dolphin.impl;
 
-public interface Converter {
+public interface Converter<B, D> {
 
-    Object convertFromDolphin(Object value);
+    B convertFromDolphin(D value);
 
-    Object convertToDolphin(Object value);
+    D convertToDolphin(B value);
 
 }

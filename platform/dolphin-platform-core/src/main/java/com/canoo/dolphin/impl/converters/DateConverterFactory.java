@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.canoo.dolphin.impl.converters;
 
 import com.canoo.dolphin.impl.Converter;
@@ -31,7 +46,7 @@ public class DateConverterFactory extends AbstractConverterFactory {
         return CONVERTER;
     }
 
-    private static class DateConverter implements Converter {
+    private static class DateConverter extends AbstractStringConverter<Date> {
 
         private static final Logger LOG = LoggerFactory.getLogger(DateConverter.class);
 
@@ -43,28 +58,26 @@ public class DateConverterFactory extends AbstractConverterFactory {
         }
 
         @Override
-        public Object convertFromDolphin(Object value) {
+        public Date convertFromDolphin(String value) {
             if (value == null) {
                 return null;
             }
             try {
-                return dateFormat.parse(value.toString());
+                return dateFormat.parse(value);
             } catch (ParseException e) {
-                LOG.warn("Unable to parse the date: " + value);
-                return null;
+                throw new IllegalArgumentException("Unable to parse the date: " + value, e);
             }
         }
 
         @Override
-        public Object convertToDolphin(Object value) {
+        public String convertToDolphin(Date value) {
             if (value == null) {
                 return null;
             }
             try {
                 return dateFormat.format(value);
-            } catch (IllegalArgumentException ex) {
-                LOG.warn("Unable to format the date: " + value);
-                return null;
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Unable to format the date: " + value, e);
             }
         }
     }

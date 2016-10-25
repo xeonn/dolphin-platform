@@ -20,6 +20,7 @@ import com.canoo.dolphin.impl.BeanDefinitionException;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.converters.BooleanConverterFactory;
 import com.canoo.dolphin.impl.converters.ByteConverterFactory;
+import com.canoo.dolphin.impl.converters.CalendarConverterFactory;
 import com.canoo.dolphin.impl.converters.DateConverterFactory;
 import com.canoo.dolphin.impl.converters.DolphinBeanConverterFactory;
 import com.canoo.dolphin.impl.converters.DoubleConverterFactory;
@@ -371,8 +372,8 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         ),
                         allOf(
                                 hasProperty("propertyName", is("calendarProperty")),
-                                hasProperty("value", is(DateConverterFactory.FIELD_TYPE_DATE)),
-                                hasProperty("baseValue", is(DateConverterFactory.FIELD_TYPE_DATE)),
+                                hasProperty("value", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
+                                hasProperty("baseValue", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
                                 hasProperty("qualifier", nullValue()),
                                 hasProperty("tag", is(Tag.VALUE))
                         ),

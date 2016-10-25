@@ -29,6 +29,7 @@ import org.opendolphin.core.PresentationModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ import java.util.Map;
 // TODO mapDolphinToObject() does not really fit here, we should probably move it to Converters, but first we need to fix scopes
 public class BeanRepositoryImpl implements BeanRepository{
 
-    private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
+    private final Map<Object, PresentationModel> objectPmToDolphinPm = new IdentityHashMap<>();
     private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
     private final Dolphin dolphin;
     private final Multimap<Class<?>, BeanAddedListener<?>> beanAddedListenerMap = ArrayListMultimap.create();
@@ -147,6 +148,12 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public Object getBean(String sourceId) {
+        if(sourceId == null) {
+            return null;
+        }
+        if(!dolphinIdToObjectPm.containsKey(sourceId)) {
+            throw new IllegalArgumentException("No bean instance found with id " + sourceId);
+        }
         return dolphinIdToObjectPm.get(sourceId);
     }
 
