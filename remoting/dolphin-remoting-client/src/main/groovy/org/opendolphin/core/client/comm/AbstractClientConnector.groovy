@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.client.comm
 import groovy.transform.CompileStatic
-import groovy.util.logging.Log
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
@@ -25,11 +24,14 @@ import org.opendolphin.core.comm.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.logging.Level
+import java.util.logging.Logger
 
-@Log
 abstract class AbstractClientConnector implements ClientConnector {
 
+    private static final Logger LOG = Logger.getLogger(AbstractClientConnector.class.getName());
+
     Codec codec
+
     UiThreadHandler uiThreadHandler // must be set from the outside - toolkit specific
 
     ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
@@ -64,16 +66,16 @@ abstract class AbstractClientConnector implements ClientConnector {
         this.responseHandler = new ClientResponseHandler(clientDolphin);
 
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
-        def log = log;
+        def log = LOG;
         onException = { Throwable up ->
             def out = new StringWriter()
             up.printStackTrace(new PrintWriter(out))
-            log.severe("onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException\n${out.buffer}")
+            log.log(Level.SEVERE, "onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException", up);
 
             if (uiThreadHandler) {
                 uiThreadHandler.executeInsideUiThread { throw up } // not sure whether this is a good default
             } else {
-                log.severe("UI Thread not defined...", up)
+                log.log(Level.SEVERE, "UI Thread not defined...", up)
             }
         }
 
@@ -82,7 +84,7 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     protected void startCommandProcessing() {
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
-        def log = log;
+        def log = LOG;
         backgroundExecutor.execute(new Runnable() {
             @Override
             void run() {
@@ -94,7 +96,7 @@ abstract class AbstractClientConnector implements ClientConnector {
                             List<Command> commands = toProcess.collect { it.command }
 
                             if (log.isLoggable(Level.INFO)) {
-                                log.info "C: sending batch of size " + commands.size()
+                                log.info("C: sending batch of size " + commands.size());
                                 for (command in commands) { log.info("C:           -> " + command) }
                             }
 
@@ -136,7 +138,7 @@ abstract class AbstractClientConnector implements ClientConnector {
         def me = this
         // see http://jira.codehaus.org/browse/GROOVY-6946
         def commands = response?.id
-        me.info "C: server responded with ${response?.size()} command(s): ${commands}"
+        LOG.info("C: server responded with ${response?.size()} command(s): ${commands}");
 
         List<ClientPresentationModel> touchedPresentationModels = new LinkedList<ClientPresentationModel>()
         List<Map> touchedDataMaps = new LinkedList<Map>()
@@ -158,10 +160,6 @@ abstract class AbstractClientConnector implements ClientConnector {
         }
     }
 
-    void info(Object message) {
-        log.info message
-    }
-
     Object dispatchHandle(Command command) {
         handle command
     }
@@ -181,12 +179,12 @@ abstract class AbstractClientConnector implements ClientConnector {
     @CompileStatic
     void doSafelyInsideUiThread(Runnable whatToDo) {
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
-        def log = log;
+        def log = LOG;
         Runnable doInside = {
             if (uiThreadHandler) {
                 uiThreadHandler.executeInsideUiThread whatToDo
             } else {
-                log.warning "please provide howToProcessInsideUI handler"
+                log.warning("please provide howToProcessInsideUI handler");
                 whatToDo.run()
             }
         }
