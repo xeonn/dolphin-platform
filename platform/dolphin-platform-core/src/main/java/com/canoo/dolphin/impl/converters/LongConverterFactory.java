@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class LongConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_LONG = "l";
+    public final static int FIELD_TYPE_LONG = 4;
 
-    private final static LongConverter CONVERTER = new LongConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null ? null : ((Number) value).longValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class LongConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_LONG;
     }
 

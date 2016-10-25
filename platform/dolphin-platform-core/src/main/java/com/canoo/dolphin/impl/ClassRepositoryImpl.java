@@ -104,7 +104,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                 if(clazz == null) {
                     throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
                 }
-                final String type = DolphinUtils.getFieldType(clazz);
+                final int type = converters.getFieldType(clazz);
                 builder.withAttribute(attributeName, type, Tag.VALUE);
             }
         }

@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class FloatConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_FLOAT = "f";
+    public final static int FIELD_TYPE_FLOAT = 5;
 
-    private final static FloatConverter CONVERTER = new FloatConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null ? null : ((Number) value).floatValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class FloatConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_FLOAT;
     }
 

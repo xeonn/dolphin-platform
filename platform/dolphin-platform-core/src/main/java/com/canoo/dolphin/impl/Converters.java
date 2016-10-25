@@ -17,6 +17,8 @@ package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,6 +30,8 @@ import java.util.ServiceLoader;
  */
 public class Converters {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Converters.class);
+
     private final List<ConverterFactory> converterFactories;
 
     public Converters(final BeanRepository beanRepository) {
@@ -37,12 +41,21 @@ public class Converters {
         Iterator<ConverterFactory> iterator = loader.iterator();
         while (iterator.hasNext()) {
             ConverterFactory factory = iterator.next();
+            LOG.trace("Found converter factory {} with type identifier {}", factory.getClass(), factory.getTypeIdentifier());
             factory.init(beanRepository);
             converterFactories.add(factory);
         }
     }
 
+    public int getFieldType(Class<?> clazz) {
+        return getFactory(clazz).getTypeIdentifier();
+    }
+
     public Converter getConverter(Class<?> clazz) {
+        return getFactory(clazz).getConverterForType(clazz);
+    }
+
+    private ConverterFactory getFactory(Class<?> clazz) {
         Assert.requireNonNull(clazz, "clazz");
         List<ConverterFactory> foundConverters = new ArrayList<>();
         for (ConverterFactory factory : converterFactories) {
@@ -56,7 +69,6 @@ public class Converters {
         if (foundConverters.isEmpty()) {
             throw new RuntimeException("No converter instance found to convert " + clazz);
         }
-        return foundConverters.get(0).getConverterForType(clazz);
-
+        return foundConverters.get(0);
     }
 }

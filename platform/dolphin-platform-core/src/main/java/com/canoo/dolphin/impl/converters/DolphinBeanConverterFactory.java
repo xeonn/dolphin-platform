@@ -2,12 +2,12 @@ package com.canoo.dolphin.impl.converters;
 
 import com.canoo.dolphin.impl.Converter;
 import com.canoo.dolphin.impl.ConverterFactory;
+import com.canoo.dolphin.impl.DolphinUtils;
 import com.canoo.dolphin.internal.BeanRepository;
-import com.canoo.dolphin.mapping.DolphinBean;
 
 public class DolphinBeanConverterFactory implements ConverterFactory {
 
-    public final static String FIELD_TYPE_DOLPHIN_BEAN = "O";
+    public final static int FIELD_TYPE_DOLPHIN_BEAN = 0;
 
     private DolphinBeanConverter converter;
 
@@ -18,16 +18,35 @@ public class DolphinBeanConverterFactory implements ConverterFactory {
 
     @Override
     public boolean supportsType(Class<?> cls) {
-        return cls.isAnnotationPresent(DolphinBean.class);
+        return DolphinUtils.isDolphinBean(cls);
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_DOLPHIN_BEAN;
     }
 
     @Override
     public Converter getConverterForType(Class<?> cls) {
         return converter;
+    }
+
+    private class DolphinBeanConverter implements Converter {
+
+        private final BeanRepository beanRepository;
+
+        public DolphinBeanConverter(BeanRepository beanRepository) {
+            this.beanRepository = beanRepository;
+        }
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return beanRepository.getBean((String) value);
+        }
+
+        @Override
+        public Object convertToDolphin(Object value) {
+            return beanRepository.getDolphinId(value);
+        }
     }
 }

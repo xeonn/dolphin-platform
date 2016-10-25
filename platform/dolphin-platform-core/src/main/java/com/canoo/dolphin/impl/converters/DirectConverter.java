@@ -15,5 +15,17 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-public class StringConverter extends AbstractBaseConverter {
+import com.canoo.dolphin.impl.Converter;
+
+public class DirectConverter implements Converter {
+
+    @Override
+    public Object convertFromDolphin(Object value) {
+        return value;
+    }
+
+    @Override
+    public Object convertToDolphin(Object value) {
+        return value;
+    }
 }

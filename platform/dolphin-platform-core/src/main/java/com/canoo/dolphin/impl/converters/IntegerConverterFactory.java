@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class IntegerConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_INT = "i";
+    public final static int FIELD_TYPE_INT = 3;
 
-    private final static IntegerConverter CONVERTER = new IntegerConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null ? null : ((Number) value).intValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class IntegerConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_INT;
     }
 

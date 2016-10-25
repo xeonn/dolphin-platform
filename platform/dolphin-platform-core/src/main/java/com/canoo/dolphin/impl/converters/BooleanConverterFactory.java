@@ -4,9 +4,9 @@ import com.canoo.dolphin.impl.Converter;
 
 public class BooleanConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_BOOLEAN = "b";
+    public final static int FIELD_TYPE_BOOLEAN = 7;
 
-    private final static BooleanConverter CONVERTER = new BooleanConverter();
+    private final static Converter CONVERTER = new DirectConverter();
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +14,7 @@ public class BooleanConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_BOOLEAN;
     }
 

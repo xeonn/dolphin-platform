@@ -8,7 +8,7 @@ public interface ConverterFactory {
 
     boolean supportsType(Class<?> cls);
 
-    String getTypeIdentifier();
+    int getTypeIdentifier();
 
     Converter getConverterForType(Class<?> cls);
 

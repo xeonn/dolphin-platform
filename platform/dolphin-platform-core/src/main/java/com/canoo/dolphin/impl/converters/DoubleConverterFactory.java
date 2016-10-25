@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class DoubleConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_DOUBLE = "d";
+    public final static int FIELD_TYPE_DOUBLE = 6;
 
-    private final static DoubleConverter CONVERTER = new DoubleConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null? null : ((Number)value).doubleValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class DoubleConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_DOUBLE;
     }
 

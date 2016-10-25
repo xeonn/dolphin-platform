@@ -4,8 +4,9 @@ import com.canoo.dolphin.impl.Converter;
 
 public class StringConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_STRING = "S";
-    private final static StringConverter CONVERTER = new StringConverter();
+    public final static int FIELD_TYPE_STRING = 8;
+
+    private final static Converter CONVERTER = new DirectConverter();
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -13,7 +14,7 @@ public class StringConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_STRING;
     }
 

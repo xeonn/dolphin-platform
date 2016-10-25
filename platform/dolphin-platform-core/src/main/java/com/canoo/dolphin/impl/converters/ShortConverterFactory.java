@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class ShortConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_SHORT = "s";
+    public final static int FIELD_TYPE_SHORT = 2;
 
-    private final static ShortConverter CONVERTER = new ShortConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null ? null : ((Number) value).shortValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class ShortConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_SHORT;
     }
 

@@ -4,9 +4,16 @@ import com.canoo.dolphin.impl.Converter;
 
 public class ByteConverterFactory extends AbstractConverterFactory {
 
-    public final static String FIELD_TYPE_BYTE = "B";
+    public final static int FIELD_TYPE_BYTE = 1;
 
-    private final static ByteConverter CONVERTER = new ByteConverter();
+    private final static Converter CONVERTER = new DirectConverter() {
+
+        @Override
+        public Object convertFromDolphin(Object value) {
+            return value == null ? null : ((Number) value).byteValue();
+        }
+    };
+
 
     @Override
     public boolean supportsType(Class<?> cls) {
@@ -14,7 +21,7 @@ public class ByteConverterFactory extends AbstractConverterFactory {
     }
 
     @Override
-    public String getTypeIdentifier() {
+    public int getTypeIdentifier() {
         return FIELD_TYPE_BYTE;
     }
 

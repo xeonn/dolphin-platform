@@ -39,27 +39,27 @@ public class BeanManagerImpl implements Serializable, BeanManager {
 
     @Override
     public boolean isManaged(final Object bean) {
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         return beanRepository.isManaged(bean);
     }
 
     @Override
     public <T> T create(final Class<T> beanClass) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         return beanBuilder.create(beanClass);
     }
 
     @Override
     public void remove(final Object bean) {
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         beanRepository.delete(bean);
     }
 
     @Override
     public void removeAll(final Class<?> beanClass) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         for (Object bean : findAll(beanClass)) {
-            BeanUtils.checkBean(bean);
+            DolphinUtils.assertIsDolphinBean(bean);
             beanRepository.delete(bean);
         }
     }
@@ -68,7 +68,7 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     public void removeAll(final Object... beans) {
         Assert.requireNonNull(beans, "beans");
         for (final Object bean : beans) {
-            BeanUtils.checkBean(bean);
+            DolphinUtils.assertIsDolphinBean(bean);
             remove(bean);
         }
     }
@@ -77,20 +77,20 @@ public class BeanManagerImpl implements Serializable, BeanManager {
     public void removeAll(final Collection<?> beans) {
         Assert.requireNonNull(beans, "beans");
         for (final Object bean : beans) {
-            BeanUtils.checkBean(bean);
+            DolphinUtils.assertIsDolphinBean(bean);
             remove(bean);
         }
     }
 
     @Override
     public <T> List<T> findAll(final Class<T> beanClass) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         return beanRepository.findAll(beanClass);
     }
 
     @Override
     public <T> Subscription onAdded(final Class<T> beanClass, final BeanAddedListener<? super T> listener) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         return beanRepository.addOnAddedListener(beanClass, listener);
     }
 
@@ -101,7 +101,7 @@ public class BeanManagerImpl implements Serializable, BeanManager {
 
     @Override
     public <T> Subscription onRemoved(final Class<T> beanClass, final BeanRemovedListener<? super T> listener) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         return beanRepository.addOnRemovedListener(beanClass, listener);
     }
 

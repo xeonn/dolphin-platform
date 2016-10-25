@@ -26,10 +26,9 @@ import com.canoo.dolphin.impl.converters.IntegerConverterFactory;
 import com.canoo.dolphin.impl.converters.LongConverterFactory;
 import com.canoo.dolphin.impl.converters.ShortConverterFactory;
 import com.canoo.dolphin.impl.converters.StringConverterFactory;
-import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.util.Assert;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,67 +41,29 @@ public class DolphinUtils {
     private DolphinUtils() {
     }
 
-    public static boolean isDolphinBean(Class cls) {
-        return DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN.equals(DolphinUtils.getFieldType(cls));
-    }
-
-
-    public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
-        if (ReflectionHelper.isProperty(descriptor)) {
-            return descriptor.getName().substring(0, descriptor.getName().length() - "Property".length());
-        }
-        return descriptor.getName();
-    }
-
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {
         return propertyField.getName();
     }
 
     public static String getDolphinPresentationModelTypeForClass(Class<?> beanClass) {
-        return BeanUtils.checkClass(beanClass).getName();
+        return assertIsDolphinBean(beanClass).getName();
     }
 
-    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
-        for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
-            if (Property.class.isAssignableFrom(field.getType()) && name.equals(getDolphinAttributePropertyNameForField(field))) {
-                return (Property<T>) ReflectionHelper.getPrivileged(field, bean);
-            }
-        }
-        return null;
+    public static <T> T assertIsDolphinBean(T bean) {
+        Assert.requireNonNull(bean, "bean");
+        assertIsDolphinBean(bean.getClass());
+        return bean;
     }
 
-    public static String getFieldType(Class<?> clazz) {
-        Assert.requireNonNull(clazz, "clazz");
-        if (String.class.equals(clazz)) {
-            return StringConverterFactory.FIELD_TYPE_STRING;
+    public static <T> Class<T> assertIsDolphinBean(Class<T> beanClass) {
+        if (!isDolphinBean(beanClass)) {
+            throw new BeanDefinitionException(beanClass);
         }
-        if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
-            return IntegerConverterFactory.FIELD_TYPE_INT;
-        }
-        if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
-            return BooleanConverterFactory.FIELD_TYPE_BOOLEAN;
-        }
-        if (long.class.equals(clazz) || Long.class.equals(clazz)) {
-            return LongConverterFactory.FIELD_TYPE_LONG;
-        }
-        if (double.class.equals(clazz) || Double.class.equals(clazz)) {
-            return DoubleConverterFactory.FIELD_TYPE_DOUBLE;
-        }
-        if (float.class.equals(clazz) || Float.class.equals(clazz)) {
-            return FloatConverterFactory.FIELD_TYPE_FLOAT;
-        }
-        if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
-            return ByteConverterFactory.FIELD_TYPE_BYTE;
-        }
-        if (short.class.equals(clazz) || Short.class.equals(clazz)) {
-            return ShortConverterFactory.FIELD_TYPE_SHORT;
-        }
-        if (Enum.class.isAssignableFrom(clazz)) {
-            return EnumConverterFactory.FIELD_TYPE_ENUM;
-        }
-        if (Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz)) {
-            return DateConverterFactory.FIELD_TYPE_DATE;
-        }
-        return DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN;
+        return beanClass;
+    }
+
+    public static boolean isDolphinBean(Class<?> beanClass) {
+        Assert.requireNonNull(beanClass, "beanClass");
+        return beanClass.isAnnotationPresent(DolphinBean.class);
     }
 }
