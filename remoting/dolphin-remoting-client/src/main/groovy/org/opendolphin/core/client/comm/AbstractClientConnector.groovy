@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.opendolphin.core.client.comm
+
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.opendolphin.core.client.ClientDolphin
@@ -44,9 +45,8 @@ abstract class AbstractClientConnector implements ClientConnector {
 
     protected final ICommandBatcher commandBatcher;
 
-
     /** The named command that waits for pushes on the server side */
-    NamedCommand  pushListener   = null;
+    NamedCommand pushListener = null;
 
     /** The signal command that publishes a "release" event on the respective bus */
     SignalCommand releaseCommand = null;
@@ -74,7 +74,6 @@ abstract class AbstractClientConnector implements ClientConnector {
             @Override
             void handle(Throwable e) {
                 log.log(Level.SEVERE, "onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException", e);
-
                 if (uiThreadHandler) {
                     uiThreadHandler.executeInsideUiThread(new Runnable() {
                         @Override
@@ -102,16 +101,15 @@ abstract class AbstractClientConnector implements ClientConnector {
                         void run() {
                             List<CommandAndHandler> toProcess = commandBatcher.getWaitingBatches().getVal();
                             List<Command> commands = new ArrayList<>();
-                            for(CommandAndHandler c : toProcess) {
+                            for (CommandAndHandler c : toProcess) {
                                 commands.add(c.command);
                             }
                             if (log.isLoggable(Level.INFO)) {
                                 log.info("C: sending batch of size " + commands.size());
                                 for (command in commands) {
-                                    log.info("C:           -> " + command) ;
+                                    log.info("C:           -> " + command);
                                 }
                             }
-
                             List<Command> answer = transmit(commands);
                             doSafelyInsideUiThread(new Runnable() {
                                 @Override
@@ -161,8 +159,10 @@ abstract class AbstractClientConnector implements ClientConnector {
         }
         def callback = commandsAndHandlers.first().handler; // there can only be one relevant handler anyway
         // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
-        if (callback !=null) {
-            callback.onFinished((List<ClientPresentationModel>) touchedPresentationModels.unique { ((ClientPresentationModel) it).id });
+        if (callback != null) {
+            callback.onFinished((List<ClientPresentationModel>) touchedPresentationModels.unique {
+                ((ClientPresentationModel) it).id
+            });
             if (callback instanceof OnFinishedData) {
                 callback.onFinishedData(touchedDataMaps);
             }
@@ -191,26 +191,29 @@ abstract class AbstractClientConnector implements ClientConnector {
     void doSafelyInsideUiThread(Runnable whatToDo) {
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
         def log = LOG;
-        Runnable doInside = {
-            if (uiThreadHandler) {
-                uiThreadHandler.executeInsideUiThread(whatToDo);
-            } else {
-                log.warning("please provide howToProcessInsideUI handler");
-                whatToDo.run();
+        doExceptionSafe(new Runnable() {
+            @Override
+            void run() {
+                if (uiThreadHandler) {
+                    uiThreadHandler.executeInsideUiThread(whatToDo);
+                } else {
+                    log.warning("please provide howToProcessInsideUI handler");
+                    whatToDo.run();
+                }
             }
-        }
-        doExceptionSafe doInside;
+        });
     }
-
-
-
 
     //////////////////////////////// push support ////////////////////////////////////////
 
     /** listens for the pushListener to return. The pushListener must be set and pushEnabled must be true. */
     public void listen() {
-        if (!pushEnabled) return; // allow the loop to end
-        if (waiting) return;      // avoid second call while already waiting (?) -> two different push actions not supported
+        if (!pushEnabled) {
+            return; // allow the loop to end
+        }
+        if (waiting) {
+            return; // avoid second call while already waiting (?) -> two different push actions not supported
+        }
         waiting = true;
         send(pushListener, new OnFinishedHandlerAdapter() {
             @Override
@@ -234,7 +237,7 @@ abstract class AbstractClientConnector implements ClientConnector {
         backgroundExecutor.execute(new Runnable() {
             @Override
             void run() {
-                transmit(Collections.<Command>singletonList(releaseCommand));
+                transmit(Collections.<Command> singletonList(releaseCommand));
             }
         });
     }
