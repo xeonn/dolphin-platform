@@ -27,7 +27,7 @@ import java.util.concurrent.Executors
 import java.util.logging.Level
 import java.util.logging.Logger
 
-abstract class AbstractClientConnector implements ClientConnector {
+public abstract class AbstractClientConnector implements ClientConnector {
 
     private static final Logger LOG = Logger.getLogger(AbstractClientConnector.class.getName());
 
@@ -58,11 +58,11 @@ abstract class AbstractClientConnector implements ClientConnector {
     protected boolean waiting = false;
 
 
-    AbstractClientConnector(ClientDolphin clientDolphin) {
+    public AbstractClientConnector(ClientDolphin clientDolphin) {
         this(clientDolphin, null);
     }
 
-    AbstractClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
+    public AbstractClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
         this.clientDolphin = clientDolphin;
         this.commandBatcher = commandBatcher ?: new CommandBatcher();
         this.responseHandler = new ClientResponseHandler(clientDolphin);
@@ -174,7 +174,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     @CompileStatic
-    void doExceptionSafe(Runnable processing, Runnable atLeast = null) {
+    private void doExceptionSafe(Runnable processing, Runnable atLeast = null) {
         try {
             processing.run();
         } catch (Exception e) {
@@ -188,7 +188,7 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     @CompileStatic
-    void doSafelyInsideUiThread(Runnable whatToDo) {
+    private void doSafelyInsideUiThread(Runnable whatToDo) {
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
         def log = LOG;
         doExceptionSafe(new Runnable() {
@@ -243,69 +243,69 @@ abstract class AbstractClientConnector implements ClientConnector {
     }
 
     @Override
-    void setPushEnabled(boolean pushEnabled) {
+    public void setPushEnabled(boolean pushEnabled) {
         this.pushEnabled = pushEnabled;
     }
 
     @Override
-    boolean isPushEnabled() {
+    public boolean isPushEnabled() {
         return this.pushEnabled;
     }
 
-    def handle(Command serverCommand) {
+    public def handle(Command serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    Map handle(DataCommand serverCommand) {
+    public Map handle(DataCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(DeletePresentationModelCommand serverCommand) {
+    public ClientPresentationModel handle(DeletePresentationModelCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(DeleteAllPresentationModelsOfTypeCommand serverCommand) {
+    public ClientPresentationModel handle(DeleteAllPresentationModelsOfTypeCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
     @CompileStatic
-    ClientPresentationModel handle(CreatePresentationModelCommand serverCommand) {
+    public ClientPresentationModel handle(CreatePresentationModelCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(ValueChangedCommand serverCommand) {
+    public ClientPresentationModel handle(ValueChangedCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
+    public ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
+    public ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(SavedPresentationModelNotification serverCommand) {
+    public ClientPresentationModel handle(SavedPresentationModelNotification serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(PresentationModelResetedCommand serverCommand) {
+    public ClientPresentationModel handle(PresentationModelResetedCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(AttributeMetadataChangedCommand serverCommand) {
+    public ClientPresentationModel handle(AttributeMetadataChangedCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    ClientPresentationModel handle(CallNamedActionCommand serverCommand) {
+    public ClientPresentationModel handle(CallNamedActionCommand serverCommand) {
         return responseHandler.handle(serverCommand);
     }
 
-    boolean getStrictMode() {
+    public boolean getStrictMode() {
         return this.responseHandler.strictMode;
     }
 
-    void setStrictMode(boolean strictMode) {
+    public void setStrictMode(boolean strictMode) {
         this.responseHandler.strictMode = strictMode;
     }
 }
