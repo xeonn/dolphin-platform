@@ -6,7 +6,6 @@ import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.NamedCommand;
 import org.opendolphin.core.comm.SignalCommand;
@@ -24,8 +23,6 @@ import java.util.logging.Logger;
 public abstract class AbstractClientConnector implements ClientConnector {
 
     private static final Logger LOG = Logger.getLogger(AbstractClientConnector.class.getName());
-
-    private Codec codec;
 
     private UiThreadHandler uiThreadHandler;
 
@@ -71,8 +68,8 @@ public abstract class AbstractClientConnector implements ClientConnector {
             @Override
             public void handle(final Throwable e) {
                 LOG.log(Level.SEVERE, "onException reached, rethrowing in UI Thread, consider setting AbstractClientConnector.onException", e);
-                if (DefaultGroovyMethods.asBoolean(getUiThreadHandler())) {
-                    getUiThreadHandler().executeInsideUiThread(new Runnable() {
+                if (uiThreadHandler != null) {
+                    uiThreadHandler.executeInsideUiThread(new Runnable() {
                         @Override
                         public void run() {
                             throw new RuntimeException(e);
@@ -86,7 +83,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         startCommandProcessing();
     }
 
-    protected void startCommandProcessing() {
+    private void startCommandProcessing() {
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -105,7 +102,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
                                     for (Command command : commands) {
                                         LOG.info("C:           -> " + command);
                                     }
-
                                 }
                                 final List<Command> answer = transmit(commands);
                                 doSafelyInsideUiThread(new Runnable() {
@@ -119,17 +115,10 @@ public abstract class AbstractClientConnector implements ClientConnector {
                                 throw new RuntimeException(e);
                             }
                         }
-
                     });
                 }
-
             }
-
         });
-    }
-
-    protected ClientModelStore getClientModelStore() {
-        return clientDolphin.getClientModelStore();
     }
 
     protected abstract List<Command> transmit(List<Command> commands);
@@ -150,8 +139,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         send(command, null);
     }
 
-    public void processResults(final List<Command> response, List<CommandAndHandler> commandsAndHandlers) {
-        AbstractClientConnector me = this;
+    protected void processResults(final List<Command> response, List<CommandAndHandler> commandsAndHandlers) {
         // see http://jira.codehaus.org/browse/GROOVY-6946
         if(LOG.isLoggable(Level.INFO)) {
             final List<String> commands = new ArrayList<>();
@@ -166,7 +154,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         List<ClientPresentationModel> touchedPresentationModels = new LinkedList<>();
         List<Map> touchedDataMaps = new LinkedList<Map>();
         for (Command serverCommand : response) {
-            Object touched = me.dispatchHandle(serverCommand);
+            Object touched = dispatchHandle(serverCommand);
             if (touched != null && touched instanceof ClientPresentationModel) {
                 DefaultGroovyMethods.leftShift(touchedPresentationModels, (ClientPresentationModel) touched);
             } else if (touched != null && touched instanceof Map) {
@@ -207,7 +195,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
             if (atLeast != null) {
                 atLeast.run();
             }
-
         }
     }
 
@@ -216,20 +203,16 @@ public abstract class AbstractClientConnector implements ClientConnector {
     }
 
     private void doSafelyInsideUiThread(final Runnable whatToDo) {
-        // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
-        final Logger log = LOG;
         doExceptionSafe(new Runnable() {
             @Override
             public void run() {
-                if (DefaultGroovyMethods.asBoolean(getUiThreadHandler())) {
-                    getUiThreadHandler().executeInsideUiThread(whatToDo);
+                if (uiThreadHandler != null) {
+                    uiThreadHandler.executeInsideUiThread(whatToDo);
                 } else {
-                    log.warning("please provide howToProcessInsideUI handler");
+                    LOG.warning("please provide howToProcessInsideUI handler");
                     whatToDo.run();
                 }
-
             }
-
         });
     }
 
@@ -293,14 +276,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
         this.responseHandler.setStrictMode(strictMode);
     }
 
-    public Codec getCodec() {
-        return codec;
-    }
-
-    public void setCodec(Codec codec) {
-        this.codec = codec;
-    }
-
     public UiThreadHandler getUiThreadHandler() {
         return uiThreadHandler;
     }
@@ -339,5 +314,9 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     public ClientDolphin getClientDolphin() {
         return clientDolphin;
+    }
+
+    protected ClientModelStore getClientModelStore() {
+        return clientDolphin.getClientModelStore();
     }
 }
