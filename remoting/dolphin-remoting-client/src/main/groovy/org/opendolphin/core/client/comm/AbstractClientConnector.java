@@ -1,27 +1,15 @@
 package org.opendolphin.core.client.comm;
 
 import groovy.lang.Closure;
-import groovy.transform.CompileStatic;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
-import org.opendolphin.core.comm.CallNamedActionCommand;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.CreatePresentationModelCommand;
-import org.opendolphin.core.comm.DataCommand;
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand;
-import org.opendolphin.core.comm.DeletePresentationModelCommand;
-import org.opendolphin.core.comm.InitializeAttributeCommand;
 import org.opendolphin.core.comm.NamedCommand;
-import org.opendolphin.core.comm.PresentationModelResetedCommand;
-import org.opendolphin.core.comm.SavedPresentationModelNotification;
 import org.opendolphin.core.comm.SignalCommand;
-import org.opendolphin.core.comm.SwitchPresentationModelCommand;
-import org.opendolphin.core.comm.ValueChangedCommand;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,27 +23,37 @@ import java.util.logging.Logger;
 
 public abstract class AbstractClientConnector implements ClientConnector {
 
-
     private static final Logger LOG = Logger.getLogger(AbstractClientConnector.class.getName());
+
     private Codec codec;
+
     private UiThreadHandler uiThreadHandler;
-    private ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+
+    private final ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
+
     private ExceptionHandler onException;
-    private ClientResponseHandler responseHandler;
-    protected final ClientDolphin clientDolphin;
-    protected final ICommandBatcher commandBatcher;
+
+    private final ClientResponseHandler responseHandler;
+
+    private final ClientDolphin clientDolphin;
+
+    private final ICommandBatcher commandBatcher;
+
     /**
      * The named command that waits for pushes on the server side
      */
     private NamedCommand pushListener = null;
+
     /**
      * The signal command that publishes a "release" event on the respective bus
      */
     private SignalCommand releaseCommand = null;
+
     /**
      * whether listening for push events should be done at all.
      */
     protected boolean pushEnabled = false;
+
     /**
      * whether we currently wait for push events (internal state) and may need to release
      */
@@ -136,7 +134,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     protected abstract List<Command> transmit(List<Command> commands);
 
-    @CompileStatic
     public void send(Command command, OnFinishedHandler callback) {
         // we have some change so regardless of the batching we may have to release a push
         if (!command.equals(pushListener)) {
@@ -149,12 +146,10 @@ public abstract class AbstractClientConnector implements ClientConnector {
         commandBatcher.batch(handler);
     }
 
-    @CompileStatic
     public void send(Command command) {
         send(command, null);
     }
 
-    @CompileStatic
     public void processResults(final List<Command> response, List<CommandAndHandler> commandsAndHandlers) {
         AbstractClientConnector me = this;
         // see http://jira.codehaus.org/browse/GROOVY-6946
@@ -199,34 +194,9 @@ public abstract class AbstractClientConnector implements ClientConnector {
     }
 
     public Object dispatchHandle(Command command) {
-        if(command instanceof DataCommand) {
-            return responseHandler.handleDataCommand((DataCommand) command);
-        } else if(command instanceof DeletePresentationModelCommand) {
-            return responseHandler.handleDeletePresentationModelCommand((DeletePresentationModelCommand) command);
-        } else if(command instanceof DeleteAllPresentationModelsOfTypeCommand) {
-            return responseHandler.handleDeleteAllPresentationModelsOfTypeCommand((DeleteAllPresentationModelsOfTypeCommand) command);
-        } else if(command instanceof CreatePresentationModelCommand) {
-            return responseHandler.handleCreatePresentationModelCommand((CreatePresentationModelCommand) command);
-        } else if(command instanceof ValueChangedCommand) {
-            return responseHandler.handleValueChangedCommand((ValueChangedCommand) command);
-        } else if(command instanceof SwitchPresentationModelCommand) {
-            return responseHandler.handleSwitchPresentationModelCommand((SwitchPresentationModelCommand) command);
-        } else if(command instanceof InitializeAttributeCommand) {
-            return responseHandler.handleInitializeAttributeCommand((InitializeAttributeCommand) command);
-        } else if(command instanceof SavedPresentationModelNotification) {
-            return responseHandler.handleSavedPresentationModelNotification((SavedPresentationModelNotification) command);
-        } else if(command instanceof PresentationModelResetedCommand) {
-            return responseHandler.handlePresentationModelResetedCommand((PresentationModelResetedCommand) command);
-        } else if(command instanceof AttributeMetadataChangedCommand) {
-            return responseHandler.handleAttributeMetadataChangedCommand((AttributeMetadataChangedCommand) command);
-        } else if(command instanceof CallNamedActionCommand) {
-            return responseHandler.handleCallNamedActionCommand((CallNamedActionCommand) command);
-        } else {
-            return responseHandler.handleUnknownCommand(command);
-        }
+        return responseHandler.dispatchHandle(command);
     }
 
-    @CompileStatic
     private void doExceptionSafe(Runnable processing, Runnable atLeast) {
         try {
             processing.run();
@@ -239,15 +209,12 @@ public abstract class AbstractClientConnector implements ClientConnector {
             }
 
         }
-
     }
 
-    @CompileStatic
     private void doExceptionSafe(Runnable processing) {
         doExceptionSafe(processing, null);
     }
 
-    @CompileStatic
     private void doSafelyInsideUiThread(final Runnable whatToDo) {
         // see https://issues.apache.org/jira/browse/GROOVY-7233 and https://issues.apache.org/jira/browse/GROOVY-5438
         final Logger log = LOG;
@@ -318,55 +285,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return this.pushEnabled;
     }
 
-//    public Object handle(Command serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public Map handle(DataCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(DeletePresentationModelCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(DeleteAllPresentationModelsOfTypeCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    @CompileStatic
-//    public ClientPresentationModel handle(CreatePresentationModelCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(ValueChangedCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(SavedPresentationModelNotification serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(PresentationModelResetedCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(AttributeMetadataChangedCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-//
-//    public ClientPresentationModel handle(CallNamedActionCommand serverCommand) {
-//        return responseHandler.handle(serverCommand);
-//    }
-
     public boolean getStrictMode() {
         return this.responseHandler.isStrictMode();
     }
@@ -403,10 +321,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return responseHandler;
     }
 
-    public void setResponseHandler(ClientResponseHandler responseHandler) {
-        this.responseHandler = responseHandler;
-    }
-
     public NamedCommand getPushListener() {
         return pushListener;
     }
@@ -423,4 +337,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         this.releaseCommand = releaseCommand;
     }
 
+    public ClientDolphin getClientDolphin() {
+        return clientDolphin;
+    }
 }
