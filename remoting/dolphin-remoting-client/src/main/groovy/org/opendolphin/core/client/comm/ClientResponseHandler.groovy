@@ -37,28 +37,28 @@ class ClientResponseHandler {
         clientDolphin.clientModelStore
     }
 
-    def handle(Command serverCommand) {
+    def handleUnknownCommand(Command serverCommand) {
         log.severe "C: cannot handle unknown command '$serverCommand'"
     }
 
-    Map handle(DataCommand serverCommand) {
+    Map handleDataCommand(DataCommand serverCommand) {
         return serverCommand.data
     }
 
-    ClientPresentationModel handle(DeletePresentationModelCommand serverCommand) {
+    ClientPresentationModel handleDeletePresentationModelCommand(DeletePresentationModelCommand serverCommand) {
         ClientPresentationModel model = clientDolphin.findPresentationModelById(serverCommand.pmId)
         if (!model) return null
         clientModelStore.delete(model)
         return model
     }
 
-    ClientPresentationModel handle(DeleteAllPresentationModelsOfTypeCommand serverCommand) {
+    ClientPresentationModel handleDeleteAllPresentationModelsOfTypeCommand(DeleteAllPresentationModelsOfTypeCommand serverCommand) {
         clientDolphin.deleteAllPresentationModelsOfType(serverCommand.pmType)
         return null // we cannot really return a single pm here
     }
 
     @CompileStatic
-    ClientPresentationModel handle(CreatePresentationModelCommand serverCommand) {
+    ClientPresentationModel handleCreatePresentationModelCommand(CreatePresentationModelCommand serverCommand) {
         if (clientModelStore.containsPresentationModel(serverCommand.pmId)) {
             throw new IllegalStateException("There already is a presentation model with id '$serverCommand.pmId' known to the client.")
         }
@@ -85,7 +85,7 @@ class ClientResponseHandler {
         return model
     }
 
-    ClientPresentationModel handle(ValueChangedCommand serverCommand) {
+    ClientPresentationModel handleValueChangedCommand(ValueChangedCommand serverCommand) {
         Attribute attribute = clientModelStore.findAttributeById(serverCommand.attributeId)
         if (!attribute) {
             log.warning "C: attribute with id '$serverCommand.attributeId' not found, cannot update old value '$serverCommand.oldValue' to new value '$serverCommand.newValue'"
@@ -104,7 +104,7 @@ class ClientResponseHandler {
         return null // this command is not expected to be sent explicitly, so no pm needs to be returned
     }
 
-    ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
+    ClientPresentationModel handleSwitchPresentationModelCommand(SwitchPresentationModelCommand serverCommand) {
         def switchPm = clientModelStore.findPresentationModelById(serverCommand.pmId)
         if (!switchPm) {
             log.warning "C: switch pm with id '$serverCommand.pmId' not found, cannot switch"
@@ -119,7 +119,7 @@ class ClientResponseHandler {
         return (ClientPresentationModel) switchPm
     }
 
-    ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
+    ClientPresentationModel handleInitializeAttributeCommand(InitializeAttributeCommand serverCommand) {
         def attribute = new ClientAttribute(serverCommand.propertyName, serverCommand.newValue, serverCommand.qualifier, serverCommand.tag)
 
         // todo: add check for no-value; null is a valid value
@@ -155,7 +155,7 @@ class ClientResponseHandler {
         return presentationModel // todo dk: check and test
     }
 
-    ClientPresentationModel handle(SavedPresentationModelNotification serverCommand) {
+    ClientPresentationModel handleSavedPresentationModelNotification(SavedPresentationModelNotification serverCommand) {
         if (!serverCommand.pmId) return null
         ClientPresentationModel model = clientModelStore.findPresentationModelById(serverCommand.pmId)
         if (null == model) {
@@ -166,7 +166,7 @@ class ClientResponseHandler {
         return model
     }
 
-    ClientPresentationModel handle(PresentationModelResetedCommand serverCommand) {
+    ClientPresentationModel handlePresentationModelResetedCommand(PresentationModelResetedCommand serverCommand) {
         if (!serverCommand.pmId) return null
         PresentationModel model = clientModelStore.findPresentationModelById(serverCommand.pmId)
         // reset locally first
@@ -175,14 +175,14 @@ class ClientResponseHandler {
         return model
     }
 
-    ClientPresentationModel handle(AttributeMetadataChangedCommand serverCommand) {
+    ClientPresentationModel handleAttributeMetadataChangedCommand(AttributeMetadataChangedCommand serverCommand) {
         ClientAttribute attribute = clientModelStore.findAttributeById(serverCommand.attributeId)
         if (!attribute) return null
         attribute[serverCommand.metadataName] = serverCommand.value
         return null
     }
 
-    ClientPresentationModel handle(CallNamedActionCommand serverCommand) {
+    ClientPresentationModel handleCallNamedActionCommand(CallNamedActionCommand serverCommand) {
         clientDolphin.send(serverCommand.actionName)
         return null
     }
