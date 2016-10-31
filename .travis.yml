@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install oracle-java8-installer
 
 script:
-  - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S --info
+  - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S
 
 after_success:
   - ./gradlew coveralls
