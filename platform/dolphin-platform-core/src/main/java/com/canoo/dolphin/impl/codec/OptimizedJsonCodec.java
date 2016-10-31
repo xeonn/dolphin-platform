@@ -27,6 +27,8 @@ import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.JsonCodec;
 import org.opendolphin.core.comm.ValueChangedCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,10 +38,13 @@ import java.util.Map;
 
 public class OptimizedJsonCodec implements Codec {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OptimizedJsonCodec.class);
+
     private static final Gson GSON = new Gson();
 
     private static final Map<Class<? extends Command>, CommandEncoder<?>> ENCODERS = new HashMap<>();
     private static final Map<String, CommandEncoder<?>> DECODERS = new HashMap<>();
+
     static {
         final CreatePresentationModelEncoder createPresentationModelEncoder = new CreatePresentationModelEncoder();
         ENCODERS.put(CreatePresentationModelCommand.class, createPresentationModelEncoder);
@@ -56,31 +61,39 @@ public class OptimizedJsonCodec implements Codec {
     @SuppressWarnings("unchecked")
     public String encode(List<Command> commands) {
         Assert.requireNonNull(commands, "commands");
-
+        LOG.trace("Encoding command list with {} commands", commands.size());
         final StringBuilder builder = new StringBuilder("[");
         for (final Command command : commands) {
-            final CommandEncoder encoder = ENCODERS.get(command.getClass());
-            if (encoder != null) {
-                final JsonObject jsonObject = encoder.encode(command);
-                GSON.toJson(jsonObject, builder);
+            if (command == null) {
+                throw new IllegalArgumentException("Command list contains a null command: " + command);
             } else {
-                final String result = fallBack.encode(Collections.singletonList(command));
-                builder.append(result.substring(1, result.length()-1));
+                LOG.trace("Encoding command of type {}", command.getClass());
+                final CommandEncoder encoder = ENCODERS.get(command.getClass());
+                if (encoder != null) {
+                    final JsonObject jsonObject = encoder.encode(command);
+                    GSON.toJson(jsonObject, builder);
+                } else {
+                    final String result = fallBack.encode(Collections.singletonList(command));
+                    builder.append(result.substring(1, result.length() - 1));
+                }
+                builder.append(",");
             }
-            builder.append(",");
         }
-        if (! commands.isEmpty()) {
+        if (!commands.isEmpty()) {
             final int length = builder.length();
-            builder.delete(length-1, length);
+            builder.delete(length - 1, length);
         }
         builder.append("]");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Encoded message: {}", builder.toString());
+        }
         return builder.toString();
     }
 
     @Override
     public List<Command> decode(String transmitted) {
         Assert.requireNonNull(transmitted, "transmitted");
-
+        LOG.trace("Decoding message: {}", transmitted);
         try {
             final List<Command> commands = new ArrayList<>();
             final JsonArray array = (JsonArray) new JsonParser().parse(transmitted);
@@ -88,6 +101,7 @@ public class OptimizedJsonCodec implements Codec {
             for (final JsonElement jsonElement : array) {
                 final JsonObject command = (JsonObject) jsonElement;
                 final String id = command.getAsJsonPrimitive("id").getAsString();
+                LOG.trace("Decoding command: {}", id);
                 final CommandEncoder<?> encoder = DECODERS.get(id);
                 if (encoder != null) {
                     commands.add(encoder.decode(command));
@@ -95,6 +109,7 @@ public class OptimizedJsonCodec implements Codec {
                     commands.addAll(fallBack.decode("[" + command.toString() + "]"));
                 }
             }
+            LOG.trace("Decoded command list with {} commands", commands.size());
             return commands;
         } catch (ClassCastException | NullPointerException ex) {
             throw new JsonParseException("Illegal JSON detected");
