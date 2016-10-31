@@ -7,6 +7,7 @@ include::_links.adoc[]
 
 :leveloffset: 1
 include::introduction.adoc[]
+include::remote-presentation-model.adoc[]
 include::lifecycle.adoc[]
 include::jumpstart.adoc[]
 include::model.adoc[]
