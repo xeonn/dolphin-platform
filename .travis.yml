@@ -9,9 +9,11 @@ env:
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - sudo apt-get update -qq
+  - sudo apt-get install oracle-java8-installer
 
 script:
-  - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S
+  - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S --info
 
 after_success:
   - ./gradlew coveralls
