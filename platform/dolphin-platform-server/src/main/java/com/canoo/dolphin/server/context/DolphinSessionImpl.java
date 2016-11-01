@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 /**
  * Default implementation of {@link DolphinSession} that uses a map internally to store all attributes
@@ -32,8 +33,11 @@ public class DolphinSessionImpl implements DolphinSession {
 
     private final String dolphinSessionId;
 
-    public DolphinSessionImpl(String dolphinSessionId) {
+    private final Executor runLaterExecutor;
+
+    public DolphinSessionImpl(final String dolphinSessionId, final Executor runLaterExecutor) {
         this.dolphinSessionId = Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
+        this.runLaterExecutor = Assert.requireNonNull(runLaterExecutor, "runLaterExecutor");
         this.store = new ConcurrentHashMap<>();
     }
 
@@ -65,5 +69,10 @@ public class DolphinSessionImpl implements DolphinSession {
     @Override
     public String getId() {
         return dolphinSessionId;
+    }
+
+    @Override
+    public void runLater(Runnable runnable) {
+        runLaterExecutor.execute(runnable);
     }
 }

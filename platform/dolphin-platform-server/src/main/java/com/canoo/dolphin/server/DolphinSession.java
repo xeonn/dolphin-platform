@@ -61,4 +61,6 @@ public interface DolphinSession {
      * @return the id
      */
     String getId();
+
+    void runLater(Runnable runnable);
 }

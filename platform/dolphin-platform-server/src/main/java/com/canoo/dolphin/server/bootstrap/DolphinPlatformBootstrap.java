@@ -118,6 +118,14 @@ MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration())
         return DolphinContextUtils.getContextForCurrentThread();
     }
 
+    public boolean isCurrentContext(final String contextId) {
+        DolphinContext currentContext = DolphinContextUtils.getContextForCurrentThread();
+        if(currentContext == null) {
+            return false;
+        }
+        return currentContext.getId().equals(contextId);
+    }
+
     public DolphinSession getCurrentDolphinSession() {
         DolphinContext context = getCurrentContext();
         if (context == null) {

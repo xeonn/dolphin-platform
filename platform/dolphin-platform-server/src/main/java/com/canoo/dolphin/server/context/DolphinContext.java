@@ -60,6 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * This class defines the central entry point for a Dolphin Platform session on the server.
@@ -68,6 +69,8 @@ import java.util.UUID;
 public class DolphinContext implements DolphinSessionProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
+
+    private final String id;
 
     private final DefaultServerDolphin dolphin;
 
@@ -85,8 +88,6 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private ServerPlatformBeanRepository platformBeanRepository;
 
-    private final String id;
-
     private final DolphinContextMBeanRegistry mBeanRegistry;
 
     private final Callback<DolphinContext> onDestroyCallback;
@@ -98,6 +99,8 @@ public class DolphinContext implements DolphinSessionProvider {
     private final DolphinSession dolphinSession;
 
     private final GarbageCollector garbageCollector;
+
+    private final DolphinContextTaskQueue taskQueue;
 
     public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
@@ -122,6 +125,8 @@ public class DolphinContext implements DolphinSessionProvider {
             }
         });
 
+        taskQueue = new DolphinContextTaskQueue(id);
+
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
         beanRepository = new ServerBeanRepositoryImpl(dolphin, dispatcher, garbageCollector);
@@ -140,7 +145,12 @@ public class DolphinContext implements DolphinSessionProvider {
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(mBeanRegistry, containerManager, beanBuilder, beanRepository, controllerRepository);
 
-        dolphinSession = new DolphinSessionImpl(id);
+        dolphinSession = new DolphinSessionImpl(id, new Executor() {
+            @Override
+            public void execute(final Runnable command) {
+                runLater(command);
+            }
+        });
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -216,7 +226,6 @@ public class DolphinContext implements DolphinSessionProvider {
                         onGarbageCollection();
                     }
                 });
-
             }
         });
     }
@@ -341,5 +350,9 @@ public class DolphinContext implements DolphinSessionProvider {
 
     public DolphinSession getCurrentDolphinSession() {
         return dolphinSession;
+    }
+
+    private void runLater(final Runnable runnable) {
+        taskQueue.addTask(runnable);
     }
 }
