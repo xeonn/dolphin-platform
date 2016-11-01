@@ -134,11 +134,41 @@ TODO
 
 === Creating new model instances
 
-TODO
+Since all beans of the Dolphin Platform model layer will be synchronized between client and server a new model instance
+can not be created "by hand" (`MyBean bean = new MyBean`). So instead of creating a new bean instance by calling its
+constructor the BeanManager interface must be used to create a new bean instance. By doing so the bean instance will
+automatically be added to the bean manager and synchronized between client and server. Here is an example how a bean
+instance can be created:
+
+----
+MyBean bean = beanManager.create(MyBean.class);
+----
 
 === Removing a bean
 
-TODO
+The BeanManager interface provides several methods to remove beans. Until a bean is removed by the bean manager it will
+be synchronized between client and server. Even if a bean isn't referenced in the custom application code anymore it won't
+be removed by the Java Garbage Collection since it's still referenced by the bean manager. The following methods can be
+used to remove beans from the client-server-synchronization:
+
+* `void remove(Object bean)`
+* `void removeAll(Class<?> beanClass)`
+* `void removeAll(Object... beans)`
+* `void removeAll(Collection<?> beans)`
+
+All this methods do not work transitive. This means that in a hierarchy of beans all beans must be detached from the
+bean manager seperately.
+
+In addition the BeanManager interface provides a method to check if a bean is still synchronized between client and
+server or if it's already removed from the bean manager:
+
+* `boolean isManaged(Object bean)`
+
+CAUTION: Currently all mentioned methods are deprecated. Since the Dolphin Platform provides its own Garbage
+Collector beans can be automatically removed by the bean manager once they are not referenced in the model layer anymore.
+Until now the Dolphin Platform garbage collection is an experimental feature that must be activated on the server. Once
+the garbage collection will become a default in the Dolphin Platform the deprecated methods will be removed in a future
+release.
 
 == The Dolphin Platform garbage collection
 
