@@ -31,7 +31,6 @@ import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerBeanBuilderImpl;
 import com.canoo.dolphin.server.impl.ServerBeanRepository;
@@ -84,8 +83,6 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final EventDispatcher dispatcher;
 
-    private final DolphinEventBusImpl dolphinEventBus;
-
     private ServerPlatformBeanRepository platformBeanRepository;
 
     private final DolphinContextMBeanRegistry mBeanRegistry;
@@ -102,13 +99,12 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final DolphinContextTaskQueue taskQueue;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
         this.preDestroyCallback = Assert.requireNonNull(preDestroyCallback, "preDestroyCallback");
         this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
-        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
 
         //ID
         id = UUID.randomUUID().toString();
@@ -119,7 +115,7 @@ public class DolphinContext implements DolphinSessionProvider {
         garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
             @Override
             public void onReject(Set<Instance> instances) {
-                for(Instance instance : instances) {
+                for (Instance instance : instances) {
                     beanRepository.onGarbageCollectionRejection(instance.getBean());
                 }
             }
@@ -242,12 +238,12 @@ public class DolphinContext implements DolphinSessionProvider {
         preDestroyCallback.call(this);
 
         //Deregister from event bus
-        dolphinEventBus.unsubscribeSession(getId());
+        //dolphinEventBus.unsubscribeSession(getId());
 
         //Destroy all controllers
         controllerHandler.destroyAllControllers();
 
-        if(mBeanSubscription != null) {
+        if (mBeanSubscription != null) {
             mBeanSubscription.unsubscribe();
         }
 
@@ -290,15 +286,11 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onReleaseEventBus() {
-        dolphinEventBus.release();
+        taskQueue.interrupt();
     }
 
     private void onPollEventBus() {
-        try {
-            dolphinEventBus.longPoll();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        taskQueue.executeTasks();
     }
 
     private void onGarbageCollection() {
@@ -323,8 +315,8 @@ public class DolphinContext implements DolphinSessionProvider {
             results.addAll(dolphin.getServerConnector().receive(command));
         }
 
-        if(UnstableFeatureFlags.isUseGc()) {
-            if(commands.size() != 1 || !PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME.equals(commands.get(0).getId())) {
+        if (UnstableFeatureFlags.isUseGc()) {
+            if (commands.size() != 1 || !PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME.equals(commands.get(0).getId())) {
                 NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
                 results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
             }

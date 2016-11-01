@@ -60,7 +60,7 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
         }
         final MessageListener<? super T> listener = new MessageListener<T>() {
             @Override
-            public void onMessage(Message<T> message) {
+            public void onMessage(final Message<T> message) {
                 if(DolphinPlatformBootstrap.getInstance().isCurrentContext(currentContext.getId())) {
                     ((MessageListener<T>)handler).onMessage(message);
                 } else {

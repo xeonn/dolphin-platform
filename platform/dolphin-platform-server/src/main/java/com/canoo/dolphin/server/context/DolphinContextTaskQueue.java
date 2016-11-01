@@ -23,9 +23,9 @@ public class DolphinContextTaskQueue {
 
     private final AtomicBoolean interrupted = new AtomicBoolean(false);
 
-    private final long maxExecutionTime = 1_000;
+    private final long maxExecutionTime = 10_000;
 
-    private final long sleepTime= 100;
+    private final long sleepTime= 1_000;
 
     public DolphinContextTaskQueue(final String contextId) {
         this.contextId = Assert.requireNonBlank(contextId, "contextId");

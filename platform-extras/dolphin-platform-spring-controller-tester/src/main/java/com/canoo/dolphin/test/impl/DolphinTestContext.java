@@ -17,24 +17,25 @@ package com.canoo.dolphin.test.impl;
 
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.DolphinContext;
+import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.OpenDolphinFactory;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.DefaultServerDolphin;
+
+import java.util.List;
 
 public class DolphinTestContext extends DolphinContext {
 
     private final TestInMemoryConfiguration config;
 
-    private final DolphinEventBusImpl dolphinEventBus;
-
-    public DolphinTestContext(ContainerManager containerManager, ControllerRepository controllerRepository, TestInMemoryConfiguration config, DolphinEventBusImpl dolphinEventBus) {
-        super(containerManager, controllerRepository, createServerDolphinFactory(config), dolphinEventBus, createEmptyCallback(), createEmptyCallback());
+    public DolphinTestContext(ContainerManager containerManager, ControllerRepository controllerRepository, TestInMemoryConfiguration config) {
+        super(containerManager, controllerRepository, createServerDolphinFactory(config), createEmptyCallback(), createEmptyCallback());
         this.config = Assert.requireNonNull(config, "config");
-        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
+        DolphinContextUtils.setContextForCurrentThread(this);
     }
 
     private static Callback<DolphinContext> createEmptyCallback() {
@@ -58,8 +59,10 @@ public class DolphinTestContext extends DolphinContext {
         };
     }
 
-    public DolphinEventBusImpl getDolphinEventBus() {
-        return dolphinEventBus;
+    @Override
+    public List<Command> handle(List<Command> commands) {
+        DolphinContextUtils.setContextForCurrentThread(this);
+        return super.handle(commands);
     }
 
     public ClientDolphin getClientDolphin() {

@@ -27,7 +27,8 @@ import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinSessionListenerProvider;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.context.DefaultDolphinEventBus;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.mbean.MBeanRegistry;
 import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
@@ -62,10 +63,10 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
 
     public static final String DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING = "/dolphininvalidate";
 
-    private final DolphinEventBusImpl dolphinEventBus;
+    private final DolphinEventBus dolphinEventBus;
 
     private DolphinPlatformBootstrap() {
-        dolphinEventBus = new DolphinEventBusImpl(this);
+        dolphinEventBus = new DefaultDolphinEventBus();
     }
 
     /**
@@ -152,7 +153,7 @@ MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration())
         return INSTANCE;
     }
 
-    public DolphinEventBusImpl getDolphinEventBus() {
+    public DolphinEventBus getDolphinEventBus() {
         return dolphinEventBus;
     }
 }

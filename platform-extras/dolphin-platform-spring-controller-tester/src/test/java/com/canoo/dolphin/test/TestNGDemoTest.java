@@ -51,17 +51,9 @@ public class TestNGDemoTest extends SpringTestNGControllerTest {
         assertEquals(controller.getModel().getInternModels().get(0).getValue(), "I'm a subbean");
     }
 
-   // @Test
-   // public void testEventBus() {
-   //     controller.invoke("sendEvent");
-
-        //Still a workaround to wait till next request
-   //     try {
-   //         Thread.sleep(1000);
-   //     } catch (InterruptedException e) {
-   //         e.printStackTrace();
-   //     }
-
-   //     assertEquals(controller.getModel().getValue(), "changed by eventBus!");
-   // }
+    @Test
+    public void testEventBus() {
+        controller.invoke("sendEvent");
+        assertEquals(controller.getModel().getValue(), "changed by eventBus!");
+    }
 }
