@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.impl;
+package com.canoo.dolphin.impl.converters;
 
-public interface Converter {
+import com.canoo.dolphin.converter.Converter;
 
-    Object convertFromDolphin(Object value);
-
-    Object convertToDolphin(Object value);
-
+/**
+ * Created by hendrikebbers on 25.10.16.
+ */
+public abstract class AbstractStringConverter<B> implements Converter<B, String> {
 }
+

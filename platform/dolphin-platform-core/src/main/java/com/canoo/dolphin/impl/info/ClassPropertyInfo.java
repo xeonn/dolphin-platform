@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.impl.info;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 

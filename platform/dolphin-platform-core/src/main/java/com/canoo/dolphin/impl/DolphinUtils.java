@@ -15,11 +15,20 @@
  */
 package com.canoo.dolphin.impl;
 
-import com.canoo.dolphin.impl.ClassRepositoryImpl.FieldType;
-import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.impl.converters.BooleanConverterFactory;
+import com.canoo.dolphin.impl.converters.ByteConverterFactory;
+import com.canoo.dolphin.impl.converters.DateConverterFactory;
+import com.canoo.dolphin.impl.converters.DolphinBeanConverterFactory;
+import com.canoo.dolphin.impl.converters.DoubleConverterFactory;
+import com.canoo.dolphin.impl.converters.EnumConverterFactory;
+import com.canoo.dolphin.impl.converters.FloatConverterFactory;
+import com.canoo.dolphin.impl.converters.IntegerConverterFactory;
+import com.canoo.dolphin.impl.converters.LongConverterFactory;
+import com.canoo.dolphin.impl.converters.ShortConverterFactory;
+import com.canoo.dolphin.impl.converters.StringConverterFactory;
+import com.canoo.dolphin.mapping.DolphinBean;
 import com.canoo.dolphin.util.Assert;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,62 +41,29 @@ public class DolphinUtils {
     private DolphinUtils() {
     }
 
-    public static String getDolphinAttributeName(PropertyDescriptor descriptor) {
-        if (ReflectionHelper.isProperty(descriptor)) {
-            return descriptor.getName().substring(0, descriptor.getName().length() - "Property".length());
-        }
-        return descriptor.getName();
-    }
-
     public static String getDolphinAttributePropertyNameForField(Field propertyField) {
         return propertyField.getName();
     }
 
     public static String getDolphinPresentationModelTypeForClass(Class<?> beanClass) {
-        return BeanUtils.checkClass(beanClass).getName();
+        return assertIsDolphinBean(beanClass).getName();
     }
 
-    public static <T> Property<T> getProperty(Object bean, String name) throws IllegalAccessException {
-        for (Field field : ReflectionHelper.getInheritedDeclaredFields(bean.getClass())) {
-            if (Property.class.isAssignableFrom(field.getType()) && name.equals(getDolphinAttributePropertyNameForField(field))) {
-                return (Property<T>) ReflectionHelper.getPrivileged(field, bean);
-            }
-        }
-        return null;
+    public static <T> T assertIsDolphinBean(T bean) {
+        Assert.requireNonNull(bean, "bean");
+        assertIsDolphinBean(bean.getClass());
+        return bean;
     }
 
-    public static FieldType getFieldType(Class<?> clazz) {
-        Assert.requireNonNull(clazz, "clazz");
-        if (String.class.equals(clazz)) {
-            return FieldType.STRING;
+    public static <T> Class<T> assertIsDolphinBean(Class<T> beanClass) {
+        if (!isDolphinBean(beanClass)) {
+            throw new BeanDefinitionException(beanClass);
         }
-        if (int.class.equals(clazz) || Integer.class.equals(clazz)) {
-            return FieldType.INT;
-        }
-        if (boolean.class.equals(clazz) || Boolean.class.equals(clazz)) {
-            return FieldType.BOOLEAN;
-        }
-        if (long.class.equals(clazz) || Long.class.equals(clazz)) {
-            return FieldType.LONG;
-        }
-        if (double.class.equals(clazz) || Double.class.equals(clazz)) {
-            return FieldType.DOUBLE;
-        }
-        if (float.class.equals(clazz) || Float.class.equals(clazz)) {
-            return FieldType.FLOAT;
-        }
-        if (byte.class.equals(clazz) || Byte.class.equals(clazz)) {
-            return FieldType.BYTE;
-        }
-        if (short.class.equals(clazz) || Short.class.equals(clazz)) {
-            return FieldType.SHORT;
-        }
-        if (Enum.class.isAssignableFrom(clazz)) {
-            return FieldType.ENUM;
-        }
-        if (Date.class.isAssignableFrom(clazz) || Calendar.class.isAssignableFrom(clazz)) {
-            return FieldType.DATE;
-        }
-        return FieldType.DOLPHIN_BEAN;
+        return beanClass;
+    }
+
+    public static boolean isDolphinBean(Class<?> beanClass) {
+        Assert.requireNonNull(beanClass, "beanClass");
+        return beanClass.isAnnotationPresent(DolphinBean.class);
     }
 }

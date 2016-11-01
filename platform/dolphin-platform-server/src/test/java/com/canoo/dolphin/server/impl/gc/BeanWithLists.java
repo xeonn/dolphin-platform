@@ -16,10 +16,9 @@
 package com.canoo.dolphin.server.impl.gc;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.mapping.DolphinBean;
 
-/**
- * Created by hendrikebbers on 20.01.16.
- */
+@DolphinBean
 public class BeanWithLists {
 
     private ObservableList<String> stringList;

@@ -26,13 +26,19 @@ import com.canoo.dolphin.internal.PresentationModelBuilder;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.internal.info.ClassInfo;
 import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.MappingException;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListMapperImpl implements ListMapper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ListMapperImpl.class);
+
 
     private final Dolphin dolphin;
     private final BeanRepository beanRepository;
@@ -71,8 +77,9 @@ public class ListMapperImpl implements ListMapper {
                     }
 
                     list.internalSplice(from, to, newElements);
-                } catch (NullPointerException | ClassCastException ex) {
-                    System.out.println("Invalid LIST_SPLICE command received: " + model);
+                } catch (Exception ex) {
+                    //TODO: This exception must be handled!
+                    LOG.error("Invalid LIST_SPLICE command received: " + model, ex);
                 } finally {
                     if (model != null) {
                         ListMapperImpl.this.dolphin.remove(model);
@@ -104,7 +111,11 @@ public class ListMapperImpl implements ListMapper {
 
             int i = 0;
             for (final Object current : newElements) {
-                builder.withAttribute(Integer.toString(i++), observableListInfo.convertToDolphin(current));
+                try {
+                    builder.withAttribute(Integer.toString(i++), observableListInfo.convertToDolphin(current));
+                }catch (Exception e) {
+                    throw new MappingException("Error in event processing!", e);
+                }
             }
 
             builder.create();

@@ -29,6 +29,7 @@ import org.opendolphin.core.PresentationModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ import java.util.Map;
 // TODO mapDolphinToObject() does not really fit here, we should probably move it to Converters, but first we need to fix scopes
 public class BeanRepositoryImpl implements BeanRepository{
 
-    private final Map<Object, PresentationModel> objectPmToDolphinPm = new HashMap<>();
+    private final Map<Object, PresentationModel> objectPmToDolphinPm = new IdentityHashMap<>();
     private final Map<String, Object> dolphinIdToObjectPm = new HashMap<>();
     private final Dolphin dolphin;
     private final Multimap<Class<?>, BeanAddedListener<?>> beanAddedListenerMap = ArrayListMultimap.create();
@@ -73,7 +74,7 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public <T> Subscription addOnAddedListener(final Class<T> beanClass, final BeanAddedListener<? super T> listener) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         beanAddedListenerMap.put(beanClass, listener);
         return new Subscription() {
             @Override
@@ -96,7 +97,7 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public <T> Subscription addOnRemovedListener(final Class<T> beanClass, final BeanRemovedListener<? super T> listener) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         beanRemovedListenerMap.put(beanClass, listener);
         return new Subscription() {
             @Override
@@ -119,13 +120,13 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public boolean isManaged(Object bean) {
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         return objectPmToDolphinPm.containsKey(bean);
     }
 
     @Override
     public <T> void delete(T bean) {
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         final PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
             dolphinIdToObjectPm.remove(model.getId());
@@ -136,7 +137,7 @@ public class BeanRepositoryImpl implements BeanRepository{
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> beanClass) {
-        BeanUtils.checkClass(beanClass);
+        DolphinUtils.assertIsDolphinBean(beanClass);
         final List<T> result = new ArrayList<>();
         final List<PresentationModel> presentationModels = dolphin.findAllPresentationModelsByType(DolphinUtils.getDolphinPresentationModelTypeForClass(beanClass));
         for (PresentationModel model : presentationModels) {
@@ -147,6 +148,12 @@ public class BeanRepositoryImpl implements BeanRepository{
 
     @Override
     public Object getBean(String sourceId) {
+        if(sourceId == null) {
+            return null;
+        }
+        if(!dolphinIdToObjectPm.containsKey(sourceId)) {
+            throw new IllegalArgumentException("No bean instance found with id " + sourceId);
+        }
         return dolphinIdToObjectPm.get(sourceId);
     }
 
@@ -155,7 +162,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         if (bean == null) {
             return null;
         }
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         try {
             return objectPmToDolphinPm.get(bean).getId();
         } catch (NullPointerException ex) {
@@ -166,7 +173,7 @@ public class BeanRepositoryImpl implements BeanRepository{
     @Override
     @SuppressWarnings("unchecked")
     public void registerBean(Object bean, PresentationModel model, UpdateSource source) {
-        BeanUtils.checkBean(bean);
+        DolphinUtils.assertIsDolphinBean(bean);
         objectPmToDolphinPm.put(bean, model);
         dolphinIdToObjectPm.put(model.getId(), bean);
 

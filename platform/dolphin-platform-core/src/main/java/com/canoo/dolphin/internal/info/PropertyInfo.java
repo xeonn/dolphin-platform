@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.internal.info;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 
 public abstract class PropertyInfo {
 
@@ -35,11 +36,11 @@ public abstract class PropertyInfo {
 
     public abstract void setPriviliged(Object bean, Object value);
 
-    public Object convertFromDolphin(Object value) {
+    public Object convertFromDolphin(Object value) throws ValueConverterException {
         return converter.convertFromDolphin(value);
     }
 
-    public Object convertToDolphin(Object value) {
+    public Object convertToDolphin(Object value) throws ValueConverterException {
         return converter.convertToDolphin(value);
     }
 }
