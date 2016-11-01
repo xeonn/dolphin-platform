@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.server.event;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -22,7 +23,9 @@ import java.util.UUID;
  * a specific topic. A topic is defined by it's name that means that each topic needs a unique name.
  * @param <T> the type of data that can be send to this topic
  */
-public class Topic<T> {
+public class Topic<T> implements Serializable {
+
+    private static final long serialVersionUID = -875992657685501660L;
 
     private final String name;
 

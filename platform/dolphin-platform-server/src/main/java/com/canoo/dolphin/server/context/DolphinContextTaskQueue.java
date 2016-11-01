@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Internal class to call tasks (see {@link Runnable}) in a Dolphin Platform context
  * (see {@link DolphinContext}). Tasks can come from an "invokeLater" call or the event bus.
- *
  */
 public class DolphinContextTaskQueue {
 
@@ -51,17 +50,17 @@ public class DolphinContextTaskQueue {
         long startTime = System.currentTimeMillis();
         while (!interrupted.get() && System.currentTimeMillis() < startTime + maxExecutionTime) {
             if(!tasks.isEmpty()) {
-                //TODO: Blocking call
                 try {
                     tasks.remove(0).run();
                 } catch (Exception e) {
-                    throw new RuntimeException("Error in running task in Dolphin Platform context " + contextId, e);
+                    throw new DolphinTaskException("Error in running task in Dolphin Platform context " + contextId, e);
                 }
             }
             try {
+                //TODO: refactoring - do not use sleep
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
-                throw new RuntimeException("Task executor error in Dolphin Platform context " + contextId, e);
+                throw new DolphinTaskException("Task executor error in Dolphin Platform context " + contextId, e);
             }
         }
         interrupted.set(false);
