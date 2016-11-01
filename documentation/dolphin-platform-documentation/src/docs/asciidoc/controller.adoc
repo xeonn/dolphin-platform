@@ -258,3 +258,91 @@ that are (transitive) injected in controllers. For a future release we plan to s
 be called from a client and "live" in the client scope. This will be useful to provide specific content like images or
 files to the client.
 
+== Injection of Dolphin Platform specific services
+
+The Dolphin Platform provide several services that can be injected in any managed bean. Since the Dolphin Platform
+controllers are managed beans and support dependency injection the Dolphin Platform specific services can be injected in
+any controller.
+
+=== The bean manager
+
+The Dolphin Platform bean manager provides methods to manages the model layer. More information about the model layer
+and how to use the bean manager can be found in the *Model API* chapter. The bean manager is defined by the
+`com.canoo.dolphin.BeanManager` interface. Instances are managed objects in the client session scope.
+
+Example:
+
+[source,java]
+----
+@DolphinController
+public class MyViewController {
+
+    @Inject
+    private BeanManager beanManager;
+
+     //...
+
+}
+----
+
+=== The event bus
+The Dolphin Platform provides its own event bus that can be used to provide interaction between several sessions or to
+access the Dolphin Platform from a background thread or endpoint. The event bus is defined by the
+ `com.canoo.dolphin.server.event.DolphinEventBus` interface. Instances are managed objects in the application scope.
+
+Example:
+
+[source,java]
+----
+@DolphinController
+public class MyViewController {
+
+    @Inject
+    private DolphinEventBus eventBus;
+
+     //...
+
+}
+----
+
+=== The Dolphin Platform session
+
+The Dolphin Platform offers a service to interact with the client session. To do so the
+`com.canoo.dolphin.server.DolphinSession` can be injected. The interface provides similar functionallity as the
+`javax.servlet.http.HttpSession` interface does for the http session. Instances are managed objects in the client session
+scope.
+
+Example:
+
+[source,java]
+----
+@DolphinController
+public class MyViewController {
+
+    @Inject
+    private DolphinSession session;
+
+     //...
+
+}
+----
+
+=== The property binder
+The Dolphin Platform provides a way to create binding between properties in the model layer. This bindings can be
+created by injecting the com.canoo.dolphin.server.binding.PropertyBinder interface. A more detailed description of
+bindings can be found in the *Model API* chapter. Instances are managed objects in the client session scope.
+
+Example:
+
+[source,java]
+----
+@DolphinController
+public class MyViewController {
+
+    @Inject
+    private PropertyBinder binder;
+
+     //...
+
+}
+----
