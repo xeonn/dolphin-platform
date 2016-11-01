@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,26 +59,26 @@ public class DateConverterFactory extends AbstractConverterFactory {
         }
 
         @Override
-        public Date convertFromDolphin(String value) {
+        public Date convertFromDolphin(String value) throws ValueConverterException{
             if (value == null) {
                 return null;
             }
             try {
                 return dateFormat.parse(value);
             } catch (ParseException e) {
-                throw new IllegalArgumentException("Unable to parse the date: " + value, e);
+                throw new ValueConverterException("Unable to parse the date: " + value, e);
             }
         }
 
         @Override
-        public String convertToDolphin(Date value) {
+        public String convertToDolphin(Date value) throws ValueConverterException{
             if (value == null) {
                 return null;
             }
             try {
                 return dateFormat.format(value);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unable to format the date: " + value, e);
+                throw new ValueConverterException("Unable to format the date: " + value, e);
             }
         }
     }

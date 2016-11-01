@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.impl;
+package com.canoo.dolphin.converter;
 
-/**
- * Created by hendrikebbers on 14.07.16.
- */
-public class BeanUtils {
+public interface Converter<B, D> {
+
+    B convertFromDolphin(D value) throws ValueConverterException;
+
+    D convertToDolphin(B value) throws ValueConverterException;
 
 }

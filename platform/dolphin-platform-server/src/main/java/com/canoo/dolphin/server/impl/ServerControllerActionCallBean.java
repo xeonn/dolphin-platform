@@ -15,8 +15,10 @@
  */
 package com.canoo.dolphin.server.impl;
 
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.AbstractControllerActionCallBean;
 import com.canoo.dolphin.impl.Converters;
+import com.canoo.dolphin.mapping.MappingException;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -50,6 +52,10 @@ public class ServerControllerActionCallBean extends AbstractControllerActionCall
         if (valueAttribute == null) {
             throw new IllegalArgumentException(String.format("Invoking DolphinAction requires parameter '%s', but it was not send", name));
         }
-        return converters.getConverter(type).convertFromDolphin(valueAttribute.getValue());
+        try {
+            return converters.getConverter(type).convertFromDolphin(valueAttribute.getValue());
+        } catch (ValueConverterException e) {
+            throw new MappingException("Error in conversion", e);
+        }
     }
 }

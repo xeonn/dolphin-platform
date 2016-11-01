@@ -15,10 +15,12 @@
  */
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.internal.info.PropertyInfo;
+import com.canoo.dolphin.mapping.MappingException;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
@@ -49,22 +51,34 @@ public class PropertyImpl<T> implements Property<T> {
             @Override
             public void propertyChange(final PropertyChangeEvent evt) {
                 Assert.requireNonNull(evt, "evt");
-                final T oldValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getOldValue());
-                final T newValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getNewValue());
-                firePropertyChanged(oldValue, newValue);
+                try {
+                    final T oldValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getOldValue());
+                    final T newValue = (T) PropertyImpl.this.propertyInfo.convertFromDolphin(evt.getNewValue());
+                    firePropertyChanged(oldValue, newValue);
+                } catch (Exception e) {
+                    throw new MappingException("Error in property change handling!", e);
+                }
             }
         });
     }
 
     @Override
     public void set(T value) {
-        attribute.setValue(propertyInfo.convertToDolphin(value));
+        try {
+            attribute.setValue(propertyInfo.convertToDolphin(value));
+        } catch (ValueConverterException e) {
+            throw new MappingException("Error in mutating property value!", e);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public T get() {
+        try {
         return (T) propertyInfo.convertFromDolphin(attribute.getValue());
+        } catch (ValueConverterException e) {
+            throw new MappingException("Error in accessing property value!", e);
+        }
     }
 
     @Override

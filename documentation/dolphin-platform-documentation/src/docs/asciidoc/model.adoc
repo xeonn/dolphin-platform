@@ -81,7 +81,7 @@ in a future version
 === Custom data types
 
 Since version 0.8.8 the Dolphin Platform provides a SPI to add custom data types for properties and collections. To add
-support for a new data type a custom converter must be provided. To do so the `com.canoo.dolphin.impl.ConverterFactory`
+support for a new data type a custom converter must be provided. To do so the `com.canoo.dolphin.converter.ConverterFactory`
 interface must be implemented and provided for
 https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Java Service Provider Interface (SPI)]. Examples for custom
 data types can be found in the sources of the optional `dolphin-platform-date-time-converter` module.

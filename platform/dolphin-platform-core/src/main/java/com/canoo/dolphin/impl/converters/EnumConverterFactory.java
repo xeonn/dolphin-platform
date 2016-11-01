@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,26 +61,26 @@ public class EnumConverterFactory extends AbstractConverterFactory {
         }
 
         @Override
-        public Enum convertFromDolphin(String value) {
+        public Enum convertFromDolphin(String value) throws ValueConverterException{
             if (value == null) {
                 return null;
             }
             try {
                 return Enum.valueOf(clazz, value);
             } catch (IllegalArgumentException ex) {
-                throw new IllegalArgumentException("Unable to convert to an enum: " + clazz + ", value: " + value, ex);
+                throw new ValueConverterException("Unable to convert to an enum: " + clazz + ", value: " + value, ex);
             }
         }
 
         @Override
-        public String convertToDolphin(Enum value) {
+        public String convertToDolphin(Enum value) throws ValueConverterException{
             if (value == null) {
                 return null;
             }
             try {
                 return value.name();
             } catch (ClassCastException ex) {
-                throw new IllegalArgumentException("Unable to evaluatethe enum: " + value, ex);
+                throw new ValueConverterException("Unable to evaluatethe enum: " + value, ex);
             }
         }
     }

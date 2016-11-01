@@ -16,10 +16,12 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.Param;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.AbstractControllerActionCallBean;
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.internal.PresentationModelBuilder;
+import com.canoo.dolphin.mapping.MappingException;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
@@ -40,7 +42,12 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
 
         for (final Param param : params) {
             final Object value = param.getValue();
-            final Object dolphinValue = value != null? converters.getConverter(value.getClass()).convertToDolphin(value) : null;
+            final Object dolphinValue;
+            try {
+                dolphinValue = value != null? converters.getConverter(value.getClass()).convertToDolphin(value) : null;
+            } catch (ValueConverterException e) {
+               throw new MappingException("Error in value conversion", e);
+            }
             final String paramName = PARAM_PREFIX + param.getName();
             builder.withAttribute(paramName, dolphinValue);
         }

@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.internal.BeanRepository;
 import mockit.Mocked;
@@ -25,10 +26,8 @@ import java.time.Period;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.fail;
 
-/**
- * Created by hendrikebbers on 25.10.16.
- */
 public class PeriodeConverterFactoryTest {
 
     @Test
@@ -40,7 +39,7 @@ public class PeriodeConverterFactoryTest {
         int type = converters.getFieldType(Period.class);
 
         //Then
-        assertEquals(type, PeriodConverterFactory.FIELD_TYPE);
+        assertEquals(type, ValueFieldTypes.PERIODE_FIELD_TYPE);
     }
 
     @Test
@@ -80,12 +79,16 @@ public class PeriodeConverterFactoryTest {
         Converter converter = converters.getConverter(Period.class);
 
         //Then
-        assertEquals(converter.convertFromDolphin(null), null);
-        assertEquals(converter.convertToDolphin(null), null);
+        try {
+            assertEquals(converter.convertFromDolphin(null), null);
+            assertEquals(converter.convertToDolphin(null), null);
+        } catch (ValueConverterException e) {
+            fail("Error in conversion", e);
+        }
     }
 
     @Test(expectedExceptions = ClassCastException.class)
-    public void testWrongDolphinValues(@Mocked BeanRepository beanRepository) {
+    public void testWrongDolphinValues(@Mocked BeanRepository beanRepository) throws ValueConverterException{
         //Given
         Converters converters = new Converters(beanRepository);
 
@@ -97,7 +100,7 @@ public class PeriodeConverterFactoryTest {
     }
 
     @Test(expectedExceptions = ClassCastException.class)
-    public void testWrongBeanValues(@Mocked BeanRepository beanRepository) {
+    public void testWrongBeanValues(@Mocked BeanRepository beanRepository) throws ValueConverterException{
         //Given
         Converters converters = new Converters(beanRepository);
 
@@ -108,14 +111,17 @@ public class PeriodeConverterFactoryTest {
         converter.convertToDolphin(7);
     }
 
-
     private void testReconversion(Converter converter, Period duration) {
-        Object dolphinObject = converter.convertToDolphin(duration);
-        assertNotNull(dolphinObject);
-        Object reconvertedObject = converter.convertFromDolphin(dolphinObject);
-        assertNotNull(reconvertedObject);
-        assertEquals(reconvertedObject.getClass(), Period.class);
-        Period reconvertedDuration = (Period) reconvertedObject;
-        assertEquals(reconvertedDuration, duration);
+        try {
+            Object dolphinObject = converter.convertToDolphin(duration);
+            assertNotNull(dolphinObject);
+            Object reconvertedObject = converter.convertFromDolphin(dolphinObject);
+            assertNotNull(reconvertedObject);
+            assertEquals(reconvertedObject.getClass(), Period.class);
+            Period reconvertedDuration = (Period) reconvertedObject;
+            assertEquals(reconvertedDuration, duration);
+        } catch (ValueConverterException e) {
+            fail("Error in conversion", e);
+        }
     }
 }

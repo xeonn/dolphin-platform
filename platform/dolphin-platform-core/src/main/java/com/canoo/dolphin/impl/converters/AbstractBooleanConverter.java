@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
 
 /**
  * Created by hendrikebbers on 25.10.16.

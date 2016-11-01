@@ -16,6 +16,7 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.collections.ObservableList;
+import com.canoo.dolphin.converter.Converter;
 import com.canoo.dolphin.impl.info.ClassPropertyInfo;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.PresentationModelBuilder;

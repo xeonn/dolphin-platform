@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.converters.AbstractConverterFactory;
 import com.canoo.dolphin.impl.converters.AbstractStringConverter;
 
@@ -29,8 +30,6 @@ public class ZonedDateTimeConverterFactory extends AbstractConverterFactory {
 
     private final static Converter CONVERTER = new ZonedDateTimeConverter();
 
-    public final static int FIELD_TYPE = 54;
-
     @Override
     public boolean supportsType(Class<?> cls) {
         return ZonedDateTime.class.isAssignableFrom(cls);
@@ -38,7 +37,7 @@ public class ZonedDateTimeConverterFactory extends AbstractConverterFactory {
 
     @Override
     public int getTypeIdentifier() {
-        return FIELD_TYPE;
+        return ValueFieldTypes.ZONED_DATE_TIME_FIELD_TYPE;
     }
 
     @Override
@@ -49,19 +48,27 @@ public class ZonedDateTimeConverterFactory extends AbstractConverterFactory {
     private static class ZonedDateTimeConverter extends AbstractStringConverter<ZonedDateTime> {
 
         @Override
-        public ZonedDateTime convertFromDolphin(String value) {
-            if(value == null) {
+        public ZonedDateTime convertFromDolphin(String value) throws ValueConverterException {
+            if (value == null) {
                 return null;
             }
-            return ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value));
+            try {
+                return ZonedDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(value));
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert to ZonedDateTime", e);
+            }
         }
 
         @Override
-        public String convertToDolphin(ZonedDateTime value) {
-            if(value == null) {
+        public String convertToDolphin(ZonedDateTime value) throws ValueConverterException {
+            if (value == null) {
                 return null;
             }
-            return value.format(DateTimeFormatter.ISO_DATE_TIME);
+            try {
+                return value.format(DateTimeFormatter.ISO_DATE_TIME);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert from ZonedDateTime", e);
+            }
         }
     }
 

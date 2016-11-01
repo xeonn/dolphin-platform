@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.converters.AbstractConverterFactory;
 import com.canoo.dolphin.impl.converters.AbstractStringConverter;
 
@@ -28,8 +29,6 @@ public class PeriodConverterFactory extends AbstractConverterFactory {
 
     private final static Converter CONVERTER = new PeriodConverter();
 
-    public final static int FIELD_TYPE = 53;
-
     @Override
     public boolean supportsType(Class<?> cls) {
         return Period.class.isAssignableFrom(cls);
@@ -37,7 +36,7 @@ public class PeriodConverterFactory extends AbstractConverterFactory {
 
     @Override
     public int getTypeIdentifier() {
-        return FIELD_TYPE;
+        return ValueFieldTypes.PERIODE_FIELD_TYPE;
     }
 
     @Override
@@ -48,19 +47,27 @@ public class PeriodConverterFactory extends AbstractConverterFactory {
     private static class PeriodConverter extends AbstractStringConverter<Period> {
 
         @Override
-        public Period convertFromDolphin(String value) {
+        public Period convertFromDolphin(String value) throws ValueConverterException {
             if(value == null) {
                 return null;
             }
-            return Period.parse(value);
+            try {
+                return Period.parse(value);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert to Periode", e);
+            }
         }
 
         @Override
-        public String convertToDolphin(Period value) {
+        public String convertToDolphin(Period value) throws ValueConverterException{
             if(value == null) {
                 return null;
             }
-            return value.toString();
+            try {
+                return value.toString();
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert from Periode", e);
+            }
         }
     }
 

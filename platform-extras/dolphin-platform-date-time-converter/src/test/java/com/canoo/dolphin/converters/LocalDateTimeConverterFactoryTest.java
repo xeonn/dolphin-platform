@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.Converters;
 import com.canoo.dolphin.internal.BeanRepository;
 import mockit.Mocked;
@@ -27,12 +28,9 @@ import java.util.TimeZone;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.fail;
 
-/**
- * Created by hendrikebbers on 25.10.16.
- */
 public class LocalDateTimeConverterFactoryTest {
-
 
     @Test
     public void testFactoryFieldType(@Mocked BeanRepository beanRepository) {
@@ -43,7 +41,7 @@ public class LocalDateTimeConverterFactoryTest {
         int type = converters.getFieldType(LocalDateTime.class);
 
         //Then
-        assertEquals(type, LocalDateTimeConverterFactory.FIELD_TYPE);
+        assertEquals(type, ValueFieldTypes.LOCAL_DATE_TIME_FIELD_TYPE);
     }
 
     @Test
@@ -83,12 +81,16 @@ public class LocalDateTimeConverterFactoryTest {
         Converter converter = converters.getConverter(LocalDateTime.class);
 
         //Then
-        assertEquals(converter.convertFromDolphin(null), null);
-        assertEquals(converter.convertToDolphin(null), null);
+        try {
+            assertEquals(converter.convertFromDolphin(null), null);
+            assertEquals(converter.convertToDolphin(null), null);
+        } catch (ValueConverterException e) {
+            fail("Error in conversion", e);
+        }
     }
 
     @Test(expectedExceptions = ClassCastException.class)
-    public void testWrongDolphinValues(@Mocked BeanRepository beanRepository) {
+    public void testWrongDolphinValues(@Mocked BeanRepository beanRepository) throws ValueConverterException{
         //Given
         Converters converters = new Converters(beanRepository);
 
@@ -100,7 +102,7 @@ public class LocalDateTimeConverterFactoryTest {
     }
 
     @Test(expectedExceptions = ClassCastException.class)
-    public void testWrongBeanValues(@Mocked BeanRepository beanRepository) {
+    public void testWrongBeanValues(@Mocked BeanRepository beanRepository) throws ValueConverterException{
         //Given
         Converters converters = new Converters(beanRepository);
 
@@ -111,17 +113,18 @@ public class LocalDateTimeConverterFactoryTest {
         converter.convertToDolphin(7);
     }
 
-
     private void testReconversion(Converter converter, LocalDateTime time) {
-        Object dolphinObject = converter.convertToDolphin(time);
-        assertNotNull(dolphinObject);
-
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC-3")));
-
-        Object reconvertedObject = converter.convertFromDolphin(dolphinObject);
-        assertNotNull(reconvertedObject);
-        assertEquals(reconvertedObject.getClass(), LocalDateTime.class);
-        LocalDateTime reverted = (LocalDateTime) reconvertedObject;
-        assertEquals(reverted, time);
+        try {
+            Object dolphinObject = converter.convertToDolphin(time);
+            assertNotNull(dolphinObject);
+            TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC-3")));
+            Object reconvertedObject = converter.convertFromDolphin(dolphinObject);
+            assertNotNull(reconvertedObject);
+            assertEquals(reconvertedObject.getClass(), LocalDateTime.class);
+            LocalDateTime reverted = (LocalDateTime) reconvertedObject;
+            assertEquals(reverted, time);
+        } catch (ValueConverterException e) {
+            fail("Error in conversion");
+        }
     }
 }

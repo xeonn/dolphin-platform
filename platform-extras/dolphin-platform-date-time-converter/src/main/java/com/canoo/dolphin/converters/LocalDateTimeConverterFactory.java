@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.converters.AbstractConverterFactory;
 import com.canoo.dolphin.impl.converters.AbstractStringConverter;
 
@@ -26,8 +27,6 @@ public class LocalDateTimeConverterFactory extends AbstractConverterFactory {
 
     private final static Converter CONVERTER = new LocalDateTimeConverter();
 
-    public final static int FIELD_TYPE = 52;
-
     @Override
     public boolean supportsType(Class<?> cls) {
         return LocalDateTime.class.isAssignableFrom(cls);
@@ -35,7 +34,7 @@ public class LocalDateTimeConverterFactory extends AbstractConverterFactory {
 
     @Override
     public int getTypeIdentifier() {
-        return FIELD_TYPE;
+        return ValueFieldTypes.LOCAL_DATE_TIME_FIELD_TYPE;
     }
 
     @Override
@@ -46,19 +45,27 @@ public class LocalDateTimeConverterFactory extends AbstractConverterFactory {
     private static class LocalDateTimeConverter extends AbstractStringConverter<LocalDateTime> {
 
         @Override
-        public LocalDateTime convertFromDolphin(String value) {
+        public LocalDateTime convertFromDolphin(String value) throws ValueConverterException {
             if (value == null) {
                 return null;
             }
-            return LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(value));
+            try {
+                return LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(value));
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert to LocalDateTime", e);
+            }
         }
 
         @Override
-        public String convertToDolphin(LocalDateTime value) {
+        public String convertToDolphin(LocalDateTime value) throws ValueConverterException {
             if (value == null) {
                 return null;
             }
-            return value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            try {
+                return value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert from LocalDateTime", e);
+            }
         }
     }
 

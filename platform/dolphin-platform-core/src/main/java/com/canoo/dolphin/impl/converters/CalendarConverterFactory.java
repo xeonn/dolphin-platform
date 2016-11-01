@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class CalendarConverterFactory extends AbstractConverterFactory {
         }
 
         @Override
-        public Calendar convertFromDolphin(String value) {
+        public Calendar convertFromDolphin(String value) throws ValueConverterException {
             if (value == null) {
                 return null;
             }
@@ -67,19 +68,19 @@ public class CalendarConverterFactory extends AbstractConverterFactory {
                 result.setTime(dateFormat.parse(value));
                 return result;
             } catch (ParseException e) {
-                throw new IllegalArgumentException("Unable to parse the date: " + value, e);
+                throw new ValueConverterException("Unable to parse the date: " + value, e);
             }
         }
 
         @Override
-        public String convertToDolphin(Calendar value) {
+        public String convertToDolphin(Calendar value) throws ValueConverterException {
             if (value == null) {
                 return null;
             }
             try {
                 return dateFormat.format(((Calendar)value).getTime());
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unable to format the date: " + value, e);
+                throw new ValueConverterException("Unable to format the date: " + value, e);
             }
         }
     }

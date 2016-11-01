@@ -15,7 +15,8 @@
  */
 package com.canoo.dolphin.converters;
 
-import com.canoo.dolphin.impl.Converter;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.converters.AbstractConverterFactory;
 import com.canoo.dolphin.impl.converters.AbstractStringConverter;
 
@@ -25,8 +26,6 @@ public class DurationConverterFactory extends AbstractConverterFactory {
 
     private final static Converter CONVERTER = new DurationConverter();
 
-    public final static int FIELD_TYPE = 51;
-
     @Override
     public boolean supportsType(Class<?> cls) {
         return Duration.class.isAssignableFrom(cls);
@@ -34,7 +33,7 @@ public class DurationConverterFactory extends AbstractConverterFactory {
 
     @Override
     public int getTypeIdentifier() {
-        return FIELD_TYPE;
+        return ValueFieldTypes.DURATION_FIELD_TYPE;
     }
 
     @Override
@@ -45,19 +44,27 @@ public class DurationConverterFactory extends AbstractConverterFactory {
     private static class DurationConverter extends AbstractStringConverter<Duration> {
 
         @Override
-        public Duration convertFromDolphin(String value) {
-            if(value == null) {
+        public Duration convertFromDolphin(String value) throws ValueConverterException {
+            if (value == null) {
                 return null;
             }
-            return Duration.parse(value);
+            try {
+                return Duration.parse(value);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert to Duration", e);
+            }
         }
 
         @Override
-        public String convertToDolphin(Duration value) {
-            if(value == null) {
+        public String convertToDolphin(Duration value) throws ValueConverterException {
+            if (value == null) {
                 return null;
             }
-            return value.toString();
+            try {
+                return value.toString();
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert from Duration", e);
+            }
         }
     }
 

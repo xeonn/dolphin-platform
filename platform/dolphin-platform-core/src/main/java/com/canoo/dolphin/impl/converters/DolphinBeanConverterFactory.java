@@ -15,8 +15,9 @@
  */
 package com.canoo.dolphin.impl.converters;
 
-import com.canoo.dolphin.impl.Converter;
-import com.canoo.dolphin.impl.ConverterFactory;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ConverterFactory;
+import com.canoo.dolphin.converter.ValueConverterException;
 import com.canoo.dolphin.impl.DolphinUtils;
 import com.canoo.dolphin.internal.BeanRepository;
 
@@ -55,13 +56,21 @@ public class DolphinBeanConverterFactory implements ConverterFactory {
         }
 
         @Override
-        public Object convertFromDolphin(String value) {
-            return beanRepository.getBean((String) value);
+        public Object convertFromDolphin(String value) throws ValueConverterException {
+            try {
+                return beanRepository.getBean(value);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert to dolphin bean", e);
+            }
         }
 
         @Override
-        public String convertToDolphin(Object value) {
-            return beanRepository.getDolphinId(value);
+        public String convertToDolphin(Object value) throws ValueConverterException {
+            try {
+                return beanRepository.getDolphinId(value);
+            } catch (Exception e) {
+                throw new ValueConverterException("Can not convert from dolphin bean", e);
+            }
         }
     }
 }

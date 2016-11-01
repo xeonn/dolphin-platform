@@ -15,6 +15,8 @@
  */
 package com.canoo.dolphin.impl;
 
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ConverterFactory;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;

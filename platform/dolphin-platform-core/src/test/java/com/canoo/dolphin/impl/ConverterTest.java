@@ -15,10 +15,14 @@
  */
 package com.canoo.dolphin.impl;
 
-import org.testng.Assert;
+import com.canoo.dolphin.converter.Converter;
+import com.canoo.dolphin.converter.ValueConverterException;
 import org.testng.annotations.Test;
 
 import java.util.Date;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 public class ConverterTest {
 
@@ -66,9 +70,13 @@ public class ConverterTest {
     }
 
     private void checkConversion(Converter converter, Object val) {
-        Object converted = converter.convertToDolphin(val);
-        Object reconverted = converter.convertFromDolphin(converted);
-        Assert.assertEquals(reconverted, val);
+        try {
+            Object converted = converter.convertToDolphin(val);
+            Object reconverted = converter.convertFromDolphin(converted);
+            assertEquals(reconverted, val);
+        } catch (ValueConverterException e) {
+            fail("Error in conversion", e);
+        }
     }
 
 }
