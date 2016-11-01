@@ -50,21 +50,41 @@ the Dolphin Platform beans (by adding the `@DolphinBean` annotation) are valid D
 
 Currently Dolphin Platform properties and collections support the following types as content:
 
-* Integer
-* Long
-* Float
-* Double
-* Byte
-* Short
-* Boolean
-* String
-* Date _(since version 0.8.4)_
-* Calendar _(since version 0.8.4)_
-* Enums _(since version 0.8.4)_
+* `Integer`
+* `Long`
+* `Float`
+* `Double`
+* `Byte`
+* `Short`
+* `Boolean`
+* `String`
+* `Date` _(since version 0.8.4)_
+* `Calendar` _(since version 0.8.4)_
+* `Enums` _(since version 0.8.4)_
 * Dolphin Platform Bean <<bean-hierarchies, (see description)>>
 
 CAUTION: As some browsers have issues with Timezone, one has to use UTC. If the provided Calendar is not set to UTC, it
 will be converted.
+
+Since version 0.8.8 the Dolphin Platform contains the optional module `dolphin-platform-date-time-converter` that provides
+the support for addition types for properties and collections. All the types are part of the Java 8 date and time API:
+
+* Duration
+* LocalDateTime
+* Period
+* ZonedDateTime
+
+
+CAUTION: Currently the additional data types are only supported in Java. The support for the JavaScript will be added
+in a future version
+
+=== Custom data types
+
+Since version 0.8.8 the Dolphin Platform provides a SPI to add custom data types for properties and collections. To add
+support for a new data type a custom converter must be provided. To do so the `com.canoo.dolphin.impl.ConverterFactory`
+interface must be implemented and provided for
+https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Java Service Provider Interface (SPI)]. Examples for custom
+data types can be found in the sources of the optional `dolphin-platform-date-time-converter` module.
 
 == Using collections
 
