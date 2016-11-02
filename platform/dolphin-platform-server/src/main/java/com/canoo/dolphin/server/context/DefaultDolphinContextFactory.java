@@ -19,7 +19,6 @@ import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
@@ -42,12 +41,12 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final ContainerManager containerManager;
 
-    private final DolphinEventBus dolphinEventBus;
+    private final DolphinSessionProvider sessionProvider;
 
-    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, final ContainerManager containerManager, final DolphinEventBus dolphinEventBus, final ClasspathScanner scanner) {
+    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, DolphinSessionProvider sessionProvider, final ContainerManager containerManager, final ClasspathScanner scanner) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
+        this.sessionProvider = Assert.requireNonNull(sessionProvider, "sessionProvider");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
-        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
         this.controllerRepository = new ControllerRepository(scanner);
         this.dolphinFactory = new DefaultOpenDolphinFactory();
     }
@@ -75,6 +74,6 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
                 DolphinContextUtils.removeFromSession(httpSession, dolphinContext);
             }
         };
-        return new DolphinContext(configuration, containerManager, controllerRepository, dolphinFactory, preDestroyCallback, onDestroyCallback);
+        return new DolphinContext(configuration, sessionProvider, containerManager, controllerRepository, dolphinFactory, preDestroyCallback, onDestroyCallback);
     }
 }

@@ -2,7 +2,6 @@ package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.DolphinSession;
-import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
@@ -61,12 +60,12 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
     public <T> Subscription subscribe(final Topic<T> topic, final MessageListener<? super T> handler) {
         Assert.requireNonNull(topic, "topic");
         Assert.requireNonNull(handler, "handler");
-        final DolphinSession currentSession = sessionProvider.getCurrentDolphinSession();
-        if(currentSession == null) {
+        final DolphinSession subscriptionSession = sessionProvider.getCurrentDolphinSession();
+        if(subscriptionSession == null) {
             throw new IllegalStateException("Subscription can only be done from Dolphin Context!");
         }
 
-        LOG.trace("Adding subscription for topic {} in Dolphin Platform context {}", topic.getName(), currentSession.getId());
+        LOG.trace("Adding subscription for topic {} in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
         List<MessageListener<?>> listeners = topicListeners.get(topic);
         if(listeners == null) {
             listeners = new CopyOnWriteArrayList<>();
@@ -76,16 +75,18 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
         final MessageListener<? super T> listener = new MessageListener<T>() {
             @Override
             public void onMessage(final Message<T> message) {
-                if(DolphinPlatformBootstrap.getInstance().isCurrentContext(currentSession.getId())) {
-                    LOG.trace("Event listener for topic {} can be called directly in Dolphin Platform context {}", topic.getName(), currentSession.getId());
+                DolphinSession currentSession = sessionProvider.getCurrentDolphinSession();
+
+                if(currentSession != null && currentSession.getId().equals(subscriptionSession.getId())) {
+                    LOG.trace("Event listener for topic {} can be called directly in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
                     ((MessageListener<T>)handler).onMessage(message);
                 } else {
-                    LOG.trace("Event listener for topic {} must be called later in Dolphin Platform context {}", topic.getName(), currentSession.getId());
-                    currentSession.runLater(new Runnable() {
+                    LOG.trace("Event listener for topic {} must be called later in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
+                    subscriptionSession.runLater(new Runnable() {
 
                         @Override
                         public void run() {
-                            LOG.trace("Calling event listener for topic {} in Dolphin Platform context {}", topic.getName(), currentSession.getId());
+                            LOG.trace("Calling event listener for topic {} in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
                             ((MessageListener<T>)handler).onMessage(message);
                         }
                     });
@@ -96,7 +97,7 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
         return new Subscription() {
             @Override
             public void unsubscribe() {
-                LOG.trace("Removing subscription for topic {} in Dolphin Platform context {}", topic.getName(), currentSession.getId());
+                LOG.trace("Removing subscription for topic {} in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
                 topicListeners.get(topic).remove(listener);
             }
         };

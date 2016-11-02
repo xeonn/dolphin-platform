@@ -22,7 +22,7 @@ import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import org.opendolphin.core.server.ServerDolphin;
+import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -42,25 +42,14 @@ public class SpringBeanFactory {
     @Bean(name="beanManager")
     @ClientScoped
     protected BeanManager createManager() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentContext().getBeanManager();
-    }
-
-    /**
-     * Method to create a spring managed {@link org.opendolphin.core.server.ServerDolphin} instance in client scope.
-     * @return the instance
-     */
-    @Bean(name="serverDolphin")
-    @ClientScoped
-    protected ServerDolphin createDolphin() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentContext().getDolphin();
+        return DolphinPlatformBootstrap.getContextProvider().getCurrentContext().getBeanManager();
     }
 
     @Bean(name="dolphinSession")
     @ClientScoped
     protected DolphinSession createDolphinSession() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getContextProvider().getCurrentDolphinSession();
     }
-
 
     /**
      * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
@@ -69,7 +58,7 @@ public class SpringBeanFactory {
     @Bean(name="dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
+        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider());
     }
 
     @Bean(name="propertyBinder")
@@ -84,7 +73,7 @@ public class SpringBeanFactory {
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
             public DolphinSession getCurrentDolphinSession() {
-                return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
+                return DolphinPlatformBootstrap.getContextProvider().getCurrentDolphinSession();
             }
         }));
         return configurer;

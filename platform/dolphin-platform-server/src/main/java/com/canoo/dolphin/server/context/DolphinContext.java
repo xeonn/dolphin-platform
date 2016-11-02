@@ -103,7 +103,7 @@ public class DolphinContext {
 
     private final DolphinContextTaskQueue taskQueue;
 
-    public DolphinContext(final DolphinPlatformConfiguration configuration, ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+    public DolphinContext(final DolphinPlatformConfiguration configuration, DolphinSessionProvider dolphinSessionProvider, ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
@@ -126,7 +126,7 @@ public class DolphinContext {
             }
         });
 
-        taskQueue = new DolphinContextTaskQueue(id, configuration.getMaxPollTime(), TimeUnit.MILLISECONDS);
+        taskQueue = new DolphinContextTaskQueue(id, dolphinSessionProvider, configuration.getMaxPollTime(), TimeUnit.MILLISECONDS);
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);

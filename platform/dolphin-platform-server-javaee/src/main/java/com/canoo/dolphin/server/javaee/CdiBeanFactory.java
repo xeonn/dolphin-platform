@@ -21,6 +21,7 @@ import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
@@ -37,19 +38,19 @@ public class CdiBeanFactory {
     @Produces
     @ClientScoped
     public BeanManager createManager() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentContext().getBeanManager();
+        return DolphinPlatformBootstrap.getContextProvider().getCurrentContext().getBeanManager();
     }
 
     @Produces
     @ClientScoped
     public DolphinSession createDolphinSession() {
-        return DolphinPlatformBootstrap.getInstance().getCurrentDolphinSession();
+        return DolphinPlatformBootstrap.getContextProvider().getCurrentDolphinSession();
     }
 
     @Produces
     @ApplicationScoped
     public DolphinEventBus createEventBus() {
-        return DolphinPlatformBootstrap.getInstance().getDolphinEventBus();
+        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider());
     }
 
     @Produces

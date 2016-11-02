@@ -131,9 +131,8 @@ public class DolphinPlatformSpringTestBootstrap {
         containerManager.init(context.getServletContext());
         DolphinContextProviderMock dolphinContextProviderMock = new DolphinContextProviderMock();
 
-        DolphinTestContext dolphinContext = new DolphinTestContext(ConfigurationFileLoader.loadConfiguration(), containerManager, controllerRepository, config);
+        DolphinTestContext dolphinContext = new DolphinTestContext(ConfigurationFileLoader.loadConfiguration(), dolphinContextProviderMock, containerManager, controllerRepository, config);
         dolphinContextProviderMock.setCurrentContext(dolphinContext);
-
 
         DolphinTestClientConnector inMemoryClientConnector = new DolphinTestClientConnector(config.getClientDolphin(), dolphinContext);
 

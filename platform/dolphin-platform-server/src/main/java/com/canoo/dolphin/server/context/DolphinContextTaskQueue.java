@@ -1,7 +1,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.IdentitySet;
-import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class DolphinContextTaskQueue {
 
     private final IdentitySet<Runnable> tasks;
 
-    private final String contextId;
+    private final String dolphinSessionId;
 
     private final AtomicBoolean interrupted = new AtomicBoolean(false);
 
@@ -31,22 +31,25 @@ public class DolphinContextTaskQueue {
 
     private final TimeUnit maxExecutionTimeUnit;
 
+    private final DolphinSessionProvider sessionProvider;
+
     private final Lock taskLock = new ReentrantLock();
 
     private final Condition taskCondition = taskLock.newCondition();
 
-    public DolphinContextTaskQueue(final String contextId, long maxExecutionTime, TimeUnit maxExecutionTimeUnit) {
-        this.contextId = Assert.requireNonBlank(contextId, "contextId");
+    public DolphinContextTaskQueue(final String dolphinSessionId, final DolphinSessionProvider sessionProvider, final long maxExecutionTime, final TimeUnit maxExecutionTimeUnit) {
+        this.dolphinSessionId = Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
         this.tasks = new IdentitySet<>();
+        this.sessionProvider = Assert.requireNonNull(sessionProvider, "sessionProvider");
         this.maxExecutionTime = maxExecutionTime;
-        this.maxExecutionTimeUnit = maxExecutionTimeUnit;
+        this.maxExecutionTimeUnit = Assert.requireNonNull(maxExecutionTimeUnit, "maxExecutionTimeUnit");
     }
 
     public void addTask(Runnable task) {
         taskLock.lock();
         try {
             tasks.add(task);
-            LOG.trace("Tasks added to Dolphin Platform context {}", contextId);
+            LOG.trace("Tasks added to Dolphin Platform context {}", dolphinSessionId);
             taskCondition.signal();
         } finally {
             taskLock.unlock();
@@ -57,7 +60,7 @@ public class DolphinContextTaskQueue {
         taskLock.lock();
         try {
             interrupted.set(true);
-            LOG.trace("Tasks in Dolphin Platform context {} interrupted", contextId);
+            LOG.trace("Tasks in Dolphin Platform context {} interrupted", dolphinSessionId);
             taskCondition.signal();
         } finally {
             taskLock.unlock();
@@ -65,12 +68,13 @@ public class DolphinContextTaskQueue {
     }
 
     public synchronized void executeTasks() {
-        if (!DolphinPlatformBootstrap.getInstance().isCurrentContext(contextId)) {
-            throw new IllegalStateException("Not in Dolphin Platform context " + contextId);
+        DolphinSession currentSession = sessionProvider.getCurrentDolphinSession();
+        if (currentSession == null || !dolphinSessionId.equals(currentSession.getId())) {
+            throw new IllegalStateException("Not in Dolphin Platform session " + dolphinSessionId);
         }
         taskLock.lock();
         try {
-            LOG.trace("Running {} tasks in Dolphin Platform context {}", tasks.size(), contextId);
+            LOG.trace("Running {} tasks in Dolphin Platform session {}", tasks.size(), dolphinSessionId);
             long endTime = System.currentTimeMillis() + maxExecutionTimeUnit.toMillis(maxExecutionTime);
             while (!interrupted.get()) {
                 if (tasks.isEmpty()) {
@@ -92,9 +96,9 @@ public class DolphinContextTaskQueue {
                         Runnable task = taskIterator.next();
                         try {
                             task.run();
-                            LOG.trace("Executed task in Dolphin Platform context {}", contextId);
+                            LOG.trace("Executed task in Dolphin Platform session {}", dolphinSessionId);
                         } catch (Exception e) {
-                            throw new DolphinTaskException("Error in running task in Dolphin Platform context " + contextId, e);
+                            throw new DolphinTaskException("Error in running task in Dolphin Platform session " + dolphinSessionId, e);
                         } finally {
                             interrupted.set(true);
                             tasks.remove(task);
@@ -105,7 +109,7 @@ public class DolphinContextTaskQueue {
                 }
             }
             interrupted.set(false);
-            LOG.trace("Task executor in Dolphin Platform context {} interrupted. Still {} tasks open", contextId, tasks.size());
+            LOG.trace("Task executor in Dolphin Platform session {} interrupted. Still {} tasks open", dolphinSessionId, tasks.size());
         } finally {
             taskLock.unlock();
         }

@@ -37,6 +37,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        DolphinPlatformBootstrap.getInstance().start(servletContext, ConfigurationFileLoader.loadConfiguration());
+        DolphinPlatformBootstrap.start(servletContext, ConfigurationFileLoader.loadConfiguration());
     }
 }

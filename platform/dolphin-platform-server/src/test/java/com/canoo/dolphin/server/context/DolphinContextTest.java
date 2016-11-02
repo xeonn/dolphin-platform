@@ -16,6 +16,7 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
@@ -146,7 +147,17 @@ public class DolphinContextTest {
     private final ClasspathScanner classpathScanner = new ClasspathScanner("com.canoo.dolphin");
 
     private DolphinContext createContext() {
-        return new DolphinContext(new DolphinPlatformConfiguration(), new ContainerManagerMock(), new ControllerRepository(classpathScanner), new DefaultOpenDolphinFactory(), new DestroyCallbackMock(), new DestroyCallbackMock());
+        return new DolphinContext(new DolphinPlatformConfiguration(), new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                return null;
+            }
+
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return null;
+            }
+        }, new ContainerManagerMock(), new ControllerRepository(classpathScanner), new DefaultOpenDolphinFactory(), new DestroyCallbackMock(), new DestroyCallbackMock());
     }
 
     private class DestroyCallbackMock implements Callback<DolphinContext> {
