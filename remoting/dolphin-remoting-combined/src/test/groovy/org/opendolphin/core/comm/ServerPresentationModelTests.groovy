@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.comm
 
-import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.LogConfig
 import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent
@@ -352,8 +351,8 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
     void testServerSideModelStoreListener() {
 
-        DataflowQueue<CreatePresentationModelCommand> receivedCommands = new DataflowQueue<>()
-        DataflowQueue<ModelStoreEvent> receivedEvents   = new DataflowQueue<>()
+        List<CreatePresentationModelCommand> receivedCommands = new ArrayList<>();
+        List<ModelStoreEvent> receivedEvents = new ArrayList<>();
 
         serverDolphin.action "registerMSL", { cmd, response ->
             serverDolphin.addModelStoreListener(new ModelStoreListener() {
@@ -386,12 +385,12 @@ class ServerPresentationModelTests extends GroovyTestCase {
         clientDolphin.presentationModel("client-side-with-id", null, attr1:1)
 
         clientDolphin.send "create", {
-            assert receivedCommands.val.pmId == "client-side-with-id"
-            assert receivedCommands.val.pmId == "server-side-with-id"
-            assert receivedCommands.val.pmId == "0-AUTO-SRV"
-            assert receivedEvents.val.presentationModel.id == "client-side-with-id"
-            assert receivedEvents.val.presentationModel.id == "server-side-with-id"
-            assert receivedEvents.val.presentationModel.id == "0-AUTO-SRV"
+            assert receivedCommands.get(0).pmId == "client-side-with-id"
+            assert receivedCommands.get(1).pmId == "server-side-with-id"
+            assert receivedCommands.get(2).pmId == "0-AUTO-SRV"
+            assert receivedEvents.get(0).presentationModel.id == "client-side-with-id"
+            assert receivedEvents.get(1).presentationModel.id == "server-side-with-id"
+            assert receivedEvents.get(2).presentationModel.id == "0-AUTO-SRV"
             context.assertionsDone()
         }
     }
