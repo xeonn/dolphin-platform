@@ -43,6 +43,8 @@ public class DolphinPlatformConfiguration {
 
     private int sessionTimeout = SESSION_TIMEOUT_DEFAULT_VALUE;
 
+    private long maxPollTime = 5_000;
+
     private int maxClientsPerSession = 10;
 
     public int getSessionTimeout() {
@@ -117,4 +119,11 @@ public class DolphinPlatformConfiguration {
         this.rootPackageForClasspathScan = rootPackageForClasspathScan;
     }
 
+    public long getMaxPollTime() {
+        return maxPollTime;
+    }
+
+    public void setMaxPollTime(long maxPollTime) {
+        this.maxPollTime = maxPollTime;
+    }
 }

@@ -16,10 +16,10 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.server.DolphinSessionListener;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
@@ -34,6 +34,8 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DefaultDolphinContextFactory.class);
 
+    private final DolphinPlatformConfiguration configuration;
+
     private final ControllerRepository controllerRepository;
 
     private final OpenDolphinFactory dolphinFactory;
@@ -42,7 +44,8 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final DolphinEventBus dolphinEventBus;
 
-    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBus dolphinEventBus, final ClasspathScanner scanner) {
+    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, final ContainerManager containerManager, final DolphinEventBus dolphinEventBus, final ClasspathScanner scanner) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
         this.controllerRepository = new ControllerRepository(scanner);
@@ -72,6 +75,6 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
                 DolphinContextUtils.removeFromSession(httpSession, dolphinContext);
             }
         };
-        return new DolphinContext(containerManager, controllerRepository, dolphinFactory, preDestroyCallback, onDestroyCallback);
+        return new DolphinContext(configuration, containerManager, controllerRepository, dolphinFactory, preDestroyCallback, onDestroyCallback);
     }
 }

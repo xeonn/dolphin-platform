@@ -28,6 +28,7 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
@@ -60,6 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class defines the central entry point for a Dolphin Platform session on the server.
@@ -70,6 +72,8 @@ public class DolphinContext implements DolphinSessionProvider {
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
     private final String id;
+
+    private final DolphinPlatformConfiguration configuration;
 
     private final DefaultServerDolphin dolphin;
 
@@ -99,7 +103,8 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final DolphinContextTaskQueue taskQueue;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+    public DolphinContext(final DolphinPlatformConfiguration configuration, ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
@@ -121,7 +126,7 @@ public class DolphinContext implements DolphinSessionProvider {
             }
         });
 
-        taskQueue = new DolphinContextTaskQueue(id);
+        taskQueue = new DolphinContextTaskQueue(id, configuration.getMaxPollTime(), TimeUnit.MILLISECONDS);
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);

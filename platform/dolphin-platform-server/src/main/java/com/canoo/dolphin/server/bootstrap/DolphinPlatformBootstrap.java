@@ -82,9 +82,9 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         LOG.debug("Dolphin Platform starts with value for dolphinPlatformServletMapping=" + configuration.getDolphinPlatformServletMapping());
         LOG.debug("Dolphin Platform starts with value for openDolphinLogLevel=" + configuration.getOpenDolphinLogLevel());
 
-final ClasspathScanner classpathScanner = new ClasspathScanner(configuration.getRootPackageForClasspathScan());
+        final ClasspathScanner classpathScanner = new ClasspathScanner(configuration.getRootPackageForClasspathScan());
 
-MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration());
+        MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration());
 
         final ContainerManager containerManager = findManager();
         containerManager.init(servletContext);
@@ -93,7 +93,7 @@ MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration())
 
         final DolphinSessionListenerProvider dolphinSessionListenerProvider = new DolphinSessionListenerProvider(containerManager, classpathScanner);
 
-        DolphinContextFactory dolphinContextFactory = new DefaultDolphinContextFactory(containerManager, dolphinEventBus, classpathScanner);
+        DolphinContextFactory dolphinContextFactory = new DefaultDolphinContextFactory(configuration, containerManager, dolphinEventBus, classpathScanner);
         servletContext.addServlet(DOLPHIN_SERVLET_NAME, new DolphinPlatformServlet(communicationHandler)).addMapping(configuration.getDolphinPlatformServletMapping());
         if (configuration.isUseSessionInvalidationServlet()) {
             servletContext.addServlet(DOLPHIN_INVALIDATION_SERVLET_NAME, new InvalidationServlet()).addMapping(DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING);
@@ -121,7 +121,7 @@ MBeanRegistry.getInstance().setMbeanSupport(configuration.isMBeanRegistration())
 
     public boolean isCurrentContext(final String contextId) {
         DolphinContext currentContext = DolphinContextUtils.getContextForCurrentThread();
-        if(currentContext == null) {
+        if (currentContext == null) {
             return false;
         }
         return currentContext.getId().equals(contextId);
