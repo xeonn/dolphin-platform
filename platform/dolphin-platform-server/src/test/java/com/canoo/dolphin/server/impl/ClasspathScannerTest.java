@@ -20,7 +20,7 @@ import com.canoo.dolphin.server.impl.util.AnnotatedClassForClasspathScan;
 import com.canoo.dolphin.server.impl.util.AnnotationForClasspathScanTest;
 import org.testng.annotations.Test;
 
-import javax.inject.Inject;
+import javax.annotation.Resources;
 import java.lang.annotation.Documented;
 import java.util.Set;
 
@@ -37,7 +37,7 @@ public class ClasspathScannerTest {
     public void testSimpleScan() {
         //There can't be a class that is annotated with Inject
         ClasspathScanner scanner = new ClasspathScanner();
-        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Resources.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 0);
 
@@ -51,7 +51,7 @@ public class ClasspathScannerTest {
     public void testInPackageScan() {
         //There can't be a class that is annotated with Inject
         ClasspathScanner scanner = new ClasspathScanner("com.canoo.dolphin");
-        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Resources.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 0);
 
@@ -65,7 +65,7 @@ public class ClasspathScannerTest {
     public void testScanOtherPackage() {
         //There can't be a class that is annotated with Inject
         ClasspathScanner scanner = new ClasspathScanner("com.canoo.dolphin.server.impl.special");
-        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Inject.class);
+        Set<Class<?>> classes = scanner.getTypesAnnotatedWith(Resources.class);
         assertNotNull(classes);
         assertEquals(classes.size(), 0);
 

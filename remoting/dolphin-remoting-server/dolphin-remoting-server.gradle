@@ -16,7 +16,6 @@
 
 dependencies {
     compile project(':dolphin-remoting-shared')
-    compile 'javax.inject:javax.inject:1'
     compileOnly "javax.servlet:javax.servlet-api:$servletApiVersion"
     testCompile "javax.servlet:javax.servlet-api:$servletApiVersion"
 }

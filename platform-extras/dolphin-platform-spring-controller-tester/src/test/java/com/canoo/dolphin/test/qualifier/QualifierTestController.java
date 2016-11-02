@@ -21,9 +21,9 @@ import com.canoo.dolphin.server.DolphinAction;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.binding.PropertyBinder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +41,10 @@ public class QualifierTestController {
     @DolphinModel
     private QualifierTestModel model;
 
-    @Inject
+    @Autowired
     private BeanManager beanManager;
 
-    @Inject
+    @Autowired
     private PropertyBinder binder;
 
     private List<Binding> bindings = new ArrayList<>();
