@@ -17,8 +17,6 @@ package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.config.ConfigurationFileLoader;
-import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
-import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
@@ -26,7 +24,6 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.io.IOException;
 
 /**
  * Basic Bootstrap for Spring based application. The bootstrap automatically starts the dolphin platform bootstrap.
@@ -40,14 +37,6 @@ public class DolphinPlatformSpringBootstrap implements ServletContextInitializer
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        Assert.requireNonNull(servletContext, "servletContext");
-        DolphinPlatformConfiguration configuration = null;
-        try {
-            configuration = ConfigurationFileLoader.load();
-        } catch (IOException e) {
-            LOG.error("Can not read configuration! Will use default configuration!", e);
-            configuration = new DolphinPlatformConfiguration();
-        }
-        DolphinPlatformBootstrap.getInstance().start(servletContext, configuration);
+        DolphinPlatformBootstrap.getInstance().start(servletContext, ConfigurationFileLoader.loadConfiguration());
     }
 }

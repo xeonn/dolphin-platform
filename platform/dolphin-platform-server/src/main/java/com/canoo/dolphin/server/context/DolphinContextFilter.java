@@ -74,7 +74,7 @@ public class DolphinContextFilter implements Filter {
                 dolphinContext = createNewContext(httpSession);
                 DolphinContextUtils.storeInSession(httpSession, dolphinContext);
                 for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
-                    listener.sessionCreated(dolphinContext.getCurrentDolphinSession());
+                    listener.sessionCreated(dolphinContext.getDolphinSession());
                 }
                 LOG.trace("Created new DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
 

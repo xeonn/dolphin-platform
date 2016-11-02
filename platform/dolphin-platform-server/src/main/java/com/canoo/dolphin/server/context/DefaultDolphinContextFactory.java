@@ -62,7 +62,7 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
             public void call(DolphinContext dolphinContext) {
                 Assert.requireNonNull(dolphinContext, "dolphinContext");
                 for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
-                    listener.sessionDestroyed(dolphinContext.getCurrentDolphinSession());
+                    listener.sessionDestroyed(dolphinContext.getDolphinSession());
                 }
             }
         };

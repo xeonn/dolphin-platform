@@ -28,13 +28,14 @@ import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinHttpSessionListener;
 import com.canoo.dolphin.server.context.DolphinSessionListenerProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.context.DefaultDolphinEventBus;
+import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.mbean.MBeanRegistry;
 import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
 import com.canoo.dolphin.server.servlet.DolphinPlatformServlet;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.server.adapter.InvalidationServlet;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
@@ -42,7 +43,6 @@ import javax.servlet.ServletContext;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.ServiceLoader;
-import java.util.logging.Logger;
 
 /**
  * This class defines the bootstrap for Dolphin Platform.
@@ -51,7 +51,7 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
 
     private static final DolphinPlatformBootstrap INSTANCE = new DolphinPlatformBootstrap();
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DolphinPlatformBootstrap.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformBootstrap.class);
 
     public static final String DOLPHIN_SERVLET_NAME = "dolphin-platform-servlet";
 
@@ -66,7 +66,7 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
     private final DolphinEventBus dolphinEventBus;
 
     private DolphinPlatformBootstrap() {
-        dolphinEventBus = new DefaultDolphinEventBus();
+        dolphinEventBus = new DefaultDolphinEventBus(this);
     }
 
     /**
@@ -111,7 +111,7 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         contextCleaner.init(configuration);
         servletContext.addListener(contextCleaner);
 
-        java.util.logging.Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
+        java.util.logging.Logger openDolphinLogger = java.util.logging.Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(configuration.getOpenDolphinLogLevel());
     }
 
@@ -132,7 +132,7 @@ public class DolphinPlatformBootstrap implements DolphinContextProvider {
         if (context == null) {
             return null;
         }
-        return context.getCurrentDolphinSession();
+        return context.getDolphinSession();
     }
 
     private ContainerManager findManager() {

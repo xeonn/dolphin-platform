@@ -15,6 +15,7 @@
  */
 package com.canoo.dolphin.test.impl;
 
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextUtils;
@@ -32,8 +33,8 @@ public class DolphinTestContext extends DolphinContext {
 
     private final TestInMemoryConfiguration config;
 
-    public DolphinTestContext(ContainerManager containerManager, ControllerRepository controllerRepository, TestInMemoryConfiguration config) {
-        super(containerManager, controllerRepository, createServerDolphinFactory(config), createEmptyCallback(), createEmptyCallback());
+    public DolphinTestContext(DolphinPlatformConfiguration configuration, ContainerManager containerManager, ControllerRepository controllerRepository, TestInMemoryConfiguration config) {
+        super(configuration, containerManager, controllerRepository, createServerDolphinFactory(config), createEmptyCallback(), createEmptyCallback());
         this.config = Assert.requireNonNull(config, "config");
         DolphinContextUtils.setContextForCurrentThread(this);
     }

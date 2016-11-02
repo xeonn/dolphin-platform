@@ -67,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  * This class defines the central entry point for a Dolphin Platform session on the server.
  * Each Dolphin Platform client context on the client side is connected with one {@link DolphinContext}.
  */
-public class DolphinContext implements DolphinSessionProvider {
+public class DolphinContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
 
@@ -329,6 +329,12 @@ public class DolphinContext implements DolphinSessionProvider {
         return results;
     }
 
+
+
+    public DolphinSession getDolphinSession() {
+        return dolphinSession;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -343,10 +349,6 @@ public class DolphinContext implements DolphinSessionProvider {
     @Override
     public int hashCode() {
         return id.hashCode();
-    }
-
-    public DolphinSession getCurrentDolphinSession() {
-        return dolphinSession;
     }
 
     private void runLater(final Runnable runnable) {

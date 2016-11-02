@@ -16,6 +16,8 @@
 package com.canoo.dolphin.server.config;
 
 import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,8 @@ import java.util.logging.Level;
  * All properties that are not specified in the property file will be defined by default values.
  */
 public class ConfigurationFileLoader {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFileLoader.class);
 
     private static final String JAR_LOCATION = "META-INF/dolphin.properties";
 
@@ -64,6 +68,17 @@ public class ConfigurationFileLoader {
     private static final String MBEAN_REGISTRATION = "mBeanRegistration";
 
     private static final String MAX_POLL_TIME = "maxPollTime";
+
+    public static DolphinPlatformConfiguration loadConfiguration() {
+        DolphinPlatformConfiguration configuration = null;
+        try {
+            configuration = ConfigurationFileLoader.load();
+        } catch (IOException e) {
+            LOG.error("Can not read configuration! Will use default configuration!", e);
+            configuration = new DolphinPlatformConfiguration();
+        }
+        return configuration;
+    }
 
     /**
      * Tries to load a {@link DolphinPlatformConfiguration} based on a file. if no config file

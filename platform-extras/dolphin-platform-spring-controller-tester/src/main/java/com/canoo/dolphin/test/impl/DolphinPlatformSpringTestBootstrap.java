@@ -43,13 +43,14 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
+import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
 import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.context.DefaultDolphinEventBus;
+import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.spring.ClientScope;
 import com.canoo.dolphin.test.ControllerTestException;
@@ -57,6 +58,8 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.server.ServerModelStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -72,6 +75,8 @@ import java.util.concurrent.ExecutionException;
 
 @Configuration
 public class DolphinPlatformSpringTestBootstrap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringTestBootstrap.class);
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -125,7 +130,8 @@ public class DolphinPlatformSpringTestBootstrap {
         TestSpringContainerManager containerManager = new TestSpringContainerManager(context);
         containerManager.init(context.getServletContext());
         DolphinContextProviderMock dolphinContextProviderMock = new DolphinContextProviderMock();
-        DolphinTestContext dolphinContext = new DolphinTestContext(containerManager, controllerRepository, config);
+
+        DolphinTestContext dolphinContext = new DolphinTestContext(ConfigurationFileLoader.loadConfiguration(), containerManager, controllerRepository, config);
         dolphinContextProviderMock.setCurrentContext(dolphinContext);
 
 
@@ -175,7 +181,7 @@ public class DolphinPlatformSpringTestBootstrap {
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinSession createDolphinSession(final DolphinTestContext context) {
         Assert.requireNonNull(context, "context");
-        return context.getCurrentDolphinSession();
+        return context.getDolphinSession();
     }
 
 
@@ -186,8 +192,18 @@ public class DolphinPlatformSpringTestBootstrap {
      */
     @Bean(name = "dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    protected DolphinEventBus createEventBus() {
-        return new DefaultDolphinEventBus();
+    protected DolphinEventBus createEventBus(final DolphinTestContext context) {
+        return new DefaultDolphinEventBus(new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                return context;
+            }
+
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return context.getDolphinSession();
+            }
+        });
     }
 
     @Bean(name = "propertyBinder")
@@ -203,7 +219,7 @@ public class DolphinPlatformSpringTestBootstrap {
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
             public DolphinSession getCurrentDolphinSession() {
-                return context.getCurrentDolphinSession();
+                return context.getDolphinSession();
             }
         }));
         return configurer;
@@ -224,7 +240,7 @@ public class DolphinPlatformSpringTestBootstrap {
 
         @Override
         public DolphinSession getCurrentDolphinSession() {
-            return getCurrentContext().getCurrentDolphinSession();
+            return getCurrentContext().getDolphinSession();
         }
     }
 
