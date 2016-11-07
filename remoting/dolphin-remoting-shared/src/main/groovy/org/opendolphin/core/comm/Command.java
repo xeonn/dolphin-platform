@@ -2,6 +2,8 @@ package org.opendolphin.core.comm;
 
 import org.codehaus.groovy.runtime.StringGroovyMethods;
 
+import java.io.Serializable;
+
 /**
  * Commands come in two flavors: *Command (active voice) and *Notification (passive voice).
  * A *Command instructs the other side to do something.
@@ -12,7 +14,7 @@ import org.codehaus.groovy.runtime.StringGroovyMethods;
  * They are only "DTOs" that are sent over the wire.
  * The receiving side is responsible for finding the appropriate action.
  */
-public class Command {
+public class Command implements Serializable {
     public Command() {
 
     }
