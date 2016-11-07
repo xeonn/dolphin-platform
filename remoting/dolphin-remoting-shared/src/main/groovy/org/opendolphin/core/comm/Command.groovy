@@ -27,14 +27,21 @@ package org.opendolphin.core.comm
  * The receiving side is responsible for finding the appropriate action.
  */
 
-//CompileStatic
-class Command {
+public class Command {
 
-    String getId() { idFor this.class }
+    public Command() {
 
-    static String idFor(Class commandClass) {
-        commandClass.name - commandClass.package.name - "." - "Command" - "Notification"
     }
 
-    String toString() { "Command: $id" }
+    public String getId() {
+        return idFor(this.getClass());
+    }
+
+    public static String idFor(Class commandClass) {
+        commandClass.getSimpleName() - "Command" - "Notification"
+    }
+
+    public String toString() {
+        return "Command: " + getId();
+    }
 }

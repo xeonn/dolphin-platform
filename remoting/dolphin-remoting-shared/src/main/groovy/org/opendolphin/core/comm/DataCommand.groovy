@@ -20,10 +20,22 @@ package org.opendolphin.core.comm
  * necessarily working with presentation models if that is not appropriate.
  * This is very similar to a REST response.
  */
-class DataCommand extends Command {
-    Map data
+public class DataCommand extends Command {
 
-    DataCommand(Map data) {
+    private Map data;
+
+    public DataCommand(Map data) {
+        this.data = data
+    }
+
+    public DataCommand() {
+    }
+
+    public Map getData() {
+        return data
+    }
+
+    public void setData(Map data) {
         this.data = data
     }
 }

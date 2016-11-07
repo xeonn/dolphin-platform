@@ -15,8 +15,26 @@
  */
 package org.opendolphin.core.comm
 
-class GetPresentationModelCommand extends Command {
-    String pmId
+public class GetPresentationModelCommand extends Command {
 
-    String toString() { super.toString() + " for presentation model for id $pmId" }
+    private String pmId;
+
+    public GetPresentationModelCommand() {
+    }
+
+    public GetPresentationModelCommand(String pmId) {
+        this.pmId = pmId
+    }
+
+    public String getPmId() {
+        return pmId
+    }
+
+    public void setPmId(String pmId) {
+        this.pmId = pmId
+    }
+
+    public String toString() {
+        return super.toString() + " for presentation model for id " + pmId;
+    }
 }

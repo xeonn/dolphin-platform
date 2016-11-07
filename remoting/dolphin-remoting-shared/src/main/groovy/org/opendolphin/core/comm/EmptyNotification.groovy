@@ -22,6 +22,6 @@ package org.opendolphin.core.comm
  * in the expected sequence.
  */
 
-class EmptyNotification extends Command {
+public class EmptyNotification extends Command {
 
 }

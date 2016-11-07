@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
-import groovy.transform.TupleConstructor
-
 /**
  * A command where the id can be set from the outside for general purposes.
  */
-@TupleConstructor
-class NamedCommand extends Command {
-    String id // todo dk: should better be "name"
+public class NamedCommand extends Command {
+
+    private String id;
+
+    public NamedCommand() {
+    }
+
+    public NamedCommand(String id) {
+        this.id = id
+    }
+
+    void setId(String id) {
+        this.id = id
+    }
+
+    public String getId() {
+        return id
+    }
 }
