@@ -50,7 +50,7 @@ public class CdiBeanFactory {
     @Produces
     @ApplicationScoped
     public DolphinEventBus createEventBus() {
-        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider());
+        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider(), DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
 
     @Produces

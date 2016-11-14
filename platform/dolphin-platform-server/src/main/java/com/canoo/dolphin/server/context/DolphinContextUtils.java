@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by hendrikebbers on 31.05.16.
- */
 public class DolphinContextUtils {
 
     private static final String DOLPHIN_CONTEXT_MAP = "DOLPHIN_CONTEXT_MAP";

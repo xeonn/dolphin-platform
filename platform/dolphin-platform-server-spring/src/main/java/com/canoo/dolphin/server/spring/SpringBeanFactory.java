@@ -58,7 +58,7 @@ public class SpringBeanFactory {
     @Bean(name="dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
-        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider());
+        return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider(), DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
 
     @Bean(name="propertyBinder")

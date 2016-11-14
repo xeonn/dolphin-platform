@@ -2,12 +2,14 @@ package com.canoo.dolphin.server.event.impl;
 
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.context.DolphinSessionLifecycleHandler;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.event.Topic;
 import com.canoo.dolphin.util.Assert;
+import com.canoo.dolphin.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +24,18 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
 
     private final Map<Topic<?>, List<MessageListener<?>>> topicListeners = new ConcurrentHashMap<>();
 
+    private final Map<String, List<Subscription>> sessionStore = new ConcurrentHashMap<>();
+
     private final DolphinSessionProvider sessionProvider;
 
-    public DefaultDolphinEventBus(DolphinSessionProvider sessionProvider) {
+    public DefaultDolphinEventBus(DolphinSessionProvider sessionProvider, DolphinSessionLifecycleHandler lifecycleHandler) {
         this.sessionProvider = Assert.requireNonNull(sessionProvider, "sessionProvider");
+        Assert.requireNonNull(lifecycleHandler, "lifecycleHandler").addSessionDestroyedListener(new Callback<DolphinSession>() {
+            @Override
+            public void call(DolphinSession dolphinSession) {
+                onSessionEnds(dolphinSession.getId());
+            }
+        });
     }
 
     @Override
@@ -94,12 +104,41 @@ public class DefaultDolphinEventBus implements DolphinEventBus {
             }
         };
         listeners.add(listener);
-        return new Subscription() {
+
+        Subscription subscription = new Subscription() {
             @Override
             public void unsubscribe() {
                 LOG.trace("Removing subscription for topic {} in Dolphin Platform context {}", topic.getName(), subscriptionSession.getId());
-                topicListeners.get(topic).remove(listener);
+                List<MessageListener<?>> listeners = topicListeners.get(topic);
+                if(listeners != null) {
+                    listeners.remove(listener);
+                }
+                removeSubscriptionForSession(this, subscriptionSession.getId());
             }
         };
+        List<Subscription> subscriptionsForSession = sessionStore.get(subscriptionSession.getId());
+        if(subscriptionsForSession == null) {
+            subscriptionsForSession = new CopyOnWriteArrayList<>();
+            sessionStore.put(subscriptionSession.getId(), subscriptionsForSession);
+        }
+        subscriptionsForSession.add(subscription);
+        return subscription;
+    }
+
+    private void removeSubscriptionForSession(final Subscription subscription, final String dolphinSessionId) {
+        List<Subscription> subscriptionsForSession = sessionStore.get(dolphinSessionId);
+        if(subscriptionsForSession != null) {
+            subscriptionsForSession.remove(subscription);
+        }
+    }
+
+    private void onSessionEnds(final String dolphinSessionId) {
+        Assert.requireNonBlank(dolphinSessionId, "dolphinSessionId");
+        List<Subscription> subscriptions = sessionStore.get(dolphinSessionId);
+        if(subscriptions != null) {
+            for (Subscription subscription : subscriptions) {
+                subscription.unsubscribe();
+            }
+        }
     }
 }

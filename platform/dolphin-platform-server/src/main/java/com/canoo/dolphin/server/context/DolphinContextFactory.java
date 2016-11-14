@@ -22,6 +22,6 @@ import javax.servlet.http.HttpSession;
  */
 public interface DolphinContextFactory {
 
-    DolphinContext create(HttpSession httpSession, DolphinSessionListenerProvider dolphinSessionListenerProvider);
+    DolphinContext create(HttpSession httpSession);
 
 }

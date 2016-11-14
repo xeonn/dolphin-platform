@@ -15,7 +15,6 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
@@ -43,26 +42,28 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private final DolphinSessionProvider sessionProvider;
 
-    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, DolphinSessionProvider sessionProvider, final ContainerManager containerManager, final ClasspathScanner scanner) {
+    private final DolphinSessionLifecycleHandler lifecycleHandler;
+
+    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, DolphinSessionProvider sessionProvider, final ContainerManager containerManager, final ClasspathScanner scanner, final DolphinSessionLifecycleHandler lifecycleHandler) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
         this.sessionProvider = Assert.requireNonNull(sessionProvider, "sessionProvider");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
+        this.lifecycleHandler = Assert.requireNonNull(lifecycleHandler, "lifecycleHandler");
         this.controllerRepository = new ControllerRepository(scanner);
         this.dolphinFactory = new DefaultOpenDolphinFactory();
+
     }
 
     @Override
-    public DolphinContext create(final HttpSession httpSession, final DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+    public DolphinContext create(final HttpSession httpSession) {
         Assert.requireNonNull(httpSession, "httpSession");
-        Assert.requireNonNull(dolphinSessionListenerProvider, "dolphinSessionListenerProvider");
+        Assert.requireNonNull(lifecycleHandler, "lifecycleHandler");
 
         final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
             @Override
             public void call(DolphinContext dolphinContext) {
                 Assert.requireNonNull(dolphinContext, "dolphinContext");
-                for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
-                    listener.sessionDestroyed(dolphinContext.getDolphinSession());
-                }
+                lifecycleHandler.onSessionDestroyed(dolphinContext.getDolphinSession());
             }
         };
 

@@ -43,6 +43,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
 import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
@@ -202,7 +203,7 @@ public class DolphinPlatformSpringTestBootstrap {
             public DolphinSession getCurrentDolphinSession() {
                 return context.getDolphinSession();
             }
-        });
+        }, DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
 
     @Bean(name = "propertyBinder")
