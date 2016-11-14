@@ -37,7 +37,7 @@ public class CommandAndHandler {
      * whether this command/handler can be batched
      */
     public boolean isBatchable() {
-        if (handler == null) return false;
+        if (handler != null) return false;
         if (command instanceof NamedCommand) return false;
         if (command instanceof EmptyNotification) return false;
         return true;
