@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.client.comm;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.EmptyNotification;
 import org.opendolphin.core.comm.NamedCommand;
@@ -38,7 +37,7 @@ public class CommandAndHandler {
      * whether this command/handler can be batched
      */
     public boolean isBatchable() {
-        if (DefaultGroovyMethods.asBoolean(handler)) return false;
+        if (handler == null) return false;
         if (command instanceof NamedCommand) return false;
         if (command instanceof EmptyNotification) return false;
         return true;

@@ -77,7 +77,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     public AbstractClientConnector(ClientDolphin clientDolphin, ICommandBatcher commandBatcher) {
         this.clientDolphin = clientDolphin;
-        this.commandBatcher = DefaultGroovyMethods.asBoolean(commandBatcher) ? commandBatcher : new CommandBatcher();
+        this.commandBatcher = commandBatcher != null ? commandBatcher : new CommandBatcher();
         this.responseHandler = new ClientResponseHandler(clientDolphin);
         onException = new ExceptionHandler() {
             @Override
