@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm
+package org.opendolphin.core.client.comm;
 
-import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.EmptyNotification
-import org.opendolphin.core.comm.NamedCommand
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-class CommandAndHandler {
-    Command command
-    OnFinishedHandler handler
+public class RunLaterUiThreadHandler implements UiThreadHandler {
 
-    /** whether this command/handler can be batched */
-    boolean isBatchable() {
-        if (handler)                                return false
-        if (command instanceof NamedCommand)        return false
-        if (command instanceof EmptyNotification)   return false
-        true
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    @Override
+    public void executeInsideUiThread(final Runnable runnable) {
+        executorService.execute(runnable);
     }
+
 }

@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm
+package org.opendolphin.core.client.comm;
 
-import org.opendolphin.core.client.ClientPresentationModel
+import groovy.lang.Closure;
+import org.opendolphin.core.client.ClientPresentationModel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Convenience class for OnFinishedData
  */
-abstract public class OnFinishedDataAdapter implements OnFinishedData {
+public abstract class OnFinishedDataAdapter implements OnFinishedData {
+
     @Override
-    void onFinished(List<ClientPresentationModel> presentationModels) {
-            // ignore
+    public void onFinished(List<ClientPresentationModel> presentationModels) {
+        // ignore
     }
-    static OnFinishedData withAction (Closure cl) {
+
+    public static OnFinishedData withAction(final Closure cl) {
         return new OnFinishedDataAdapter() {
             @Override
-            void onFinishedData(List<Map> data) {
-                cl.call(data)
+            public void onFinishedData(List<Map> data) {
+                cl.call(data);
             }
-        }
+
+        };
     }
+
 }

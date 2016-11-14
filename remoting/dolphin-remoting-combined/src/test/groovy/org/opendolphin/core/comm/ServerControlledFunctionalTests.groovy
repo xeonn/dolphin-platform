@@ -46,7 +46,7 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
 
     @Override
     protected void tearDown() {
-        assert context.done.await(5, TimeUnit.SECONDS)
+        assert context.done.await(20, TimeUnit.SECONDS)
     }
 
     void testPMsWereDeletedAndRecreated() {
