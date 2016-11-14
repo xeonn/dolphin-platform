@@ -57,6 +57,8 @@ public class ClientConfiguration {
 
     private HttpClient httpClient;
 
+    private boolean gc = false;
+
     private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
 
     /**
@@ -150,5 +152,13 @@ public class ClientConfiguration {
 
     public DolphinPlatformThreadFactory getDolphinPlatformThreadFactory() {
         return dolphinPlatformThreadFactory;
+    }
+
+    public boolean isGc() {
+        return gc;
+    }
+
+    public void setGc(boolean gc) {
+        this.gc = gc;
     }
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -243,6 +244,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
             return; // avoid second call while already waiting (?) -> two different push actions not supported
         }
         waiting = true;
+        LOG.fine("Will send push command");
         send(pushListener, new OnFinishedHandlerAdapter() {
             @Override
             public void onFinished(List<ClientPresentationModel> presentationModels) {
@@ -254,20 +256,25 @@ public abstract class AbstractClientConnector implements ClientConnector {
         });
     }
 
+    private AtomicBoolean releaseCommandSend = new AtomicBoolean(false);
+
     /**
      * Release the current push listener, which blocks the sending queue.
      * Does nothing in case that the push listener is not active.
      */
     protected void release() {
-        if (!waiting) {
-            return; // there is no point in releasing if we do not wait. Avoid excessive releasing.
+        if (getReleaseCommand() == null || releaseCommandSend.get()) {
+            return;
         }
 
         waiting = false;// release is under way
+        releaseCommandSend.set(true);
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                LOG.fine("Sending release command");
                 transmit(Collections.singletonList(getReleaseCommand()));
+                releaseCommandSend.set(false);
             }
 
         });

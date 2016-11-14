@@ -42,7 +42,6 @@ import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
-import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.ExceptionHandler;
 
 import java.util.concurrent.CompletableFuture;
@@ -80,7 +79,8 @@ public class ClientContextFactory {
                 final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
                 final ClientDolphin clientDolphin = new ClientDolphin();
                 clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-                final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
+                final DolphinPlatformHttpClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
+                clientConnector.setGc(clientConfiguration.isGc());
                 ExceptionHandler exceptionHandler = new ExceptionHandler() {
 
                     @Override

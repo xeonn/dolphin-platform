@@ -48,7 +48,6 @@ import com.canoo.dolphin.server.mbean.DolphinContextMBeanRegistry;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.NamedCommand;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.comm.ActionRegistry;
@@ -212,11 +211,12 @@ public class DolphinContext implements DolphinSessionProvider {
                 registry.register(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, getId());
-                        onGarbageCollection();
+                        if(UnstableFeatureFlags.isUseGc()) {
+                            LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, getId());
+                            onGarbageCollection();
+                        }
                     }
                 });
-
             }
         });
     }
@@ -312,13 +312,6 @@ public class DolphinContext implements DolphinSessionProvider {
         List<Command> results = new LinkedList<>();
         for (Command command : commands) {
             results.addAll(dolphin.getServerConnector().receive(command));
-        }
-
-        if(UnstableFeatureFlags.isUseGc()) {
-            if(commands.size() != 1 || !PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME.equals(commands.get(0).getId())) {
-                NamedCommand garbageCollectionCommand = new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME);
-                results.addAll(dolphin.getServerConnector().receive(garbageCollectionCommand));
-            }
         }
         return results;
     }

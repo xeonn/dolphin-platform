@@ -24,18 +24,28 @@ import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
+import org.opendolphin.core.client.comm.OnFinishedDataAdapter;
+import org.opendolphin.core.client.comm.OnFinishedHandler;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
+import org.opendolphin.core.comm.NamedCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is used to sync the unique client scope id of the current dolphin
  */
 public class DolphinPlatformHttpClientConnector extends AbstractClientConnector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformHttpClientConnector.class);
 
     private static final String CHARSET = "UTF-8";
 
@@ -51,6 +61,10 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
     private String clientId;
 
+    private boolean gc;
+
+    private AtomicBoolean gcSend = new AtomicBoolean(false);
+
     public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, URL servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
         super(clientDolphin, new BlindCommandBatcher());
         setUiThreadHandler(uiThreadHandler);
@@ -61,9 +75,41 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
         this.responseHandler = new IdBasedResponseHandler(this);
     }
 
+    @Override
+    public void send(Command command, OnFinishedHandler callback) {
+        super.send(command, callback);
+        if(gc && !gcSend.get()) {
+            gcSend.set(true);
+            getUiThreadHandler().executeInsideUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    send(new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME), new OnFinishedDataAdapter() {
+                        @Override
+                        public void onFinishedData(List<Map> data) {
+                            gcSend.set(false);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     public List<Command> transmit(List<Command> commands) {
         Assert.requireNonNull(commands, "commands");
         List<Command> result = new ArrayList<>();
+
+        if(LOG.isTraceEnabled()) {
+            StringBuilder commandsString = new StringBuilder();
+            Iterator<Command> commandIterator = commands.iterator();
+            while (commandIterator.hasNext()) {
+                commandsString.append(commandIterator.next().getId());
+                if(commandIterator.hasNext()) {
+                    commandsString.append(", ");
+                }
+            }
+            LOG.trace("Sending {} commands to the server: {}", commands.size(), commandsString.toString());
+        }
+
         try {
             String content = codec.encode(commands);
             HttpPost httpPost = new HttpPost(servletUrl.toString());
@@ -97,6 +143,13 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
         this.clientId = clientId;
     }
 
+    public boolean isGc() {
+        return gc;
+    }
+
+    public void setGc(boolean gc) {
+        this.gc = gc;
+    }
 }
 
 
