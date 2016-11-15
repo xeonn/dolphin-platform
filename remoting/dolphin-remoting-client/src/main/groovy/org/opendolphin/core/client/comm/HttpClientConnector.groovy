@@ -27,6 +27,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
 import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.comm.Codec
 import org.opendolphin.core.comm.Command
 
 @Log
@@ -34,6 +35,8 @@ class HttpClientConnector extends AbstractClientConnector {
 
     String servletUrl = "http://localhost:8080/dolphin-grails/dolphin/"
     String charset = "UTF-8"
+
+    Codec codec;
 
     private DefaultHttpClient httpClient = new DefaultHttpClient()
 

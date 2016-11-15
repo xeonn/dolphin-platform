@@ -15,16 +15,10 @@
  */
 package org.opendolphin.core.client.comm;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+/**
+ * Created by hendrikebbers on 25.10.16.
+ */
+public interface ExceptionHandler {
 
-public class RunLaterUiThreadHandler implements UiThreadHandler {
-
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    @Override
-    public void executeInsideUiThread(final Runnable runnable) {
-        executorService.execute(runnable);
-    }
-
+    void handle(Throwable e);
 }

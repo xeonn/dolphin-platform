@@ -145,7 +145,7 @@ public abstract class DolphinPlatformApplication extends Application {
     public final void stop() throws Exception {
         if (clientContext != null) {
             try {
-                clientContext.disconnect().get(getClientConfiguration().getConnectionTimeout(), TimeUnit.MILLISECONDS);
+                clientContext.disconnect();
             } catch (Exception e) {
                 onShutdownError(new ClientShutdownException(e));
             }
