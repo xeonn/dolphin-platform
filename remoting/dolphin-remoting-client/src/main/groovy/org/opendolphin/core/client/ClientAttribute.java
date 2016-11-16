@@ -18,6 +18,7 @@ public class ClientAttribute extends BaseAttribute {
     /**
      * @deprecated you should not create Client Attributes without initial values
      */
+    @Deprecated
     public ClientAttribute(String propertyName) {
         this(propertyName, null);
     }
