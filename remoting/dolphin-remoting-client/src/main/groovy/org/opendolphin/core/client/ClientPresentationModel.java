@@ -1,6 +1,5 @@
 package org.opendolphin.core.client;
 
-import org.codehaus.groovy.runtime.StringGroovyMethods;
 import org.opendolphin.core.BasePresentationModel;
 
 import java.util.List;
@@ -14,11 +13,14 @@ public final class ClientPresentationModel extends BasePresentationModel<ClientA
      * @param id if id is null or empty, an auto-generated id will be used
      */
     public ClientPresentationModel(String id, List<ClientAttribute> attributes) {
-        super((id != null && StringGroovyMethods.asBoolean(id)) ? id : "" + instanceCount++ + AUTO_ID_SUFFIX, attributes);
+        super(createUniqueId(id), attributes);
         if (id != null && id.endsWith(AUTO_ID_SUFFIX)) {
             throw new IllegalArgumentException("presentation model with self-provided id \'" + id + "\' may not end with suffix \'" + AUTO_ID_SUFFIX + "\' since that is reserved.");
         }
+    }
 
+    private static String createUniqueId(String id) {
+        return (id != null && id.length() > 0) ? id : "" + instanceCount++ + AUTO_ID_SUFFIX;
     }
 
     public boolean getClientSideOnly() {
