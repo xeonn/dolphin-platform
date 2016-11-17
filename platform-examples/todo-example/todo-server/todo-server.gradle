@@ -18,4 +18,5 @@ description = ''
 dependencies {
   compile project(':todo-common')
   compile project(':dolphin-platform-server')
+  compile 'javax.inject:javax.inject:1'
 }

@@ -17,5 +17,4 @@
 dependencies {
     compile project(':dolphin-remoting-shared')
     compile 'org.apache.httpcomponents:httpclient:4.2.1'
-    compile 'javax.inject:javax.inject:1'
 }

@@ -15,10 +15,9 @@
  */
 package com.canoo.dolphin.server.context;
 
-import com.canoo.dolphin.server.DolphinSessionListener;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
@@ -33,33 +32,38 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DefaultDolphinContextFactory.class);
 
+    private final DolphinPlatformConfiguration configuration;
+
     private final ControllerRepository controllerRepository;
 
     private final OpenDolphinFactory dolphinFactory;
 
     private final ContainerManager containerManager;
 
-    private final DolphinEventBusImpl dolphinEventBus;
+    private final DolphinSessionProvider sessionProvider;
 
-    public DefaultDolphinContextFactory(final ContainerManager containerManager, final DolphinEventBusImpl dolphinEventBus, final ClasspathScanner scanner) {
+    private final DolphinSessionLifecycleHandler lifecycleHandler;
+
+    public DefaultDolphinContextFactory(final DolphinPlatformConfiguration configuration, DolphinSessionProvider sessionProvider, final ContainerManager containerManager, final ClasspathScanner scanner, final DolphinSessionLifecycleHandler lifecycleHandler) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
+        this.sessionProvider = Assert.requireNonNull(sessionProvider, "sessionProvider");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
-        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
+        this.lifecycleHandler = Assert.requireNonNull(lifecycleHandler, "lifecycleHandler");
         this.controllerRepository = new ControllerRepository(scanner);
         this.dolphinFactory = new DefaultOpenDolphinFactory();
+
     }
 
     @Override
-    public DolphinContext create(final HttpSession httpSession, final DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+    public DolphinContext create(final HttpSession httpSession) {
         Assert.requireNonNull(httpSession, "httpSession");
-        Assert.requireNonNull(dolphinSessionListenerProvider, "dolphinSessionListenerProvider");
+        Assert.requireNonNull(lifecycleHandler, "lifecycleHandler");
 
         final Callback<DolphinContext> preDestroyCallback = new Callback<DolphinContext>() {
             @Override
             public void call(DolphinContext dolphinContext) {
                 Assert.requireNonNull(dolphinContext, "dolphinContext");
-                for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
-                    listener.sessionDestroyed(dolphinContext.getCurrentDolphinSession());
-                }
+                lifecycleHandler.onSessionDestroyed(dolphinContext.getDolphinSession());
             }
         };
 
@@ -71,6 +75,6 @@ public class DefaultDolphinContextFactory implements DolphinContextFactory {
                 DolphinContextUtils.removeFromSession(httpSession, dolphinContext);
             }
         };
-        return new DolphinContext(containerManager, controllerRepository, dolphinFactory, dolphinEventBus, preDestroyCallback, onDestroyCallback);
+        return new DolphinContext(configuration, sessionProvider, containerManager, controllerRepository, dolphinFactory, preDestroyCallback, onDestroyCallback);
     }
 }

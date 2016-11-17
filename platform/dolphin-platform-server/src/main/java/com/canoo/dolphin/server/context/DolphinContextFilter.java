@@ -16,7 +16,6 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
-import com.canoo.dolphin.server.DolphinSessionListener;
 import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.util.Assert;
@@ -46,13 +45,13 @@ public class DolphinContextFilter implements Filter {
 
     private final DolphinContextFactory dolphinContextFactory;
 
-    private final DolphinSessionListenerProvider dolphinSessionListenerProvider;
+    private final DolphinSessionLifecycleHandler lifecycleHandler;
 
-    public DolphinContextFilter(final DolphinPlatformConfiguration configuration, final ContainerManager containerManager, final DolphinContextFactory dolphinContextFactory, final DolphinSessionListenerProvider dolphinSessionListenerProvider) {
+    public DolphinContextFilter(final DolphinPlatformConfiguration configuration, final ContainerManager containerManager, final DolphinContextFactory dolphinContextFactory, final DolphinSessionLifecycleHandler lifecycleHandler) {
         this.configuration = Assert.requireNonNull(configuration, "configuration");
         this.containerManager = Assert.requireNonNull(containerManager, "containerManager");
         this.dolphinContextFactory = Assert.requireNonNull(dolphinContextFactory, "dolphinContextFactory");
-        this.dolphinSessionListenerProvider = Assert.requireNonNull(dolphinSessionListenerProvider, "dolphinSessionListenerProvider");
+        this.lifecycleHandler = Assert.requireNonNull(lifecycleHandler, "lifecycleHandler");
     }
 
     @Override
@@ -66,28 +65,26 @@ public class DolphinContextFilter implements Filter {
             DolphinContext dolphinContext;
             final String clientId = servletRequest.getHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
             if (clientId == null || clientId.trim().isEmpty()) {
-                if(DolphinContextUtils.getOrCreateContextMapInSession(httpSession).size() >= configuration.getMaxClientsPerSession()) {
+                if (DolphinContextUtils.getOrCreateContextMapInSession(httpSession).size() >= configuration.getMaxClientsPerSession()) {
                     servletResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Maximum size for clients in session is reached");
                     LOG.info("Maximum size for clients in session {} is reached", servletRequest.getSession().getId());
                     return;
                 }
                 dolphinContext = createNewContext(httpSession);
                 DolphinContextUtils.storeInSession(httpSession, dolphinContext);
-                for(DolphinSessionListener listener : dolphinSessionListenerProvider.getAllListeners()) {
-                    listener.sessionCreated(dolphinContext.getCurrentDolphinSession());
-                }
+                lifecycleHandler.onSessionCreated(dolphinContext.getDolphinSession());
                 LOG.trace("Created new DolphinContext {} in http session {}", dolphinContext.getId(), httpSession.getId());
 
                 Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
-                if(init == null) {
+                if (init == null) {
                     httpSession.setAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION, true);
                 }
             } else {
                 LOG.trace("Trying to find DolphinContext {} in http session {}", clientId, httpSession.getId());
                 dolphinContext = DolphinContextUtils.getClientInSession(httpSession, clientId);
-                if(dolphinContext == null) {
+                if (dolphinContext == null) {
                     Object init = httpSession.getAttribute(DOLPHIN_PLATFORM_INITIALIZED_IN_SESSION);
-                    if(init == null) {
+                    if (init == null) {
                         LOG.warn("Can not find requested client for id {} in session {} (session timeout)", clientId, httpSession.getId());
                         servletResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, "Can not find requested client (session timeout)!");
                     } else {
@@ -107,7 +104,7 @@ public class DolphinContextFilter implements Filter {
 
     private DolphinContext createNewContext(final HttpSession httpSession) {
         Assert.requireNonNull(httpSession, "httpSession");
-        return dolphinContextFactory.create(httpSession, dolphinSessionListenerProvider);
+        return dolphinContextFactory.create(httpSession);
     }
 
     @Override

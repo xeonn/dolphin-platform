@@ -10,6 +10,14 @@ method of the API is annotated by `@Deprecated since we plan to remove all this 
 == Version 0.8.8
 * Provide additional information for wrong usage of scopes in Spring (https://github.com/canoo/dolphin-platform/issues/277[issue])
 
+== Version 0.8.9
+
+* Provide functionality to step into the DP lifecycle on the server (https://github.com/canoo/dolphin-platform/issues/267[issue])
+* Dependency to GParse is completely removed (https://github.com/canoo/dolphin-platform/issues/252[issue])
+* Refactoring of the event bus implementation (https://github.com/canoo/dolphin-platform/issues/127[issue])
+* Event bus can be used in controller tests for Spring (https://github.com/canoo/dolphin-platform/issues/196[issue])
+* Unneeded javax.inject dependency has been removed (https://github.com/canoo/dolphin-platform/issues/170[issue])
+
 == Version 0.8.8
 _Release date: Nov 14, 2016_
 

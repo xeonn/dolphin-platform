@@ -16,10 +16,11 @@
 package com.canoo.dolphin.server.context;
 
 import com.canoo.dolphin.impl.PlatformConstants;
+import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.container.ModelInjector;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImplMock;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.util.Callback;
 import org.opendolphin.core.server.comm.CommandHandler;
@@ -110,7 +111,7 @@ public class DolphinContextTest {
         while (!contextList.isEmpty()) {
             DolphinContext dolphinContext = contextList.remove(0);
             for(DolphinContext toCompare : contextList) {
-                assertFalse(dolphinContext.getCurrentDolphinSession().equals(toCompare.getCurrentDolphinSession()));
+                assertFalse(dolphinContext.getDolphinSession().equals(toCompare.getDolphinSession()));
             }
         }
     }
@@ -123,7 +124,7 @@ public class DolphinContextTest {
         //then:
         assertNotNull(dolphinContext.getId());
         assertNotNull(dolphinContext.getBeanManager());
-        assertNotNull(dolphinContext.getCurrentDolphinSession());
+        assertNotNull(dolphinContext.getDolphinSession());
         assertNotNull(dolphinContext.getDolphin());
     }
 
@@ -146,7 +147,17 @@ public class DolphinContextTest {
     private final ClasspathScanner classpathScanner = new ClasspathScanner("com.canoo.dolphin");
 
     private DolphinContext createContext() {
-        return new DolphinContext(new ContainerManagerMock(), new ControllerRepository(classpathScanner), new DefaultOpenDolphinFactory(), new DolphinEventBusImplMock(), new DestroyCallbackMock(), new DestroyCallbackMock());
+        return new DolphinContext(new DolphinPlatformConfiguration(), new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                return null;
+            }
+
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return null;
+            }
+        }, new ContainerManagerMock(), new ControllerRepository(classpathScanner), new DefaultOpenDolphinFactory(), new DestroyCallbackMock(), new DestroyCallbackMock());
     }
 
     private class DestroyCallbackMock implements Callback<DolphinContext> {

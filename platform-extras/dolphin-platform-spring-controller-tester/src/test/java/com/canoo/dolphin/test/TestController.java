@@ -23,17 +23,17 @@ import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.Message;
 import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.server.event.Topic;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @DolphinController("TestController")
 public class TestController {
 
-    @Inject
+    @Autowired
     private BeanManager beanManager;
 
-    @Inject
+    @Autowired
     private DolphinEventBus eventBus;
 
     @DolphinModel

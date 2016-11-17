@@ -31,6 +31,7 @@ import com.canoo.dolphin.client.impl.ForwardableCallback;
 import com.canoo.dolphin.impl.BeanRepositoryImpl;
 import com.canoo.dolphin.impl.ClassRepositoryImpl;
 import com.canoo.dolphin.impl.Converters;
+import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.impl.PresentationModelBuilderFactory;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.impl.collections.ListMapperImpl;
@@ -42,12 +43,15 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
+import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.config.ConfigurationFileLoader;
 import com.canoo.dolphin.server.context.DolphinContext;
 import com.canoo.dolphin.server.context.DolphinContextProvider;
+import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.controller.ControllerRepository;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
+import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 import com.canoo.dolphin.server.impl.ClasspathScanner;
 import com.canoo.dolphin.server.spring.ClientScope;
 import com.canoo.dolphin.test.ControllerTestException;
@@ -55,6 +59,8 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.server.ServerModelStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -62,13 +68,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 @Configuration
 public class DolphinPlatformSpringTestBootstrap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DolphinPlatformSpringTestBootstrap.class);
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -100,13 +109,15 @@ public class DolphinPlatformSpringTestBootstrap {
         final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, new ForwardableCallback());
 
         //Currently the event bus can not used in tests. See https://github.com/canoo/dolphin-platform/issues/196
-        //   config.getClientExecutor().submit(new Runnable() {
-        //       @Override
-        //       public void run() {
-        //           clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
-        //       }
-//
-        //      }).get();
+        config.getClientExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                DolphinContextUtils.setContextForCurrentThread(dolphinContext);
+                clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+                return null;
+            }
+
+        }).get();
         return clientContext;
     }
 
@@ -120,9 +131,22 @@ public class DolphinPlatformSpringTestBootstrap {
         TestSpringContainerManager containerManager = new TestSpringContainerManager(context);
         containerManager.init(context.getServletContext());
         DolphinContextProviderMock dolphinContextProviderMock = new DolphinContextProviderMock();
-        DolphinEventBusImpl dolphinEventBus = new DolphinEventBusImpl(dolphinContextProviderMock);
-        DolphinTestContext dolphinContext = new DolphinTestContext(containerManager, controllerRepository, config, dolphinEventBus);
+
+        DolphinTestContext dolphinContext = new DolphinTestContext(ConfigurationFileLoader.loadConfiguration(), dolphinContextProviderMock, containerManager, controllerRepository, config);
         dolphinContextProviderMock.setCurrentContext(dolphinContext);
+
+        DolphinTestClientConnector inMemoryClientConnector = new DolphinTestClientConnector(config.getClientDolphin(), dolphinContext);
+
+        inMemoryClientConnector.setStrictMode(false);
+        inMemoryClientConnector.setUiThreadHandler(new UiThreadHandler() {
+
+            @Override
+            public void executeInsideUiThread(Runnable runnable) {
+                config.getClientExecutor().execute(runnable);
+            }
+        });
+        config.getClientDolphin().setClientConnector(inMemoryClientConnector);
+
         return dolphinContext;
     }
 
@@ -157,7 +181,7 @@ public class DolphinPlatformSpringTestBootstrap {
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinSession createDolphinSession(final DolphinTestContext context) {
         Assert.requireNonNull(context, "context");
-        return context.getCurrentDolphinSession();
+        return context.getDolphinSession();
     }
 
 
@@ -169,8 +193,17 @@ public class DolphinPlatformSpringTestBootstrap {
     @Bean(name = "dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus(final DolphinTestContext context) {
-        Assert.requireNonNull(context, "context");
-        return context.getDolphinEventBus();
+        return new DefaultDolphinEventBus(new DolphinContextProvider() {
+            @Override
+            public DolphinContext getCurrentContext() {
+                return context;
+            }
+
+            @Override
+            public DolphinSession getCurrentDolphinSession() {
+                return context.getDolphinSession();
+            }
+        }, DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
 
     @Bean(name = "propertyBinder")
@@ -186,7 +219,7 @@ public class DolphinPlatformSpringTestBootstrap {
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {
             @Override
             public DolphinSession getCurrentDolphinSession() {
-                return context.getCurrentDolphinSession();
+                return context.getDolphinSession();
             }
         }));
         return configurer;
@@ -207,7 +240,7 @@ public class DolphinPlatformSpringTestBootstrap {
 
         @Override
         public DolphinSession getCurrentDolphinSession() {
-            return getCurrentContext().getCurrentDolphinSession();
+            return getCurrentContext().getDolphinSession();
         }
     }
 
