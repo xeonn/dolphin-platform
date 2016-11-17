@@ -69,10 +69,14 @@ public class ClientScope implements Scope {
     }
 
     private Map<String, Object> getLocalStore() {
-        Map<String, Object> localStore = getDolphinSession().getAttribute(CLIENT_STORE_ATTRIBUTE);
+        DolphinSession session = getDolphinSession();
+        if(session == null) {
+            throw new IllegalStateException("No dolphin request found! Looks like you try to use the " + ClientScope.class.getSimpleName() + " ouside of the dolphin context!");
+        }
+        Map<String, Object> localStore = session.getAttribute(CLIENT_STORE_ATTRIBUTE);
         if(localStore == null) {
             localStore = Collections.synchronizedMap(new HashMap<String, Object>());
-            getDolphinSession().setAttribute(CLIENT_STORE_ATTRIBUTE, localStore);
+            session.setAttribute(CLIENT_STORE_ATTRIBUTE, localStore);
         }
         return localStore;
     }
