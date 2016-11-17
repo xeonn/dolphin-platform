@@ -1,6 +1,12 @@
 = Changelog
 
-The following overview contains all changes of the Dolphin Platform since version 0.8.0.
+The following overview contains all changes of the Dolphin Platform since version 0.8.0.`
+
+CAUTION: Until version 1.0.0 we will not mark breaking changes in the public API seperately since the API might still change. To
+be true most of the public API of the Dolphin Platform is stable since 0.8.5 and the most changes are related to changing
+package structure or adding additional methods to public interfaces. In addition it will be best practice to not use any
+method of the API is annotated by `@deprecate since we plan to remove all this methods and classes for the final 1.0.0 release.
+
 
 == Version 0.8.8
 _Release date: Nov 14, 2016_
@@ -75,7 +81,7 @@ _Release date: Mar 7, 2016_
 _Release date: Feb 19, 2016_
 
 * Support for JBoss application server (https://github.com/canoo/dolphin-platform/issues/78[issue])
-* Command names in the protokol are shorted (https://github.com/canoo/dolphin-platform/issues/74[issue])
+* Command names in the protocol are shorted (https://github.com/canoo/dolphin-platform/issues/74[issue])
 * Fix for a bug in the list change event (https://github.com/canoo/dolphin-platform/pull/100[issue])
 * Example isn't deployed to Maven central anymore (https://github.com/canoo/dolphin-platform/pull/89[issue])
 
