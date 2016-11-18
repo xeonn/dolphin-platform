@@ -1,3 +1,4 @@
+
 = Dolphin Platform release documentation
 This chapter describes how a new release for the Dolphin Platform can be created.
 

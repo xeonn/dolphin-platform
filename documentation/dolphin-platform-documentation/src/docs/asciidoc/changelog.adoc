@@ -1,3 +1,4 @@
+
 = Changelog
 
 The following overview contains all changes of the Dolphin Platform since version 0.8.0.`
