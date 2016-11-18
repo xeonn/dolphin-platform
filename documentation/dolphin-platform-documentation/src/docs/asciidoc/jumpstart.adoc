@@ -6,7 +6,7 @@ by Dolphin Platform. Based on this archetypes it's quite easy to create a full f
 perfect base for your own project or to learn the different APIs of Dolphin Platform by simply experimenting with the
 generated project.
 
-== Creating a project
+== Creating a project with Maven
 
 To create a new project only Maven must be installed on your system. Once Maven is installed you can create a complete
 project with only one shell command:
@@ -15,6 +15,11 @@ project with only one shell command:
 ----
 $ mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:
 ----
+
+CAUTION: The archetypes are deployed to (http://search.maven.org[Maven Central]) and
+(https://bintray.com/bintray/jcenter[JCenter]). If you have configured your Maven installation to use a different
+repository that do not mirror Maven Central or JCenter your Maven installation might not find the archetypes to generate
+a jumpstart.
 
 The command will start a Maven process that creates the new project. To do so you can choose between different options
 in a shell wizard:
@@ -31,7 +36,7 @@ on the first call since all needed dependencies and plugins are downloaded to yo
 generated project in any IDE of your choice that supports Maven projects. The generated project contains a readme.md
 file that describes how the client and server parts of the project can be started.
 
-== Lazybones Jumpstart
+== Creating a project with Lazybones
 
 Next to the Maven archetype we provide a https://github.com/pledbrook/lazybones[Lazybones] template for application that
 are based on the Dolphin Platform. The project and a getting-started
