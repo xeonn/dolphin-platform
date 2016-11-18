@@ -58,8 +58,8 @@ Currently Dolphin Platform properties and collections support the following type
 * `Short`
 * `Boolean`
 * `String`
-* `Date` _(since version 0.8.4)_
-* `Calendar` _(since version 0.8.4)_
+* `java.util.Date` _(since version 0.8.4)_
+* `java.util.Calendar` _(since version 0.8.4)_
 * `Enums` _(since version 0.8.4)_
 * Dolphin Platform Bean <<bean-hierarchies, (see description)>>
 
@@ -69,10 +69,10 @@ will be converted.
 Since version 0.8.8 the Dolphin Platform contains the optional module `dolphin-platform-date-time-converter` that provides
 the support for addition types for properties and collections. All the types are part of the Java 8 date and time API:
 
-* Duration
-* LocalDateTime
-* Period
-* ZonedDateTime
+* `java.time.Duration`
+* `java.time.LocalDateTime`
+* `java.time.Period`
+* `java.time.ZonedDateTime`
 
 
 CAUTION: Currently the additional data types are only supported in Java. The support for the JavaScript will be added
