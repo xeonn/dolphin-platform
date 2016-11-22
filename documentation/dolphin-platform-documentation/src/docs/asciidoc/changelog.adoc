@@ -1,17 +1,17 @@
 
 = Changelog
 
-The following overview contains all changes of the Dolphin Platform since version 0.8.0.`
+The following overview contains all changes of the Dolphin Platform since version 0.8.0.
 
 CAUTION: Until version 1.0.0 we will not mark breaking changes in the public API seperately since the API might still change. To
 be true most of the public API of the Dolphin Platform is stable since 0.8.5 and the most changes are related to changing
 package structure or adding additional methods to public interfaces. In addition it will be best practice to not use any
-method of the API is annotated by `@Deprecated since we plan to remove all this methods and classes for the final 1.0.0 release.
+method of the API is annotated by `@Deprecated` since we plan to remove all this methods and classes for the final 1.0.0 release.
 
-== Version 0.8.8
+== UPCOMING Version 0.8.XX
 * Provide additional information for wrong usage of scopes in Spring (https://github.com/canoo/dolphin-platform/issues/277[issue])
 
-== Version 0.8.9
+== UPCOMING Version 0.8.9
 
 * Provide functionality to step into the DP lifecycle on the server (https://github.com/canoo/dolphin-platform/issues/267[issue])
 * Dependency to GParse is completely removed (https://github.com/canoo/dolphin-platform/issues/252[issue])
