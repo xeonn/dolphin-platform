@@ -20,6 +20,9 @@
             background: #4285f4;
             color: #fff;
         }
+        paper-checkbox {
+            --paper-checkbox-checkmark-color: #4285f4;
+        }
     </style>
     <template>
         <div class="layout center-justified">
@@ -27,7 +30,7 @@
             <paper-input label="Task name" value="{{model.newItemText}}"></paper-input>
             <paper-button raised class="colorful" on-tap="_onAddClicked">add</paper-button>
 
-            <template is="dom-repeat" items="[[model.items]]">
+            <template is="dom-repeat" items="{{model.items}}">
                 <paper-item>
                     <paper-item-body>[[item.text]]</paper-item-body>
                     <paper-checkbox checked="[[item.completed]]" on-tap="_onCheckboxClicked"></paper-checkbox>
