@@ -8,7 +8,7 @@ be true most of the public API of the Dolphin Platform is stable since 0.8.5 and
 package structure or adding additional methods to public interfaces. In addition it will be best practice to not use any
 method of the API is annotated by `@Deprecated` since we plan to remove all this methods and classes for the final 1.0.0 release.
 
-== UPCOMING Version 0.8.9
+== Version 0.8.9
 
 * Provide functionality to step into the DP lifecycle on the server (https://github.com/canoo/dolphin-platform/issues/267[issue])
 * Dependency to GParse is completely removed (https://github.com/canoo/dolphin-platform/issues/252[issue])
@@ -16,6 +16,7 @@ method of the API is annotated by `@Deprecated` since we plan to remove all this
 * Event bus can be used in controller tests for Spring (https://github.com/canoo/dolphin-platform/issues/196[issue])
 * Unneeded javax.inject dependency has been removed (https://github.com/canoo/dolphin-platform/issues/170[issue])
 * Provide additional information for wrong usage of scopes in Spring (https://github.com/canoo/dolphin-platform/issues/277[issue])
+* Several Groovy classes are refactored to Java (https://github.com/canoo/dolphin-platform/pull/270[issue])
 
 == Version 0.8.8
 _Release date: Nov 14, 2016_
