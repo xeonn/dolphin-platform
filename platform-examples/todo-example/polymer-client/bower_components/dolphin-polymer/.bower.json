@@ -1,6 +1,6 @@
 {
   "name": "dolphin-polymer",
-  "version": "0.8.6",
+  "version": "0.8.9",
   "authors": [
     "Michael Heinrichs <michael.heinrichs@canoo.com>"
   ],
@@ -30,18 +30,18 @@
   ],
   "devDependencies": {
     "core.js": "2.4.0",
-    "dolphin-js": "0.8.6"
+    "dolphin-js": "0.8.9"
   },
   "dependencies": {
     "polymer": ">=1.0.4 <=1.4.0"
   },
-  "_release": "0.8.6",
+  "_release": "0.8.9",
   "_resolution": {
     "type": "version",
-    "tag": "0.8.6",
-    "commit": "cd2c66632268db0760a776a6ceaf9996d519fc49"
+    "tag": "0.8.9",
+    "commit": "df35a1f01e96d55dc700d04d0e1f6b2263f779a2"
   },
   "_source": "https://github.com/canoo/dolphin-platform-polymer.git",
-  "_target": "0.8.6",
+  "_target": "0.8.9",
   "_originalSource": "dolphin-polymer"
 }
