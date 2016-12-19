@@ -77,4 +77,10 @@ in a Dolphin Bean hierarchy). If not this beans will automatically be removed on
 unstable feature at the moment and should only be activated for tests.
 |true, false
 |false
+
+|maxPollTime
+|Defines the timeout of the Dolphin Platform polling mechanism that is used for the event bus and for the session.runLater
+call.
+|any long
+|5000
 |===
