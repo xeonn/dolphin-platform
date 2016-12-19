@@ -17,23 +17,23 @@ package com.canoo.dolphin.test.scopes;
 
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @DolphinController("ScopeTestController")
 public class ScopeTestController {
 
-    @Inject
+    @Autowired
     private RequestService requestService;
 
-    @Inject
+    @Autowired
     private ClientService clientService;
 
-    @Inject
+    @Autowired
     private SessionService sessionService;
 
-    @Inject
+    @Autowired
     private SingletonService singletonService;
 
     @DolphinModel

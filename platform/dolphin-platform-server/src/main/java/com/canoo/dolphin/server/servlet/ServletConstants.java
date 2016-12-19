@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.canoo.dolphin.server.event;
+package com.canoo.dolphin.server.servlet;
 
-/**
- * A functional interface that is used to call a specific task for a controller by using the
- * {@link com.canoo.dolphin.server.event.TaskExecutor}. Since the server part of Dolphin Platform depends on Java 7 we
- * can't use the Java 8 Consumer interface here.
- * @param <T> Controller Type
- */
-public interface ControllerTask<T> {
-
-    /**
-     * The specified action will be called for the given controller
-     * @param controller the controller
-     */
-    void run(T controller);
+public interface ServletConstants {
+    String DOLPHIN_SERVLET_NAME = "dolphin-platform-servlet";
+    String DOLPHIN_CROSS_SITE_FILTER_NAME = "dolphinCrossSiteFilter";
+    String DOLPHIN_INVALIDATION_SERVLET_NAME = "dolphin-platform-invalidation-servlet";
+    String DOLPHIN_CLIENT_ID_FILTER_NAME = "dolphin-platform-client-id-filter";
+    String DEFAULT_DOLPHIN_INVALIDATION_SERVLET_MAPPING = "/dolphininvalidate";
 }

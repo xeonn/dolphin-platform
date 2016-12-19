@@ -58,8 +58,8 @@ Currently Dolphin Platform properties and collections support the following type
 * `Short`
 * `Boolean`
 * `String`
-* `Date` _(since version 0.8.4)_
-* `Calendar` _(since version 0.8.4)_
+* `java.util.Date` _(since version 0.8.4)_
+* `java.util.Calendar` _(since version 0.8.4)_
 * `Enums` _(since version 0.8.4)_
 * Dolphin Platform Bean <<bean-hierarchies, (see description)>>
 
@@ -69,10 +69,10 @@ will be converted.
 Since version 0.8.8 the Dolphin Platform contains the optional module `dolphin-platform-date-time-converter` that provides
 the support for addition types for properties and collections. All the types are part of the Java 8 date and time API:
 
-* Duration
-* LocalDateTime
-* Period
-* ZonedDateTime
+* `java.time.Duration`
+* `java.time.LocalDateTime`
+* `java.time.Period`
+* `java.time.ZonedDateTime`
 
 
 CAUTION: Currently the additional data types are only supported in Java. The support for the JavaScript will be added
@@ -112,11 +112,68 @@ A `ObservableList<V>` supports <<supported-types, all the same generic types as 
 [[bean-hierarchies]]
 == Defining hierarchies
 
-TODO
+A `Property<V>` or `ObservableList<V>` instance can not only hold primitive types. As defined in the supported types a property
+or list can contain other beans, too. By doing so a model can define a hierarchy of several beans. The following class
+shows how a model class that contains a list of other beans might look:
+
+[source,java]
+----
+@DolphinBean
+public class MainModel {
+
+    private ObservableList<MyModel> values;
+
+    public ObservableList<MyModel> getValues() {
+        return values;
+    }
+
+}
+----
+
+In this example instances of the `MyModel` that was shown as an example earlier can be stored in the list of this model
+class.
+
+CAUTION: It's important to now that a developer should never create new model instances "by hand". If a model will be
+created by simply calling it's constructor it won't become part of the synchronized models. To create new model
+instances the Dolphin Platform bean manager must be used. The API of the bean manager and how it can be used to create
+new instances of models and beans <<bean-manager, will be shown later.>>
 
 == Add observer
 
-TODO
+Both the `Property<V>` and `ObservableList<V>` interface implement the observer pattern. By doing so changes in the
+model layer can easily be handled in the view and the controller. The interfaces provide methods to add observer that
+will be called whenever the internal content will change. The following snippet shows how an observer can be added to
+a property:
+
+[source,java]
+----
+myModel.valueProperty().onChanged(e -> System.out.print("Property changed"));
+----
+
+Once the value of the value property will be changed the given observer will be triggered. For properties the observer
+is defined by the `ValueChangeListener` class.
+In the given example a lambda expression is used as the observer. So whenever the value will be changed a "Property changed" message will be printed
+to the console.
+
+TIP: The Dolphin Platform modules are compiled against Java 7 but provide a very good support for Java 8 lambda 
+expressions. Wherever it makes sense interfaces are defined as functional interface. By doing so instances of the 
+interface can be defined as a lambda expression when using Java 8. In the given example the lambda implements the
+`ValueChangeListener` interface of the Dolphin Platform.
+
+Whenever a `ValueChangeListener` is called an event object is provided. This object can be used to access the old and
+the new value of a change:
+
+[source,java]
+----
+myModel.valueProperty().onChanged(e -> print("Property changed from " + e.getOldValue() + " to " + e.getNewValue()));
+----
+
+_TODO: Subscription_
+
+[source,java]
+----
+Subscription subscription = myModel.valueProperty().onChanged(e -> print("Property changed"));
+----
 
 == Defining the model of a MVC group
 
@@ -148,6 +205,7 @@ public class MyController {
 The model instance will be automatically synchronized with the client. Since the model is completelly observable you can
  simply bind the properties and lists that are defined in the model to your UI components in the client.
 
+[[bean-manager]]
 == Working with the BeanManager
 
 TODO

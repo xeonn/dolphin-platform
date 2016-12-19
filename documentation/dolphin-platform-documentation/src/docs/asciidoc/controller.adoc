@@ -346,3 +346,7 @@ public class MyViewController {
 
 }
 ----
+
+== React on events on the server
+
+TODO 2 ways: eventbus or session.runLater...

@@ -28,10 +28,10 @@ import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
 import com.canoo.dolphin.server.DolphinSession;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.container.ContainerManager;
 import com.canoo.dolphin.server.controller.ControllerHandler;
 import com.canoo.dolphin.server.controller.ControllerRepository;
-import com.canoo.dolphin.server.event.impl.DolphinEventBusImpl;
 import com.canoo.dolphin.server.impl.ServerBeanBuilder;
 import com.canoo.dolphin.server.impl.ServerBeanBuilderImpl;
 import com.canoo.dolphin.server.impl.ServerBeanRepository;
@@ -59,14 +59,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class defines the central entry point for a Dolphin Platform session on the server.
  * Each Dolphin Platform client context on the client side is connected with one {@link DolphinContext}.
  */
-public class DolphinContext implements DolphinSessionProvider {
+public class DolphinContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinContext.class);
+
+    private final DolphinPlatformConfiguration configuration;
 
     private final DefaultServerDolphin dolphin;
 
@@ -79,8 +83,6 @@ public class DolphinContext implements DolphinSessionProvider {
     private final ControllerHandler controllerHandler;
 
     private final EventDispatcher dispatcher;
-
-    private final DolphinEventBusImpl dolphinEventBus;
 
     private ServerPlatformBeanRepository platformBeanRepository;
 
@@ -98,13 +100,15 @@ public class DolphinContext implements DolphinSessionProvider {
 
     private final GarbageCollector garbageCollector;
 
-    public DolphinContext(ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, DolphinEventBusImpl dolphinEventBus, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+    private final DolphinContextTaskQueue taskQueue;
+
+    public DolphinContext(final DolphinPlatformConfiguration configuration, DolphinSessionProvider dolphinSessionProvider, ContainerManager containerManager, ControllerRepository controllerRepository, OpenDolphinFactory dolphinFactory, Callback<DolphinContext> preDestroyCallback, Callback<DolphinContext> onDestroyCallback) {
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
         Assert.requireNonNull(containerManager, "containerManager");
         Assert.requireNonNull(controllerRepository, "controllerRepository");
         Assert.requireNonNull(dolphinFactory, "dolphinFactory");
         this.preDestroyCallback = Assert.requireNonNull(preDestroyCallback, "preDestroyCallback");
         this.onDestroyCallback = Assert.requireNonNull(onDestroyCallback, "onDestroyCallback");
-        this.dolphinEventBus = Assert.requireNonNull(dolphinEventBus, "dolphinEventBus");
 
         //ID
         id = UUID.randomUUID().toString();
@@ -115,11 +119,13 @@ public class DolphinContext implements DolphinSessionProvider {
         garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
             @Override
             public void onReject(Set<Instance> instances) {
-                for(Instance instance : instances) {
+                for (Instance instance : instances) {
                     beanRepository.onGarbageCollectionRejection(instance.getBean());
                 }
             }
         });
+
+        taskQueue = new DolphinContextTaskQueue(id, dolphinSessionProvider, configuration.getMaxPollTime(), TimeUnit.MILLISECONDS);
 
         //Init BeanRepository
         dispatcher = new ServerEventDispatcher(dolphin);
@@ -139,7 +145,12 @@ public class DolphinContext implements DolphinSessionProvider {
         //Init ControllerHandler
         controllerHandler = new ControllerHandler(mBeanRegistry, containerManager, beanBuilder, beanRepository, controllerRepository);
 
-        dolphinSession = new DolphinSessionImpl(id);
+        dolphinSession = new DolphinSessionImpl(id, new Executor() {
+            @Override
+            public void execute(final Runnable command) {
+                runLater(command);
+            }
+        });
 
         //Register commands
         registerDolphinPlatformDefaultCommands();
@@ -233,12 +244,12 @@ public class DolphinContext implements DolphinSessionProvider {
         preDestroyCallback.call(this);
 
         //Deregister from event bus
-        dolphinEventBus.unsubscribeSession(getId());
+        //dolphinEventBus.unsubscribeSession(getId());
 
         //Destroy all controllers
         controllerHandler.destroyAllControllers();
 
-        if(mBeanSubscription != null) {
+        if (mBeanSubscription != null) {
             mBeanSubscription.unsubscribe();
         }
 
@@ -281,15 +292,11 @@ public class DolphinContext implements DolphinSessionProvider {
     }
 
     private void onReleaseEventBus() {
-        dolphinEventBus.release();
+        taskQueue.interrupt();
     }
 
     private void onPollEventBus() {
-        try {
-            dolphinEventBus.longPoll();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        taskQueue.executeTasks();
     }
 
     private void onGarbageCollection() {
@@ -316,6 +323,12 @@ public class DolphinContext implements DolphinSessionProvider {
         return results;
     }
 
+
+
+    public DolphinSession getDolphinSession() {
+        return dolphinSession;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -332,7 +345,7 @@ public class DolphinContext implements DolphinSessionProvider {
         return id.hashCode();
     }
 
-    public DolphinSession getCurrentDolphinSession() {
-        return dolphinSession;
+    private void runLater(final Runnable runnable) {
+        taskQueue.addTask(runnable);
     }
 }

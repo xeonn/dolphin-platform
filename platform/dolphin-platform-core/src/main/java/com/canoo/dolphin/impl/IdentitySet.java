@@ -20,9 +20,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Created by hendrikebbers on 20.01.16.
- */
 public class IdentitySet<E> implements Set<E> {
 
     private IdentityHashMap<E, E> internalMap;

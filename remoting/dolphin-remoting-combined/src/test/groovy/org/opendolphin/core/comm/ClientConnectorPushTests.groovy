@@ -15,11 +15,9 @@
  */
 package org.opendolphin.core.comm
 
-import groovyx.gpars.dataflow.DataflowQueue
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.DefaultServerDolphin
-import org.opendolphin.core.server.EventBus
 import spock.lang.Ignore
 import spock.lang.Specification
 
@@ -82,30 +80,4 @@ class ClientConnectorPushTests extends Specification {
         then:
         pushWasCalled.await(1, TimeUnit.SECONDS)
     }
-
-    @Ignore
-    void "autorelease: sending any client-side command releases the read lock"() {
-        given:
-        CountDownLatch spoofCounter  = new CountDownLatch(3)
-        DataflowQueue  readQueue     = new DataflowQueue()
-        EventBus bus = new EventBus()
-        bus.subscribe(readQueue)
-        serverDolphin.action("PushAction") { cmd, resp ->
-            def value = readQueue.getVal(3, TimeUnit.SECONDS)
-            if (value) spoofCounter.countDown()
-        }
-        serverDolphin.action("ReleaseAction") { cmd, resp ->
-            bus.publish(null, true)
-            spoofCounter.countDown()
-        }
-        when:
-        clientDolphin.startPushListening("PushAction", "ReleaseAction")
-        clientDolphin.send "JustSomeCommandToTriggerTheRelease", {
-            spoofCounter.countDown()
-        }
-        then:
-        //TODO: This test is not working on Travis.
-        spoofCounter.await(1, TimeUnit.SECONDS)
-    }
-
 }

@@ -17,25 +17,24 @@ package com.canoo.dolphin.test.scopes;
 
 import com.canoo.dolphin.test.ControllerUnderTest;
 import com.canoo.dolphin.test.SpringTestNGControllerTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import javax.inject.Inject;
-
 @SpringApplicationConfiguration(classes = ScopesConfig.class)
 public class ScopeTestControllerTest extends SpringTestNGControllerTest {
 
-    @Inject
+    @Autowired
     private RequestService requestService;
 
-    @Inject
+    @Autowired
     private ClientService clientService;
 
-    @Inject
+    @Autowired
     private SessionService sessionService;
 
-    @Inject
+    @Autowired
     private SingletonService singletonService;
 
     @Test
