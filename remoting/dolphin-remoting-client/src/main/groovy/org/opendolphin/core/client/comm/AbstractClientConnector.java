@@ -98,7 +98,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         startCommandProcessing();
     }
 
-    private void startCommandProcessing() {
+    protected void startCommandProcessing() {
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {

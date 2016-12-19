@@ -25,10 +25,13 @@ public class DolphinTestClientConnector extends AbstractClientConnector{
         this.dolphinContext = dolphinContext;
     }
 
+    @Override
     protected void startCommandProcessing() {
         /* do nothing! */
+        //TODO: no implementation since EventBus is used in a different way for this tests. Should be refactored in parent class.
     }
 
+    @Override
     public void send(Command command, OnFinishedHandler callback) {
         List<Command> answer = transmit(new ArrayList<>(Arrays.asList(command)));
         CommandAndHandler handler = new CommandAndHandler();
@@ -37,13 +40,14 @@ public class DolphinTestClientConnector extends AbstractClientConnector{
         processResults(answer, new ArrayList<>(Arrays.asList(handler)));
     }
 
+    @Override
     public void send(Command command) {
         send(command, null);
     }
 
     @Override
     public void listen() {
-
+        //TODO: no implementation since EventBus is used in a different way for this tests. Should be refactored in parent class.
     }
 
     @Override

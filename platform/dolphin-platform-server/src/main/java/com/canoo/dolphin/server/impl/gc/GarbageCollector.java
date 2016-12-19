@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The garbage collection for Dolphin Platform models. Whenever a new Dolphin bean {@link com.canoo.dolphin.mapping.DolphinBean}
@@ -60,6 +61,7 @@ public class GarbageCollector {
 
     /**
      * Constructor
+     *
      * @param onRemoveCallback callback that will be called for each garbage collection call.
      */
     public GarbageCollector(GarbageCollectionCallback onRemoveCallback) {
@@ -69,11 +71,12 @@ public class GarbageCollector {
     /**
      * This method must be called for each new Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean}).
      * Normally beans are created by {@link com.canoo.dolphin.BeanManager#create(Class)}
-     * @param bean the bean that was created
+     *
+     * @param bean     the bean that was created
      * @param rootBean if this is true the bean is handled as a root bean. This bean don't need a reference.
      */
     public synchronized void onBeanCreated(Object bean, boolean rootBean) {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             return;
         }
         Assert.requireNonNull(bean, "bean");
@@ -99,7 +102,7 @@ public class GarbageCollector {
     }
 
     public synchronized void onBeanRemoved(Object bean) {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             return;
         }
         Assert.requireNonNull(bean, "bean");
@@ -120,7 +123,7 @@ public class GarbageCollector {
 
         for (ObservableList list : lists) {
             listToParent.remove(list);
-            for(Object item : list) {
+            for (Object item : list) {
                 removeReferenceAndCheckForGC(list, item);
             }
         }
@@ -128,12 +131,13 @@ public class GarbageCollector {
 
     /**
      * This method must be called for each value change of a {@link Property}
+     *
      * @param property the property
      * @param oldValue the old value
      * @param newValue the new value
      */
     public synchronized void onPropertyValueChanged(Property property, Object oldValue, Object newValue) {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             return;
         }
         removeReferenceAndCheckForGC(property, oldValue);
@@ -151,11 +155,12 @@ public class GarbageCollector {
 
     /**
      * This method must be called for each item that is added to a {@link ObservableList} that is part of a Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean})
-     * @param list the list
+     *
+     * @param list  the list
      * @param value the added item
      */
     public synchronized void onAddedToList(ObservableList list, Object value) {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             return;
         }
         if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
@@ -171,11 +176,12 @@ public class GarbageCollector {
 
     /**
      * This method must be called for each item that is removed to a {@link ObservableList} that is part of a Dolphin bean (see {@link com.canoo.dolphin.mapping.DolphinBean})
-     * @param list the list
+     *
+     * @param list  the list
      * @param value the removed item
      */
     public synchronized void onRemovedFromList(ObservableList list, Object value) {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             return;
         }
         removeReferenceAndCheckForGC(list, value);
@@ -187,7 +193,7 @@ public class GarbageCollector {
      * will be called.
      */
     public synchronized void gc() {
-        if(!UnstableFeatureFlags.isUseGc()) {
+        if (!UnstableFeatureFlags.isUseGc()) {
             LOG.trace("GC deactivated, no beans will be removed!");
             return;
         }
@@ -195,16 +201,18 @@ public class GarbageCollector {
         LOG.trace("Garbage collection started! GC will remove {} beans!", removeOnGC.size());
 
         onRemoveCallback.onReject(removeOnGC.keySet());
-        for (Instance removedInstance : removeOnGC.keySet()) {
+
+        for (Map.Entry<Instance, Object> entry : removeOnGC.entrySet()) {
+            Instance removedInstance = entry.getKey();
             for (Property property : removedInstance.getProperties()) {
                 propertyToParent.remove(property);
             }
             for (ObservableList list : removedInstance.getLists()) {
                 listToParent.remove(list);
             }
-            Object value = removeOnGC.get(removedInstance);
-            allInstances.remove(value);
+            allInstances.remove(entry.getValue());
         }
+
         removedBeansCount = removedBeansCount + removeOnGC.size();
         removeOnGC.clear();
         gcCalls = gcCalls + 1;
@@ -220,11 +228,9 @@ public class GarbageCollector {
             Instance instance = getInstance(value);
             Reference toRemove = null;
             for (Reference reference : instance.getReferences()) {
-                if (reference instanceof ListReference) {
-                    if (list == ((ListReference) reference).getList()) {
-                        toRemove = reference;
-                        break;
-                    }
+                if (reference instanceof ListReference && list == ((ListReference) reference).getList()) {
+                    toRemove = reference;
+                    break;
                 }
             }
             if (toRemove == null) {
@@ -240,15 +246,13 @@ public class GarbageCollector {
 
     private void removeReferenceAndCheckForGC(Property property, Object value) {
         Assert.requireNonNull(property, "property");
-        if(value != null && DolphinUtils.isDolphinBean(value.getClass())) {
+        if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
             Instance instance = getInstance(value);
             Reference toRemove = null;
             for (Reference reference : instance.getReferences()) {
-                if (reference instanceof PropertyReference) {
-                    if (property == ((PropertyReference) reference).getProperty()) {
-                        toRemove = reference;
-                        break;
-                    }
+                if (reference instanceof PropertyReference && property == ((PropertyReference) reference).getProperty()) {
+                    toRemove = reference;
+                    break;
                 }
             }
             if (toRemove == null) {
@@ -352,7 +356,7 @@ public class GarbageCollector {
             listFieldCache.put(bean.getClass(), fields);
         }
         for (Field field : fields) {
-                ret.add((ObservableList) ReflectionHelper.getPrivileged(field, bean));
+            ret.add((ObservableList) ReflectionHelper.getPrivileged(field, bean));
         }
         return ret;
     }
