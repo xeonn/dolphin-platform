@@ -24,11 +24,8 @@ import org.opendolphin.core.client.ClientDolphin;
 @Deprecated
 public class ClientBeanManagerImpl extends BeanManagerImpl implements ClientBeanManager {
 
-    private final ClientDolphin dolphin;
-
     public ClientBeanManagerImpl(BeanRepository beanRepository, BeanBuilder beanBuilder, ClientDolphin dolphin) {
         super(beanRepository, beanBuilder);
-        this.dolphin = dolphin;
     }
 
 }

@@ -174,7 +174,7 @@ public class ReflectionHelper {
                 return (Class) pType.getActualTypeArguments()[0];
             }
         } catch (ClassCastException ex) {
-            // do nothing
+            throw new RuntimeException("Can not define class!", ex);
         }
         return null;
     }

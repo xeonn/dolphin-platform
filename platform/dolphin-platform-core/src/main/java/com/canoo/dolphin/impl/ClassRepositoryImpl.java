@@ -69,7 +69,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                     classToClassInfoMap.put(beanClass, classInfo);
                     modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
                 } catch (ClassNotFoundException e) {
-                    // Ignore unknown classes
+                    throw new RuntimeException("Error in class info generation!", e);
                 }
             }
         });
