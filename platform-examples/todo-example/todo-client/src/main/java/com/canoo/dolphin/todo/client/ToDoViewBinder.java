@@ -17,9 +17,9 @@ package com.canoo.dolphin.todo.client;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.Param;
-import com.canoo.dolphin.client.javafx.view.AbstractViewBinder;
 import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.client.javafx.binding.FXWrapper;
+import com.canoo.dolphin.client.javafx.view.AbstractViewBinder;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 import javafx.collections.ObservableList;
@@ -30,6 +30,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import static com.canoo.dolphin.todo.TodoAppConstants.ADD_ACTION;
+import static com.canoo.dolphin.todo.TodoAppConstants.CONTROLLER_NAME;
 
 /**
  * Created by hendrikebbers on 16.09.15.
@@ -42,7 +45,7 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
     private final StackPane root;
 
     public ToDoViewBinder(ClientContext clientContext) {
-        super(clientContext, "ToDoController");
+        super(clientContext, CONTROLLER_NAME);
 
         createField = new TextField();
         createButton = new Button("Create");
@@ -60,7 +63,7 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
         ObservableList<ToDoItem> items = FXWrapper.wrapList(getModel().getItems());
         itemList.setItems(items);
         createButton.setDisable(false);
-        createButton.setOnAction(event -> invoke("add"));
+        createButton.setOnAction(event -> invoke(ADD_ACTION));
     }
 
     @Override
