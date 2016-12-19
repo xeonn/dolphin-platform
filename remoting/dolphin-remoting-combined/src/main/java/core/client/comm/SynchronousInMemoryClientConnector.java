@@ -18,6 +18,7 @@ import java.util.List;
  * It may also be useful for unit-testing purposes.
  */
 public class SynchronousInMemoryClientConnector extends InMemoryClientConnector {
+
     public SynchronousInMemoryClientConnector(ClientDolphin clientDolphin, ServerConnector serverConnector) {
         super(clientDolphin, serverConnector);
     }

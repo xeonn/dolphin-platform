@@ -18,5 +18,7 @@ package org.opendolphin.core.server.action;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
 public interface ServerAction {
+
     void registerIn(ActionRegistry registry);
+
 }

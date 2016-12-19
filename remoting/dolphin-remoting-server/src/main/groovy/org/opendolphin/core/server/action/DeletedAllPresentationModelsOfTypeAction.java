@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DeletedAllPresentationModelsOfTypeAction extends DolphinServerAction {
+
     public void registerIn(ActionRegistry registry) {
         registry.register(DeletedAllPresentationModelsOfTypeNotification.class, new Closure<Void>(this, this) {
             public void doCall(DeletedAllPresentationModelsOfTypeNotification command, Object response) {

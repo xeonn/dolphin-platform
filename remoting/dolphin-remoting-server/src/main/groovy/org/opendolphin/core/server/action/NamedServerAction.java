@@ -7,6 +7,11 @@ import org.opendolphin.core.server.comm.NamedCommandHandler;
  * Java-friendly action handling
  */
 public class NamedServerAction extends DolphinServerAction {
+
+    private final String name;
+
+    private final NamedCommandHandler namedCommandHandler;
+
     public NamedServerAction(String name, NamedCommandHandler namedCommandHandler) {
         this.name = name;
         this.namedCommandHandler = namedCommandHandler;
@@ -25,6 +30,4 @@ public class NamedServerAction extends DolphinServerAction {
         return namedCommandHandler;
     }
 
-    private final String name;
-    private final NamedCommandHandler namedCommandHandler;
 }

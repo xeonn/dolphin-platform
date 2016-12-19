@@ -5,6 +5,8 @@ import java.util.List;
 
 public class CommandBatcher implements ICommandBatcher {
 
+    private final DataflowQueue<List<CommandAndHandler>> waitingBatches;
+
     public CommandBatcher() {
         this.waitingBatches = new CommandBatcherQueue();
     }
@@ -21,5 +23,4 @@ public class CommandBatcher implements ICommandBatcher {
         return waitingBatches;
     }
 
-    private final DataflowQueue<List<CommandAndHandler>> waitingBatches;
 }

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class StoreAttributeAction extends DolphinServerAction {
+
+    private static final Logger LOG = Logger.getLogger(StoreAttributeAction.class.getName());
+
     public void registerIn(ActionRegistry registry) {
         registry.register(AttributeCreatedNotification.class, new Closure<Object>(this, this) {
             public void doCall(AttributeCreatedNotification command, Object response) {
@@ -57,5 +60,4 @@ public class StoreAttributeAction extends DolphinServerAction {
         });
     }
 
-    private static final Logger LOG = Logger.getLogger(StoreAttributeAction.class.getName());
 }

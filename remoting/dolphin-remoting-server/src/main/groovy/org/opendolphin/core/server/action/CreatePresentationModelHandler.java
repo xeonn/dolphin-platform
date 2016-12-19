@@ -21,5 +21,7 @@ import org.opendolphin.core.server.ServerPresentationModel;
 import java.util.List;
 
 public interface CreatePresentationModelHandler {
-    public void call(List<Command> response, ServerPresentationModel presentationModel);
+
+    void call(List<Command> response, ServerPresentationModel presentationModel);
+
 }

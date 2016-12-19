@@ -35,7 +35,9 @@ import java.util.List;
  * or removed.
  */
 public class ClientModelStore extends ModelStore<ClientAttribute, ClientPresentationModel> {
+
     private final ClientDolphin clientDolphin;
+
     protected final AttributeChangeListener attributeChangeListener;
 
     /**

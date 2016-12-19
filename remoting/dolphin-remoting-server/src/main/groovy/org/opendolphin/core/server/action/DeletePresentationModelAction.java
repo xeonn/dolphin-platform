@@ -6,6 +6,7 @@ import org.opendolphin.core.comm.DeletedPresentationModelNotification;
 import org.opendolphin.core.server.comm.ActionRegistry;
 
 public class DeletePresentationModelAction extends DolphinServerAction {
+
     public void registerIn(ActionRegistry registry) {
         registry.register(DeletedPresentationModelNotification.class, new Closure<Boolean>(this, this) {
             public Boolean doCall(DeletedPresentationModelNotification command, Object response) {

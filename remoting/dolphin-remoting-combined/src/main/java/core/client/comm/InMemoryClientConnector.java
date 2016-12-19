@@ -14,6 +14,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryClientConnector extends AbstractClientConnector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryClientConnector.class);
+
+    private final ServerConnector serverConnector;
+
+    private long sleepMillis = 0;
+
     public InMemoryClientConnector(ClientDolphin clientDolphin, ServerConnector serverConnector) {
         super(clientDolphin);
         this.serverConnector = serverConnector;
@@ -62,7 +69,4 @@ public class InMemoryClientConnector extends AbstractClientConnector {
         this.sleepMillis = sleepMillis;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryClientConnector.class);
-    private final ServerConnector serverConnector;
-    private long sleepMillis = 0;
 }

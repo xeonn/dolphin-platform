@@ -13,6 +13,9 @@ import java.util.logging.Logger;
  * in the expected sequence.
  */
 public class EmptyAction implements ServerAction {
+
+    private static final Logger LOG = Logger.getLogger(EmptyAction.class.getName());
+
     public void registerIn(ActionRegistry registry) {
         registry.register(EmptyNotification.class, new Closure<Object>(this, this) {
             public void doCall(EmptyNotification command, Object response) {
@@ -22,5 +25,4 @@ public class EmptyAction implements ServerAction {
         });
     }
 
-    private static final Logger LOG = Logger.getLogger(EmptyAction.class.getName());
 }

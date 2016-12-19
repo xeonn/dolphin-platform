@@ -11,6 +11,9 @@ import org.opendolphin.core.server.comm.ActionRegistry;
 import java.util.List;
 
 public class ResetPresentationModelAction implements ServerAction {
+
+    private final ModelStore modelStore;
+
     public ResetPresentationModelAction(ModelStore modelStore) {
         this.modelStore = modelStore;
     }
@@ -33,5 +36,4 @@ public class ResetPresentationModelAction implements ServerAction {
         return command;
     }
 
-    private final ModelStore modelStore;
 }

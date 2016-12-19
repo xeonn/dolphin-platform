@@ -5,6 +5,13 @@ import org.opendolphin.core.BasePresentationModel;
 import java.util.List;
 
 public final class ClientPresentationModel extends BasePresentationModel<ClientAttribute> {
+
+    public final static String AUTO_ID_SUFFIX = "-AUTO-CLT";
+
+    private boolean clientSideOnly = false;
+
+    private static long instanceCount = 0;
+
     public ClientPresentationModel(List<ClientAttribute> attributes) {
         this(null, attributes);
     }
@@ -35,7 +42,5 @@ public final class ClientPresentationModel extends BasePresentationModel<ClientA
         this.clientSideOnly = clientSideOnly;
     }
 
-    public static final String AUTO_ID_SUFFIX = "-AUTO-CLT";
-    private boolean clientSideOnly = false;
-    private static long instanceCount = 0;
+
 }
