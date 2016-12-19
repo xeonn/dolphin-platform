@@ -1,7 +1,9 @@
-package org.opendolphin.core.client.comm;
+package core.client.comm;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.comm.AbstractClientConnector;
+import org.opendolphin.core.client.comm.ICommandBatcher;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerConnector;
 import org.slf4j.Logger;

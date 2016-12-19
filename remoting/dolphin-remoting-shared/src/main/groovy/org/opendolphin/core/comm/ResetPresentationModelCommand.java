@@ -19,6 +19,7 @@ public class ResetPresentationModelCommand extends Command {
         this.pmId = pmId;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " pmId " + pmId;
     }

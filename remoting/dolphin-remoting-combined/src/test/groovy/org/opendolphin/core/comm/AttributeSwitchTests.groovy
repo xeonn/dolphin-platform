@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.comm
 
+import core.comm.TestInMemoryConfig
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel

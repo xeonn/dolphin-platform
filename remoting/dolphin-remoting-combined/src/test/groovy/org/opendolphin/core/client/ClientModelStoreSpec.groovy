@@ -17,7 +17,7 @@ package org.opendolphin.core.client
 
 import org.opendolphin.core.ModelStoreEvent
 import org.opendolphin.core.ModelStoreListener
-import org.opendolphin.core.client.comm.InMemoryClientConnector
+import core.client.comm.InMemoryClientConnector
 import org.opendolphin.core.client.comm.WithPresentationModelHandler
 import org.opendolphin.core.server.ServerConnector
 import spock.lang.Specification

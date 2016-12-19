@@ -30,6 +30,7 @@ public class SwitchPresentationModelCommand extends Command {
         this.sourcePmId = sourcePmId;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " " + pmId + " to attributes of  " + sourcePmId;
     }

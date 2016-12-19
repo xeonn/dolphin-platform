@@ -19,6 +19,7 @@ public class DeletedAllPresentationModelsOfTypeNotification extends Command {
         this.pmType = pmType;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " pmType " + pmType;
     }

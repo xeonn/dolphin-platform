@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.comm
 
+import core.comm.TestInMemoryConfig
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.DefaultServerDolphin
 

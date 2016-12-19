@@ -32,7 +32,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
-import org.opendolphin.core.comm.DefaultInMemoryConfig;
+import core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 

@@ -16,6 +16,7 @@ public class DeletedPresentationModelNotification extends Command {
         this.pmId = pmId;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " pmId " + pmId;
     }

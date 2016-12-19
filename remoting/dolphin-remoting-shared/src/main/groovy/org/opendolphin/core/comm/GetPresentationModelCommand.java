@@ -16,6 +16,7 @@ public class GetPresentationModelCommand extends Command {
         this.pmId = pmId;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " for presentation model for id " + pmId;
     }

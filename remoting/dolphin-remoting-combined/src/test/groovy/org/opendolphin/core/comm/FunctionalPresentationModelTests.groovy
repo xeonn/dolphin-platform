@@ -15,16 +15,17 @@
  */
 package org.opendolphin.core.comm
 
+import core.comm.TestInMemoryConfig
 import org.opendolphin.LogConfig
 import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.client.comm.BlindCommandBatcher
-import org.opendolphin.core.client.comm.InMemoryClientConnector
+import core.client.comm.InMemoryClientConnector
 import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter
 import org.opendolphin.core.client.comm.RunLaterUiThreadHandler
-import org.opendolphin.core.client.comm.SynchronousInMemoryClientConnector
+import core.client.comm.SynchronousInMemoryClientConnector
 import org.opendolphin.core.client.comm.UiThreadHandler
 import org.opendolphin.core.client.comm.WithPresentationModelHandler
 import org.opendolphin.core.server.DTO
@@ -278,14 +279,14 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     }
 
     void testUnregisteredCommandWithLog() {
-        serverDolphin.serverConnector.log.level = Level.ALL
+        serverDolphin.serverConnector.setLogLevel(Level.ALL);
         clientDolphin.send "no-such-action-registered", {
             // unknown actions are silently ignored and logged as warnings on the server side.
         }
         context.assertionsDone()
     }
     void testUnregisteredCommandWithoutLog() {
-        serverDolphin.serverConnector.log.level = Level.OFF
+        serverDolphin.serverConnector.setLogLevel(Level.OFF);
         clientDolphin.send "no-such-action-registered"
         context.assertionsDone()
     }

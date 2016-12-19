@@ -91,6 +91,7 @@ public class InitializeAttributeCommand extends Command {
         this.tag = tag;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " pm \'" + pmId + "\' pmType\'" + pmType + "\' property \'" + propertyName + "\' initial value \'" + String.valueOf(newValue) + "\' qualifier " + qualifier + " tag " + String.valueOf(tag);
     }

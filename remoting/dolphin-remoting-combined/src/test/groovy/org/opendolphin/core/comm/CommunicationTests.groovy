@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.comm
 
+import core.comm.TestInMemoryConfig
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
@@ -36,7 +37,7 @@ class CommunicationTests extends GroovyTestCase {
 	AbstractClientConnector clientConnector
     ClientModelStore    clientModelStore
     ClientDolphin       clientDolphin
-    TestInMemoryConfig  config
+    TestInMemoryConfig config
 
     @Override
 	protected void setUp() {

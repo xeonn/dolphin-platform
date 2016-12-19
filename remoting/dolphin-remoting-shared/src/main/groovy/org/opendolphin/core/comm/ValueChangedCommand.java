@@ -41,6 +41,7 @@ public class ValueChangedCommand extends Command {
         this.newValue = newValue;
     }
 
+    @Override
     public String toString() {
         return super.toString() + " attr:" + attributeId + ", " + String.valueOf(oldValue) + " -> " + String.valueOf(newValue);
     }

@@ -1,6 +1,9 @@
-package org.opendolphin.core.client.comm;
+package core.client.comm;
 
 import org.opendolphin.core.client.ClientDolphin;
+import org.opendolphin.core.client.comm.CommandAndHandler;
+import org.opendolphin.core.client.comm.ICommandBatcher;
+import org.opendolphin.core.client.comm.OnFinishedHandler;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerConnector;
 
