@@ -44,7 +44,7 @@ class CreatePresentationModelAction extends DolphinServerAction {
         }
         List<ServerAttribute> attributes = new LinkedList()
         for (Map<String, Object> attr in command.attributes) {
-            ServerAttribute attribute = new ServerAttribute((String) attr.propertyName, attr.value, (String) attr.qualifier, Tag.tagFor[(String) attr.tag])
+            ServerAttribute attribute = new ServerAttribute((String) attr.propertyName, attr.value, (String) attr.qualifier, Tag.tagFor((String) attr.tag))
             attribute.id = attr.id
             attributes << attribute
         }

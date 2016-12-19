@@ -102,7 +102,7 @@ class JsonCodec implements Codec {
                     }
                     return
                 }
-                if (key == 'tag') value = Tag.tagFor[value]
+                if (key == 'tag') value = Tag.tagFor(value)
                 else
                 if (value instanceof List) {        // some commands may have collective values
                     for (Map entryMap in value) {

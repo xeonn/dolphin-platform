@@ -87,7 +87,7 @@ class ClientResponseHandler {
                     attr.propertyName.toString(),
                     attr.value,
                     attr.qualifier?.toString(),
-                    attr.tag ? Tag.tagFor[(String) attr.tag] : Tag.VALUE)
+                    attr.tag ? Tag.tagFor((String) attr.tag) : Tag.VALUE)
             if(attr.id?.toString()?.endsWith('S')) {
                 attribute.id = attr.id
             }

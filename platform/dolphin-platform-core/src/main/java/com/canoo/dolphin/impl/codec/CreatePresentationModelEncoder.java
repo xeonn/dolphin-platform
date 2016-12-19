@@ -85,7 +85,7 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
                 map.put("value", value);
                 map.put("baseValue", value);
                 map.put("qualifier", null);
-                map.put("tag", attribute.has(ATTRIBUTE_TAG)? Tag.tagFor.get(attribute.getAsJsonPrimitive(ATTRIBUTE_TAG).getAsString()) : Tag.VALUE);
+                map.put("tag", attribute.has(ATTRIBUTE_TAG)? Tag.tagFor(attribute.getAsJsonPrimitive(ATTRIBUTE_TAG).getAsString()) : Tag.VALUE);
                 attributes.add(map);
             }
             command.setAttributes(attributes);

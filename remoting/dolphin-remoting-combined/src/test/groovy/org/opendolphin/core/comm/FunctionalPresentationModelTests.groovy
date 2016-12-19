@@ -340,8 +340,8 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     void testPmCreationWithNullValuesAndTagIt() {
         def nullValuePM = clientDolphin.presentationModel("someId", ['a', 'b', 'c'])
         assert null == nullValuePM.c.value
-        clientDolphin.tag(nullValuePM, 'a', Tag.tagFor.MESSAGE, "the 'a' message")
-        assert nullValuePM.getAt('a', Tag.tagFor.MESSAGE).value == "the 'a' message"
+        clientDolphin.tag(nullValuePM, 'a', Tag.tagFor("MESSAGE"), "the 'a' message")
+        assert nullValuePM.getAt('a', Tag.tagFor("MESSAGE")).value == "the 'a' message"
         context.assertionsDone()
     }
 
