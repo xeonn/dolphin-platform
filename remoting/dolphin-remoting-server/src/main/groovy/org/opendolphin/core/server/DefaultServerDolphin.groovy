@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 package org.opendolphin.core.server
+
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
+import org.opendolphin.StringUtil
 import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.BaseAttribute
@@ -25,8 +27,8 @@ import org.opendolphin.core.server.action.*
 import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.logging.Logger
 
-import static org.opendolphin.StringUtil.isBlank
 /**
  * The default implementation of the Dolphin facade on the server side.
  * Responsibility: single access point for dolphin capabilities.
@@ -38,6 +40,9 @@ import static org.opendolphin.StringUtil.isBlank
 @Log
 class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin{
 
+    private static final Logger LOG = Logger.getLogger(DefaultServerDolphin.class.getName());
+
+
     /** the server model store is unique per user session */
     final ServerModelStore serverModelStore
 
@@ -46,62 +51,76 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
 
-    DefaultServerDolphin(ServerModelStore serverModelStore, ServerConnector serverConnector) {
-        this.serverModelStore = serverModelStore
-        this.serverConnector = serverConnector
-        this.serverConnector.serverModelStore = serverModelStore
+    public DefaultServerDolphin(ServerModelStore serverModelStore, ServerConnector serverConnector) {
+        this.serverModelStore = serverModelStore;
+        this.serverConnector = serverConnector;
+        this.serverConnector.setServerModelStore(serverModelStore);
     }
 
     protected DefaultServerDolphin() {
-        this(new ServerModelStore(), new ServerConnector())
+        this(new ServerModelStore(), new ServerConnector());
     }
 
     @Override
-    ServerModelStore getModelStore() {
-        serverModelStore
+    public ServerModelStore getModelStore() {
+        return serverModelStore;
     }
 
-    void registerDefaultActions() {
+    @Override
+    public ServerConnector getServerConnector() {
+        return serverConnector;
+    }
+
+    public void registerDefaultActions() {
         if (initialized.getAndSet(true)) {
-            log.warning("attempt to initialize default actions more than once!")
+            LOG.warning("attempt to initialize default actions more than once!");
             return;
+
         }
-        register new StoreValueChangeAction()
-        register new StoreAttributeAction()
-        register new CreatePresentationModelAction()
-        register new DeletePresentationModelAction()
-        register new DeletedAllPresentationModelsOfTypeAction()
-        serverConnector.register new EmptyAction()
+
+        register(new StoreValueChangeAction());
+        register(new StoreAttributeAction());
+        register(new CreatePresentationModelAction());
+        register(new DeletePresentationModelAction());
+        register(new DeletedAllPresentationModelsOfTypeAction());
+        serverConnector.register(new EmptyAction());
     }
 
-    void register(DolphinServerAction action) {
-        action.serverDolphin = this
-        serverConnector.register(action)
+    public void register(DolphinServerAction action) {
+        action.setServerDolphin(this);
+        serverConnector.register(action);
     }
 
-    /** groovy-friendly convenience method to register a named action */
-    void action(String name, Closure logic) {
-        def serverAction = new ClosureServerAction(name, logic)
-        register(serverAction)
+    /**
+     * groovy-friendly convenience method to register a named action
+     */
+    public void action(String name, Closure logic) {
+        ClosureServerAction serverAction = new ClosureServerAction(name, logic);
+        register(serverAction);
     }
-    /** java-friendly convenience method to register a named action */
-    void action(String name, NamedCommandHandler namedCommandHandler) {
-        def serverAction = new NamedServerAction(name, namedCommandHandler)
-        register(serverAction)
+
+    /**
+     * java-friendly convenience method to register a named action
+     */
+    public void action(String name, NamedCommandHandler namedCommandHandler) {
+        NamedServerAction serverAction = new NamedServerAction(name, namedCommandHandler);
+        register(serverAction);
     }
 
     /**
      * Adding the model to the model store and if successful, sending the CreatePresentationModelCommand.
+     *
      * @param model the model to be added.
      * @return whether the adding was successful, which implies that also the command has been sent
      */
     @Override
-    boolean add(ServerPresentationModel model) {
-        def result = super.add(model)
-        if (result){
-            serverModelStore.currentResponse << CreatePresentationModelCommand.makeFrom(model)
+    public boolean add(ServerPresentationModel model) {
+        boolean result = super.add(model);
+        if (result) {
+            serverModelStore.getCurrentResponse().add(CreatePresentationModelCommand.makeFrom(model));
         }
-        return result
+
+        return result;
     }
 
     /**
@@ -215,7 +234,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
 
     /** Convenience method to let Dolphin delete a presentation model on the client side */
     static void deleteCommand(List<Command> response, String pmId){
-        if (null == response || isBlank(pmId)) return
+        if (null == response || StringUtil.isBlank(pmId)) return
         response << new DeletePresentationModelCommand(pmId: pmId)
     }
 
@@ -226,7 +245,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
 
     /** Convenience method to let Dolphin delete all presentation models of a given type on the client side */
     static void deleteAllPresentationModelsOfTypeCommand(List<Command> response, String pmType){
-        if (null == response || isBlank(pmType)) return
+        if (null == response || StringUtil.isBlank(pmType)) return
         response << new DeleteAllPresentationModelsOfTypeCommand(pmType: pmType)
     }
 
@@ -251,7 +270,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
 
     /** Convenience method to let Dolphin reset a presentation model */
     static void resetCommand(List<Command> response, String pmId){
-        if (null == response || isBlank(pmId)) return
+        if (null == response || StringUtil.isBlank(pmId)) return
         response << new PresentationModelResetedCommand(pmId: pmId)
     }
 
@@ -280,7 +299,8 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
 
     /**
      * Convenience method to change an attribute value on the server side.
-     * @param response must not be null or the method silently ignores the call
+     *
+     * @param response  must not be null or the method silently ignores the call
      * @param attribute must not be null
      */
     static void changeValueCommand(List<Command>response, ServerAttribute attribute, value){
@@ -303,7 +323,8 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         response << new ValueChangedCommand(attributeId: attribute.id, newValue: value, oldValue: attribute.value)
     }
 
-    /** Convenience method for the InitializeAttributeCommand */
+
+/** Convenience method for the InitializeAttributeCommand */
     static void initAt(List<Command>response, String pmId, String propertyName, String qualifier, Object newValue = null, Tag tag = Tag.VALUE) {
         initAtCommand(response, pmId, propertyName, qualifier, newValue, tag)
     }
@@ -314,8 +335,10 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         response << new InitializeAttributeCommand(pmId: pmId, propertyName: propertyName, qualifier: qualifier, newValue: newValue, tag: tag)
     }
 
-    /** The id of the server dolphin, which is identical to the id of its server model store. */
-    int getId() {
-        serverModelStore.id
+    /**
+     * The id of the server dolphin, which is identical to the id of its server model store.
+     */
+    public int getId() {
+        return serverModelStore.getId();
     }
 }
