@@ -25,6 +25,12 @@ import java.util.Map;
  * Threading model: confined to the UI handling thread.
  */
 public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresentationModel> {
+
+
+    private ClientModelStore clientModelStore;
+
+    private ClientConnector clientConnector;
+
     @Override
     public ModelStore getModelStore() {
         return clientModelStore;
@@ -249,6 +255,4 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
         this.clientConnector = clientConnector;
     }
 
-    private ClientModelStore clientModelStore;
-    private ClientConnector clientConnector;
 }

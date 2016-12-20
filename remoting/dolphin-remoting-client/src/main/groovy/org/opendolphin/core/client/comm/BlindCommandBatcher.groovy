@@ -15,8 +15,6 @@
  */
 package org.opendolphin.core.client.comm
 
-import groovy.transform.CompileStatic
-import groovy.util.logging.Log
 import org.opendolphin.core.comm.GetPresentationModelCommand
 import org.opendolphin.core.comm.ValueChangedCommand
 
@@ -25,6 +23,8 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * A command batcher that puts all commands in one packet that
@@ -33,9 +33,9 @@ import java.util.concurrent.locks.ReentrantLock
  * when synchronizing back to the server.
  */
 
-@Log
-@CompileStatic
 class BlindCommandBatcher extends CommandBatcher {
+
+    private static final Logger LOG = Logger.getLogger(BlindCommandBatcher.class.getName());
 
     ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -44,80 +44,98 @@ class BlindCommandBatcher extends CommandBatcher {
     Lock commandsAndHandlersLock = new ReentrantLock();
 
     /** Time allowed to fill the queue before a batch is assembled */
-    long deferMillis = 10
-    /** Must be > 0*/
-    int maxBatchSize = 100
-    /** when attribute x changes its value from 0 to 1 and then from 1 to 2, merge this into one change from 0 to 2 */
-    boolean mergeValueChanges = false
+    long deferMillis = 10;
 
-    protected final AtomicBoolean inProcess      = new AtomicBoolean(false) // whether we started to batch up commands
-    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false) // whether we need to give commands the opportunity to enter the queue
-    protected boolean shallWeEvenTryToMerge      = false // do not even try if there is no value change cmd in the batch
+    /** Must be > 0*/
+    int maxBatchSize = 100;
+
+    /** when attribute x changes its value from 0 to 1 and then from 1 to 2, merge this into one change from 0 to 2 */
+    boolean mergeValueChanges = false;
+
+    protected final AtomicBoolean inProcess = new AtomicBoolean(false); // whether we started to batch up commands
+
+    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false);
+    // whether we need to give commands the opportunity to enter the queue
+
+    protected boolean shallWeEvenTryToMerge = false; // do not even try if there is no value change cmd in the batch
+
+    protected final int MAX_GET_PM_CMD_CACHE_SIZE = 200;
+
+    protected LinkedList<CommandAndHandler> cacheGetPmCmds = new LinkedList();
 
     @Override
     boolean isEmpty() {
-        return waitingBatches.length() < 1
+        return waitingBatches.length() < 1;
     }
 
     @Override
     void batch(CommandAndHandler commandWithHandler) {
-        log.finest "batching $commandWithHandler.command with${commandWithHandler.handler ? '' : 'out' } handler"
+        LOG.log(Level.FINEST, "batching " + commandWithHandler.getCommand() + " with" + (commandWithHandler.getHandler() ? '' : 'out') + " handler");
 
         if (canBeDropped(commandWithHandler)) {
-            log.finest "dropping duplicate GetPresentationModelCommand"
-            return
+            LOG.log(Level.FINEST, "dropping duplicate GetPresentationModelCommand");
+            return;
         }
 
-                commandsAndHandlersLock.lock();
-                try {
-                    commandsAndHandlers.add(commandWithHandler);
-                } finally {
-                    commandsAndHandlersLock.unlock();
-                }
+        commandsAndHandlersLock.lock();
+        try {
+            commandsAndHandlers.add(commandWithHandler);
+        } finally {
+            commandsAndHandlersLock.unlock();
+        }
 
         if (commandWithHandler.isBatchable()) {
-            deferralNeeded.set(true)
-            if (inProcess.get()) return
-            processDeferred()
+            deferralNeeded.set(true);
+            if (inProcess.get()) {
+                return;
+            }
+            processDeferred();
         } else {
-            processBatch()
+            processBatch();
         }
     }
-
-    protected final int MAX_GET_PM_CMD_CACHE_SIZE = 200
-    protected LinkedList<CommandAndHandler> cacheGetPmCmds = new LinkedList()
 
     // the only command we can safely drop is a GetPmCmd where a second one for the same
     // pmId is already in the batch with the exact same onFinished handler or no handler at all
     protected boolean canBeDropped(CommandAndHandler commandWithHandler) {
-        if (!(commandWithHandler.command instanceof GetPresentationModelCommand)) return false
-        def pmId = ((GetPresentationModelCommand) commandWithHandler.command).pmId
-        def handler = commandWithHandler.handler
-        def found = cacheGetPmCmds.any { CommandAndHandler it ->
-            ((GetPresentationModelCommand) it.command).pmId == pmId &&
-                    ((handler == null) || handler.is(it.handler))
+        if (!(commandWithHandler.getCommand() instanceof GetPresentationModelCommand)) {
+            return false;
         }
+        String pmId = ((GetPresentationModelCommand) commandWithHandler.command).getPmId();
+        OnFinishedHandler handler = commandWithHandler.getHandler();
+
+        boolean found = false;
+        for (CommandAndHandler commandAndHandler : cacheGetPmCmds) {
+            if (((GetPresentationModelCommand) commandAndHandler.getCommand()).getPmId().equals(pmId) &&
+                    ((handler == null) || handler.is(commandAndHandler.handler))) {
+                found = true;
+            }
+        }
+
         if (!found) {
-            cacheGetPmCmds.push commandWithHandler // front adding makes lookup faster
-            if (cacheGetPmCmds.size() > MAX_GET_PM_CMD_CACHE_SIZE) cacheGetPmCmds.removeLast()
+            cacheGetPmCmds.push(commandWithHandler) // front adding makes lookup faster
+            if (cacheGetPmCmds.size() > MAX_GET_PM_CMD_CACHE_SIZE) {
+                cacheGetPmCmds.removeLast();
+            }
         }
-        return found
+        return found;
     }
 
     protected void processDeferred() {
-        inProcess.set(true)
+        inProcess.set(true);
 
         executorService.execute(new Runnable() {
             @Override
             void run() {
-                def count = maxBatchSize        // never wait for more than those
+                int count = maxBatchSize;        // never wait for more than those
                 while (deferralNeeded.get() && count > 0) {
-                    count--
-                    deferralNeeded.set(false)
-                    sleep(deferMillis)          // while we sleep, new requests may have arrived that request deferral
+                    count--;
+                    deferralNeeded.set(false);
+                    sleep(deferMillis);
+                    // while we sleep, new requests may have arrived that request deferral
                 }
-                processBatch()
-                inProcess.set(false)
+                processBatch();
+                inProcess.set(false);
             }
         });
     }
@@ -128,13 +146,13 @@ class BlindCommandBatcher extends CommandBatcher {
             void run() {
                 commandsAndHandlersLock.lock();
                 try {
-                    def last = batchBlinds(commandsAndHandlers) // always send leading blinds first
-                    if (last) {
+                    CommandAndHandler last = batchBlinds(commandsAndHandlers); // always send leading blinds first
+                    if (last != null) {
                         // we do have a trailing command with handler and batch it separately
-                waitingBatches.add([last])
+                        waitingBatches.add(Arrays.asList(last));
                     }
-                    if (!commandsAndHandlers.empty) {
-                        processBatch()
+                    if (!commandsAndHandlers.isEmpty()) {
+                        processBatch();
                         // this is not so much like recursion, more like a trampoline
                     }
                 } finally {
@@ -145,37 +163,53 @@ class BlindCommandBatcher extends CommandBatcher {
     }
 
     protected CommandAndHandler batchBlinds(List<CommandAndHandler> queue) {
-        if (queue.empty) return
-        List<CommandAndHandler> blindCommands = new LinkedList()
-        int counter = maxBatchSize
-        // we have to check again, since new ones may have arrived since last check
-        def val = take(queue)
-        shallWeEvenTryToMerge = false
-        while (counter-- && val?.isBatchable()) {      // we do have a blind
-            addToBlindsOrMerge(blindCommands, val)
-            val = counter ? take(queue) : null
+        if (queue.isEmpty()) {
+            return;
         }
-        log.finest "batching ${blindCommands.size()} blinds"
-        if (blindCommands) waitingBatches.add(blindCommands)
-        return val // may be null or a cwh that has a handler
+        List<CommandAndHandler> blindCommands = new LinkedList();
+        int counter = maxBatchSize;
+        // we have to check again, since new ones may have arrived since last check
+        CommandAndHandler val = take(queue);
+        shallWeEvenTryToMerge = false;
+        while (counter-- && val?.isBatchable()) {      // we do have a blind
+            addToBlindsOrMerge(blindCommands, val);
+            val = counter ? take(queue) : null;
+        }
+        LOG.log(Level.FINEST, "batching " + blindCommands.size() + " blinds");
+        if (blindCommands) {
+            waitingBatches.add(blindCommands);
+        }
+        return val; // may be null or a cwh that has a handler
     }
 
     protected void addToBlindsOrMerge(List<CommandAndHandler> blindCommands, CommandAndHandler val) {
         if (!wasMerged(blindCommands, val)) {
-            blindCommands << val
-            if (val.command in ValueChangedCommand) shallWeEvenTryToMerge = true
+            blindCommands.add(val);
+            if (val.command in ValueChangedCommand) {
+                shallWeEvenTryToMerge = true;
+            }
         }
     }
 
     protected boolean wasMerged(List<CommandAndHandler> blindCommands, CommandAndHandler val) {
-        if (!mergeValueChanges) return false
-        if (!shallWeEvenTryToMerge) return false
-        if (blindCommands.empty) return false
-        if (!val.command) return false
-        if (!(val.command in ValueChangedCommand)) return false
-        ValueChangedCommand valCmd = (ValueChangedCommand) val.command
+        if (!mergeValueChanges) {
+            return false;
+        }
+        if (!shallWeEvenTryToMerge) {
+            return false;
+        }
+        if (blindCommands.empty) {
+            return false;
+        }
+        if (!val.command) {
+            return false;
+        }
+        if (!(val.command in ValueChangedCommand)) {
+            return false;
+        }
+        ValueChangedCommand valCmd = (ValueChangedCommand) val.command;
 
-        shallWeEvenTryToMerge = true
+        shallWeEvenTryToMerge = true;
 
         def mergeable = blindCommands.find { CommandAndHandler cah ->           // this has O(n*n) and can become costly
             cah.command != null &&
@@ -183,17 +217,21 @@ class BlindCommandBatcher extends CommandBatcher {
                     ((ValueChangedCommand) cah.command).attributeId == valCmd.attributeId &&
                     ((ValueChangedCommand) cah.command).newValue == valCmd.oldValue
         }
-        if (!mergeable) return false
+        if (!mergeable) {
+            return false;
+        }
 
-        ValueChangedCommand mergeableCmd = (ValueChangedCommand) mergeable.command
-        log.finest("merging value changed command for attribute ${mergeableCmd.attributeId} with new values ${mergeableCmd.newValue} -> ${valCmd.newValue}")
-        mergeableCmd.newValue = valCmd.newValue
+        ValueChangedCommand mergeableCmd = (ValueChangedCommand) mergeable.getCommand();
+        LOG.log(Level.FINEST, "merging value changed command for attribute " + mergeableCmd.getAttributeId() + " with new values " + mergeableCmd.getNewValue() + " -> " + valCmd.getNewValue());
+        mergeableCmd.setNewValue(valCmd.getNewValue());
 
-        return true
+        return true;
     }
 
     protected CommandAndHandler take(List<CommandAndHandler> intern) {
-        if (intern.empty) return null
-        return intern.remove(0)
+        if (intern.isEmpty()) {
+            return null;
+        }
+        return intern.remove(0);
     }
 }
