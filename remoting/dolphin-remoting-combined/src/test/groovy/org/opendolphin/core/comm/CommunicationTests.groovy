@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.comm
 
-import core.comm.TestInMemoryConfig
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
@@ -55,7 +54,7 @@ class CommunicationTests extends GroovyTestCase {
     }
 
 	void testSimpleAttributeChangeIsVisibleOnServer() {
-		def ca  = new ClientAttribute('name')
+		def ca  = new ClientAttribute('name', null)
         def cpm = new ClientPresentationModel('model', [ca])
         clientModelStore.add cpm
 
@@ -84,7 +83,7 @@ class CommunicationTests extends GroovyTestCase {
 		}
 		serverConnector.registry.register CreatePresentationModelCommand, testServerAction
 
-        clientModelStore.add new ClientPresentationModel('testPm', [new ClientAttribute('name')])
+        clientModelStore.add new ClientPresentationModel('testPm', [new ClientAttribute('name', null)])
 
         clientDolphin.sync {
             assert receivedCommand.id == "CreatePresentationModel"
@@ -96,7 +95,7 @@ class CommunicationTests extends GroovyTestCase {
 	}
 
 	void testWhenServerChangesValueThisTriggersUpdateOnClient() {
-		def ca = new ClientAttribute('name')
+		def ca = new ClientAttribute('name', null)
 
 		def setValueAction = { CreatePresentationModelCommand command, response ->
 			response << new ValueChangedCommand(

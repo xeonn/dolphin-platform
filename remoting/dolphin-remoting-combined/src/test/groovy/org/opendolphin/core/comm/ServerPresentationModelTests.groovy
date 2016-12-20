@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.comm
 
-import core.comm.TestInMemoryConfig
 import org.opendolphin.LogConfig
 import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent

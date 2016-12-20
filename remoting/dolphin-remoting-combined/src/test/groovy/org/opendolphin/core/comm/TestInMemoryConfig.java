@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package core.comm;
+package org.opendolphin.core.comm;
 
+import core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.client.comm.RunLaterUiThreadHandler;
 
 import java.util.concurrent.CountDownLatch;

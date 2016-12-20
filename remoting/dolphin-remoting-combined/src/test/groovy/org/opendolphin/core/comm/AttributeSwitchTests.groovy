@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.comm
 
-import core.comm.TestInMemoryConfig
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
@@ -33,8 +32,8 @@ class AttributeSwitchTests extends GroovyTestCase {
         def config = new TestInMemoryConfig()
         clientModelStore = config.clientDolphin.clientModelStore
 
-        switchPm = new ClientPresentationModel([new ClientAttribute(propertyName: 'name', qualifier: 'dataid1')])
-        sourcePm = new ClientPresentationModel([new ClientAttribute(propertyName: 'name', qualifier: 'dataid2')])
+        switchPm = new ClientPresentationModel([new ClientAttribute("name", null,"dataid1")])
+        sourcePm = new ClientPresentationModel([new ClientAttribute("name", null, "dataid2")])
         clientModelStore.add switchPm
         clientModelStore.add sourcePm
     }
@@ -66,7 +65,7 @@ class AttributeSwitchTests extends GroovyTestCase {
 
     void testWritingToSwitchesWithSwitchingSources() {
 
-        def otherPm = new ClientPresentationModel([new ClientAttribute(propertyName: 'name', qualifier: 'dataid3')])
+        def otherPm = new ClientPresentationModel([new ClientAttribute("name", null, "dataid3")])
         clientModelStore.add otherPm
 
         switchPm.name.syncWith sourcePm.name

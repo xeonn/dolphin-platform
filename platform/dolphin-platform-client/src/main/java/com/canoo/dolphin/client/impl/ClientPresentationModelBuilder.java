@@ -36,7 +36,7 @@ public class ClientPresentationModelBuilder extends AbstractPresentationModelBui
 
     @Override
     public ClientPresentationModelBuilder withAttribute(String name) {
-        attributes.add(new ClientAttribute(name));
+        attributes.add(new ClientAttribute(name, null));
         return this;
     }
 

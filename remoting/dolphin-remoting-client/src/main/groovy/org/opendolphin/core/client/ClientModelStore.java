@@ -23,7 +23,6 @@ import org.opendolphin.core.client.comm.WithPresentationModelHandler;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.DeletedAllPresentationModelsOfTypeNotification;
 import org.opendolphin.core.comm.DeletedPresentationModelNotification;
-import org.opendolphin.core.comm.GetPresentationModelCommand;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -93,21 +92,6 @@ public class ClientModelStore extends ModelStore<ClientAttribute, ClientPresenta
     public void registerAttribute(ClientAttribute attribute) {
         super.registerAttribute(attribute);
         attribute.addPropertyChangeListener(attributeChangeListener);
-    }
-
-    public void withPresentationModel(final String requestedPmId, final WithPresentationModelHandler withPmHandler) {
-        if (withPresentationModelFromStore(requestedPmId, withPmHandler)) return;
-        // when the PM is not in the store, we have to fetch it
-        GetPresentationModelCommand cmd = new GetPresentationModelCommand();
-        cmd.setPmId(requestedPmId);
-        getClientConnector().send(cmd); // sending with null handler to allow optimizations
-
-        clientDolphin.sync( new Runnable() {
-            @Override
-            public void run() {
-                withPresentationModelFromStore(requestedPmId, withPmHandler);
-            }
-        });
     }
 
     private boolean withPresentationModelFromStore(String requestedPmId, WithPresentationModelHandler withPmHandler) {

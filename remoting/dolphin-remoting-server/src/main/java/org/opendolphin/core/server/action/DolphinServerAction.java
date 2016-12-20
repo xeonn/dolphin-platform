@@ -25,20 +25,6 @@ public abstract class DolphinServerAction implements ServerAction {
         DefaultServerDolphin.changeValueCommand(dolphinResponse, attribute, value);
     }
 
-    /**
-     * Convenience method for the InitializeAttributeCommand
-     */
-    public void initAt(String pmId, String propertyName, String qualifier, Object newValue) {
-        DefaultServerDolphin.initAt(dolphinResponse, pmId, propertyName, qualifier, newValue);
-    }
-
-    /**
-     * Convenience method for the InitializeAttributeCommand
-     */
-    public void initAt(String pmId, String propertyName, String qualifier) {
-        initAt(pmId, propertyName, qualifier, null);
-    }
-
     public DefaultServerDolphin getServerDolphin() {
         return serverDolphin;
     }

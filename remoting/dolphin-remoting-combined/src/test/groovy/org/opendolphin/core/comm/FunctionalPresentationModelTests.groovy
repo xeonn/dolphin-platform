@@ -15,8 +15,7 @@
  */
 package org.opendolphin.core.comm
 import core.client.comm.InMemoryClientConnector
-import core.client.comm.SynchronousInMemoryClientConnector
-import core.comm.TestInMemoryConfig
+import org.opendolphin.core.client.comm.SynchronousInMemoryClientConnector
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
@@ -349,17 +348,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         assert myPm.a.value == 2
         assert ! myPm.dirty
         context.assertionsDone()
-    }
-
-    void testWithPresentationModelFetchedFromServer() {
-        serverDolphin.serverConnector.registry.register(GetPresentationModelCommand) { GetPresentationModelCommand cmd, response ->
-            serverDolphin.presentationModelCommand(response, "newPm", null, new DTO(new Slot('a','1')))
-        }
-        clientDolphin.modelStore.withPresentationModel("newPm", { pm ->
-            assert pm.id == 'newPm'
-            assert pm.a.value == '1'
-            context.assertionsDone()
-        } as WithPresentationModelHandler)
     }
 
     void testActionAndSendJavaLike() {
