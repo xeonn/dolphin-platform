@@ -65,4 +65,8 @@ public class ServerModelStore extends ModelStore {
         ((ServerPresentationModel)model).modelStore = this;
         return true;
     }
+
+    public int getId() {
+        return id;
+    }
 }
