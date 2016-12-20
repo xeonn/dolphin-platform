@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public class StoreValueChangeAction extends DolphinServerAction {
 
     private static final Logger LOG = Logger.getLogger(StoreValueChangeAction.class.getName());
-    
+
     public void registerIn(ActionRegistry registry) {
         registry.register(ValueChangedCommand.class, new Closure<Object>(this, this) {
             public void doCall(final ValueChangedCommand command, Object response) {
