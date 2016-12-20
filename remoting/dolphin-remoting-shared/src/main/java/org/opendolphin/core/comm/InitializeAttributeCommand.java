@@ -34,6 +34,15 @@ public class InitializeAttributeCommand extends Command {
         this.pmType = pmType;
     }
 
+    public InitializeAttributeCommand(String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
+        this.pmId = pmId;
+        this.propertyName = propertyName;
+        this.qualifier = qualifier;
+        this.newValue = newValue;
+        this.pmType = pmType;
+        this.tag = tag;
+    }
+
     public InitializeAttributeCommand(String pmId, String propertyName, String qualifier, Object newValue, String pmType, Tag tag) {
         this.pmId = pmId;
         this.propertyName = propertyName;
