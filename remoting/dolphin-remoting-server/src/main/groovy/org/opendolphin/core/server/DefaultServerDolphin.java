@@ -1,41 +1,46 @@
-/*
- * Copyright 2015-2016 Canoo Engineering AG.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.opendolphin.core.server
+package org.opendolphin.core.server;
 
-import org.opendolphin.StringUtil
-import org.opendolphin.core.AbstractDolphin
-import org.opendolphin.core.Attribute
-import org.opendolphin.core.BaseAttribute
-import org.opendolphin.core.Tag
-import org.opendolphin.core.comm.*
-import org.opendolphin.core.server.action.*
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import groovy.lang.Closure;
+import org.opendolphin.StringUtil;
+import org.opendolphin.core.AbstractDolphin;
+import org.opendolphin.core.Attribute;
+import org.opendolphin.core.BaseAttribute;
+import org.opendolphin.core.Tag;
+import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
+import org.opendolphin.core.comm.Command;
+import org.opendolphin.core.comm.CreatePresentationModelCommand;
+import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand;
+import org.opendolphin.core.comm.DeletePresentationModelCommand;
+import org.opendolphin.core.comm.InitializeAttributeCommand;
+import org.opendolphin.core.comm.PresentationModelResetedCommand;
+import org.opendolphin.core.comm.ValueChangedCommand;
+import org.opendolphin.core.server.action.ClosureServerAction;
+import org.opendolphin.core.server.action.CreatePresentationModelAction;
+import org.opendolphin.core.server.action.DeletePresentationModelAction;
+import org.opendolphin.core.server.action.DeletedAllPresentationModelsOfTypeAction;
+import org.opendolphin.core.server.action.DolphinServerAction;
+import org.opendolphin.core.server.action.EmptyAction;
+import org.opendolphin.core.server.action.NamedServerAction;
+import org.opendolphin.core.server.action.StoreAttributeAction;
+import org.opendolphin.core.server.action.StoreValueChangeAction;
+import org.opendolphin.core.server.comm.NamedCommandHandler;
 
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.logging.Logger
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
+
 /**
  * The default implementation of the Dolphin facade on the server side.
  * Responsibility: single access point for dolphin capabilities.
  * Collaborates with server model store and current response.
  * Threading model: confined to a single controller thread.
  */
-class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin{
+public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin {
 
     private static final Logger LOG = Logger.getLogger(DefaultServerDolphin.class.getName());
-
 
     /**
      * the server model store is unique per user session
@@ -73,9 +78,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (initialized.getAndSet(true)) {
             LOG.warning("attempt to initialize default actions more than once!");
             return;
-
         }
-
         register(new StoreValueChangeAction());
         register(new StoreAttributeAction());
         register(new CreatePresentationModelAction());
@@ -117,7 +120,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (result) {
             serverModelStore.getCurrentResponse().add(CreatePresentationModelCommand.makeFrom(model));
         }
-
         return result;
     }
 
@@ -140,7 +142,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
             });
             ((ArrayList<ServerAttribute>) attributes).add(result);
         }
-
         ServerPresentationModel model = new ServerPresentationModel(id, attributes, serverModelStore);
         model.setPresentationModelType(presentationModelType);
         add(model);
@@ -154,10 +155,11 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         presentationModelCommand(response, id, presentationModelType, dto);
     }
 
-
-    /** Convenience method to let the client (!) dolphin create a presentation model as specified by the DTO.
-     * The server model store remains untouched until the client has issued the notification.*/
-    static void presentationModelCommand(List<Command> response, String id, String presentationModelType, DTO dto){
+    /**
+     * Convenience method to let the client (!) dolphin create a presentation model as specified by the DTO.
+     * The server model store remains untouched until the client has issued the notification.
+     */
+    public static void presentationModelCommand(List<Command> response, String id, String presentationModelType, DTO dto) {
         if (response == null) {
             return;
         }
@@ -179,9 +181,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void clientSideModelCommand(List<Command> response, String id, String presentationModelType, DTO dto) {
         if (response == null) {
             return;
-
         }
-
         response.add(new CreatePresentationModelCommand(id, presentationModelType, dto.encodable(), true));
     }
 
@@ -199,9 +199,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (attribute == null) {
             LOG.severe("Cannot rebase null attribute");
             return;
-
         }
-
         response.add(new AttributeMetadataChangedCommand(attribute.getId(), Attribute.BASE_VALUE, attribute.getValue()));
     }
 
@@ -213,7 +211,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (deleted) {
             DefaultServerDolphin.deleteCommand(serverModelStore.getCurrentResponse(), pm);
         }
-
         return deleted;
     }
 
@@ -227,7 +224,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
             serverModelStore.remove(model);
             // go through the model store to avoid single commands being sent to the client
         }
-
         DefaultServerDolphin.deleteAllPresentationModelsOfTypeCommand(serverModelStore.getCurrentResponse(), type);
     }
 
@@ -245,9 +241,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (pm == null) {
             LOG.severe("Cannot delete null presentation model");
             return;
-
         }
-
         deleteCommand(response, pm.getId());
     }
 
@@ -264,9 +258,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void deleteCommand(List<Command> response, String pmId) {
         if (response == null || StringUtil.isBlank(pmId)) {
             return;
-
         }
-
         response.add(new DeletePresentationModelCommand(pmId));
     }
 
@@ -283,9 +275,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void deleteAllPresentationModelsOfTypeCommand(List<Command> response, String pmType) {
         if (response == null || StringUtil.isBlank(pmType)) {
             return;
-
         }
-
         response.add(new DeleteAllPresentationModelsOfTypeCommand(pmType));
     }
 
@@ -303,9 +293,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (pm == null) {
             LOG.severe("Cannot reset null presentation model");
             return;
-
         }
-
         resetCommand(response, pm.getId());
     }
 
@@ -322,9 +310,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void resetCommand(List<Command> response, String pmId) {
         if (response == null || StringUtil.isBlank(pmId)) {
             return;
-
         }
-
         response.add(new PresentationModelResetedCommand(pmId));
     }
 
@@ -342,9 +328,7 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         if (response == null || attribute == null) {
             LOG.severe("Cannot reset null attribute");
             return;
-
         }
-
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), attribute.getBaseValue()));
     }
 
@@ -364,28 +348,27 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void changeValueCommand(List<Command> response, ServerAttribute attribute, Object value) {
         if (response == null) {
             return;
-
         }
-
         if (attribute == null) {
             LOG.severe("Cannot change value on a null attribute to '" + value);
             return;
-
         }
-
         forceChangeValue(value, response, attribute);
     }
 
-    /** @deprecated use {@link #forceChangeValueCommand(java.lang.Object, java.util.List, org.opendolphin.core.server.ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
-    static void forceChangeValue(value, List<Command> response, ServerAttribute attribute) {
+    /**
+     * @deprecated use {@link #forceChangeValueCommand(Object, List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
+     */
+    public static void forceChangeValue(Object value, List<Command> response, ServerAttribute attribute) {
         forceChangeValueCommand(value, response, attribute);
     }
 
-    /** @deprecated use {@link #changeValueCommand(java.util.List, org.opendolphin.core.server.ServerAttribute, java.lang.Object)}, which enforces the value change by default. Will be removed in version 1.0! */
-    static void forceChangeValueCommand(value, List<Command> response, ServerAttribute attribute) {
+    /**
+     * @deprecated use {@link #changeValueCommand(List, ServerAttribute, Object)}, which enforces the value change by default. Will be removed in version 1.0!
+     */
+    public static void forceChangeValueCommand(Object value, List<Command> response, ServerAttribute attribute) {
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), BaseAttribute.checkValue(value)));
     }
-
 
     public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier) {
         initAt(response, pmId, propertyName, qualifier, null, Tag.VALUE);
@@ -427,7 +410,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
         if (null == response) {
             return;
-
         }
         response.add(new InitializeAttributeCommand(pmId, propertyName, qualifier, newValue, tag));
     }
@@ -442,5 +424,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public ServerModelStore getServerModelStore() {
         return serverModelStore;
     }
+
 
 }
