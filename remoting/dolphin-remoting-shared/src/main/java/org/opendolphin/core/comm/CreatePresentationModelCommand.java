@@ -18,6 +18,16 @@ public class CreatePresentationModelCommand extends Command {
 
     private List<Map<String, Object>> attributes = new ArrayList<Map<String, Object>>();
 
+    public CreatePresentationModelCommand(String pmId, String pmType, List<Map<String, Object>> attributes, boolean clientSideOnly) {
+        this.pmId = pmId;
+        this.pmType = pmType;
+        this.clientSideOnly = clientSideOnly;
+        this.attributes = attributes;
+    }
+
+    public CreatePresentationModelCommand() {
+    }
+
     /**
      * @deprecated use ServerFacade convenience methods (it is ok to use it from the client atm)
      */
