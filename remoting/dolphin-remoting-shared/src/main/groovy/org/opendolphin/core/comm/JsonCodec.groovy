@@ -17,123 +17,130 @@ package org.opendolphin.core.comm
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import groovy.util.logging.Log
 import org.opendolphin.core.BaseAttribute
 import org.opendolphin.core.Tag
 
 import java.text.SimpleDateFormat
+import java.util.logging.Logger
 
-@Log
 class JsonCodec implements Codec {
 
+    private static final Logger LOG = Logger.getLogger(JsonCodec.class.getName());
 
     public static final String DATE_TYPE_KEY = Date.toString();
+
     public static final String BIGDECIMAL_TYPE_KEY = BigDecimal.toString();
+
     public static final String FLOAT_TYPE_KEY = Float.toString();
+
     public static final String DOUBLE_TYPE_KEY = Double.toString();
+
     public static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
     @Override
-    String encode(List<Command> commands) {
+    public String encode(List<Command> commands) {
         def content = commands.collect { Command cmd ->
-            log.finest "encoding command $cmd"
-            def entry = cmd.properties
+            LOG.finest("encoding command " + cmd);
+            Map entry = cmd.properties;
             ['class', 'metaClass'].each { entry.remove it }
-            entry.className = cmd.class.name
+            entry.put("className", cmd.getClass().getName());
             entry.each { key, value ->              // prepare against invalid entries
                 if (value instanceof List) {        // some commands may have collective values
                     for (Map entryMap in value) {
-                        entryMap.each { entryKey, entryValue ->
-                            entryMap[entryKey] = encodeBaseValue(entryValue)
+                        for (Map.Entry mapEntry : entryMap) {
+                            entryMap.put(mapEntry.getKey(), encodeBaseValue(mapEntry.getValue()));
                         }
                     }
                 } else if (value instanceof Map) {  // DataCommand has map content
-                    value.each { entryKey, entryValue ->
-                        value[entryKey] = encodeBaseValue(entryValue)
+                    for (Map.Entry mapEntry : value) {
+                        ((Map) value).put(mapEntry.getKey(), encodeBaseValue(mapEntry.getValue()));
                     }
                 } else {
-                    entry[key] = encodeBaseValue(value)
+                    entry.put(key, encodeBaseValue(value));
                 }
             }
             entry
         }
-        JsonBuilder builder = new JsonBuilder(content)
-        builder.toString()
+        JsonBuilder builder = new JsonBuilder(content);
+        return builder.toString()
     }
 
     protected Object encodeBaseValue(entryValue) {
         def result = BaseAttribute.checkValue(entryValue);
         if (result instanceof Date) {
-            def map = [:];
-            map[DATE_TYPE_KEY] = new SimpleDateFormat(ISO8601_FORMAT).format(result)
-            result = map
+            Map map = new HashMap();
+            map.put(DATE_TYPE_KEY, new SimpleDateFormat(ISO8601_FORMAT).format(result));
+            result = map;
         } else if (result instanceof BigDecimal) {
-            def map = [:];
-            map[BIGDECIMAL_TYPE_KEY] = result.toString();
-            result = map
+            Map map = new HashMap();
+            map.put(BIGDECIMAL_TYPE_KEY, result.toString());
+            result = map;
         } else if (result instanceof Float) {
-            def map = [:];
-            map[FLOAT_TYPE_KEY] = Float.toString(result);
-            result = map
+            Map map = new HashMap();
+            map.put(FLOAT_TYPE_KEY, Float.toString(result));
+            result = map;
         } else if (result instanceof Double) {
-            def map = [:];
-            map[DOUBLE_TYPE_KEY] = Double.toString(result);
-            result = map
+            Map map = new HashMap();
+            map.put(DOUBLE_TYPE_KEY, Double.toString(result));
+            result = map;
         }
-        return result
+        return result;
     }
 
     @Override
-    List<Command> decode(String transmitted) {
-        def result = new LinkedList()
-        def got = new JsonSlurper().parseText(transmitted)
+    public List<Command> decode(String transmitted) {
+        List<Command> result = new LinkedList<>();
+        Object got = new JsonSlurper().parseText(transmitted);
 
-        def validPackagePrefix = Command.class.getPackage().getName()
+        String validPackagePrefix = Command.class.getPackage().getName();
 
         got.findAll { cmd ->
-            cmd['className'] != null && String.class.cast(cmd['className']).startsWith(validPackagePrefix)
+            cmd['className'] != null && String.class.cast(cmd['className']).startsWith(validPackagePrefix);
         }.each { cmd ->
-            Command responseCommand = Class.forName(cmd['className']).newInstance()
+            Command responseCommand = Class.forName(cmd['className']).newInstance();
             cmd.each { key, value ->
-                if (key == 'className') return
-                if (key == 'id') { // id is only set for NamedCommand and SignalCommand others are dynamic
-                    if (responseCommand in NamedCommand || responseCommand instanceof SignalCommand) {
-                        responseCommand.id = value
-                    }
-                    return
+                if (key == 'className') {
+                    return;
                 }
-                if (key == 'tag') value = Tag.tagFor(value)
-                else
-                if (value instanceof List) {        // some commands may have collective values
-                    for (Map entryMap in value) {
+                if (key == 'id') { // id is only set for NamedCommand and SignalCommand others are dynamic
+                    if (responseCommand instanceof SignalCommand) {
+                        ((SignalCommand) responseCommand).setId(value);
+                    }
+                    if (responseCommand in NamedCommand) {
+                        ((NamedCommand) responseCommand).setId(value);
+                    }
+                    return;
+                }
+                if (key == 'tag') {
+                    value = Tag.tagFor(value);
+                } else if (value instanceof List) {        // some commands may have collective values
+                    for (Map entryMap : value) {
                         entryMap.each { entryKey, entryValue ->
-                            entryMap[entryKey] = decodeBaseValue(entryValue)
+                            entryMap[entryKey] = decodeBaseValue(entryValue);
                         }
                     }
+                } else {
+                    value = decodeBaseValue(value);
                 }
-                else value = decodeBaseValue(value)
-                responseCommand[key] = value
+                responseCommand[key] = value;
             }
-            log.finest "decoded command $responseCommand"
-            result << responseCommand
+            LOG.finest("decoded command " + responseCommand);
+            result.add(responseCommand);
         }
-        return result
+        return result;
     }
 
-    Object decodeBaseValue(Object encodedValue) {
+    public Object decodeBaseValue(Object encodedValue) {
         Object result = encodedValue;
         if (encodedValue instanceof Map && encodedValue.size() == 1) {
             if (encodedValue.containsKey(DATE_TYPE_KEY)) {
-                result = new SimpleDateFormat(ISO8601_FORMAT).parse(encodedValue[DATE_TYPE_KEY]);
-            } else
-            if (encodedValue.containsKey(BIGDECIMAL_TYPE_KEY)) {
-                result = new BigDecimal(encodedValue[BIGDECIMAL_TYPE_KEY]);
-            } else
-            if (encodedValue.containsKey(FLOAT_TYPE_KEY)) {
-                result = Float.parseFloat(encodedValue[FLOAT_TYPE_KEY]);
-            } else
-            if (encodedValue.containsKey(DOUBLE_TYPE_KEY)) {
-                result = Double.parseDouble(encodedValue[DOUBLE_TYPE_KEY]);
+                result = new SimpleDateFormat(ISO8601_FORMAT).parse(encodedValue.get(DATE_TYPE_KEY));
+            } else if (encodedValue.containsKey(BIGDECIMAL_TYPE_KEY)) {
+                result = new BigDecimal(encodedValue.get(BIGDECIMAL_TYPE_KEY));
+            } else if (encodedValue.containsKey(FLOAT_TYPE_KEY)) {
+                result = Float.parseFloat(encodedValue.get(FLOAT_TYPE_KEY));
+            } else if (encodedValue.containsKey(DOUBLE_TYPE_KEY)) {
+                result = Double.parseDouble(encodedValue.get(DOUBLE_TYPE_KEY));
             }
         }
         return result;
