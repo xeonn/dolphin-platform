@@ -8,6 +8,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class ServerPresentationModel extends BasePresentationModel<ServerAttribute> {
+
+    private static final Logger LOG = Logger.getLogger(ServerPresentationModel.class.getName());
+
+    public static final String AUTO_ID_SUFFIX = "-AUTO-SRV";
+
+    public ServerModelStore modelStore;
+
     /**
      * @param id if id is null or empty, an auto-generated id will be used
      */
@@ -44,7 +51,7 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
 
     }
 
-    private static final Logger LOG = Logger.getLogger(ServerPresentationModel.class.getName());
-    public static final String AUTO_ID_SUFFIX = "-AUTO-SRV";
-    public ServerModelStore modelStore;
+    public ServerModelStore getModelStore() {
+        return modelStore;
+    }
 }
