@@ -9,4 +9,6 @@ public interface ValueFieldTypes {
     int PERIODE_FIELD_TYPE = 53;
 
     int ZONED_DATE_TIME_FIELD_TYPE = 54;
+    
+    int LOCAL_DATE_FIELD_TYPE = 55;
 }
