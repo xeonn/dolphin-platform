@@ -15,8 +15,6 @@
  */
 package org.opendolphin.core.server
 
-import groovy.transform.CompileStatic
-import groovy.util.logging.Log
 import org.opendolphin.StringUtil
 import org.opendolphin.core.AbstractDolphin
 import org.opendolphin.core.Attribute
@@ -28,26 +26,26 @@ import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Logger
-
 /**
  * The default implementation of the Dolphin facade on the server side.
  * Responsibility: single access point for dolphin capabilities.
  * Collaborates with server model store and current response.
  * Threading model: confined to a single controller thread.
  */
-
-@CompileStatic
-@Log
 class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin{
 
     private static final Logger LOG = Logger.getLogger(DefaultServerDolphin.class.getName());
 
 
-    /** the server model store is unique per user session */
-    final ServerModelStore serverModelStore
+    /**
+     * the server model store is unique per user session
+     */
+    private final ServerModelStore serverModelStore;
 
-    /** the serverConnector is unique per user session */
-    final ServerConnector serverConnector
+    /**
+     * the serverConnector is unique per user session
+     */
+    private final ServerConnector serverConnector;
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
 
@@ -160,8 +158,10 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     /** Convenience method to let the client (!) dolphin create a presentation model as specified by the DTO.
      * The server model store remains untouched until the client has issued the notification.*/
     static void presentationModelCommand(List<Command> response, String id, String presentationModelType, DTO dto){
-        if (null == response) return
-        response << new CreatePresentationModelCommand(pmId: id, pmType: presentationModelType, attributes: dto.encodable())
+        if (response == null) {
+            return;
+        }
+        response.add(new CreatePresentationModelCommand(id, presentationModelType, dto.encodable()));
     }
 
     /**
@@ -203,20 +203,6 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         }
 
         response.add(new AttributeMetadataChangedCommand(attribute.getId(), Attribute.BASE_VALUE, attribute.getValue()));
-    }
-
-    /**
-     * @deprecated use attribute.rebase(). Will be removed in version 1.0!
-     */
-    public static void rebase(List<Command> response, String attributeId) {
-        rebaseCommand(response, attributeId);
-    }
-
-    /**
-     * @deprecated use attribute.rebase(). Will be removed in version 1.0!
-     */
-    public static void rebaseCommand(List<Command> response, String attributeId) {
-        throw new UnsupportedOperationException("Direct use of rebaseCommand is no longer supported. Use attribute.rebase()");
     }
 
     /**
@@ -452,4 +438,9 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     public int getId() {
         return serverModelStore.getId();
     }
+
+    public ServerModelStore getServerModelStore() {
+        return serverModelStore;
+    }
+
 }

@@ -563,8 +563,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         clientDolphin.presentationModel('pm', attr: 1)
 
         serverDolphin.action('arbitrary') { cmd, response ->
-            shouldFail { serverDolphin.rebase(null, serverDolphin['pm'].attr) }
-            shouldFail { serverDolphin.rebase([], null) }
             serverDolphin.resetCommand(null, serverDolphin['pm'])
             serverDolphin.resetCommand([], '')
             serverDolphin.resetCommand([], (ServerAttribute) null)

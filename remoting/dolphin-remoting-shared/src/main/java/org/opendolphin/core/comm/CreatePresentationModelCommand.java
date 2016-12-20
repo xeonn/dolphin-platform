@@ -25,6 +25,12 @@ public class CreatePresentationModelCommand extends Command {
         this.attributes = attributes;
     }
 
+    public CreatePresentationModelCommand(String pmId, String pmType, List<Map<String, Object>> attributes) {
+        this.pmId = pmId;
+        this.pmType = pmType;
+        this.attributes = attributes;
+    }
+
     public CreatePresentationModelCommand() {
     }
 
