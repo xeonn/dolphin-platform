@@ -4,7 +4,6 @@ import groovy.lang.Closure;
 import org.opendolphin.core.AbstractDolphin;
 import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.client.comm.ClientConnector;
-import org.opendolphin.core.client.comm.OnFinishedDataAdapter;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
 import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
 import org.opendolphin.core.comm.AttributeCreatedNotification;
@@ -24,7 +23,6 @@ import java.util.Map;
  * Threading model: confined to the UI handling thread.
  */
 public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresentationModel> {
-
 
     private ClientModelStore clientModelStore;
 
@@ -130,20 +128,6 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
     }
 
     /**
-     * groovy-friendly convenience method for sending a named command that expects only data responses
-     */
-    public void data(String commandName, Closure onFinished) {
-        clientConnector.send(new NamedCommand(commandName), OnFinishedDataAdapter.withAction(onFinished));
-    }
-
-    /**
-     * start of a fluent api: apply source to target. Use for selection changes in master-detail views.
-     */
-    public ApplyToAble apply(ClientPresentationModel source) {
-        return new ApplyToAble(this, source);
-    }
-
-    /**
      * Removes the modelToDelete from the client model store,
      * detaches all model store listeners,
      * and notifies the server if successful
@@ -173,31 +157,6 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
             clientConnector.send(new AttributeCreatedNotification(presentationModel.getId(), attribute.getId(), attribute.getPropertyName(), attribute.getValue(), attribute.getQualifier()));
         }
 
-    }
-
-    protected ClientAttribute copyAttribute(ClientAttribute sourceAttribute) {
-        ClientAttribute result = new ClientAttribute(sourceAttribute.getPropertyName(), sourceAttribute.getBaseValue(), sourceAttribute.getQualifier());
-        result.setValue(sourceAttribute.getValue());
-        return result;
-    }
-
-    /**
-     * Constructs a new {@link ClientPresentationModel} with attributes identical to the source presentation model.
-     *
-     * @param sourcePM
-     * @return the newly constructed ClientPresentationModel
-     */
-    public ClientPresentationModel copy(ClientPresentationModel sourcePM) {
-        List<ClientAttribute> attrs = new ArrayList<ClientAttribute>();
-        for (ClientAttribute attribute : sourcePM.getAttributes()) {
-            ((ArrayList<ClientAttribute>) attrs).add(copyAttribute(attribute));
-        }
-
-        ClientPresentationModel result = new ClientPresentationModel(null, attrs);
-        result.setPresentationModelType(sourcePM.getPresentationModelType());
-        result.setClientSideOnly(sourcePM.isClientSideOnly());
-        clientModelStore.add(result);
-        return result;
     }
 
     public void startPushListening(String pushActionName, String releaseActionName) {

@@ -19,34 +19,41 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class AbstractObservable implements Observable {
+
     private final PropertyChangeSupport pcs;
 
     public AbstractObservable() {
         pcs = new PropertyChangeSupport(this);
     }
 
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         if (listener == null || containsListener(listener, getPropertyChangeListeners())) return;
         pcs.addPropertyChangeListener(listener);
     }
 
+    @Override
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         if (listener == null || containsListener(listener, getPropertyChangeListeners(propertyName))) return;
         pcs.addPropertyChangeListener(propertyName, listener);
     }
 
+    @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
 
+    @Override
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(propertyName, listener);
     }
 
+    @Override
     public PropertyChangeListener[] getPropertyChangeListeners() {
         return pcs.getPropertyChangeListeners();
     }
 
+    @Override
     public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
         return pcs.getPropertyChangeListeners(propertyName);
     }

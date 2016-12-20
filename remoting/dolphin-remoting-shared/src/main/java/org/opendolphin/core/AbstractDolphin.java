@@ -33,6 +33,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * @param model the model to be added.
      * @return if the add operation was successful or not.
      */
+    @Override
     public boolean add(P model) {
         return getModelStore().add(model);
     }
@@ -43,6 +44,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * @param model the model to be removed from the store.
      * @return if the remove operation was successful or not.
      */
+    @Override
     public boolean remove(P model) {
         return getModelStore().remove(model);
     }
@@ -54,6 +56,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * @param id the id to search for.
      * @return an attribute whose id matches the parameter, {@code null} otherwise.
      */
+    @Override
     public A findAttributeById(String id) {
         return (A)getModelStore().findAttributeById(id);
     }
@@ -64,20 +67,22 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      *
      * @return a {@code List} of all attributes for which their qualifier was a match.
      */
+    @Override
     public List<A> findAllAttributesByQualifier(String qualifier) {
         return (List<A>)getModelStore().findAllAttributesByQualifier(qualifier);
     }
 
-
-
+    @Override
     public Set<String> listPresentationModelIds() {
         return getModelStore().listPresentationModelIds();
     }
 
+    @Override
     public Collection<P> listPresentationModels() {
          return (Collection<P>) getModelStore().listPresentationModels();
     }
 
+    @Override
     public List<P> findAllPresentationModelsByType(String presentationModelType) {
         return (List<P>) getModelStore().findAllPresentationModelsByType(presentationModelType);
     }
@@ -85,42 +90,52 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
     /**
      * alias for findPresentationModelById
      */
+    @Override
     public P getAt(String id) {
         return findPresentationModelById(id);
     }
 
+    @Override
     public P findPresentationModelById(String id) {
         return (P) getModelStore().findPresentationModelById(id);
     }
 
+    @Override
     public void removeModelStoreListener(ModelStoreListener listener) {
         getModelStore().removeModelStoreListener(listener);
     }
 
+    @Override
     public void removeModelStoreListener(String presentationModelType, ModelStoreListener listener) {
         getModelStore().removeModelStoreListener(presentationModelType, listener);
     }
 
+    @Override
     public boolean hasModelStoreListener(ModelStoreListener listener) {
         return getModelStore().hasModelStoreListener(listener);
     }
 
+    @Override
     public void addModelStoreListener(String presentationModelType, ModelStoreListener listener) {
         getModelStore().addModelStoreListener(presentationModelType, listener);
     }
 
+    @Override
     public void addModelStoreListener(String presentationModelType, Closure listener) {
         getModelStore().addModelStoreListener(presentationModelType, asType(listener, ModelStoreListener.class));
     }
 
+    @Override
     public boolean hasModelStoreListener(String presentationModelType, ModelStoreListener listener) {
         return getModelStore().hasModelStoreListener(presentationModelType, listener);
     }
 
+    @Override
     public void addModelStoreListener(ModelStoreListener listener) {
         getModelStore().addModelStoreListener(listener);
     }
 
+    @Override
     public void addModelStoreListener(Closure listener) {
         getModelStore().addModelStoreListener(asType(listener, ModelStoreListener.class));
     }
@@ -130,6 +145,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * all attributes that bear the same qualifier and tag.
      */
     // todo dk: not quite sure whether this should be called automatically in some handle() methods
+    @Override
     public void updateQualifiers(P presentationModel) {
         for (A source : presentationModel.getAttributes()) {
             if (null == source.getQualifier()) continue;

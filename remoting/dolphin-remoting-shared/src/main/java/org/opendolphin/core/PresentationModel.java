@@ -103,5 +103,5 @@ public interface PresentationModel<A extends Attribute> extends Observable {
     /**
      * Sets the presentation model's dirty flag if any of its attributes are dirty, else clears the dirty flag.
      */
-    void    updateDirty();
+    void updateDirty();
 }
