@@ -38,14 +38,6 @@ public class TestInMemoryConfig extends DefaultInMemoryConfig {
     }
 
     /**
-     * for testing purposes, we may want to send commands synchronously such that we better know when to run asserts
-     */
-    public void sendSynchronously(String commandName) {
-        getClientDolphin().send(commandName);
-        syncPoint(1);
-    }
-
-    /**
      * make sure we continue only after all previous commands have been executed
      */
     public void syncPoint(final int soManyRoundTrips) {
@@ -74,7 +66,4 @@ public class TestInMemoryConfig extends DefaultInMemoryConfig {
         return done;
     }
 
-    public void setDone(CountDownLatch done) {
-        this.done = done;
-    }
 }

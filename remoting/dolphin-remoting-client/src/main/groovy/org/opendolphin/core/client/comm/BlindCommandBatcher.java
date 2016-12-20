@@ -223,28 +223,12 @@ public class BlindCommandBatcher extends CommandBatcher {
         return intern.remove(0);
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-
     public LinkedList<CommandAndHandler> getCommandsAndHandlers() {
         return commandsAndHandlers;
     }
 
-    public void setCommandsAndHandlers(LinkedList<CommandAndHandler> commandsAndHandlers) {
-        this.commandsAndHandlers = commandsAndHandlers;
-    }
-
     public Lock getCommandsAndHandlersLock() {
         return commandsAndHandlersLock;
-    }
-
-    public void setCommandsAndHandlersLock(Lock commandsAndHandlersLock) {
-        this.commandsAndHandlersLock = commandsAndHandlersLock;
     }
 
     public long getDeferMillis() {
@@ -261,14 +245,6 @@ public class BlindCommandBatcher extends CommandBatcher {
 
     public void setMaxBatchSize(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
-    }
-
-    public boolean getMergeValueChanges() {
-        return mergeValueChanges;
-    }
-
-    public boolean isMergeValueChanges() {
-        return mergeValueChanges;
     }
 
     public void setMergeValueChanges(boolean mergeValueChanges) {

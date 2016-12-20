@@ -34,10 +34,6 @@ public final class Slot {
         this(propertyName, value, qualifier, Tag.VALUE);
     }
 
-    public Slot(String propertyName, Object value, Tag tag) {
-        this(propertyName, value, null, tag);
-    }
-
     /**
      * Convenience method with positional parameters to create an attribute specification from name/value pairs.
      * Especially useful when creating DTO objects.
@@ -65,11 +61,11 @@ public final class Slot {
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<String, Object>();
-        ((HashMap<String, Object>) map).put("propertyName", propertyName);
-        ((HashMap<String, Object>) map).put("value", value);
-        ((HashMap<String, Object>) map).put("baseValue", baseValue);
-        ((HashMap<String, Object>) map).put("qualifier", qualifier);
-        ((HashMap<String, Object>) map).put("tag", tag);
+        map.put("propertyName", propertyName);
+        map.put("value", value);
+        map.put("baseValue", baseValue);
+        map.put("qualifier", qualifier);
+        map.put("tag", tag);
         return map;
     }
 

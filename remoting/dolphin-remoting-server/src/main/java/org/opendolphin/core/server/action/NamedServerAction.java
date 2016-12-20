@@ -26,8 +26,4 @@ public class NamedServerAction extends DolphinServerAction {
         return name;
     }
 
-    public final NamedCommandHandler getNamedCommandHandler() {
-        return namedCommandHandler;
-    }
-
 }

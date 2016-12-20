@@ -81,10 +81,6 @@ public class ServerConnector {
         this.codec = codec;
     }
 
-    public ServerModelStore getServerModelStore() {
-        return serverModelStore;
-    }
-
     public void setServerModelStore(ServerModelStore serverModelStore) {
         this.serverModelStore = serverModelStore;
     }

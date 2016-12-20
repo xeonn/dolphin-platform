@@ -4,10 +4,6 @@ public class GetPresentationModelCommand extends Command {
     public GetPresentationModelCommand() {
     }
 
-    public GetPresentationModelCommand(String pmId) {
-        this.pmId = pmId;
-    }
-
     public String getPmId() {
         return pmId;
     }

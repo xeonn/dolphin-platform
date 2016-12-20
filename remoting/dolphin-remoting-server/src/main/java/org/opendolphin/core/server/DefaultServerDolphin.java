@@ -25,7 +25,6 @@ import org.opendolphin.core.server.action.StoreAttributeAction;
 import org.opendolphin.core.server.action.StoreValueChangeAction;
 import org.opendolphin.core.server.comm.NamedCommandHandler;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,13 +166,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #clientSideModelCommand(List, String, String, DTO)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void clientSideModel(List<Command> response, String id, String presentationModelType, DTO dto) {
-        clientSideModelCommand(response, id, presentationModelType, dto);
-    }
-
-    /**
      * Convenience method to let Dolphin create a
      * <strong> client-side only </strong>
      * presentation model as specified by the DTO.
@@ -228,13 +220,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #deleteCommand(List, ServerPresentationModel)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void delete(List<Command> response, ServerPresentationModel pm) {
-        deleteCommand(response, pm);
-    }
-
-    /**
      * Convenience method to let Dolphin delete a presentation model on the client side
      */
     public static void deleteCommand(List<Command> response, ServerPresentationModel pm) {
@@ -243,13 +228,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
             return;
         }
         deleteCommand(response, pm.getId());
-    }
-
-    /**
-     * @deprecated use {@link #deleteCommand(List, String)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void delete(List<Command> response, String pmId) {
-        deleteCommand(response, pmId);
     }
 
     /**
@@ -280,13 +258,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #resetCommand(List, ServerPresentationModel)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void reset(List<Command> response, ServerPresentationModel pm) {
-        resetCommand(response, pm);
-    }
-
-    /**
      * Convenience method to let Dolphin reset a presentation model
      */
     public static void resetCommand(List<Command> response, ServerPresentationModel pm) {
@@ -295,13 +266,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
             return;
         }
         resetCommand(response, pm.getId());
-    }
-
-    /**
-     * @deprecated use {@link #resetCommand(List, String)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void reset(List<Command> response, String pmId) {
-        resetCommand(response, pmId);
     }
 
     /**
@@ -315,13 +279,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #resetCommand(List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void reset(List<Command> response, ServerAttribute attribute) {
-        resetCommand(response, attribute);
-    }
-
-    /**
      * Convenience method to let Dolphin reset the value of an attribute
      */
     public static void resetCommand(List<Command> response, ServerAttribute attribute) {
@@ -330,13 +287,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
             return;
         }
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), attribute.getBaseValue()));
-    }
-
-    /**
-     * @deprecated use changeValueCommand(List, ServerAttribute, Object). You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void changeValue(List<Command> response, ServerAttribute attribute, Serializable value) {
-        changeValueCommand(response, attribute, value);
     }
 
     /**
@@ -374,34 +324,11 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         initAt(response, pmId, propertyName, qualifier, null, Tag.VALUE);
     }
 
-    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
-        initAt(response, pmId, propertyName, qualifier, newValue, Tag.VALUE);
-    }
-
-    /**
-     * Convenience method for the InitializeAttributeCommand
-     */
-    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Tag tag) {
-        initAt(response, pmId, propertyName, qualifier, null, tag);
-    }
-
     /**
      * Convenience method for the InitializeAttributeCommand
      */
     public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
         initAtCommand(response, pmId, propertyName, qualifier, newValue, tag);
-    }
-
-    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier) {
-        initAtCommand(response, pmId, propertyName, qualifier, null, Tag.VALUE);
-    }
-
-    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
-        initAtCommand(response, pmId, propertyName, qualifier, newValue, Tag.VALUE);
-    }
-
-    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Tag tag) {
-        initAtCommand(response, pmId, propertyName, qualifier, null, tag);
     }
 
     /**

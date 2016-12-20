@@ -61,10 +61,6 @@ public class InMemoryClientConnector extends AbstractClientConnector {
         return result;
     }
 
-    public long getSleepMillis() {
-        return sleepMillis;
-    }
-
     public void setSleepMillis(long sleepMillis) {
         this.sleepMillis = sleepMillis;
     }

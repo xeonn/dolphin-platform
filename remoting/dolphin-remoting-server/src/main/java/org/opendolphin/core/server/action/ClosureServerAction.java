@@ -26,8 +26,4 @@ public class ClosureServerAction extends DolphinServerAction {
         return name;
     }
 
-    public final Closure getNamedCommandHandler() {
-        return namedCommandHandler;
-    }
-
 }

@@ -30,10 +30,6 @@ public final class ClientPresentationModel extends BasePresentationModel<ClientA
         return (id != null && id.length() > 0) ? id : "" + instanceCount++ + AUTO_ID_SUFFIX;
     }
 
-    public boolean getClientSideOnly() {
-        return clientSideOnly;
-    }
-
     public boolean isClientSideOnly() {
         return clientSideOnly;
     }

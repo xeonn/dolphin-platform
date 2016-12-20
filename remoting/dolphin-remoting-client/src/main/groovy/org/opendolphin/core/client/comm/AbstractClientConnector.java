@@ -19,7 +19,6 @@ import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.NamedCommand;
@@ -98,7 +97,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         startCommandProcessing();
     }
 
-    private void startCommandProcessing() {
+    protected void startCommandProcessing() {
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -283,36 +282,15 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return this.pushEnabled;
     }
 
-    public boolean getStrictMode() {
-        return this.responseHandler.isStrictMode();
-    }
-
     public void setStrictMode(boolean strictMode) {
         this.responseHandler.setStrictMode(strictMode);
-    }
-
-    public UiThreadHandler getUiThreadHandler() {
-        return uiThreadHandler;
     }
 
     public void setUiThreadHandler(UiThreadHandler uiThreadHandler) {
         this.uiThreadHandler = uiThreadHandler;
     }
-
-    public ExceptionHandler getOnException() {
-        return onException;
-    }
-
     public void setOnException(ExceptionHandler onException) {
         this.onException = onException;
-    }
-
-    public ClientResponseHandler getResponseHandler() {
-        return responseHandler;
-    }
-
-    public NamedCommand getPushListener() {
-        return pushListener;
     }
 
     public void setPushListener(NamedCommand pushListener) {
@@ -329,9 +307,5 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     public ClientDolphin getClientDolphin() {
         return clientDolphin;
-    }
-
-    protected ClientModelStore getClientModelStore() {
-        return clientDolphin.getClientModelStore();
     }
 }

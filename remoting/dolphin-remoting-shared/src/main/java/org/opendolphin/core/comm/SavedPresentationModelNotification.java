@@ -4,10 +4,6 @@ public class SavedPresentationModelNotification extends Command {
     public SavedPresentationModelNotification() {
     }
 
-    public SavedPresentationModelNotification(String pmId) {
-        this.pmId = pmId;
-    }
-
     public String getPmId() {
         return pmId;
     }

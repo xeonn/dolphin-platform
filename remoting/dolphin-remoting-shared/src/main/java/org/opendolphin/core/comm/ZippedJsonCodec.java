@@ -77,22 +77,6 @@ public class ZippedJsonCodec extends JsonCodec {
         return super.decode(raw.get());
     }
 
-    public int getMaxUnzippedSize() {
-        return maxUnzippedSize;
-    }
-
-    public void setMaxUnzippedSize(int maxUnzippedSize) {
-        this.maxUnzippedSize = maxUnzippedSize;
-    }
-
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
     /**
      * The max amount of characters in the transfer string that will not result in compressing.
      * Whatever fits in one "packet" of the underlying infrastructure makes no sense compressing.

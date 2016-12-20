@@ -53,7 +53,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
     @Override
     protected void tearDown() {
-        assert context.done.await(5, TimeUnit.SECONDS)
+        assert context.done.await(10, TimeUnit.SECONDS)
     }
 
     void testServerModelStoreAcceptsConfig() {

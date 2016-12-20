@@ -80,10 +80,6 @@ public class AttributeChangeListener implements PropertyChangeListener {
         return new ChangeAttributeMetadataCommand(((Attribute) evt.getSource()).getId(), evt.getPropertyName(), evt.getNewValue());
     }
 
-    public ClientModelStore getClientModelStore() {
-        return clientModelStore;
-    }
-
     public void setClientModelStore(ClientModelStore clientModelStore) {
         this.clientModelStore = clientModelStore;
     }

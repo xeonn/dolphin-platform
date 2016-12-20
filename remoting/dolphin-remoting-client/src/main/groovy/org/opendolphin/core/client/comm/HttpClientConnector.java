@@ -2,7 +2,6 @@ package org.opendolphin.core.client.comm;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
@@ -10,8 +9,6 @@ import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 
-import java.io.File;
-import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,19 +77,4 @@ public class HttpClientConnector extends AbstractClientConnector {
 
         return result;
     }
-
-    public String uploadFile(File file, URI handler) {
-        try {
-            HttpPost httpPost = new HttpPost(handler);
-            httpPost.setEntity(new FileEntity(file, charset));
-            String result = httpClient.execute(httpPost, responseHandler);
-            LOG.finest(result);
-            return result;
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "cannot transmit", ex);
-            throw new RuntimeException("Error!", ex);
-        }
-
-    }
-
 }

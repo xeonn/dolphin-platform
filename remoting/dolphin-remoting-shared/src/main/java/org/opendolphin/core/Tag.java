@@ -37,29 +37,9 @@ public final class Tag {
      */
     public static final Tag LABEL = tagFor("LABEL");
     /**
-     * a single text; e.g. "textArea" if the String value should be displayed in a text area instead of a textField
-     */
-    public static final Tag WIDGET_HINT = tagFor("WIDGET_HINT");
-    /**
-     * a single text; e.g. "java.util.Date" if the value String represents a date
-     */
-    public static final Tag VALUE_TYPE = tagFor("VALUE_TYPE");
-    /**
-     * regular expression for local, syntactical constraints like in "rejectField"
-     */
-    public static final Tag REGEX = tagFor("REGEX");
-    /**
-     * Url.toExternalForm()
-     */
-    public static final Tag HELP_URL = tagFor("HELP_URL");
-    /**
      * Tooltip text for the attribute.
      */
     public static final Tag TOOLTIP = tagFor("TOOLTIP");
-    /**
-     * "true" or "false"; maps to Grails constraint nullable:false
-     */
-    public static final Tag MANDATORY = tagFor("MANDATORY");
     /**
      * "true" or "false"; maps to Grails constraint display:true
      */

@@ -53,10 +53,6 @@ public class SessionAffinityCheckingResponseHandler implements ResponseHandler<S
         return result;
     }
 
-    public boolean isThrowExceptionOnSessionChange() {
-        return throwExceptionOnSessionChange;
-    }
-
     public void setThrowExceptionOnSessionChange(boolean throwExceptionOnSessionChange) {
         this.throwExceptionOnSessionChange = throwExceptionOnSessionChange;
     }
