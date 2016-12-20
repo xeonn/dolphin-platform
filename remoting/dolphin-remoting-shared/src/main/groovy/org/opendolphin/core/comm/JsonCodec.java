@@ -19,6 +19,19 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class JsonCodec implements Codec {
+
+    private static final Logger LOG = Logger.getLogger(JsonCodec.class.getName());
+
+    public static final String DATE_TYPE_KEY = Date.class.toString();
+
+    public static final String BIGDECIMAL_TYPE_KEY = BigDecimal.class.toString();
+
+    public static final String FLOAT_TYPE_KEY = Float.class.toString();
+
+    public static final String DOUBLE_TYPE_KEY = Double.class.toString();
+
+    public static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
     @Override
     public String encode(List<Command> commands) {
         List<Map> content = DefaultGroovyMethods.collect(commands, new Closure<Map>(this, this) {
@@ -97,61 +110,61 @@ public class JsonCodec implements Codec {
 
         final String validPackagePrefix = Command.class.getPackage().getName();
 
-        DefaultGroovyMethods.each((List) DefaultGroovyMethods.findAll(got, new Closure<Boolean>(this, this) {
-            public Boolean doCall(Object cmd) {
-                return DefaultGroovyMethods.getAt(cmd, "className") != null && String.class.cast(DefaultGroovyMethods.getAt(cmd, "className")).startsWith(validPackagePrefix);
-            }
+        if(got instanceof List) {
+            for(Object listEntry : (List)got) {
+                if(listEntry instanceof Map) {
+                    Map cmd = (Map) listEntry;
+                    if(cmd.get("className") != null && cmd.get("className").toString().startsWith(validPackagePrefix)) {
+                        try {
+                            final Command responseCommand = (Command) Class.forName((String) cmd.get("className")).newInstance();
+                            DefaultGroovyMethods.each(cmd, new Closure<Object>(JsonCodec.this, JsonCodec.this) {
+                                public Object doCall(Map.Entry cmdEntry) {
+                                    Object key = cmdEntry.getKey();
+                                    Object value = cmdEntry.getValue();
+                                    if (key.equals("className")) {
+                                        return null;
+                                    }
 
-        }), new Closure<Boolean>(this, this) {
-            public Boolean doCall(Object cmd) {
-                try {
-                    final Command responseCommand = (Command) Class.forName((String) DefaultGroovyMethods.getAt(cmd, "className")).newInstance();
-                    DefaultGroovyMethods.each(cmd, new Closure<Object>(JsonCodec.this, JsonCodec.this) {
-                        public Object doCall(Map.Entry cmdEntry) {
-                            Object key = cmdEntry.getKey();
-                            Object value = cmdEntry.getValue();
-                            if (key.equals("className")) {
-                                return null;
-                            }
-
-                            if (key.equals("id")) {// id is only set for NamedCommand and SignalCommand others are dynamic
-                                if (responseCommand instanceof SignalCommand) {
-                                    ((SignalCommand) responseCommand).setId((String) value);
-                                }
-
-                                if (responseCommand instanceof NamedCommand) {
-                                    ((NamedCommand) responseCommand).setId((String) value);
-                                }
-                                return null;
-                            }
-
-                            if (key.equals("tag")) {
-                                value = Tag.tagFor((String) value);
-                            } else if (value instanceof List) {// some commands may have collective values
-                                for (final Map entryMap : (List<Map>) value) {
-                                    DefaultGroovyMethods.each(entryMap, new Closure<Object>(JsonCodec.this, JsonCodec.this) {
-                                        public Object doCall(Object entryKey, Object entryValue) {
-                                            return putAt0(entryMap, entryKey, decodeBaseValue(entryValue));
+                                    if (key.equals("id")) {// id is only set for NamedCommand and SignalCommand others are dynamic
+                                        if (responseCommand instanceof SignalCommand) {
+                                            ((SignalCommand) responseCommand).setId((String) value);
                                         }
-                                    });
+
+                                        if (responseCommand instanceof NamedCommand) {
+                                            ((NamedCommand) responseCommand).setId((String) value);
+                                        }
+                                        return null;
+                                    }
+
+                                    if (key.equals("tag")) {
+                                        value = Tag.tagFor((String) value);
+                                    } else if (value instanceof List) {// some commands may have collective values
+                                        for (final Map entryMap : (List<Map>) value) {
+                                            DefaultGroovyMethods.each(entryMap, new Closure<Object>(JsonCodec.this, JsonCodec.this) {
+                                                public Object doCall(Object entryKey, Object entryValue) {
+                                                    return putAt0(entryMap, entryKey, decodeBaseValue(entryValue));
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        value = decodeBaseValue(value);
+                                    }
+
+                                    DefaultGroovyMethods.putAt(responseCommand, (String) key, value);
+                                    return value;
                                 }
-                            } else {
-                                value = decodeBaseValue(value);
-                            }
 
-                            DefaultGroovyMethods.putAt(responseCommand, (String) key, value);
-                            return value;
+                            });
+                            LOG.finest("decoded command " + responseCommand);
+                            result.add(responseCommand);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Can not decode!", e);
                         }
-
-                    });
-                    LOG.finest("decoded command " + responseCommand);
-                    return result.add(responseCommand);
-                } catch (Exception e) {
-                    throw new RuntimeException("Can not decode!", e);
+                    }
                 }
             }
+        }
 
-        });
         return result;
     }
 
@@ -176,15 +189,9 @@ public class JsonCodec implements Codec {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(JsonCodec.class.getName());
-    public static final String DATE_TYPE_KEY = Date.class.toString();
-    public static final String BIGDECIMAL_TYPE_KEY = BigDecimal.class.toString();
-    public static final String FLOAT_TYPE_KEY = Float.class.toString();
-    public static final String DOUBLE_TYPE_KEY = Double.class.toString();
-    public static final String ISO8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
     private static <K, V, Value extends V> Value putAt0(Map<K, V> propOwner, K key, Value value) {
         propOwner.put(key, value);
         return value;
     }
+
 }
