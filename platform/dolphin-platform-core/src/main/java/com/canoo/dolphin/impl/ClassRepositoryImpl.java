@@ -28,7 +28,6 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
-import org.opendolphin.core.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +105,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                     throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
                 }
                 final int type = converters.getFieldType(clazz);
-                builder.withAttribute(attributeName, type, Tag.VALUE);
+                builder.withAttribute(attributeName, type);
             }
         }
 

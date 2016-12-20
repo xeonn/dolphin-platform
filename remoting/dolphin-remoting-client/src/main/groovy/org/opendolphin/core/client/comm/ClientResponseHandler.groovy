@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 package org.opendolphin.core.client.comm
-
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
 import org.opendolphin.core.Attribute
 import org.opendolphin.core.PresentationModel
-import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand
-import org.opendolphin.core.comm.CallNamedActionCommand
-import org.opendolphin.core.comm.Command
-import org.opendolphin.core.comm.CreatePresentationModelCommand
-import org.opendolphin.core.comm.DataCommand
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand
-import org.opendolphin.core.comm.DeletePresentationModelCommand
-import org.opendolphin.core.comm.InitializeAttributeCommand
-import org.opendolphin.core.comm.PresentationModelResetedCommand
-import org.opendolphin.core.comm.SavedPresentationModelNotification
-import org.opendolphin.core.comm.SwitchPresentationModelCommand
-import org.opendolphin.core.comm.ValueChangedCommand
+import org.opendolphin.core.comm.*
 
 @Log
 class ClientResponseHandler {
@@ -86,8 +73,7 @@ class ClientResponseHandler {
             ClientAttribute attribute = new ClientAttribute(
                     attr.propertyName.toString(),
                     attr.value,
-                    attr.qualifier?.toString(),
-                    attr.tag ? Tag.tagFor((String) attr.tag) : Tag.VALUE)
+                    attr.qualifier?.toString())
             if(attr.id?.toString()?.endsWith('S')) {
                 attribute.id = attr.id
             }
@@ -139,7 +125,7 @@ class ClientResponseHandler {
     }
 
     ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
-        def attribute = new ClientAttribute(serverCommand.propertyName, serverCommand.newValue, serverCommand.qualifier, serverCommand.tag)
+        def attribute = new ClientAttribute(serverCommand.propertyName, serverCommand.newValue, serverCommand.qualifier)
 
         // todo: add check for no-value; null is a valid value
         if (serverCommand.qualifier) {
@@ -164,7 +150,7 @@ class ClientResponseHandler {
             clientModelStore.add(presentationModel)
         }
         // if we already have the attribute, just update the value
-        def existingAtt = presentationModel.getAt(serverCommand.propertyName, serverCommand.tag)
+        def existingAtt = presentationModel.getAt(serverCommand.propertyName)
         if (existingAtt) {
             existingAtt.value = attribute.value
         } else {

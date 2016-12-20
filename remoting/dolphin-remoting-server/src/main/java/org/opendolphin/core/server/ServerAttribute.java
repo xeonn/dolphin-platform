@@ -4,7 +4,6 @@ import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.BaseAttribute;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
 
 import java.util.List;
@@ -18,8 +17,8 @@ public class ServerAttribute extends BaseAttribute {
         super(propertyName, initialValue);
     }
 
-    public ServerAttribute(String propertyName, Object baseValue, String qualifier, Tag tag) {
-        super(propertyName, baseValue, qualifier, tag);
+    public ServerAttribute(String propertyName, Object baseValue, String qualifier) {
+        super(propertyName, baseValue, qualifier);
     }
 
     @Override

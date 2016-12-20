@@ -42,7 +42,6 @@ import mockit.Mocked;
 import org.hamcrest.Matchers;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.HttpClientConnector;
@@ -88,15 +87,13 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is("myProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -107,22 +104,19 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(SimpleAnnotatedTestModel.class.getName())),
                                 hasProperty("baseValue", is(SimpleAnnotatedTestModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("myProperty")),
                                 hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));
@@ -152,15 +146,13 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is("text")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -171,22 +163,19 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(SimpleTestModel.class.getName())),
                                 hasProperty("baseValue", is(SimpleTestModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("text")),
                                 hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));
@@ -237,7 +226,6 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                 assertThat(attribute.getBaseValue(), nullValue());
             }
             assertThat(attribute.getQualifier(), nullValue());
-            assertThat(attribute.getTag(), is(Tag.VALUE));
         }
 
         final List<ClientPresentationModel> classModels = dolphin.findAllPresentationModelsByType(PlatformConstants.DOLPHIN_BEAN);
@@ -295,7 +283,6 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                 }
             }
             assertThat(attribute.getQualifier(), nullValue());
-            assertThat(attribute.getTag(), is(Tag.VALUE));
         }
     }
 
@@ -328,29 +315,25 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is("dateProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is("calendarProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is("enumProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -361,36 +344,31 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(ComplexDataTypesModel.class.getName())),
                                 hasProperty("baseValue", is(ComplexDataTypesModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("dateProperty")),
                                 hasProperty("value", is(DateConverterFactory.FIELD_TYPE_DATE)),
                                 hasProperty("baseValue", is(DateConverterFactory.FIELD_TYPE_DATE)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("calendarProperty")),
                                 hasProperty("value", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
                                 hasProperty("baseValue", is(CalendarConverterFactory.FIELD_TYPE_CALENDAR)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("enumProperty")),
                                 hasProperty("value", is(EnumConverterFactory.FIELD_TYPE_ENUM)),
                                 hasProperty("baseValue", is(EnumConverterFactory.FIELD_TYPE_ENUM)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));
@@ -421,15 +399,13 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is("referenceProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -440,22 +416,19 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(SingleReferenceModel.class.getName())),
                                 hasProperty("baseValue", is(SingleReferenceModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("referenceProperty")),
                                 hasProperty("value", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
                                 hasProperty("baseValue", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));
@@ -484,8 +457,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -496,29 +468,25 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(ListReferenceModel.class.getName())),
                                 hasProperty("baseValue", is(ListReferenceModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("objectList")),
                                 hasProperty("value", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
                                 hasProperty("baseValue", is(DolphinBeanConverterFactory.FIELD_TYPE_DOLPHIN_BEAN)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("primitiveList")),
                                 hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));
@@ -550,22 +518,19 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                         hasProperty("propertyName", is("childProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is("parentProperty")),
                         hasProperty("value", nullValue()),
                         hasProperty("baseValue", nullValue()),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 ),
                 allOf(
                         hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                         hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                         hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                        hasProperty("qualifier", nullValue()),
-                        hasProperty("tag", is(Tag.VALUE))
+                        hasProperty("qualifier", nullValue())
                 )
         ));
 
@@ -577,29 +542,25 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
                                 hasProperty("propertyName", is(PlatformConstants.JAVA_CLASS)),
                                 hasProperty("value", is(ChildModel.class.getName())),
                                 hasProperty("baseValue", is(ChildModel.class.getName())),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("childProperty")),
                                 hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is("parentProperty")),
                                 hasProperty("value", is(StringConverterFactory.FIELD_TYPE_STRING)),
                                 hasProperty("baseValue", is(StringConverterFactory.FIELD_TYPE_STRING)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         ),
                         allOf(
                                 hasProperty("propertyName", is(PlatformConstants.SOURCE_SYSTEM)),
                                 hasProperty("value", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
                                 hasProperty("baseValue", is(PlatformConstants.SOURCE_SYSTEM_CLIENT)),
-                                hasProperty("qualifier", nullValue()),
-                                hasProperty("tag", is(Tag.VALUE))
+                                hasProperty("qualifier", nullValue())
                         )
                 ))
         ));

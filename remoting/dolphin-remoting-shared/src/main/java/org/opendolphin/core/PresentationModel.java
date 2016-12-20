@@ -22,7 +22,6 @@ import java.util.List;
  * The presentation model may also be given a type.
  * @param <A>
  * @see Attribute
- * @see Tag
  */
 public interface PresentationModel<A extends Attribute> extends Observable {
     String DIRTY_PROPERTY = "dirty";
@@ -48,16 +47,6 @@ public interface PresentationModel<A extends Attribute> extends Observable {
     A getAt(String propertyName);
 
     /**
-     * Convenience (shorthand) method for finding an attribute with the specified tag by property name.
-     * @see #findAttributeByPropertyName(String)
-     * @param propertyName attribute's property name
-     * @param tag          attribute's tag
-     * @return attribute for the given property; null if non-existent
-     * @see #findAttributeByPropertyNameAndTag(String, Tag)
-     */
-    A getAt(String propertyName, Tag tag);
-
-    /**
      * Convenience method to get the value of an attribute if it exists, or a default value if it does not.
      */
     public int getValue(String attributeName, int defaultValue);
@@ -74,14 +63,6 @@ public interface PresentationModel<A extends Attribute> extends Observable {
      * @return list of all attributes with the given property name.
      */
     List<A> findAllAttributesByPropertyName(String propertyName);
-
-    /**
-     *
-     * @param propertyName attribute's property name
-     * @param tag          attribute's tag
-     * @return attribute for the given property; null if non-existent
-     */
-    A findAttributeByPropertyNameAndTag(String propertyName, Tag tag);
 
     /**
      * Returns the first attribute whose qualifier matches the supplied value.

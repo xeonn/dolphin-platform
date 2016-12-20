@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
+import core.client.comm.InMemoryClientConnector
+import core.client.comm.SynchronousInMemoryClientConnector
 import core.comm.TestInMemoryConfig
 import org.opendolphin.LogConfig
-import org.opendolphin.core.Tag
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
-import org.opendolphin.core.client.comm.BlindCommandBatcher
-import core.client.comm.InMemoryClientConnector
-import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter
-import org.opendolphin.core.client.comm.RunLaterUiThreadHandler
-import core.client.comm.SynchronousInMemoryClientConnector
-import org.opendolphin.core.client.comm.UiThreadHandler
-import org.opendolphin.core.client.comm.WithPresentationModelHandler
-import org.opendolphin.core.server.DTO
-import org.opendolphin.core.server.DefaultServerDolphin
-import org.opendolphin.core.server.ServerAttribute
-import org.opendolphin.core.server.ServerDolphin
-import org.opendolphin.core.server.ServerPresentationModel
-import org.opendolphin.core.server.Slot
+import org.opendolphin.core.client.comm.*
+import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
 import org.opendolphin.core.server.comm.NamedCommandHandler
@@ -41,7 +30,6 @@ import org.opendolphin.core.server.comm.NamedCommandHandler
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
-
 /**
  * Showcase for how to test an application without the GUI by
  * issuing the respective commands and model changes against the
@@ -172,14 +160,12 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         registerAction serverDolphin, "create", { cmd, response ->
             def NO_TYPE = null
             def NO_QUALIFIER = null
-            serverDolphin.presentationModelCommand(response, "id".toString(), NO_TYPE, new DTO(new Slot("attr", true, NO_QUALIFIER, Tag.VISIBLE)))
+            serverDolphin.presentationModelCommand(response, "id".toString(), NO_TYPE, new DTO(new Slot("attr", true, NO_QUALIFIER)))
         }
         registerAction serverDolphin, "checkTagIsKnownOnServerSide", { cmd, response ->
-            assert serverDolphin.getAt("id").getAt('attr', Tag.VISIBLE)
         }
 
         clientDolphin.send "create", { List<ClientPresentationModel> pms ->
-            assert clientDolphin.getAt("id").getAt('attr', Tag.VISIBLE)
             clientDolphin.send "checkTagIsKnownOnServerSide", { List<ClientPresentationModel> xxx ->
                 context.assertionsDone()
             }
@@ -332,8 +318,8 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
 
     void testApplyPm() {
         registerAction serverDolphin,"checkPmWasApplied", { cmd, resp ->
-            assert 1 == serverDolphin['second'].getAt('a',Tag.VALUE).value
-            assert 1 == serverDolphin['second'].getAt('a',Tag.VALUE).baseValue // apply must also set base value
+            assert 1 == serverDolphin['second'].getAt('a').value
+            assert 1 == serverDolphin['second'].getAt('a').baseValue // apply must also set base value
             context.assertionsDone()
         }
         def first = clientDolphin.presentationModel("first", null, a:1)
@@ -341,14 +327,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         clientDolphin.apply first to second
         assert 1 == second.a.value
         clientDolphin.send "checkPmWasApplied"
-    }
-
-    void testPmCreationWithNullValuesAndTagIt() {
-        def nullValuePM = clientDolphin.presentationModel("someId", ['a', 'b', 'c'])
-        assert null == nullValuePM.c.value
-        clientDolphin.tag(nullValuePM, 'a', Tag.tagFor("MESSAGE"), "the 'a' message")
-        assert nullValuePM.getAt('a', Tag.tagFor("MESSAGE")).value == "the 'a' message"
-        context.assertionsDone()
     }
 
     void testDataRequest() {
@@ -476,7 +454,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
 
     void testCopyPresentationModelOnClient() {
 
-        ClientAttribute ca = new ClientAttribute('attr1', true, 'qualifier', Tag.ENABLED)
+        ClientAttribute ca = new ClientAttribute('attr1', true, 'qualifier')
         ca.value = false
         def pm1 = clientDolphin.presentationModel("PM1", "type", ca)
         clientDolphin.addAttributeToModel(pm1, ca)
@@ -485,12 +463,11 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         assert pm1.id != pm2.id
         assert pm1.presentationModelType == pm2.presentationModelType
         assert pm1.attributes.size()    == pm2.attributes.size()
-        def orig = pm1.getAt('attr1', Tag.ENABLED)
-        def copy = pm2.getAt('attr1', Tag.ENABLED)
+        def orig = pm1.getAt('attr1')
+        def copy = pm2.getAt('attr1')
         assert orig.value     == copy.value
         assert orig.baseValue == copy.baseValue
         assert orig.qualifier == copy.qualifier
-        assert orig.tag       == copy.tag
 
         registerAction serverDolphin,'assert', { cmd, response ->
             def pms = serverDolphin.findAllPresentationModelsByType('type')
@@ -500,12 +477,11 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
             assert spm1.id != spm2.id
             assert spm1.presentationModelType == spm2.presentationModelType
             assert spm1.attributes.size()    == spm2.attributes.size()
-            def sorig = spm1.getAt('attr1', Tag.ENABLED)
-            def scopy = spm2.getAt('attr1', Tag.ENABLED)
+            def sorig = spm1.getAt('attr1')
+            def scopy = spm2.getAt('attr1')
             assert sorig.value     == scopy.value
             assert sorig.baseValue == scopy.baseValue
             assert sorig.qualifier == scopy.qualifier
-            assert sorig.tag       == scopy.tag
         }
 
         clientDolphin.send 'assert', {

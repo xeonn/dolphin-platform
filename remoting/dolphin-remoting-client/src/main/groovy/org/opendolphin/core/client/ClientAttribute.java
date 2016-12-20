@@ -2,7 +2,6 @@ package org.opendolphin.core.client;
 
 import groovy.transform.CompileStatic;
 import org.opendolphin.core.BaseAttribute;
-import org.opendolphin.core.Tag;
 
 import java.util.Map;
 
@@ -23,16 +22,12 @@ public class ClientAttribute extends BaseAttribute {
         this(propertyName, null);
     }
 
-    public ClientAttribute(String propertyName, Object initialValue, String qualifier, Tag tag) {
-        super(propertyName, initialValue, qualifier, tag);
-    }
-
     public ClientAttribute(String propertyName, Object initialValue, String qualifier) {
-        this(propertyName, initialValue, qualifier, Tag.VALUE);
+        super(propertyName, initialValue, qualifier);
     }
 
     public ClientAttribute(String propertyName, Object initialValue) {
-        this(propertyName, initialValue, null, Tag.VALUE);
+        this(propertyName, initialValue, null);
     }
 
     /**

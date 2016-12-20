@@ -55,7 +55,6 @@ class BaseAttributeSpec extends Specification {
         attribute.baseValue == null
         attribute.value == null
         attribute.toString().contains "name"
-        attribute.toString().contains " [VALUE] "
     }
 
     def "check isDirty triggers when value changes (initialValue == null)"() {
@@ -236,12 +235,8 @@ class MyAttribute extends BaseAttribute {
         super(propertyName)
     }
 
-    MyAttribute(String propertyName, Object initialValue) {
-        super(propertyName, initialValue)
-    }
-
-    MyAttribute(String propertyName, Object baseValue, Tag tag) {
-        super(propertyName, baseValue, tag)
+    MyAttribute(String propertyName, Object baseValue) {
+        super(propertyName, baseValue)
     }
 
     @Override

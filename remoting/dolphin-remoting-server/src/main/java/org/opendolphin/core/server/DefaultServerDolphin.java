@@ -3,7 +3,6 @@ package org.opendolphin.core.server;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.AbstractDolphin;
 import org.opendolphin.core.BaseAttribute;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.DeletePresentationModelCommand;
@@ -106,7 +105,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     public ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto) {
         List<ServerAttribute> attributes = new ArrayList<ServerAttribute>();
         for (final Slot slot : dto.getSlots()) {
-            final ServerAttribute result = new ServerAttribute(slot.getPropertyName(), slot.getBaseValue(), slot.getQualifier(), slot.getTag());
+            final ServerAttribute result = new ServerAttribute(slot.getPropertyName(), slot.getBaseValue(), slot.getQualifier());
             result.silently(new Runnable() {
                 @Override
                 public void run() {
@@ -210,18 +209,18 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     /**
      * Convenience method for the InitializeAttributeCommand
      */
-    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
-        initAtCommand(response, pmId, propertyName, qualifier, newValue, tag);
+    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
+        initAtCommand(response, pmId, propertyName, qualifier, newValue);
     }
 
     /**
      * Convenience method for the InitializeAttributeCommand
      */
-    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
+    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
         if (null == response) {
             return;
         }
-        response.add(new InitializeAttributeCommand(pmId, propertyName, qualifier, newValue, tag));
+        response.add(new InitializeAttributeCommand(pmId, propertyName, qualifier, newValue));
     }
 
     public ServerModelStore getServerModelStore() {

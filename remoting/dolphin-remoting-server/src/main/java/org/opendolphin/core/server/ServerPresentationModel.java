@@ -41,7 +41,7 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
     public void addAttribute(ServerAttribute attribute) {
         _internal_addAttribute(attribute);
         modelStore.registerAttribute(attribute);
-        DefaultServerDolphin.initAt(modelStore.getCurrentResponse(), getId(), attribute.getPropertyName(), attribute.getQualifier(), attribute.getValue(), attribute.getTag());
+        DefaultServerDolphin.initAt(modelStore.getCurrentResponse(), getId(), attribute.getPropertyName(), attribute.getQualifier(), attribute.getValue());
     }
 
     public void rebase() {

@@ -17,7 +17,6 @@ package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
 import com.canoo.dolphin.impl.PlatformConstants;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.ClientAttribute;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
@@ -48,20 +47,8 @@ public class ClientPresentationModelBuilder extends AbstractPresentationModelBui
     }
 
     @Override
-    public ClientPresentationModelBuilder withAttribute(String name, Object value, Tag tag) {
-        attributes.add(new ClientAttribute(name, value, null, tag));
-        return this;
-    }
-
-    @Override
     public ClientPresentationModelBuilder withAttribute(String name, Object value, String qualifier) {
         attributes.add(new ClientAttribute(name, value, qualifier));
-        return this;
-    }
-
-    @Override
-    public ClientPresentationModelBuilder withAttribute(String name, Object value, String qualifier, Tag tag) {
-        attributes.add(new ClientAttribute(name, value, qualifier, tag));
         return this;
     }
 

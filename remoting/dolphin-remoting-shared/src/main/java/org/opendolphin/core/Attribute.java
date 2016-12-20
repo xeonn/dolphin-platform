@@ -54,9 +54,6 @@ public interface Attribute extends Observable {
      */
     String getId();
 
-    /** Returns the tag of this attribute.  Every attribute has a tag.  By default, a tag of "VALUE" is assigned. */
-    Tag getTag();
-
     /** Copies the source attribute's qualifier, base value, and value to this attribute, thus "synchronizing" the
      * two attributes.
      * @param source attribute whose values are to be copied into this attribute

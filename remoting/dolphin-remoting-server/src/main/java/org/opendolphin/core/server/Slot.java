@@ -1,7 +1,5 @@
 package org.opendolphin.core.server;
 
-import org.opendolphin.core.Tag;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,26 +22,20 @@ public final class Slot {
 
     private String qualifier;
 
-    private Tag tag;
-
     public Slot(String propertyName, Object value) {
-        this(propertyName, value, null, Tag.VALUE);
+        this(propertyName, value, null);
     }
 
-    public Slot(String propertyName, Object value, String qualifier) {
-        this(propertyName, value, qualifier, Tag.VALUE);
-    }
 
     /**
      * Convenience method with positional parameters to create an attribute specification from name/value pairs.
      * Especially useful when creating DTO objects.
      */
-    public Slot(String propertyName, Object value, String qualifier, Tag tag) {
+    public Slot(String propertyName, Object value, String qualifier) {
         this.propertyName = propertyName;
         this.value = value;
         this.baseValue = value;
         this.qualifier = qualifier;
-        this.tag = tag;
     }
 
     /**
@@ -65,7 +57,6 @@ public final class Slot {
         map.put("value", value);
         map.put("baseValue", baseValue);
         map.put("qualifier", qualifier);
-        map.put("tag", tag);
         return map;
     }
 
@@ -85,7 +76,4 @@ public final class Slot {
         return qualifier;
     }
 
-    public Tag getTag() {
-        return tag;
-    }
 }

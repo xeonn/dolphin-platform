@@ -35,7 +35,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     private       Object value;
     private       Object baseValue;
     private      boolean dirty = false;
-    private final Tag    tag;
 
     private PresentationModel presentationModel;
 
@@ -43,24 +42,20 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     private String qualifier; // application specific semantics apply
 
     public BaseAttribute(String propertyName) {
-        this(propertyName, null);
+        this(propertyName, null, null);
     }
 
     public BaseAttribute(String propertyName, Object baseValue) {
-        this(propertyName, baseValue, Tag.VALUE);
+        this(propertyName, baseValue, null);
     }
 
-    public BaseAttribute(String propertyName, Object baseValue, Tag tag) {
-        this(propertyName, baseValue, null, tag);
-    }
 
-    public BaseAttribute(String propertyName, Object baseValue, String qualifier, Tag tag) {
+    public BaseAttribute(String propertyName, Object baseValue, String qualifier) {
         this.id = (instanceCount++) + getOrigin();
         this.propertyName = propertyName;
         this.baseValue = baseValue;
         this.value = baseValue;
         this.qualifier = qualifier;
-        this.tag = (null==tag) ? Tag.VALUE : tag ;
     }
 
     /**
@@ -92,14 +87,9 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
         return value;
     }
 
-    public Tag getTag() {
-        return tag;
-    }
-
     /** Check whether value is of allowed type and convert to an allowed type if possible. */
     public static Object checkValue(Object value) {
         if (null == value) return null;
-        if (value instanceof Tag) return ((Tag)value).getName(); // name instead of ordinal to make decoding easier
         Object result = value;
         if (result instanceof GString) result = value.toString();
         if (result instanceof BaseAttribute) {
@@ -156,7 +146,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
                 .append(propertyName)
                 .append(" (")
                 .append(qualifier).append(") ")
-                .append("[").append(tag.getName()).append("] ")
                 .append(value).toString();
     }
 

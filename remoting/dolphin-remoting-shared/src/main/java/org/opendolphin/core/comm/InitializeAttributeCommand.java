@@ -1,7 +1,5 @@
 package org.opendolphin.core.comm;
 
-import org.opendolphin.core.Tag;
-
 public class InitializeAttributeCommand extends Command {
 
     private String pmId;
@@ -13,8 +11,6 @@ public class InitializeAttributeCommand extends Command {
     private Object newValue;
 
     private String pmType;
-
-    private Tag tag = Tag.VALUE;
 
     public InitializeAttributeCommand() {
     }
@@ -32,24 +28,6 @@ public class InitializeAttributeCommand extends Command {
         this.qualifier = qualifier;
         this.newValue = newValue;
         this.pmType = pmType;
-    }
-
-    public InitializeAttributeCommand(String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
-        this.pmId = pmId;
-        this.propertyName = propertyName;
-        this.qualifier = qualifier;
-        this.newValue = newValue;
-        this.pmType = pmType;
-        this.tag = tag;
-    }
-
-    public InitializeAttributeCommand(String pmId, String propertyName, String qualifier, Object newValue, String pmType, Tag tag) {
-        this.pmId = pmId;
-        this.propertyName = propertyName;
-        this.qualifier = qualifier;
-        this.newValue = newValue;
-        this.pmType = pmType;
-        this.tag = tag;
     }
 
     public String getPmId() {
@@ -92,16 +70,8 @@ public class InitializeAttributeCommand extends Command {
         this.pmType = pmType;
     }
 
-    public Tag getTag() {
-        return tag;
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + " pm \'" + pmId + "\' pmType\'" + pmType + "\' property \'" + propertyName + "\' initial value \'" + String.valueOf(newValue) + "\' qualifier " + qualifier + " tag " + String.valueOf(tag);
+        return super.toString() + " pm \'" + pmId + "\' pmType\'" + pmType + "\' property \'" + propertyName + "\' initial value \'" + String.valueOf(newValue) + "\' qualifier " + qualifier;
     }
 }

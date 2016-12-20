@@ -15,8 +15,6 @@
  */
 package org.opendolphin.core.comm
 
-import org.opendolphin.core.Tag
-
 public class JsonCodecTest extends GroovyTestCase {
 
     void testEmpty() {
@@ -82,7 +80,7 @@ public class JsonCodecTest extends GroovyTestCase {
     }
 
     void testCodingCommands() {
-        assertCodingCommand(new AttributeCreatedNotification(tag: Tag.TOOLTIP))
+        assertCodingCommand(new AttributeCreatedNotification())
         assertCodingCommand(new AttributeMetadataChangedCommand())
         assertCodingCommand(new CallNamedActionCommand("some-action"))
         assertCodingCommand(new CreatePresentationModelCommand())

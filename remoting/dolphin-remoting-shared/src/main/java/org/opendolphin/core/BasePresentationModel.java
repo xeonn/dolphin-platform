@@ -46,7 +46,7 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
 
     public void updateDirty() {
         for (A attr : attributes) {
-            if (attr.getTag() == Tag.VALUE && attr.isDirty()) {
+            if (attr.isDirty()) {
                 setDirty(true);
                 return;
             }
@@ -56,10 +56,9 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
 
     public void _internal_addAttribute(A attribute) {
         if (null == attribute || attributes.contains(attribute)) return;
-        if (null != findAttributeByPropertyNameAndTag(attribute.getPropertyName(), attribute.getTag())) {
+        if (null != findAttributeByPropertyName(attribute.getPropertyName())) {
             throw new IllegalStateException("There already is an attribute with property name '"
                                             + attribute.getPropertyName()
-                                            + "' and tag '" + attribute.getTag()
                                             + "' in presentation model with id '" + this.id + "'.");
         }
         if (attribute.getQualifier() != null && this.findAttributeByQualifier(attribute.getQualifier()) != null) {
@@ -68,7 +67,7 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         }
         ((BaseAttribute)attribute).setPresentationModel(this);
         attributes.add(attribute);
-        if (attribute.getTag() == Tag.VALUE) updateDirty(); // the new attribute may be dirty
+        updateDirty(); // the new attribute may be dirty
     }
 
     public String getId() {
@@ -126,15 +125,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         return (attributeValue == null) ? defaultValue : Integer.parseInt(attributeValue.toString());
     }
 
-    public A getAt(String propertyName, Tag tag) {
-        return findAttributeByPropertyNameAndTag(propertyName, tag);
-    }
-
-    public A findAttributeByPropertyName(String propertyName) {
-        return findAttributeByPropertyNameAndTag(propertyName, Tag.VALUE);
-    }
-
-
     public List<A> findAllAttributesByPropertyName(String propertyName) {
         List<A> result = new LinkedList<A>();
         if (null == propertyName) return result;
@@ -146,11 +136,10 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         return result;
     }
 
-    public A findAttributeByPropertyNameAndTag(String propertyName, Tag tag) {
+    public A findAttributeByPropertyName(String propertyName) {
         if (null == propertyName) return null;
-        if (null == tag) return null;
         for (A attribute : attributes) {
-            if (propertyName.equals(attribute.getPropertyName()) && tag.equals(attribute.getTag())) {
+            if (propertyName.equals(attribute.getPropertyName())) {
                 return attribute;
             }
         }
@@ -192,7 +181,7 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
      */
     public void syncWith(PresentationModel sourcePresentationModel) {
         for (A targetAttribute : attributes) {
-            Attribute sourceAttribute = sourcePresentationModel.getAt(targetAttribute.getPropertyName(), targetAttribute.getTag());
+            Attribute sourceAttribute = sourcePresentationModel.getAt(targetAttribute.getPropertyName());
             if (sourceAttribute != null) targetAttribute.syncWith(sourceAttribute);
         }
     }

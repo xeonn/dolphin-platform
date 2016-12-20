@@ -5,7 +5,6 @@ import groovy.json.JsonSlurper;
 import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.BaseAttribute;
-import org.opendolphin.core.Tag;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -136,9 +135,7 @@ public class JsonCodec implements Codec {
                                         return null;
                                     }
 
-                                    if (key.equals("tag")) {
-                                        value = Tag.tagFor((String) value);
-                                    } else if (value instanceof List) {// some commands may have collective values
+                                    if (value instanceof List) {// some commands may have collective values
                                         for (final Map entryMap : (List<Map>) value) {
                                             DefaultGroovyMethods.each(entryMap, new Closure<Object>(JsonCodec.this, JsonCodec.this) {
                                                 public Object doCall(Object entryKey, Object entryValue) {

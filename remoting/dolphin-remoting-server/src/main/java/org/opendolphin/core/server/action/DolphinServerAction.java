@@ -1,6 +1,5 @@
 package org.opendolphin.core.server.action;
 
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.DefaultServerDolphin;
@@ -29,22 +28,15 @@ public abstract class DolphinServerAction implements ServerAction {
     /**
      * Convenience method for the InitializeAttributeCommand
      */
-    public void initAt(String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
-        DefaultServerDolphin.initAt(dolphinResponse, pmId, propertyName, qualifier, newValue, tag);
-    }
-
-    /**
-     * Convenience method for the InitializeAttributeCommand
-     */
     public void initAt(String pmId, String propertyName, String qualifier, Object newValue) {
-        initAt(pmId, propertyName, qualifier, newValue, Tag.VALUE);
+        DefaultServerDolphin.initAt(dolphinResponse, pmId, propertyName, qualifier, newValue);
     }
 
     /**
      * Convenience method for the InitializeAttributeCommand
      */
     public void initAt(String pmId, String propertyName, String qualifier) {
-        initAt(pmId, propertyName, qualifier, null, Tag.VALUE);
+        initAt(pmId, propertyName, qualifier, null);
     }
 
     public DefaultServerDolphin getServerDolphin() {

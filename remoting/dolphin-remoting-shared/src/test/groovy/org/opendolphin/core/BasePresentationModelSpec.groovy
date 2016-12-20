@@ -21,11 +21,11 @@ import java.beans.PropertyChangeListener
 
 class BasePresentationModelSpec extends Specification {
 
-    def "finding all tag attributes for a given property name"() {
+    def "finding all attributes for a given property name"() {
         given:
-        def value = new MyAttribute("name",  null, Tag.VALUE)
-        def label = new MyAttribute("name",  null, Tag.LABEL)
-        def other = new MyAttribute("other", null, Tag.VALUE)
+        def value = new MyAttribute("name",  null)
+        def label = new MyAttribute("nameLabel",  null)
+        def other = new MyAttribute("other", null)
 
 
         when:
@@ -34,14 +34,14 @@ class BasePresentationModelSpec extends Specification {
 
         then:
 
-        fullModel.findAllAttributesByPropertyName("name")         == [value, label]
+        fullModel.findAllAttributesByPropertyName("name")         == [value]
         fullModel.findAllAttributesByPropertyName("other")        == [other]
         fullModel.findAllAttributesByPropertyName("no-such-name") == []
         fullModel.findAllAttributesByPropertyName(null)           == []
 
         emptyModel.findAllAttributesByPropertyName("name")        == []
 
-        value.getPresentationModel().findAllAttributesByPropertyName(value.getPropertyName()) == [value, label]
+        value.getPresentationModel().findAllAttributesByPropertyName(value.getPropertyName()) == [value]
 
     }
 
@@ -62,8 +62,8 @@ class BasePresentationModelSpec extends Specification {
     def "you can not add two attributes with the same property name and tag"() {
         given:
         def model = new BasePresentationModel("1", [])
-        def attribute1 = new MyAttribute("name", null, Tag.VALUE)
-        def attribute2 = new MyAttribute("name", null, Tag.VALUE)
+        def attribute1 = new MyAttribute("name", null)
+        def attribute2 = new MyAttribute("name", null)
 
         when:
         model._internal_addAttribute(attribute1)
@@ -116,8 +116,7 @@ class BasePresentationModelSpec extends Specification {
         def pm = new BasePresentationModel('1',[baseAttribute])
 
         expect:
-        null == pm.findAttributeByPropertyNameAndTag('myInt', null) // null safe
-        null == pm.findAttributeByPropertyNameAndTag(null, null) // null safe
+        null == pm.findAttributeByPropertyName(null) // null safe
 
         null == pm.findAttributeByQualifier('no-such-qualifier')
         baseAttribute == pm.findAttributeByQualifier('myQualifier')

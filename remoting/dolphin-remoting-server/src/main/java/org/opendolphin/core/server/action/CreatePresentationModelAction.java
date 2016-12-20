@@ -2,7 +2,6 @@ package org.opendolphin.core.server.action;
 
 import groovy.lang.Closure;
 import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerAttribute;
@@ -38,7 +37,7 @@ public class CreatePresentationModelAction extends DolphinServerAction {
 
         List<ServerAttribute> attributes = new LinkedList();
         for (Map<String, Object> attr : command.getAttributes()) {
-            ServerAttribute attribute = new ServerAttribute((String) attr.get("propertyName"), attr.get("value"), (String) attr.get("qualifier"), Tag.tagFor(attr.get("tag").toString()));
+            ServerAttribute attribute = new ServerAttribute((String) attr.get("propertyName"), attr.get("value"), (String) attr.get("qualifier"));
             attribute.setId((String) attr.get("id"));
             attributes.add(attribute);
         }

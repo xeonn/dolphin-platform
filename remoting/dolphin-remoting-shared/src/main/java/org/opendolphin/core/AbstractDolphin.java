@@ -134,7 +134,6 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
         for (A source : presentationModel.getAttributes()) {
             if (null == source.getQualifier()) continue;
             for (A target : getModelStore().findAllAttributesByQualifier(source.getQualifier())) {
-                if (target.getTag() != source.getTag()) continue;
                 target.setValue(source.getValue());
             }
         }

@@ -3,7 +3,6 @@ package org.opendolphin.core.client;
 import groovy.lang.Closure;
 import org.opendolphin.core.AbstractDolphin;
 import org.opendolphin.core.ModelStore;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.OnFinishedDataAdapter;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
@@ -162,19 +161,6 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
     }
 
     /**
-     * Tags the attribute by
-     * adding a new attribute with the given tag and value to the model store
-     * inside the given presentation model and for the given property name.
-     *
-     * @return the created ClientAttribute that carries the tag value
-     */
-    public ClientAttribute tag(ClientPresentationModel model, String propertyName, Tag tag, Object value) {
-        ClientAttribute attribute = new ClientAttribute(propertyName, value, null, tag);
-        addAttributeToModel(model, attribute);
-        return attribute;
-    }
-
-    /**
      * Adds the supplied attribute to the model store for the specified presentation model.
      *
      * @param presentationModel
@@ -184,13 +170,13 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
         presentationModel._internal_addAttribute(attribute);
         clientModelStore.registerAttribute(attribute);
         if (!presentationModel.isClientSideOnly()) {
-            clientConnector.send(new AttributeCreatedNotification(presentationModel.getId(), attribute.getId(), attribute.getPropertyName(), attribute.getValue(), attribute.getQualifier(), attribute.getTag()));
+            clientConnector.send(new AttributeCreatedNotification(presentationModel.getId(), attribute.getId(), attribute.getPropertyName(), attribute.getValue(), attribute.getQualifier()));
         }
 
     }
 
     protected ClientAttribute copyAttribute(ClientAttribute sourceAttribute) {
-        ClientAttribute result = new ClientAttribute(sourceAttribute.getPropertyName(), sourceAttribute.getBaseValue(), sourceAttribute.getQualifier(), sourceAttribute.getTag());
+        ClientAttribute result = new ClientAttribute(sourceAttribute.getPropertyName(), sourceAttribute.getBaseValue(), sourceAttribute.getQualifier());
         result.setValue(sourceAttribute.getValue());
         return result;
     }

@@ -42,19 +42,12 @@ public class CreatePresentationModelCommand extends Command {
         result.setPmId(model.getId());
         result.setPmType(model.getPresentationModelType());
         for (T attr : model.getAttributes()) {
-
             Map attributeMap = new HashMap();
             attributeMap.put("propertyName", attr.getPropertyName());
             attributeMap.put("id", attr.getId());
             attributeMap.put("qualifier", attr.getQualifier());
             attributeMap.put("value", attr.getValue());
             attributeMap.put("baseValue", attr.getBaseValue());
-            if (attr.getTag() != null) {
-                attributeMap.put("tag", attr.getTag().getName());
-            } else {
-                attributeMap.put("tag", null);
-            }
-
             result.getAttributes().add(attributeMap);
         }
 

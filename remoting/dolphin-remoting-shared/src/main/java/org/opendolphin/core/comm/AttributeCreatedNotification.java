@@ -1,7 +1,5 @@
 package org.opendolphin.core.comm;
 
-import org.opendolphin.core.Tag;
-
 public class AttributeCreatedNotification extends Command {
 
     private String pmId;
@@ -14,18 +12,15 @@ public class AttributeCreatedNotification extends Command {
 
     private String qualifier;
 
-    private Tag tag = Tag.VALUE;
-
     public AttributeCreatedNotification() {
     }
 
-    public AttributeCreatedNotification(String pmId, String attributeId, String propertyName, Object newValue, String qualifier, Tag tag) {
+    public AttributeCreatedNotification(String pmId, String attributeId, String propertyName, Object newValue, String qualifier) {
         this.pmId = pmId;
         this.attributeId = attributeId;
         this.propertyName = propertyName;
         this.newValue = newValue;
         this.qualifier = qualifier;
-        this.tag = tag;
     }
 
     public String getPmId() {
@@ -68,16 +63,8 @@ public class AttributeCreatedNotification extends Command {
         this.qualifier = qualifier;
     }
 
-    public Tag getTag() {
-        return tag;
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
     public String toString() {
-        return super.toString() + " attr:" + attributeId + ", pm:" + pmId + ", property:" + propertyName + " value:" + String.valueOf(newValue) + " qualifier:" + qualifier + " tag:" + (tag == null ? null : tag.getName());
+        return super.toString() + " attr:" + attributeId + ", pm:" + pmId + ", property:" + propertyName + " value:" + String.valueOf(newValue) + " qualifier:" + qualifier;
     }
 
 }
