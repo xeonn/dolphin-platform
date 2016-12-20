@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package org.opendolphin.core.client.comm
-
+import groovy.transform.CompileStatic
 import org.opendolphin.core.comm.GetPresentationModelCommand
 import org.opendolphin.core.comm.ValueChangedCommand
 
@@ -32,7 +32,7 @@ import java.util.logging.Logger
  * for value change and create presentation model commands
  * when synchronizing back to the server.
  */
-
+@CompileStatic
 class BlindCommandBatcher extends CommandBatcher {
 
     private static final Logger LOG = Logger.getLogger(BlindCommandBatcher.class.getName());
@@ -43,7 +43,7 @@ class BlindCommandBatcher extends CommandBatcher {
 
     Lock commandsAndHandlersLock = new ReentrantLock();
 
-    /** Time allowed to fill the queue before a batch is assembled */
+/** Time allowed to fill the queue before a batch is assembled */
     long deferMillis = 10;
 
     /** Must be > 0*/
@@ -162,6 +162,7 @@ class BlindCommandBatcher extends CommandBatcher {
         });
     }
 
+
     protected CommandAndHandler batchBlinds(List<CommandAndHandler> queue) {
         if (queue.isEmpty()) {
             return;
@@ -207,7 +208,7 @@ class BlindCommandBatcher extends CommandBatcher {
         if (!(val.command in ValueChangedCommand)) {
             return false;
         }
-        ValueChangedCommand valCmd = (ValueChangedCommand) val.command;
+        ValueChangedCommand valCmd = (ValueChangedCommand) val.getCommand();
 
         shallWeEvenTryToMerge = true;
 
