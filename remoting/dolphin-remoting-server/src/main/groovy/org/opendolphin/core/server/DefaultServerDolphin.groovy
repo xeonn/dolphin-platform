@@ -142,10 +142,13 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         return model
     }
 
-    /** @deprecated use {@link #presentationModelCommand(java.util.List, java.lang.String, java.lang.String, org.opendolphin.core.server.DTO)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
-    static void presentationModel(List<Command> response, String id, String presentationModelType, DTO dto){
-        presentationModelCommand(response, id, presentationModelType, dto)
+    /**
+     * @deprecated use {@link #presentationModelCommand(List, String, String, DTO)}. You can use the "inline method refactoring". Will be removed in version 1.0!
+     */
+    public static void presentationModel(List<Command> response, String id, String presentationModelType, DTO dto) {
+        presentationModelCommand(response, id, presentationModelType, dto);
     }
+
 
     /** Convenience method to let the client (!) dolphin create a presentation model as specified by the DTO.
      * The server model store remains untouched until the client has issued the notification.*/
@@ -167,9 +170,11 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
         response << new CreatePresentationModelCommand(pmId: id, pmType: presentationModelType, attributes: dto.encodable(), clientSideOnly:true)
     }
 
-    /** @deprecated use {@link #rebaseCommand(java.util.List, org.opendolphin.core.server.ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
-    static void rebase(List<Command> response, ServerAttribute attribute){
-        rebaseCommand(response, attribute)
+    /**
+     * @deprecated use {@link #rebaseCommand(List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
+     */
+    public static void rebase(List<Command> response, ServerAttribute attribute) {
+        rebaseCommand(response, attribute);
     }
 
     /** Convenience method to let Dolphin rebase the value of an attribute */
@@ -184,9 +189,11 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
                 value: attribute.value)
     }
 
-    /** @deprecated use attribute.rebase(). Will be removed in version 1.0! */
-    static void rebase(List<Command> response, String attributeId){
-        rebaseCommand(response, attributeId)
+    /**
+     * @deprecated use attribute.rebase(). Will be removed in version 1.0!
+     */
+    public static void rebase(List<Command> response, String attributeId) {
+        rebaseCommand(response, attributeId);
     }
 
     /** @deprecated use attribute.rebase(). Will be removed in version 1.0! */
@@ -324,15 +331,49 @@ class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresen
     }
 
 
-/** Convenience method for the InitializeAttributeCommand */
-    static void initAt(List<Command>response, String pmId, String propertyName, String qualifier, Object newValue = null, Tag tag = Tag.VALUE) {
-        initAtCommand(response, pmId, propertyName, qualifier, newValue, tag)
+    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier) {
+        initAt(response, pmId, propertyName, qualifier, null, Tag.VALUE);
     }
 
-    /** Convenience method for the InitializeAttributeCommand */
-    static void initAtCommand(List<Command>response, String pmId, String propertyName, String qualifier, Object newValue = null, Tag tag = Tag.VALUE) {
-        if (null == response) return
-        response << new InitializeAttributeCommand(pmId: pmId, propertyName: propertyName, qualifier: qualifier, newValue: newValue, tag: tag)
+    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
+        initAt(response, pmId, propertyName, qualifier, newValue, Tag.VALUE);
+    }
+
+    /**
+     * Convenience method for the InitializeAttributeCommand
+     */
+    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Tag tag) {
+        initAt(response, pmId, propertyName, qualifier, null, tag);
+    }
+
+    /**
+     * Convenience method for the InitializeAttributeCommand
+     */
+    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
+        initAtCommand(response, pmId, propertyName, qualifier, newValue, tag);
+    }
+
+    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier) {
+        initAtCommand(response, pmId, propertyName, qualifier, null, Tag.VALUE);
+    }
+
+    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
+        initAtCommand(response, pmId, propertyName, qualifier, newValue, Tag.VALUE);
+    }
+
+    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Tag tag) {
+        initAtCommand(response, pmId, propertyName, qualifier, null, tag);
+    }
+
+    /**
+     * Convenience method for the InitializeAttributeCommand
+     */
+    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue, Tag tag) {
+        if (null == response) {
+            return;
+
+        }
+        response.add(new InitializeAttributeCommand(pmId, propertyName, qualifier, newValue, tag));
     }
 
     /**
