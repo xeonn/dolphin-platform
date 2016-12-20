@@ -18,6 +18,10 @@ package org.opendolphin.core.comm
 import core.comm.TestInMemoryConfig
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.ServerDolphin
+import org.opendolphin.core.server.action.DolphinServerAction
+import org.opendolphin.core.server.comm.ActionRegistry
+import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +43,26 @@ class DeletePresentationModelTests extends GroovyTestCase {
         assert context.done.await(2, TimeUnit.SECONDS)
     }
 
+    void registerAction(ServerDolphin serverDolphin, String name, Closure handler) {
+        serverDolphin.register(new DolphinServerAction() {
+
+            @Override
+            void registerIn(ActionRegistry registry) {
+                registry.register(name, handler);
+            }
+        });
+    }
+
+    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+        serverDolphin.register(new DolphinServerAction() {
+
+            @Override
+            void registerIn(ActionRegistry registry) {
+                registry.register(name, handler);
+            }
+        });
+    }
+    
     void testCreateAndDeletePresentationModel() {
         // create the pm
         String modelId = 'modelId'
@@ -84,9 +108,9 @@ class DeletePresentationModelTests extends GroovyTestCase {
             assert serverDolphin.getAt(modelId)
         }
 
-        serverDolphin.action('triggerDelete') { cmd, List<Command> response ->
+        registerAction(serverDolphin, 'triggerDelete', { cmd, List<Command> response ->
             serverDolphin.deleteCommand(response, modelId)
-        }
+        });
         // when we now delete the pm
         clientDolphin.send 'triggerDelete', {
             clientDolphin.sync {

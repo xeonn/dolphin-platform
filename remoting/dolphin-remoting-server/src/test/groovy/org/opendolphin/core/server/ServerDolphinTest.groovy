@@ -27,11 +27,6 @@ public class ServerDolphinTest extends GroovyTestCase {
         dolphin.serverModelStore.currentResponse = []
     }
 
-    void testUniqueIds() {
-        def other = ServerDolphinFactory.create()
-        assert dolphin.id != other.id
-    }
-
     void testListPresentationModels() {
         assert dolphin.listPresentationModelIds().empty
         assert dolphin.listPresentationModels().empty

@@ -1,32 +1,23 @@
 package org.opendolphin.core.server;
 
-import groovy.lang.Closure;
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.AbstractDolphin;
-import org.opendolphin.core.Attribute;
 import org.opendolphin.core.BaseAttribute;
 import org.opendolphin.core.Tag;
-import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
-import org.opendolphin.core.comm.DeleteAllPresentationModelsOfTypeCommand;
 import org.opendolphin.core.comm.DeletePresentationModelCommand;
 import org.opendolphin.core.comm.InitializeAttributeCommand;
-import org.opendolphin.core.comm.PresentationModelResetedCommand;
 import org.opendolphin.core.comm.ValueChangedCommand;
-import org.opendolphin.core.server.action.ClosureServerAction;
 import org.opendolphin.core.server.action.CreatePresentationModelAction;
 import org.opendolphin.core.server.action.DeletePresentationModelAction;
 import org.opendolphin.core.server.action.DeletedAllPresentationModelsOfTypeAction;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.action.EmptyAction;
-import org.opendolphin.core.server.action.NamedServerAction;
 import org.opendolphin.core.server.action.StoreAttributeAction;
 import org.opendolphin.core.server.action.StoreValueChangeAction;
-import org.opendolphin.core.server.comm.NamedCommandHandler;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
@@ -92,22 +83,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * groovy-friendly convenience method to register a named action
-     */
-    public void action(String name, Closure logic) {
-        ClosureServerAction serverAction = new ClosureServerAction(name, logic);
-        register(serverAction);
-    }
-
-    /**
-     * java-friendly convenience method to register a named action
-     */
-    public void action(String name, NamedCommandHandler namedCommandHandler) {
-        NamedServerAction serverAction = new NamedServerAction(name, namedCommandHandler);
-        register(serverAction);
-    }
-
-    /**
      * Adding the model to the model store and if successful, sending the CreatePresentationModelCommand.
      *
      * @param model the model to be added.
@@ -148,13 +123,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #presentationModelCommand(List, String, String, DTO)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void presentationModel(List<Command> response, String id, String presentationModelType, DTO dto) {
-        presentationModelCommand(response, id, presentationModelType, dto);
-    }
-
-    /**
      * Convenience method to let the client (!) dolphin create a presentation model as specified by the DTO.
      * The server model store remains untouched until the client has issued the notification.
      */
@@ -166,36 +134,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * Convenience method to let Dolphin create a
-     * <strong> client-side only </strong>
-     * presentation model as specified by the DTO.
-     */
-    public static void clientSideModelCommand(List<Command> response, String id, String presentationModelType, DTO dto) {
-        if (response == null) {
-            return;
-        }
-        response.add(new CreatePresentationModelCommand(id, presentationModelType, dto.encodable(), true));
-    }
-
-    /**
-     * @deprecated use {@link #rebaseCommand(List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void rebase(List<Command> response, ServerAttribute attribute) {
-        rebaseCommand(response, attribute);
-    }
-
-    /**
-     * Convenience method to let Dolphin rebase the value of an attribute
-     */
-    public static void rebaseCommand(List<Command> response, ServerAttribute attribute) {
-        if (attribute == null) {
-            LOG.severe("Cannot rebase null attribute");
-            return;
-        }
-        response.add(new AttributeMetadataChangedCommand(attribute.getId(), Attribute.BASE_VALUE, attribute.getValue()));
-    }
-
-    /**
      * Convenience method to let Dolphin remove a presentation model directly on the server and notify the client.
      */
     public boolean remove(ServerPresentationModel pm) {
@@ -204,19 +142,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
             DefaultServerDolphin.deleteCommand(serverModelStore.getCurrentResponse(), pm);
         }
         return deleted;
-    }
-
-    /**
-     * Convenience method to let Dolphin remove all presentation models of a given type directly on the server and notify the client.
-     */
-    public void removeAllPresentationModelsOfType(String type) {
-        // todo: [REF] duplicated with DeleteAllPresentationModelsOfTypeAction, could go into ModelStore
-        List<ServerPresentationModel> models = new LinkedList(findAllPresentationModelsByType(type));// work on a copy
-        for (ServerPresentationModel model : models) {
-            serverModelStore.remove(model);
-            // go through the model store to avoid single commands being sent to the client
-        }
-        DefaultServerDolphin.deleteAllPresentationModelsOfTypeCommand(serverModelStore.getCurrentResponse(), type);
     }
 
     /**
@@ -238,44 +163,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
             return;
         }
         response.add(new DeletePresentationModelCommand(pmId));
-    }
-
-    /**
-     * @deprecated use {@link #deleteAllPresentationModelsOfTypeCommand(List, String)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void deleteAllPresentationModelsOfType(List<Command> response, String pmType) {
-        deleteAllPresentationModelsOfTypeCommand(response, pmType);
-    }
-
-    /**
-     * Convenience method to let Dolphin delete all presentation models of a given type on the client side
-     */
-    public static void deleteAllPresentationModelsOfTypeCommand(List<Command> response, String pmType) {
-        if (response == null || StringUtil.isBlank(pmType)) {
-            return;
-        }
-        response.add(new DeleteAllPresentationModelsOfTypeCommand(pmType));
-    }
-
-    /**
-     * Convenience method to let Dolphin reset a presentation model
-     */
-    public static void resetCommand(List<Command> response, ServerPresentationModel pm) {
-        if (pm == null) {
-            LOG.severe("Cannot reset null presentation model");
-            return;
-        }
-        resetCommand(response, pm.getId());
-    }
-
-    /**
-     * Convenience method to let Dolphin reset a presentation model
-     */
-    public static void resetCommand(List<Command> response, String pmId) {
-        if (response == null || StringUtil.isBlank(pmId)) {
-            return;
-        }
-        response.add(new PresentationModelResetedCommand(pmId));
     }
 
     /**
@@ -320,10 +207,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), BaseAttribute.checkValue(value)));
     }
 
-    public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier) {
-        initAt(response, pmId, propertyName, qualifier, null, Tag.VALUE);
-    }
-
     /**
      * Convenience method for the InitializeAttributeCommand
      */
@@ -341,16 +224,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         response.add(new InitializeAttributeCommand(pmId, propertyName, qualifier, newValue, tag));
     }
 
-    /**
-     * The id of the server dolphin, which is identical to the id of its server model store.
-     */
-    public int getId() {
-        return serverModelStore.getId();
-    }
-
     public ServerModelStore getServerModelStore() {
         return serverModelStore;
     }
-
-
 }
