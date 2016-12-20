@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2016 Canoo Engineering AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.opendolphin.core.server
 
 import org.opendolphin.StringUtil
@@ -17,7 +32,22 @@ import java.util.logging.Logger
  * Collaborates with server model store and current response.
  * Threading model: confined to a single controller thread.
  */
-public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin {
+class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, ServerPresentationModel> implements ServerDolphin{
+
+    private static final Logger LOG = Logger.getLogger(DefaultServerDolphin.class.getName());
+
+    /**
+     * the server model store is unique per user session
+     */
+    private final ServerModelStore serverModelStore;
+
+    /**
+     * the serverConnector is unique per user session
+     */
+    private final ServerConnector serverConnector;
+
+    private AtomicBoolean initialized = new AtomicBoolean(false);
+
     public DefaultServerDolphin(ServerModelStore serverModelStore, ServerConnector serverConnector) {
         this.serverModelStore = serverModelStore;
         this.serverConnector = serverConnector;
@@ -361,19 +391,14 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         forceChangeValue(value, response, attribute);
     }
 
-    /**
-     * @deprecated use {@link #forceChangeValueCommand(Object, List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
-     */
-    public static void forceChangeValue(Object value, List<Command> response, ServerAttribute attribute) {
+    /** @deprecated use {@link #forceChangeValueCommand(java.lang.Object, java.util.List, org.opendolphin.core.server.ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0! */
+    static void forceChangeValue(value, List<Command> response, ServerAttribute attribute) {
         forceChangeValueCommand(value, response, attribute);
     }
 
-    /**
-     * @deprecated use changeValueCommand(List, ServerAttribute, Object), which enforces the value change by default. Will be removed in version 1.0!
-     */
-    public static void forceChangeValueCommand(Object value, List<Command> response, ServerAttribute attribute) {
-        value = BaseAttribute.checkValue(value);
-        response.add(new ValueChangedCommand(attribute.getId(), value, attribute.getValue()));
+    /** @deprecated use {@link #changeValueCommand(java.util.List, org.opendolphin.core.server.ServerAttribute, java.lang.Object)}, which enforces the value change by default. Will be removed in version 1.0! */
+    static void forceChangeValueCommand(value, List<Command> response, ServerAttribute attribute) {
+        response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), BaseAttribute.checkValue(value)));
     }
 
     public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier) {
@@ -432,14 +457,4 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         return serverModelStore;
     }
 
-    private static final Logger LOG = Logger.getLogger(DefaultServerDolphin.class.getName());
-    /**
-     * the server model store is unique per user session
-     */
-    private final ServerModelStore serverModelStore;
-    /**
-     * the serverConnector is unique per user session
-     */
-    private final ServerConnector serverConnector;
-    private AtomicBoolean initialized = new AtomicBoolean(false);
 }
