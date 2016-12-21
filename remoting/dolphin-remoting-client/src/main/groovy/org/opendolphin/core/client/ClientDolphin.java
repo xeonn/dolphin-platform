@@ -137,14 +137,6 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
     }
 
     /**
-     * Removes the models of a given type from the model store just like delete()
-     * but sends only one notification to the server
-     */
-    public void deleteAllPresentationModelsOfType(String presentationModelType) {
-        clientModelStore.deleteAllPresentationModelsOfType(presentationModelType);
-    }
-
-    /**
      * Adds the supplied attribute to the model store for the specified presentation model.
      *
      * @param presentationModel

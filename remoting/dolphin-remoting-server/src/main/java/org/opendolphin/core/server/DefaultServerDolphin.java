@@ -9,7 +9,6 @@ import org.opendolphin.core.comm.InitializeAttributeCommand;
 import org.opendolphin.core.comm.ValueChangedCommand;
 import org.opendolphin.core.server.action.CreatePresentationModelAction;
 import org.opendolphin.core.server.action.DeletePresentationModelAction;
-import org.opendolphin.core.server.action.DeletedAllPresentationModelsOfTypeAction;
 import org.opendolphin.core.server.action.DolphinServerAction;
 import org.opendolphin.core.server.action.EmptyAction;
 import org.opendolphin.core.server.action.StoreAttributeAction;
@@ -71,7 +70,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         register(new StoreAttributeAction());
         register(new CreatePresentationModelAction());
         register(new DeletePresentationModelAction());
-        register(new DeletedAllPresentationModelsOfTypeAction());
         serverConnector.register(new EmptyAction());
     }
 

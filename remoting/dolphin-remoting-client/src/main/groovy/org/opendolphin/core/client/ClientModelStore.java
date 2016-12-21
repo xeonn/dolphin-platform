@@ -21,10 +21,8 @@ import org.opendolphin.core.client.comm.AttributeChangeListener;
 import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.WithPresentationModelHandler;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
-import org.opendolphin.core.comm.DeletedAllPresentationModelsOfTypeNotification;
 import org.opendolphin.core.comm.DeletedPresentationModelNotification;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -116,14 +114,4 @@ public class ClientModelStore extends ModelStore<ClientAttribute, ClientPresenta
             getClientConnector().send(new DeletedPresentationModelNotification(model.getId()));
         }
     }
-
-    // ModelStoreListener REMOVE will be fired after the server is notified.
-    public void deleteAllPresentationModelsOfType(String presentationModelType) {
-        getClientConnector().send(new DeletedAllPresentationModelsOfTypeNotification(presentationModelType));
-        List<ClientPresentationModel> models = new LinkedList<ClientPresentationModel>(findAllPresentationModelsByType(presentationModelType));
-        for (ClientPresentationModel model: models) {
-            delete(model, false);
-        }
-    }
-
 }

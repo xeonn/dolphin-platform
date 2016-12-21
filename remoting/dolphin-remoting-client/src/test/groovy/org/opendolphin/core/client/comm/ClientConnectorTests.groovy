@@ -307,17 +307,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		assert 1 == clientConnector.transmittedCommands.findAll { it instanceof DeletedPresentationModelNotification }.size()
 	}
 
-	void testHandle_DeleteAllPresentationModelsOfType() {
-		ClientPresentationModel p1 = dolphin.presentationModel('p1','type')
-		ClientPresentationModel p2 = dolphin.presentationModel('p2', 'type')
-		clientConnector.dispatchHandle(new DeleteAllPresentationModelsOfTypeCommand(pmType: 'type'))
-		assert !dolphin.getPresentationModel(p1.id)
-		assert !dolphin.getPresentationModel(p2.id)
-		syncAndWaitUntilDone()
-		assertCommandsTransmitted(4) // two creates, one deleteAll, one empty
-		assert 1 == clientConnector.transmittedCommands.findAll { it instanceof DeletedAllPresentationModelsOfTypeNotification }.size()
-	}
-
 	void testHandle_DataCommand() {
 		def data = [k: 'v']
 		assert data == clientConnector.dispatchHandle(new DataCommand(data))
