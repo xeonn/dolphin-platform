@@ -1,7 +1,5 @@
 package org.opendolphin.core.client.comm;
 
-import groovy.lang.Closure;
-import groovy.transform.CompileStatic;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.DefaultGroovyStaticMethods;
 import org.opendolphin.core.comm.GetPresentationModelCommand;
@@ -24,7 +22,6 @@ import java.util.logging.Logger;
  * for value change and create presentation model commands
  * when synchronizing back to the server.
  */
-@CompileStatic
 public class BlindCommandBatcher extends CommandBatcher {
     @Override
     public boolean isEmpty() {
@@ -197,13 +194,15 @@ public class BlindCommandBatcher extends CommandBatcher {
 
         shallWeEvenTryToMerge = true;
 
-        CommandAndHandler mergeable = DefaultGroovyMethods.find(blindCommands, new Closure<Boolean>(this, this) {
-            public Boolean doCall(CommandAndHandler cah) {// this has O(n*n) and can become costly
-                return cah.getCommand() != null && cah.getCommand() instanceof ValueChangedCommand && ((ValueChangedCommand) cah.getCommand()).getAttributeId().equals(valCmd.getAttributeId()) && ((ValueChangedCommand) cah.getCommand()).getNewValue().equals(valCmd.getOldValue());
-            }
 
-        });
-        if (!DefaultGroovyMethods.asBoolean(mergeable)) {
+        CommandAndHandler mergeable = null;
+        for (CommandAndHandler entry : blindCommands) {
+            if (entry.getCommand() != null && entry.getCommand() instanceof ValueChangedCommand && ((ValueChangedCommand) entry.getCommand()).getAttributeId().equals(valCmd.getAttributeId()) && ((ValueChangedCommand) entry.getCommand()).getNewValue().equals(valCmd.getOldValue())) {
+                mergeable = entry;
+                break;
+            }
+        }
+        if (mergeable == null){
             return false;
         }
 

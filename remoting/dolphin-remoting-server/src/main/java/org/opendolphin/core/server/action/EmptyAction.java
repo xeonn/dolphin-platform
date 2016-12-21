@@ -1,9 +1,10 @@
 package org.opendolphin.core.server.action;
 
-import groovy.lang.Closure;
 import org.opendolphin.core.comm.EmptyNotification;
 import org.opendolphin.core.server.comm.ActionRegistry;
+import org.opendolphin.core.server.comm.CommandHandler;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -17,11 +18,11 @@ public class EmptyAction implements ServerAction {
     private static final Logger LOG = Logger.getLogger(EmptyAction.class.getName());
 
     public void registerIn(ActionRegistry registry) {
-        registry.register(EmptyNotification.class, new Closure<Object>(this, this) {
-            public void doCall(EmptyNotification command, Object response) {
+        registry.register(EmptyNotification.class, new CommandHandler<EmptyNotification>() {
+            @Override
+            public void handleCommand(EmptyNotification command, List response) {
                 LOG.finest("empty action reached - doing nothing on the server");
             }
-
         });
     }
 

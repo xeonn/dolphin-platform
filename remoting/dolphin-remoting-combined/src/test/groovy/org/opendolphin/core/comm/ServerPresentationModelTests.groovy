@@ -23,6 +23,7 @@ import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
+import org.opendolphin.core.server.comm.CommandHandler
 import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.TimeUnit
@@ -54,16 +55,6 @@ class ServerPresentationModelTests extends GroovyTestCase {
     void testServerModelStoreAcceptsConfig() {
         new ServerModelStore(new ModelStoreConfig())
         context.assertionsDone()
-    }
-
-    void registerAction(ServerDolphin serverDolphin, String name, Closure handler) {
-        serverDolphin.register(new DolphinServerAction() {
-
-            @Override
-            void registerIn(ActionRegistry registry) {
-                registry.register(name, handler);
-            }
-        });
     }
 
     void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
@@ -222,9 +213,13 @@ class ServerPresentationModelTests extends GroovyTestCase {
         serverDolphin.register(new DolphinServerAction() {
             @Override
             void registerIn(ActionRegistry registry) {
-                registry.register(CreatePresentationModelCommand) { cmd, resp ->
-                    receivedCommands << cmd
-                }
+                registry.register(CreatePresentationModelCommand.class, new CommandHandler<CreatePresentationModelCommand>() {
+
+                    @Override
+                    void handleCommand(CreatePresentationModelCommand command, List<Command> response) {
+                        receivedCommands << command
+                    }
+                });
             }
         })
 

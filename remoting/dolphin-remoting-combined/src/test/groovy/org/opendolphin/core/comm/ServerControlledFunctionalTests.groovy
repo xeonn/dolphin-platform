@@ -54,16 +54,6 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
         assert context.done.await(20, TimeUnit.SECONDS)
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, Closure handler) {
-        serverDolphin.register(new DolphinServerAction() {
-
-            @Override
-            void registerIn(ActionRegistry registry) {
-                registry.register(name, handler);
-            }
-        });
-    }
-
     void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
         serverDolphin.register(new DolphinServerAction() {
 

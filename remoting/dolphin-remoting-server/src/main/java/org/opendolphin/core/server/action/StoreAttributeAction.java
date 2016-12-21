@@ -1,6 +1,5 @@
 package org.opendolphin.core.server.action;
 
-import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
@@ -10,8 +9,10 @@ import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerModelStore;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
+import org.opendolphin.core.server.comm.CommandHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class StoreAttributeAction extends DolphinServerAction {
@@ -19,8 +20,9 @@ public class StoreAttributeAction extends DolphinServerAction {
     private static final Logger LOG = Logger.getLogger(StoreAttributeAction.class.getName());
 
     public void registerIn(ActionRegistry registry) {
-        registry.register(AttributeCreatedNotification.class, new Closure<Object>(this, this) {
-            public void doCall(AttributeCreatedNotification command, Object response) {
+        registry.register(AttributeCreatedNotification.class, new CommandHandler<AttributeCreatedNotification>() {
+            @Override
+            public void handleCommand(AttributeCreatedNotification command, List response) {
                 ServerModelStore modelStore = getServerDolphin().getServerModelStore();
                 Attribute existing = modelStore.findAttributeById(command.getAttributeId());
                 if (DefaultGroovyMethods.asBoolean(existing)) {
@@ -38,11 +40,11 @@ public class StoreAttributeAction extends DolphinServerAction {
                 ((ServerPresentationModel) pm)._internal_addAttribute(attribute);
                 modelStore.registerAttribute(attribute);
             }
-
         });
 
-        registry.register(ChangeAttributeMetadataCommand.class, new Closure<Object>(this, this) {
-            public void doCall(final ChangeAttributeMetadataCommand command, Object response) {
+        registry.register(ChangeAttributeMetadataCommand.class, new CommandHandler<ChangeAttributeMetadataCommand>() {
+            @Override
+            public void handleCommand(final ChangeAttributeMetadataCommand command, List response) {
                 final Attribute attribute = getServerDolphin().findAttributeById(command.getAttributeId());
                 if (!DefaultGroovyMethods.asBoolean(attribute)) {
                     LOG.warning("Cannot find attribute with id '" + command.getAttributeId() + "'. Metadata remains unchanged.");

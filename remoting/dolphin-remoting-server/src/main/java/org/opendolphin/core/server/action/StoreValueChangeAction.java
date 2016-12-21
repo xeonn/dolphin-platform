@@ -1,11 +1,12 @@
 package org.opendolphin.core.server.action;
 
-import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.comm.ValueChangedCommand;
 import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.comm.ActionRegistry;
+import org.opendolphin.core.server.comm.CommandHandler;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public class StoreValueChangeAction extends DolphinServerAction {
@@ -13,8 +14,9 @@ public class StoreValueChangeAction extends DolphinServerAction {
     private static final Logger LOG = Logger.getLogger(StoreValueChangeAction.class.getName());
 
     public void registerIn(ActionRegistry registry) {
-        registry.register(ValueChangedCommand.class, new Closure<Object>(this, this) {
-            public void doCall(final ValueChangedCommand command, Object response) {
+        registry.register(ValueChangedCommand.class, new CommandHandler<ValueChangedCommand>() {
+            @Override
+            public void handleCommand(final ValueChangedCommand command, List response) {
                 final ServerAttribute attribute = getServerDolphin().findAttributeById(command.getAttributeId());
                 if (DefaultGroovyMethods.asBoolean(attribute)) {
                     if ((attribute.getValue() != null || command.getOldValue() != null) && !attribute.getValue().equals(command.getOldValue())) {
@@ -31,9 +33,7 @@ public class StoreValueChangeAction extends DolphinServerAction {
                 } else {
                     LOG.severe("S: cannot find attribute with id '" + command.getAttributeId() + "' to change value from '" + command.getOldValue() + "' to '" + command.getNewValue() + "'.");
                 }
-
             }
-
         });
     }
 }

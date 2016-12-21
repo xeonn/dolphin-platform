@@ -156,16 +156,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         }
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, Closure handler) {
-        serverDolphin.register(new DolphinServerAction() {
-
-            @Override
-            void registerIn(ActionRegistry registry) {
-                registry.register(name, handler);
-            }
-        });
-    }
-
     void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
         serverDolphin.register(new DolphinServerAction() {
 

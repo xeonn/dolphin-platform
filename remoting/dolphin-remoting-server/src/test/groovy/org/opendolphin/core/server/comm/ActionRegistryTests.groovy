@@ -16,7 +16,9 @@
 package org.opendolphin.core.server.comm
 
 import org.opendolphin.core.comm.AttributeCreatedNotification
+import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.DataCommand
+import org.opendolphin.core.comm.NamedCommand
 
 class ActionRegistryTests extends GroovyTestCase {
     ActionRegistry registry
@@ -28,12 +30,22 @@ class ActionRegistryTests extends GroovyTestCase {
 
     void testRegisterCommand() {
         assert 0 == registry.actions.size()
-        def firstAction = {}
+        CommandHandler firstAction = new CommandHandler<Command>() {
+            @Override
+            void handleCommand(Command command, List response) {
+
+            }
+        };
         registry.register('Data', firstAction)
         assert 1 == registry.getAt('Data').size()
-        assert registry.getAt('Data').closure.contains(firstAction)
+        assert registry.getAt('Data').contains(firstAction)
 
-        def otherAction = {}
+        CommandHandler otherAction = new CommandHandler<Command>() {
+            @Override
+            void handleCommand(Command command, List<Command> response) {
+
+            }
+        }
         registry.register(DataCommand, otherAction)
         registry.register(AttributeCreatedNotification, otherAction)
         assert 2 == registry.actions.size()
@@ -63,7 +75,12 @@ class ActionRegistryTests extends GroovyTestCase {
     }
 
     void testUnregisterCommand() {
-        def action = {}
+        CommandHandler action = new CommandHandler<Command>() {
+            @Override
+            void handleCommand(Command command, List<Command> response) {
+
+            }
+        };
         registry.register('Data',action)
         assert 1 == registry.getAt('Data').size()
         registry.unregister('Data',action)
@@ -76,7 +93,12 @@ class ActionRegistryTests extends GroovyTestCase {
 
     void testRegisterCommand_MultipleCalls() {
         assert 0 == registry.actions.size()
-        def action = {}
+        def action = new CommandHandler<NamedCommand>() {
+            @Override
+            void handleCommand(NamedCommand command, List<Command> response) {
+
+            }
+        }
         registry.register('Data', action)
         assert 1 == registry.getAt('Data').size()
 

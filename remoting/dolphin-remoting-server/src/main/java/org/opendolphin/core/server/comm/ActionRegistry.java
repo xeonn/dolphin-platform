@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.server.comm;
 
-import groovy.lang.Closure;
 import org.opendolphin.core.comm.Command;
 
 import java.util.ArrayList;
@@ -39,14 +38,6 @@ public class ActionRegistry {
         return Collections.unmodifiableMap(ACTIONS);
     }
 
-    public void register(String commandId, Closure serverCommand) {
-        register(commandId, new CommandHandlerClosureAdapter(serverCommand));
-    }
-
-    public void register(Class commandClass, Closure serverCommand) {
-        register(Command.idFor(commandClass), new CommandHandlerClosureAdapter(serverCommand));
-    }
-
     public void register(String commandId, CommandHandler serverCommand) {
         List<CommandHandler> actions = getActionsFor(commandId);
         if (!actions.contains(serverCommand)) {
@@ -60,14 +51,6 @@ public class ActionRegistry {
 
     public List<CommandHandler> getAt(String commandId) {
         return getActionsFor(commandId);
-    }
-
-    public void unregister(String commandId, Closure serverCommand) {
-        unregister(commandId, new CommandHandlerClosureAdapter(serverCommand));
-    }
-
-    public void unregister(Class commandClass, Closure serverCommand) {
-        unregister(Command.idFor(commandClass), new CommandHandlerClosureAdapter(serverCommand));
     }
 
     public void unregister(String commandId, CommandHandler serverCommand) {

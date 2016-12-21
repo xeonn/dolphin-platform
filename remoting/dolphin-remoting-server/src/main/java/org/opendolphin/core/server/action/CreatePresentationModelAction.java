@@ -1,12 +1,12 @@
 package org.opendolphin.core.server.action;
 
-import groovy.lang.Closure;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.server.DefaultServerDolphin;
 import org.opendolphin.core.server.ServerAttribute;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.opendolphin.core.server.comm.ActionRegistry;
+import org.opendolphin.core.server.comm.CommandHandler;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +18,10 @@ public class CreatePresentationModelAction extends DolphinServerAction {
     private static final Logger LOG = Logger.getLogger(CreatePresentationModelAction.class.getName());
 
     public void registerIn(ActionRegistry registry) {
-        registry.register(CreatePresentationModelCommand.class, new Closure<Object>(this, this) {
-            public void doCall(CreatePresentationModelCommand command, Object response) {
+
+        registry.register(CreatePresentationModelCommand.class, new CommandHandler<CreatePresentationModelCommand>() {
+            @Override
+            public void handleCommand(final CreatePresentationModelCommand command, List response) {
                 createPresentationModel(command, getServerDolphin());// closure wrapper for correct scoping and extracted method for static compilation
             }
         });

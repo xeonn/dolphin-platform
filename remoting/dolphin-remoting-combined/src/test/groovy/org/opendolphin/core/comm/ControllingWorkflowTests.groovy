@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.DefaultServerDolphin
@@ -24,7 +23,6 @@ import org.opendolphin.core.server.comm.ActionRegistry
 import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.TimeUnit
-
 /**
  * Showcase for how to set up a workflow on the server side where a series of actions
  * depend on each other and the effect that an earlier action had on the model store.
@@ -47,16 +45,6 @@ class ControllingWorkflowTests extends GroovyTestCase {
     @Override
     protected void tearDown() {
         assert context.done.await(10, TimeUnit.SECONDS)
-    }
-
-    void registerAction(ServerDolphin serverDolphin, String name, Closure handler) {
-        serverDolphin.register(new DolphinServerAction() {
-
-            @Override
-            void registerIn(ActionRegistry registry) {
-                registry.register(name, handler);
-            }
-        });
     }
 
     void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {

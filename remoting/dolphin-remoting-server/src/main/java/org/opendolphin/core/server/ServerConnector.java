@@ -1,6 +1,5 @@
 package org.opendolphin.core.server;
 
-import groovy.util.logging.Log;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.comm.Codec;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Log
 public class ServerConnector {
     /**
      * doesn't fail on missing commands

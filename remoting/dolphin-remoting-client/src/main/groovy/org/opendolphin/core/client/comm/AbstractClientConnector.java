@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.client.comm;
 
-import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.client.ClientDolphin;
@@ -179,16 +178,19 @@ public abstract class AbstractClientConnector implements ClientConnector {
         OnFinishedHandler callback = DefaultGroovyMethods.first(commandsAndHandlers).getHandler();// there can only be one relevant handler anyway
         // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
         if (callback != null) {
-            callback.onFinished((List<ClientPresentationModel>) DefaultGroovyMethods.unique(touchedPresentationModels, new Closure<String>(this, this) {
-                public String doCall(ClientPresentationModel it) {
-                    return ((ClientPresentationModel) it).getId();
+            List<ClientPresentationModel> uniqueModels = new ArrayList<>();
+            for(ClientPresentationModel model : touchedPresentationModels) {
+                boolean found = false;
+                for(ClientPresentationModel check : uniqueModels) {
+                    if(model.getId().equals(check.getId())) {
+                        found = true;
+                    }
                 }
-
-                public String doCall() {
-                    return doCall(null);
+                if(!found) {
+                    uniqueModels.add(model);
                 }
-
-            }));
+            }
+            callback.onFinished(uniqueModels);
             if (callback instanceof OnFinishedData) {
                 ((OnFinishedData) callback).onFinishedData(touchedDataMaps);
             }
