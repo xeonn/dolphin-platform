@@ -93,7 +93,7 @@ class ModelStoreSpec extends Specification {
         when:
         modelStore.add bpm1
         then:
-        'val' == modelStore.findPresentationModelById('pm1').getAt("attr").value
+        'val' == modelStore.findPresentationModelById('pm1').getAttribute("attr").value
 
         when:
         modelStore.remove bpm1

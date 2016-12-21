@@ -61,7 +61,7 @@ public class ClassRepositoryImpl implements ClassRepository {
             public void modelStoreChanged(final ModelStoreEvent event) {
                 Assert.requireNonNull(event, "event");
                 try {
-                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
+                    final String className = (String) event.getPresentationModel().getAttribute(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
                     final ClassInfo classInfo = createClassInfoForClass(beanClass);
                     Assert.requireNonNull(classInfo, "classInfo");

@@ -46,7 +46,7 @@ public class ServerDolphinTest extends GroovyTestCase {
         assert 2 == dolphin.listPresentationModels().size()
 
         for (id in dolphin.listPresentationModelIds()) {
-            assert dolphin.findPresentationModelById(id) in dolphin.listPresentationModels()
+            assert dolphin.getPresentationModel(id) in dolphin.listPresentationModels()
         }
     }
 

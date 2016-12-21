@@ -30,7 +30,7 @@ public class StoreAttributeAction extends DolphinServerAction {
 
                 ServerAttribute attribute = new ServerAttribute(command.getPropertyName(), command.getNewValue(), command.getQualifier());
                 attribute.setId(command.getAttributeId());
-                PresentationModel pm = getServerDolphin().findPresentationModelById(command.getPmId());
+                PresentationModel pm = getServerDolphin().getPresentationModel(command.getPmId());
                 if (pm == null) {
                     pm = new ServerPresentationModel(command.getPmId(), new ArrayList(), modelStore);
                     modelStore.add(pm);

@@ -18,7 +18,7 @@ import spock.lang.Specification
 
 class BasePresentationModelSpec extends Specification {
 
-    def "finding all attributes for a given property name"() {
+    def "get attributes for a given property name"() {
         given:
         def value = new MyAttribute("name",  null)
         def label = new MyAttribute("nameLabel",  null)
@@ -31,14 +31,14 @@ class BasePresentationModelSpec extends Specification {
 
         then:
 
-        fullModel.findAllAttributesByPropertyName("name")         == [value]
-        fullModel.findAllAttributesByPropertyName("other")        == [other]
-        fullModel.findAllAttributesByPropertyName("no-such-name") == []
-        fullModel.findAllAttributesByPropertyName(null)           == []
+        fullModel.getAttribute("name")         == value
+        fullModel.getAttribute("other")        == other
+        fullModel.getAttribute("no-such-name") == null
+        fullModel.getAttribute(null)           == null
 
-        emptyModel.findAllAttributesByPropertyName("name")        == []
+        emptyModel.getAttribute("name")        == null
 
-        value.getPresentationModel().findAllAttributesByPropertyName(value.getPropertyName()) == [value]
+        value.getPresentationModel().getAttribute(value.getPropertyName()) == value
 
     }
 
@@ -70,7 +70,6 @@ class BasePresentationModelSpec extends Specification {
         thrown IllegalStateException
     }
 
-
     def "attributes are accessible as properties"() {
         given:
 
@@ -80,7 +79,7 @@ class BasePresentationModelSpec extends Specification {
         expect:
 
         pm.attributes.find { it.propertyName == 'myPropName' } == baseAttribute // old style
-        pm.getAt("myPropName") == baseAttribute  // new style
+        pm.getAttribute("myPropName") == baseAttribute  // new style
     }
 
     def "missing attributes throw MissingPropertyException on access"() {
@@ -96,16 +95,6 @@ class BasePresentationModelSpec extends Specification {
         exception.message.contains('noSuchAttributeName')
     }
 
-    def "getValue(name,int) convenience method"() {
-        given:
-        def baseAttribute = new MyAttribute('myInt',1)
-        def pm = new BasePresentationModel('1',[baseAttribute])
-
-        expect:
-        1 == pm.getValue('myInt', 0)
-        0 == pm.getValue('no-such-property', 0)
-    }
-
     def "finder methods"() {
         given:
         def baseAttribute = new MyAttribute('myInt',1)
@@ -113,7 +102,7 @@ class BasePresentationModelSpec extends Specification {
         def pm = new BasePresentationModel('1',[baseAttribute])
 
         expect:
-        null == pm.findAttributeByPropertyName(null) // null safe
+        null == pm.getAttribute(null) // null safe
 
         null == pm.findAttributeByQualifier('no-such-qualifier')
         baseAttribute == pm.findAttributeByQualifier('myQualifier')

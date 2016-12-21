@@ -43,25 +43,7 @@ public interface PresentationModel<A extends Attribute> extends Observable {
      * @param propertyName attribute's property name
      * @return value attribute for the given property; null if non-existent
      */
-    A getAt(String propertyName);
-
-    /**
-     * Convenience method to get the value of an attribute if it exists, or a default value if it does not.
-     */
-    public int getValue(String attributeName, int defaultValue);
-
-    /**
-     * @param propertyName attribute's property name
-     * @return value attribute for the given property; null if non-existent
-     */
-    A findAttributeByPropertyName(String propertyName);
-
-    /**
-     * Retusn a list of all attributes with the given property name.  Each attribute will have a different tag value.
-     * @param propertyName attribute's property name
-     * @return list of all attributes with the given property name.
-     */
-    List<A> findAllAttributesByPropertyName(String propertyName);
+    A getAttribute(String propertyName);
 
     /**
      * Returns the first attribute whose qualifier matches the supplied value.

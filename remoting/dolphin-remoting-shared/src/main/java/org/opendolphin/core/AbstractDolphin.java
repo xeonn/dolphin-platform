@@ -15,13 +15,9 @@
  */
 package org.opendolphin.core;
 
-import groovy.lang.Closure;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import static org.codehaus.groovy.runtime.DefaultGroovyMethods.asType;
 
 public abstract class AbstractDolphin<A extends Attribute, P extends PresentationModel<A>> implements Dolphin<A, P> {
 
@@ -91,12 +87,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * alias for findPresentationModelById
      */
     @Override
-    public P getAt(String id) {
-        return findPresentationModelById(id);
-    }
-
-    @Override
-    public P findPresentationModelById(String id) {
+    public P getPresentationModel(String id) {
         return (P) getModelStore().findPresentationModelById(id);
     }
 
@@ -121,11 +112,6 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
     }
 
     @Override
-    public void addModelStoreListener(String presentationModelType, Closure listener) {
-        getModelStore().addModelStoreListener(presentationModelType, asType(listener, ModelStoreListener.class));
-    }
-
-    @Override
     public boolean hasModelStoreListener(String presentationModelType, ModelStoreListener listener) {
         return getModelStore().hasModelStoreListener(presentationModelType, listener);
     }
@@ -133,11 +119,6 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
     @Override
     public void addModelStoreListener(ModelStoreListener listener) {
         getModelStore().addModelStoreListener(listener);
-    }
-
-    @Override
-    public void addModelStoreListener(Closure listener) {
-        getModelStore().addModelStoreListener(asType(listener, ModelStoreListener.class));
     }
 
     /**

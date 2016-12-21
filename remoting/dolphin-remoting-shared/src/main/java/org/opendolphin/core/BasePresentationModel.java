@@ -46,7 +46,7 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
 
     public void _internal_addAttribute(A attribute) {
         if (null == attribute || attributes.contains(attribute)) return;
-        if (null != findAttributeByPropertyName(attribute.getPropertyName())) {
+        if (null != getAttribute(attribute.getPropertyName())) {
             throw new IllegalStateException("There already is an attribute with property name '"
                                             + attribute.getPropertyName()
                                             + "' in presentation model with id '" + this.id + "'.");
@@ -78,8 +78,14 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         return Collections.unmodifiableList(attributes);
     }
 
-    public A getAt(String propertyName) {
-        return findAttributeByPropertyName(propertyName);
+    public A getAttribute(String propertyName) {
+        if (null == propertyName) return null;
+        for (A attribute : attributes) {
+            if (propertyName.equals(attribute.getPropertyName())) {
+                return attribute;
+            }
+        }
+        return null;
     }
 
     // todo dk: overload with types for defaultValue
@@ -88,7 +94,7 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
      * Convenience method to get the value of an attribute if it exists or a default value otherwise.
      */
     public int getValue(String attributeName, int defaultValue) {
-        A attribute = getAt(attributeName);
+        A attribute = getAttribute(attributeName);
         Object attributeValue = (attribute == null) ? null : attribute.getValue();
         return (attributeValue == null) ? defaultValue : Integer.parseInt(attributeValue.toString());
     }
@@ -104,15 +110,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         return result;
     }
 
-    public A findAttributeByPropertyName(String propertyName) {
-        if (null == propertyName) return null;
-        for (A attribute : attributes) {
-            if (propertyName.equals(attribute.getPropertyName())) {
-                return attribute;
-            }
-        }
-        return null;
-    }
 
     public A findAttributeByQualifier(String qualifier) {
         if (null == qualifier) return null;

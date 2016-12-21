@@ -54,7 +54,7 @@ public class TestDolphinCommandHandler extends AbstractDolphinBasedTest {
                 registry.register("CHANGE_VALUE", new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        serverDolphin.findPresentationModelById(modelId).getAt("myAttribute").setValue("Hello World");
+                        serverDolphin.getPresentationModel(modelId).getAttribute("myAttribute").setValue("Hello World");
                     }
                 });
             }
@@ -64,7 +64,7 @@ public class TestDolphinCommandHandler extends AbstractDolphinBasedTest {
         dolphinCommandHandler.invokeDolphinCommand("CHANGE_VALUE").get();
 
         //Then:
-        assertEquals(clientDolphin.findPresentationModelById(modelId).getAt("myAttribute").getValue(), "Hello World");
+        assertEquals(clientDolphin.getPresentationModel(modelId).getAttribute("myAttribute").getValue(), "Hello World");
     }
 
 }

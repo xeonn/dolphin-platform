@@ -136,7 +136,7 @@ public abstract class EventDispatcherImpl implements EventDispatcher {
 
     private boolean isLocalChange(PresentationModel model) {
         Assert.requireNonNull(model, "model");
-        final Object value = model.findAttributeByPropertyName(PlatformConstants.SOURCE_SYSTEM).getValue();
+        final Object value = model.getAttribute(PlatformConstants.SOURCE_SYSTEM).getValue();
         return getLocalSystemIdentifier().equals(value);
     }
 

@@ -26,7 +26,7 @@ public class CreatePresentationModelAction extends DolphinServerAction {
     }
 
     private static void createPresentationModel(CreatePresentationModelCommand command, DefaultServerDolphin serverDolphin) {
-        if (serverDolphin.getAt(command.getPmId()) != null) {
+        if (serverDolphin.getPresentationModel(command.getPmId()) != null) {
             LOG.info("Ignoring create PM '" + command.getPmId() + "' since it is already in the model store.");
             return;
         }

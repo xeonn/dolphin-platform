@@ -16,6 +16,7 @@
 package org.opendolphin.core.comm
 
 import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.client.comm.OnFinishedDataAdapter
 import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerDolphin
 import org.opendolphin.core.server.action.DolphinServerAction
@@ -67,18 +68,18 @@ class DeletePresentationModelTests extends GroovyTestCase {
         String modelId = 'modelId'
         def model = clientDolphin.presentationModel(modelId, someAttribute:"someValue")
         // sanity check: we have a least the client model store listening to changes of someAttribute
-        assert model.getAt("someAttribute").propertyChangeListeners
+        assert model.getAttribute("someAttribute").propertyChangeListeners
         // the model is in the client model store
-        def found = clientDolphin.getAt(modelId)
+        def found = clientDolphin.getPresentationModel(modelId)
         assert model == found
         // ... and in the server model store after roundtrip
         clientDolphin.sync {
-            assert serverDolphin.getAt(modelId)
+            assert serverDolphin.getPresentationModel(modelId)
         }
         // when we now delete the pm
         clientDolphin.delete(model)
         // ... it is no longer in the client model store
-        assert !clientDolphin.findPresentationModelById(modelId)
+        assert !clientDolphin.getPresentationModel(modelId)
         // ... all listeners have been detached from model and all its attributes
         assert ! model.getPropertyChangeListeners()
         // what is allowed to remain is the "detached" model still listening to its own attribute changes
@@ -89,7 +90,7 @@ class DeletePresentationModelTests extends GroovyTestCase {
         }
         // the model is also gone from the server model store
         clientDolphin.sync {
-            assert !serverDolphin.getAt(modelId)
+            assert !serverDolphin.getPresentationModel(modelId)
             context.assertionsDone()
         }
     }
@@ -100,29 +101,29 @@ class DeletePresentationModelTests extends GroovyTestCase {
         String modelId = 'modelId'
         def model = clientDolphin.presentationModel(modelId, someAttribute:"someValue")
         // the model is in the client model store
-        def found = clientDolphin.getAt(modelId)
+        def found = clientDolphin.getPresentationModel(modelId)
         assert model == found
         // ... and in the server model store after roundtrip
         clientDolphin.sync {
-            assert serverDolphin.getAt(modelId)
+            assert serverDolphin.getPresentationModel(modelId)
         }
 
         registerAction(serverDolphin, 'triggerDelete', { cmd, List<Command> response ->
             serverDolphin.deleteCommand(response, modelId)
         });
         // when we now delete the pm
-        clientDolphin.send 'triggerDelete', {
+        clientDolphin.send 'triggerDelete', OnFinishedDataAdapter.withAction({
             clientDolphin.sync {
                 // ... it is no longer in the client model store
-                assert !clientDolphin.getAt(modelId)
+                assert !clientDolphin.getPresentationModel(modelId)
             }
             clientDolphin.sync {
                 // the model is also gone from the server model store
-                assert !serverDolphin.getAt(modelId)
+                assert !serverDolphin.getPresentationModel(modelId)
                 // we are done
                 context.assertionsDone()
             }
-        }
+        });
 
     }
 

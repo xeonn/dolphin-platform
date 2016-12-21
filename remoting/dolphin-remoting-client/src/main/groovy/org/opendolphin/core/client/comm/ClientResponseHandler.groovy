@@ -17,7 +17,6 @@ package org.opendolphin.core.client.comm
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log
 import org.opendolphin.core.Attribute
-import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientModelStore
@@ -52,7 +51,7 @@ class ClientResponseHandler {
     }
 
     ClientPresentationModel handle(DeletePresentationModelCommand serverCommand) {
-        ClientPresentationModel model = clientDolphin.findPresentationModelById(serverCommand.pmId)
+        ClientPresentationModel model = clientDolphin.getPresentationModel(serverCommand.pmId)
         if (!model) return null
         clientModelStore.delete(model)
         return model
@@ -134,7 +133,7 @@ class ClientResponseHandler {
             clientModelStore.add(presentationModel)
         }
         // if we already have the attribute, just update the value
-        def existingAtt = presentationModel.getAt(serverCommand.propertyName)
+        def existingAtt = presentationModel.getAttribute(serverCommand.propertyName)
         if (existingAtt) {
             existingAtt.value = attribute.value
         } else {
