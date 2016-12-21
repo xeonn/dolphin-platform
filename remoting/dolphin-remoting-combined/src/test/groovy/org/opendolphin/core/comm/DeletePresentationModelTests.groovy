@@ -21,7 +21,7 @@ import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerDolphin
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
 
@@ -43,7 +43,7 @@ class DeletePresentationModelTests extends GroovyTestCase {
         assert context.done.await(2, TimeUnit.SECONDS)
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
         serverDolphin.register(new DolphinServerAction() {
 
             @Override
@@ -98,7 +98,7 @@ class DeletePresentationModelTests extends GroovyTestCase {
             assert serverDolphin.getPresentationModel(modelId)
         }
 
-        registerAction(serverDolphin, 'triggerDelete', new NamedCommandHandler() {
+        registerAction(serverDolphin, 'triggerDelete', new CommandHandler<NamedCommand>() {
 
             @Override
             void handleCommand(NamedCommand command, List<Command> response) {

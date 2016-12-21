@@ -26,7 +26,7 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
 
     public static final String AUTO_ID_SUFFIX = "-AUTO-SRV";
 
-    public ServerModelStore modelStore;
+    private ServerModelStore modelStore;
 
     /**
      * @param id if id is null or empty, an auto-generated id will be used
@@ -52,5 +52,9 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
 
     public ServerModelStore getModelStore() {
         return modelStore;
+    }
+
+    public void setModelStore(ServerModelStore modelStore) {
+        this.modelStore = modelStore;
     }
 }

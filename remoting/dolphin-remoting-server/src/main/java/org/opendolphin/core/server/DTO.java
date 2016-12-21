@@ -15,10 +15,8 @@
  */
 package org.opendolphin.core.server;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A DTO is a <a href="http://en.wikipedia.org/wiki/Data_transfer_object">data transfer object</a>, used to
@@ -39,18 +37,6 @@ public final class DTO {
 
     public DTO(Slot... newSlots) {
         this(Arrays.asList(newSlots));
-    }
-
-    /**
-     * Create the representation that is used within commands.
-     */
-    public List<Map<String, Object>> encodable() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Slot slot : slots) {
-            list.add(slot.toMap());
-        }
-
-        return list;
     }
 
     public List<Slot> getSlots() {

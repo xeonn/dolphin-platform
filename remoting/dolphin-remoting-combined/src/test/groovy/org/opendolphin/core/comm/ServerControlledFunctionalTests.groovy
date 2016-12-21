@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.core.client.ClientAttribute
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.client.comm.OnFinishedHandler
-import org.opendolphin.core.server.DTO
-import org.opendolphin.core.server.DefaultServerDolphin
-import org.opendolphin.core.server.ServerDolphin
-import org.opendolphin.core.server.ServerPresentationModel
-import org.opendolphin.core.server.Slot
+import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import java.util.concurrent.TimeUnit
-
 /**
  * Functional tests for scenarios that customers observed when controlling
  * the application purely from server side.
@@ -56,7 +50,7 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
         assert context.done.await(20, TimeUnit.SECONDS)
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
         serverDolphin.register(new DolphinServerAction() {
 
             @Override

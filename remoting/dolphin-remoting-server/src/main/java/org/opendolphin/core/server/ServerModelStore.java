@@ -62,7 +62,7 @@ public class ServerModelStore extends ModelStore {
     public boolean add(PresentationModel model) {
         boolean added = super.add(model);
         if (! added) return false;
-        ((ServerPresentationModel)model).modelStore = this;
+        ((ServerPresentationModel)model).setModelStore(this);
         return true;
     }
 

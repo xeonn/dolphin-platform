@@ -25,13 +25,12 @@ class SlotTest extends Specification {
 
         expect:
         slot.value      == value
-        slot.baseValue  == baseValue
         slot.qualifier  == qualifier
 
         where:
-        value | baseValue | qualifier
-        null  | null      | null
-        1     | 1         | null
-        "x"   | "x"       | null
+        value | qualifier
+        null  | null
+        1     | null
+        "x"   | null
     }
 }

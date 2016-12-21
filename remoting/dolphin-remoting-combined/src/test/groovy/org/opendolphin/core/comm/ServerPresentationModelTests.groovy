@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.LogConfig
 import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent
@@ -26,11 +25,10 @@ import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
 import org.opendolphin.core.server.comm.CommandHandler
-import org.opendolphin.core.server.comm.NamedCommandHandler
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-
+import java.util.logging.Level
 /**
  * Functional tests for the server-side state changes.
  */
@@ -46,7 +44,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
         context = new TestInMemoryConfig()
         serverDolphin = context.serverDolphin
         clientDolphin = context.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     @Override
@@ -59,7 +57,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
         context.assertionsDone()
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
         serverDolphin.register(new DolphinServerAction() {
 
             @Override

@@ -30,7 +30,9 @@ import org.opendolphin.core.server.action.StoreAttributeAction;
 import org.opendolphin.core.server.action.StoreValueChangeAction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -117,7 +119,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     public ServerPresentationModel presentationModel(String id, String presentationModelType, DTO dto) {
         List<ServerAttribute> attributes = new ArrayList<ServerAttribute>();
         for (final Slot slot : dto.getSlots()) {
-            final ServerAttribute result = new ServerAttribute(slot.getPropertyName(), slot.getBaseValue(), slot.getQualifier());
+            final ServerAttribute result = new ServerAttribute(slot.getPropertyName(), slot.getValue(), slot.getQualifier());
             result.silently(new Runnable() {
                 @Override
                 public void run() {
@@ -141,7 +143,15 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         if (response == null) {
             return;
         }
-        response.add(new CreatePresentationModelCommand(id, presentationModelType, dto.encodable()));
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Slot slot : dto.getSlots()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("propertyName", slot.getPropertyName());
+            map.put("value", slot.getValue());
+            map.put("qualifier", slot.getQualifier());
+            list.add(map);
+        }
+        response.add(new CreatePresentationModelCommand(id, presentationModelType, list));
     }
 
     /**
@@ -183,7 +193,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * @deprecated use {@link #forceChangeValueCommand(Object, List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
+     * @deprecated use forceChangeValueCommand(Object, List, ServerAttribute). You can use the "inline method refactoring". Will be removed in version 1.0!
      */
     public static void forceChangeValue(Object value, List<Command> response, ServerAttribute attribute) {
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), value));

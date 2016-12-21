@@ -22,6 +22,8 @@ import core.client.comm.InMemoryClientConnector;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerDolphinFactory;
 
+import java.util.logging.Level;
+
 /**
  * Base class for running a client and server dolphin inside the same VM.
  * <p>
@@ -37,7 +39,7 @@ public class DefaultInMemoryConfig {
     private final InMemoryClientConnector clientConnector;
 
     public DefaultInMemoryConfig() {
-        LogConfig.logCommunication();
+        LogConfig.logOnLevel(Level.INFO);
 
         clientDolphin = new ClientDolphin();
         serverDolphin = ServerDolphinFactory.create();

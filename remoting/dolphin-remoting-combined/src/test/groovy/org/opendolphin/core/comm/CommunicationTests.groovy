@@ -25,6 +25,7 @@ import org.opendolphin.core.server.ServerConnector
 import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 
 /**
  * Tests for the sequence between client requests and server responses.
@@ -41,7 +42,7 @@ class CommunicationTests extends GroovyTestCase {
 
     @Override
 	protected void setUp() {
-		LogConfig.logCommunication()
+		LogConfig.logOnLevel(Level.INFO);
 		config = new TestInMemoryConfig()
         serverConnector  = config.serverDolphin.serverConnector
         clientConnector  = config.clientDolphin.clientConnector

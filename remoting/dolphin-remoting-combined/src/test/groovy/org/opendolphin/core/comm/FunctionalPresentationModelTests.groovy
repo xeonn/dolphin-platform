@@ -26,7 +26,7 @@ import org.opendolphin.core.client.comm.*
 import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -49,7 +49,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         context = new TestInMemoryConfig()
         serverDolphin = context.serverDolphin
         clientDolphin = context.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     @Override
@@ -186,7 +186,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         }
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
         serverDolphin.register(new DolphinServerAction() {
 
             @Override
@@ -225,7 +225,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     }
 
     void testAsynchronousExceptionOnTheServer() {
-        LogConfig.logCommunication()
+        LogConfig.logOnLevel(Level.INFO);
         def count = 0
         clientDolphin.clientConnector.onException = { count++ }
 
@@ -326,7 +326,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
 
     void testActionAndSendJavaLike() {
         boolean reached = false
-        registerAction(serverDolphin, "java", new NamedCommandHandler() {
+        registerAction(serverDolphin, "java", new CommandHandler<NamedCommand>() {
             @Override
             void handleCommand(NamedCommand command, List<Command> response) {
                 reached = true
@@ -381,7 +381,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     }
 
     void testStateConflictBetweenClientAndServer() {
-        LogConfig.logCommunication()
+        LogConfig.logOnLevel(Level.INFO);
         def latch = new CountDownLatch(1)
         def pm = clientDolphin.presentationModel('pm', attr: 1)
         def attr = pm.getAttribute('attr')

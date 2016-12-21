@@ -20,9 +20,10 @@ import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerDolphin
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
-import org.opendolphin.core.server.comm.NamedCommandHandler
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 /**
  * Showcase for how to set up a workflow on the server side where a series of actions
  * depend on each other and the effect that an earlier action had on the model store.
@@ -39,7 +40,7 @@ class ControllingWorkflowTests extends GroovyTestCase {
         context = new TestInMemoryConfig()
         serverDolphin = context.serverDolphin
         clientDolphin = context.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     @Override
@@ -47,7 +48,7 @@ class ControllingWorkflowTests extends GroovyTestCase {
         assert context.done.await(10, TimeUnit.SECONDS)
     }
 
-    void registerAction(ServerDolphin serverDolphin, String name, NamedCommandHandler handler) {
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
         serverDolphin.register(new DolphinServerAction() {
 
             @Override

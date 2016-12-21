@@ -27,7 +27,7 @@ class SimpleCommandHandlerTests extends GroovyTestCase {
     }
 }
 
-class TestSimpleCommandHandler implements NamedCommandHandler {
+class TestSimpleCommandHandler implements CommandHandler<NamedCommand> {
 
     boolean callForwarded
 
