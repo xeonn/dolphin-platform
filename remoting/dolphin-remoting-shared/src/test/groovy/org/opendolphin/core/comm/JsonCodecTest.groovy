@@ -33,7 +33,7 @@ public class JsonCodecTest extends GroovyTestCase {
         def codec = new JsonCodec()
         def commands = []
         count.times {
-            commands << new AttributeCreatedNotification(pmId: it, attributeId: "${it * count}C", propertyName: "prop$it", newValue: "value$it", qualifier: null)
+            commands << new AttributeCreatedNotification(it + "", (it * count) + "C", "prop" + it, "value" + it, null)
         }
         def coded = codec.encode(commands)
         def decoded = codec.decode(coded)
@@ -49,7 +49,7 @@ public class JsonCodecTest extends GroovyTestCase {
     }
 
     void testCodingCreatePresentationModelWithStructuredEntry() {
-        def map = [propertyName: 'x', qualifier: null]
+        def map = [propertyName: 'x', qualifier: "q"]
         map.value = "ok"
         assertCodingCreatePresentationModel(map)
     }
@@ -64,6 +64,10 @@ public class JsonCodecTest extends GroovyTestCase {
         commands << new CreatePresentationModelCommand(pmId: "bla", attributes: [attributes])
         def coded = codec.encode(commands)
         def decoded = codec.decode(coded)
+
+        println commands.toString().toList().sort()
+        println decoded.toString().toList().sort()
+
         assert commands.toString().toList().sort() == decoded.toString().toList().sort() // ;-)
     }
 
