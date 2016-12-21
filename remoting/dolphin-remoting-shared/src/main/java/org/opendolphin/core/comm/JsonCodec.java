@@ -82,14 +82,11 @@ public class JsonCodec implements Codec {
                 ret.add(element);
             }
         }
-
-        System.out.println("-> " + GSON.toJson(ret));
         return GSON.toJson(ret);
     }
 
     @Override
     public List<Command> decode(String transmitted) {
-        System.out.println("<- " + transmitted);
         LOG.trace("Decoding message: {}", transmitted);
         try {
             final List<Command> commands = new ArrayList<>();
