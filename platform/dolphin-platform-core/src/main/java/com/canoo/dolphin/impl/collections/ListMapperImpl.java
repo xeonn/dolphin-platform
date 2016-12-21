@@ -82,7 +82,7 @@ public class ListMapperImpl implements ListMapper {
                     LOG.error("Invalid LIST_SPLICE command received: " + model, ex);
                 } finally {
                     if (model != null) {
-                        ListMapperImpl.this.dolphin.remove(model);
+                        ListMapperImpl.this.dolphin.removePresentationModel(model);
                     }
                 }
 

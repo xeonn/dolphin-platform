@@ -65,7 +65,7 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
     @SuppressWarnings("unchecked")
     public void unregister() {
         if (pm != null) {
-            dolphin.remove(pm);
+            dolphin.removePresentationModel(pm);
             pm = null;
         }
     }

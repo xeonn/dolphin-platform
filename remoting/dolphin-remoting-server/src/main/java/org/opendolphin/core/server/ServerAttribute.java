@@ -23,7 +23,6 @@ import java.util.List;
 
 public class ServerAttribute extends BaseAttribute {
 
-
     private boolean notifyClient = true;
 
     public ServerAttribute(String propertyName, Object initialValue) {
@@ -74,7 +73,7 @@ public class ServerAttribute extends BaseAttribute {
     public void setQualifier(String value) {
         super.setQualifier(value);
         if (notifyClient) {
-            getPresentationModel().getModelStore().getCurrentResponse().add(new AttributeMetadataChangedCommand(getId(), Attribute.QUALIFIER_PROPERTY, value));
+            getPresentationModel().getModelStore().getCurrentResponse().add(new AttributeMetadataChangedCommand(getId(), Attribute.QUALIFIER_NAME, value));
         }
 
     }

@@ -19,7 +19,6 @@ import org.opendolphin.core.AbstractDolphin;
 import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
-import org.opendolphin.core.client.comm.OnFinishedHandlerAdapter;
 import org.opendolphin.core.comm.AttributeCreatedNotification;
 import org.opendolphin.core.comm.EmptyNotification;
 import org.opendolphin.core.comm.NamedCommand;
@@ -121,7 +120,7 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
      * presentation models nor data in the callback
      */
     public void sync(final Runnable runnable) {
-        clientConnector.send(new EmptyNotification(), new OnFinishedHandlerAdapter() {
+        clientConnector.send(new EmptyNotification(), new OnFinishedHandler() {
             public void onFinished(List<ClientPresentationModel> presentationModels) {
                 runnable.run();
             }

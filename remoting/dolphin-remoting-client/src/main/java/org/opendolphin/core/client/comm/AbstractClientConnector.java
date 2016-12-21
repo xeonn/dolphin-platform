@@ -241,7 +241,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
             return; // avoid second call while already waiting (?) -> two different push actions not supported
         }
         waiting = true;
-        send(pushListener, new OnFinishedHandlerAdapter() {
+        send(pushListener, new OnFinishedHandler() {
             @Override
             public void onFinished(List<ClientPresentationModel> presentationModels) {
                 // we do nothing here nor do we register a special handler.

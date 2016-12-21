@@ -115,6 +115,6 @@ class ModelStoreSpec extends Specification {
         modelStore.registerAttribute(attr)
         modelStore.registerAttribute(attr)
         then:
-        attr.getPropertyChangeListeners(Attribute.QUALIFIER_PROPERTY).size() == 1
+        attr.getPropertyChangeListeners(Attribute.QUALIFIER_NAME).size() == 1
     }
 }

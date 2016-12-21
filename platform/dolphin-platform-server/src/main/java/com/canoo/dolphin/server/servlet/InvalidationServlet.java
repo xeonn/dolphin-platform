@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.client.comm;
+package com.canoo.dolphin.server.servlet;
 
-import org.opendolphin.core.client.ClientPresentationModel;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import java.util.List;
-
-/**
- * Convenience class for OnFinishedData
- */
-public abstract class OnFinishedDataAdapter implements OnFinishedData {
+@Deprecated
+public class InvalidationServlet extends HttpServlet {
 
     @Override
-    public void onFinished(List<ClientPresentationModel> presentationModels) {
-        // ignore
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getRequestURL().toString().contains("invalidate")) {
+            req.getSession().invalidate();
+            resp.getWriter().write("new session");
+        }
+
     }
+
 }

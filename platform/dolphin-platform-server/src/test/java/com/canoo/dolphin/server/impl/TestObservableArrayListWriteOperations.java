@@ -170,7 +170,7 @@ public class TestObservableArrayListWriteOperations {
 
 
     //////////////////////////////////////////
-    // remove(Object)
+    // removePresentationModel(Object)
     //////////////////////////////////////////
     @Test
     public void removeOnSingleElementList_shouldRemoveElement() {
@@ -263,7 +263,7 @@ public class TestObservableArrayListWriteOperations {
 
 
     //////////////////////////////////////////
-    // remove(index)
+    // removePresentationModel(index)
     //////////////////////////////////////////
     @Test
     public void indexedRemoveOnSingleElementList_shouldRemoveElement() {

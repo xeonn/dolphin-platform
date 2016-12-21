@@ -192,11 +192,11 @@ public class ClientResponseHandler {
             return null;
         }
 
-        if (serverCommand.getMetadataName() != null && serverCommand.getMetadataName().equals(Attribute.VALUE)) {
+        if (serverCommand.getMetadataName() != null && serverCommand.getMetadataName().equals(Attribute.VALUE_NAME)) {
             attribute.setValue(serverCommand.getValue());
         }
 
-        if (serverCommand.getMetadataName() != null && serverCommand.getMetadataName().equals(Attribute.QUALIFIER_PROPERTY)) {
+        if (serverCommand.getMetadataName() != null && serverCommand.getMetadataName().equals(Attribute.QUALIFIER_NAME)) {
             if(serverCommand.getValue() == null) {
                 attribute.setQualifier(null);
             } else {

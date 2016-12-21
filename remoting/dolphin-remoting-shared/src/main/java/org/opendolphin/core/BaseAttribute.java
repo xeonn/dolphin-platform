@@ -15,22 +15,17 @@
  */
 package org.opendolphin.core;
 
-import java.util.Date;
-import java.util.logging.Logger;
-
 /**
  * The value may be null as long as the BaseAttribute is used as a "placeholder".
  */
 
 public abstract class BaseAttribute extends AbstractObservable implements Attribute {
 
-    static final public  Class[] SUPPORTED_VALUE_TYPES = {Character.class, String.class, Number.class, Boolean.class, Date.class};
-    static final private Logger  log                   = Logger.getLogger(BaseAttribute.class.getName());
     static private long  instanceCount = 0;
 
     private final String propertyName;
 
-    private       Object value;
+    private Object value;
 
     private PresentationModel presentationModel;
 
@@ -45,7 +40,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     public BaseAttribute(String propertyName, Object value) {
         this(propertyName, value, null);
     }
-
 
     public BaseAttribute(String propertyName, Object value, String qualifier) {
         this.id = (instanceCount++) + getOrigin();
@@ -78,7 +72,7 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     // todo dk: think about specific method versions for each allowed type
     public void setValue(Object newValue) {
         if (isDifferent(value, newValue)){ // firePropertyChange doesn't do this check sufficiently
-            firePropertyChange(VALUE, value, value = newValue); // set inline to avoid recursion
+            firePropertyChange(VALUE_NAME, value, value = newValue); // set inline to avoid recursion
         }
     }
 
@@ -113,13 +107,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     }
 
     public void setQualifier(String qualifier) {
-        firePropertyChange(QUALIFIER_PROPERTY, this.qualifier, this.qualifier = qualifier);
-    }
-
-    public void syncWith(Attribute source) {
-        if (this == source || null == source) return;
-        //order is important
-        setQualifier(source.getQualifier());
-        setValue(source.getValue());
+        firePropertyChange(QUALIFIER_NAME, this.qualifier, this.qualifier = qualifier);
     }
 }

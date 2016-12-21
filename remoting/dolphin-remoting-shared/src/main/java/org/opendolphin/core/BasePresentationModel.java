@@ -88,29 +88,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         return null;
     }
 
-    // todo dk: overload with types for defaultValue
-
-    /**
-     * Convenience method to get the value of an attribute if it exists or a default value otherwise.
-     */
-    public int getValue(String attributeName, int defaultValue) {
-        A attribute = getAttribute(attributeName);
-        Object attributeValue = (attribute == null) ? null : attribute.getValue();
-        return (attributeValue == null) ? defaultValue : Integer.parseInt(attributeValue.toString());
-    }
-
-    public List<A> findAllAttributesByPropertyName(String propertyName) {
-        List<A> result = new LinkedList<A>();
-        if (null == propertyName) return result;
-        for (A attribute : attributes) {
-            if (propertyName.equals(attribute.getPropertyName())) {
-                result.add(attribute);
-            }
-        }
-        return result;
-    }
-
-
     public A findAttributeByQualifier(String qualifier) {
         if (null == qualifier) return null;
         for (A attribute : attributes) {

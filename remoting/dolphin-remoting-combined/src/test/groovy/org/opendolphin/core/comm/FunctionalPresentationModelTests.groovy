@@ -332,7 +332,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
                 reached = true
             }
         });
-        clientDolphin.send("java", new OnFinishedHandlerAdapter() {
+        clientDolphin.send("java", new OnFinishedHandler() {
             @Override
             void onFinished(List<ClientPresentationModel> presentationModels) {
                 assert reached
@@ -346,7 +346,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
 
         registerAction serverDolphin, 'delete', { cmd, response ->
 //            serverDolphin.delete(response, serverDolphin['pm']) // deprecated
-            serverDolphin.remove(serverDolphin.getPresentationModel('pm'))
+            serverDolphin.removePresentationModel(serverDolphin.getPresentationModel('pm'))
             assert serverDolphin.getPresentationModel('pm') == null
         }
         assert clientDolphin.getPresentationModel('pm')
@@ -365,7 +365,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         clientDolphin.presentationModel('pm', attr: 1)
 
         registerAction serverDolphin, 'arbitrary', { cmd, response ->
-            serverDolphin.deleteCommand([], (ServerPresentationModel) null)
+            serverDolphin.deleteCommand([], null)
             serverDolphin.deleteCommand([], '')
             serverDolphin.deleteCommand(null, '')
             serverDolphin.presentationModelCommand(null, null, null, null)

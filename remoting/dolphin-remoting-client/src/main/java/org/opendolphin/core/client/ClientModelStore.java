@@ -19,7 +19,6 @@ import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.ModelStoreConfig;
 import org.opendolphin.core.client.comm.AttributeChangeListener;
 import org.opendolphin.core.client.comm.ClientConnector;
-import org.opendolphin.core.client.comm.WithPresentationModelHandler;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.DeletedPresentationModelNotification;
 
@@ -90,15 +89,6 @@ public class ClientModelStore extends ModelStore<ClientAttribute, ClientPresenta
     public void registerAttribute(ClientAttribute attribute) {
         super.registerAttribute(attribute);
         attribute.addPropertyChangeListener(attributeChangeListener);
-    }
-
-    private boolean withPresentationModelFromStore(String requestedPmId, WithPresentationModelHandler withPmHandler) {
-        ClientPresentationModel result = findPresentationModelById(requestedPmId);
-        if (result != null) {
-            withPmHandler.onFinished(result);
-            return true;
-        }
-        return false;
     }
 
     public void delete(ClientPresentationModel model) {

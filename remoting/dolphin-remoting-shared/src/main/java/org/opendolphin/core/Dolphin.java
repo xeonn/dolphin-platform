@@ -23,9 +23,9 @@ public interface Dolphin<A extends Attribute, P extends PresentationModel<A>> {
 
     ModelStore<A, P> getModelStore();
 
-    boolean add(P model);
+    boolean addPresentationModel(P model);
 
-    boolean remove(P model);
+    boolean removePresentationModel(P model);
 
     A findAttributeById(String id);
 

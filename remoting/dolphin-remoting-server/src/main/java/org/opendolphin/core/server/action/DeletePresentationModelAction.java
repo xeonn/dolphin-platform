@@ -30,7 +30,7 @@ public class DeletePresentationModelAction extends DolphinServerAction {
             public void handleCommand(final DeletedPresentationModelNotification command, List response) {
                 PresentationModel model = getServerDolphin().getPresentationModel(command.getPmId());
 
-                // Note: we cannot do serverDolphin.remove(model) since that may trigger another DeleteCommand
+                // Note: we cannot do serverDolphin.removePresentationModel(model) since that may trigger another DeleteCommand
                 // We need to do it silently just like when creating PMs.
 
                 getServerDolphin().getServerModelStore().remove(model);

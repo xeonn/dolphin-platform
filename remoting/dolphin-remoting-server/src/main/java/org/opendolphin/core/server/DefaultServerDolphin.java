@@ -100,8 +100,8 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
      * @return whether the adding was successful, which implies that also the command has been sent
      */
     @Override
-    public boolean add(ServerPresentationModel model) {
-        boolean result = super.add(model);
+    public boolean addPresentationModel(ServerPresentationModel model) {
+        boolean result = super.addPresentationModel(model);
         if (result) {
             serverModelStore.getCurrentResponse().add(CreatePresentationModelCommand.makeFrom(model));
         }
@@ -129,7 +129,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
         }
         ServerPresentationModel model = new ServerPresentationModel(id, attributes, serverModelStore);
         model.setPresentationModelType(presentationModelType);
-        add(model);
+        addPresentationModel(model);
         return model;
     }
 
@@ -145,25 +145,14 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * Convenience method to let Dolphin remove a presentation model directly on the server and notify the client.
+     * Convenience method to let Dolphin removePresentationModel a presentation model directly on the server and notify the client.
      */
-    public boolean remove(ServerPresentationModel pm) {
+    public boolean removePresentationModel(ServerPresentationModel pm) {
         boolean deleted = serverModelStore.remove(pm);
         if (deleted) {
-            DefaultServerDolphin.deleteCommand(serverModelStore.getCurrentResponse(), pm);
+            DefaultServerDolphin.deleteCommand(serverModelStore.getCurrentResponse(), pm.getId());
         }
         return deleted;
-    }
-
-    /**
-     * Convenience method to let Dolphin delete a presentation model on the client side
-     */
-    public static void deleteCommand(List<Command> response, ServerPresentationModel pm) {
-        if (pm == null) {
-            LOG.severe("Cannot delete null presentation model");
-            return;
-        }
-        deleteCommand(response, pm.getId());
     }
 
     /**
@@ -197,13 +186,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
      * @deprecated use {@link #forceChangeValueCommand(Object, List, ServerAttribute)}. You can use the "inline method refactoring". Will be removed in version 1.0!
      */
     public static void forceChangeValue(Object value, List<Command> response, ServerAttribute attribute) {
-        forceChangeValueCommand(value, response, attribute);
-    }
-
-    /**
-     * @deprecated use {@link #changeValueCommand(List, ServerAttribute, Object)}, which enforces the value change by default. Will be removed in version 1.0!
-     */
-    public static void forceChangeValueCommand(Object value, List<Command> response, ServerAttribute attribute) {
         response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), value));
     }
 
@@ -211,13 +193,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
      * Convenience method for the InitializeAttributeCommand
      */
     public static void initAt(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
-        initAtCommand(response, pmId, propertyName, qualifier, newValue);
-    }
-
-    /**
-     * Convenience method for the InitializeAttributeCommand
-     */
-    public static void initAtCommand(List<Command> response, String pmId, String propertyName, String qualifier, Object newValue) {
         if (null == response) {
             return;
         }

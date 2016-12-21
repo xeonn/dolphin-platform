@@ -94,7 +94,7 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
                 toDelete.add(model);
             }
             for(ServerPresentationModel model : toDelete) {
-                serverDolphin.remove(model);
+                serverDolphin.removePresentationModel(model);
             }
 
             serverDolphin.presentationModel(null, "myType", new DTO(new Slot('a',0))) // recreate
@@ -159,7 +159,7 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
         });
         registerAction(serverDolphin, "remove", { cmd, list ->
             def myPm = serverDolphin.getPresentationModel("myPm")
-            serverDolphin.remove(myPm)
+            serverDolphin.removePresentationModel(myPm)
             assert null == serverDolphin.getPresentationModel("myPm")
         });
 

@@ -20,5 +20,5 @@ import org.opendolphin.core.comm.Command;
 import java.util.List;
 
 public interface CommandHandler<T extends Command> {
-    public void handleCommand(T command, List<Command> response);
+    void handleCommand(T command, List<Command> response);
 }

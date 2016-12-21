@@ -24,7 +24,7 @@ public interface ServerBeanRepository extends BeanRepository {
 
     /**
      * Method should be called if a bean get rejected by the Dolphin Platform garbage collection. This means
-     * that the bean isn't referenced anymore by another bean and can be removed. Implementations shoudl remove
+     * that the bean isn't referenced anymore by another bean and can be removed. Implementations shoudl removePresentationModel
      * the bean from the model / remoting layer. For more information see {@link com.canoo.dolphin.server.impl.gc.GarbageCollector}
      * @param rejectedBean the rejected bean
      * @param <T> type of the bean.

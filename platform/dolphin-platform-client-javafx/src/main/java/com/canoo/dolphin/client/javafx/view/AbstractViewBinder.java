@@ -83,7 +83,7 @@ public abstract class AbstractViewBinder<M> {
     /**
      * By calling this method the MVC group will be destroyed. This means that the controller instance on the server will
      * be removed and the model that is managed and synchronized between client and server will be detached. After this method
-     * is called the view should not be used anymore. It's important to call this method to remove all the unneeded references on
+     * is called the view should not be used anymore. It's important to call this method to removePresentationModel all the unneeded references on
      * the server.
      * @return a future can be used to react on the destroy
      */

@@ -68,9 +68,9 @@ public class StoreAttributeAction extends DolphinServerAction {
                 ((ServerAttribute) attribute).silently(new Runnable() {
                     @Override
                     public void run() {
-                        if(command.getMetadataName().equals(Attribute.VALUE)) {
+                        if(command.getMetadataName().equals(Attribute.VALUE_NAME)) {
                             attribute.setValue(command.getValue());
-                        } else if(command.getMetadataName().equals(Attribute.QUALIFIER_PROPERTY)) {
+                        } else if(command.getMetadataName().equals(Attribute.QUALIFIER_NAME)) {
                             if(command.getValue() == null) {
                                 ((ServerAttribute) attribute).setQualifier(null);
                             } else {

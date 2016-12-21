@@ -30,7 +30,7 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * @return if the add operation was successful or not.
      */
     @Override
-    public boolean add(P model) {
+    public boolean addPresentationModel(P model) {
         return getModelStore().add(model);
     }
 
@@ -38,10 +38,10 @@ public abstract class AbstractDolphin<A extends Attribute, P extends Presentatio
      * Removes a presentation model from the model store.<br/>
      *
      * @param model the model to be removed from the store.
-     * @return if the remove operation was successful or not.
+     * @return if the removePresentationModel operation was successful or not.
      */
     @Override
-    public boolean remove(P model) {
+    public boolean removePresentationModel(P model) {
         return getModelStore().remove(model);
     }
 

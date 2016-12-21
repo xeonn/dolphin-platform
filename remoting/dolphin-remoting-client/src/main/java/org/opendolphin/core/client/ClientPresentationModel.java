@@ -53,5 +53,4 @@ public final class ClientPresentationModel extends BasePresentationModel<ClientA
         this.clientSideOnly = clientSideOnly;
     }
 
-
 }

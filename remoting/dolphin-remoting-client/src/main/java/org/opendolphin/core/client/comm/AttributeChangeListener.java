@@ -35,7 +35,7 @@ public class AttributeChangeListener implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Attribute.VALUE)) {
+        if (evt.getPropertyName().equals(Attribute.VALUE_NAME)) {
             if (evt.getOldValue() == null && evt.getNewValue() == null || evt.getOldValue() != null && evt.getNewValue() != null && evt.getOldValue().equals(evt.getNewValue())) {
                 return;
             }

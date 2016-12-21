@@ -268,7 +268,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
         registerAction serverDolphin, "remove", { cmd, response ->
             def pm = serverDolphin.getPresentationModel("client-side-with-id")
             assert pm
-            serverDolphin.remove(pm)
+            serverDolphin.removePresentationModel(pm)
             assert null == serverDolphin.getPresentationModel("client-side-with-id") // immediately removed on server
         }
 

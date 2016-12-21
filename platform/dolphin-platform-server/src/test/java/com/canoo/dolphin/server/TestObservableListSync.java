@@ -671,7 +671,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
             toRemove.add(model);
         }
         for(ServerPresentationModel model : toRemove) {
-            dolphin.remove(model);
+            dolphin.removePresentationModel(model);
         }
     }
 

@@ -36,11 +36,10 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
         if (id != null && id.endsWith(AUTO_ID_SUFFIX)) {
             LOG.info("Creating a PM with self-provided id \'" + id + "\' even though it ends with a reserved suffix.");
         }
-
         modelStore = serverModelStore;
     }
 
-    public static String makeId(ServerModelStore serverModelStore) {
+    private static String makeId(ServerModelStore serverModelStore) {
         long newId = serverModelStore.pmInstanceCount++;
         return String.valueOf(newId) + AUTO_ID_SUFFIX;
     }
