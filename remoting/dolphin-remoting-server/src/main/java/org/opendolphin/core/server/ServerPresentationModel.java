@@ -1,8 +1,6 @@
 package org.opendolphin.core.server;
 
 import org.opendolphin.core.BasePresentationModel;
-import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.comm.SwitchPresentationModelCommand;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,23 +30,10 @@ public class ServerPresentationModel extends BasePresentationModel<ServerAttribu
         return String.valueOf(newId) + AUTO_ID_SUFFIX;
     }
 
-    @Override
-    public void syncWith(PresentationModel sourcePresentationModel) {
-        super.syncWith(sourcePresentationModel);// this may already trigger some value changes and metadata changes
-        modelStore.getCurrentResponse().add(new SwitchPresentationModelCommand(getId(), sourcePresentationModel.getId()));
-    }
-
     public void addAttribute(ServerAttribute attribute) {
         _internal_addAttribute(attribute);
         modelStore.registerAttribute(attribute);
         DefaultServerDolphin.initAt(modelStore.getCurrentResponse(), getId(), attribute.getPropertyName(), attribute.getQualifier(), attribute.getValue());
-    }
-
-    public void rebase() {
-        for (ServerAttribute attr : getAttributes()) {
-            attr.rebase();
-        }
-
     }
 
     public ServerModelStore getModelStore() {

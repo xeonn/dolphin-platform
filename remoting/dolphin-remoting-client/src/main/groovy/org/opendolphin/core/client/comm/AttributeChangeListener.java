@@ -20,9 +20,7 @@ public class AttributeChangeListener implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Attribute.DIRTY_PROPERTY)) {
-            // ignore
-        } else if (evt.getPropertyName().equals(Attribute.VALUE)) {
+        if (evt.getPropertyName().equals(Attribute.VALUE)) {
             if (evt.getOldValue() == null && evt.getNewValue() == null || evt.getOldValue() != null && evt.getNewValue() != null && evt.getOldValue().equals(evt.getNewValue())) {
                 return;
             }
@@ -34,21 +32,6 @@ public class AttributeChangeListener implements PropertyChangeListener {
             List<ClientAttribute> attributes = clientModelStore.findAllAttributesByQualifier(((Attribute) evt.getSource()).getQualifier());
             for (ClientAttribute attribute : attributes) {
                 attribute.setValue(evt.getNewValue());
-            }
-
-        } else if (evt.getPropertyName().equals(Attribute.BASE_VALUE)) {
-            if (evt.getOldValue() == null && evt.getNewValue() == null || evt.getOldValue() != null && evt.getNewValue() != null && evt.getOldValue().equals(evt.getNewValue())) {
-                return;
-
-            }
-
-            if (isSendable(evt)) {
-                clientConnector.send(constructChangeAttributeMetadataCommand(evt));
-            }
-
-            List<ClientAttribute> attributes = clientModelStore.findAllAttributesByQualifier(((Attribute) evt.getSource()).getQualifier());
-            for (ClientAttribute attribute : attributes) {
-                attribute.setBaseValue(evt.getNewValue());
             }
 
         } else {

@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.comm
 import core.client.comm.InMemoryClientConnector
+import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.comm.SynchronousInMemoryClientConnector
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientAttribute
@@ -55,45 +56,12 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     }
 
     void testQualifiersInClientPMs() {
-        def modelA = clientDolphin.presentationModel("1", new ClientAttribute("a", 0, "QUAL"))
-        def modelB = clientDolphin.presentationModel("2", new ClientAttribute("b", 0, "QUAL"))
+        PresentationModel modelA = clientDolphin.presentationModel("1", new ClientAttribute("a", 0, "QUAL"))
+        PresentationModel modelB = clientDolphin.presentationModel("2", new ClientAttribute("b", 0, "QUAL"))
 
-        modelA.a.value = 1
+        modelA.getAt("a").setValue(1)
 
-        assert modelB.b.value == 1
-        context.assertionsDone() // make sure the assertions are really executed
-    }
-
-    void testValueChangeWithQualifiersInClientSideOnlyPMs() {
-        def modelA = new ClientPresentationModel("1", [new ClientAttribute("a", 0, "QUAL")])
-        modelA.clientSideOnly = true
-        clientDolphin.add modelA
-
-        def modelB = clientDolphin.presentationModel("2", new ClientAttribute("b", 0))
-        modelB.clientSideOnly = true
-        clientDolphin.addAttributeToModel(modelB, new ClientAttribute("bLate", 0, "QUAL"))
-
-        modelA.a.value = 1
-
-        assert modelB.bLate.value == 1
-        context.assertionsDone() // make sure the assertions are really executed
-    }
-
-    void testValueRebaseWithQualifiersInClientSideOnlyPMs() {
-        def modelA = new ClientPresentationModel("1", [new ClientAttribute("a", 0, "QUAL")])
-        modelA.clientSideOnly = true
-        clientDolphin.add modelA
-
-        def modelB = clientDolphin.presentationModel("2", new ClientAttribute("b", 0))
-        modelB.clientSideOnly = true
-        clientDolphin.addAttributeToModel(modelB, new ClientAttribute("bLate", 0, "QUAL"))
-
-        modelA.a.value = 1
-        assert modelB.bLate.baseValue == 0
-        modelA.a.rebase()
-
-        assert modelA.a.baseValue == 1
-        assert modelB.bLate.baseValue == 1
+        assert modelB.getAt("b").getValue() == 1
         context.assertionsDone() // make sure the assertions are really executed
     }
 
@@ -182,8 +150,8 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         clientDolphin.send "fetchData", { List<ClientPresentationModel> pms ->
             assert pms.size() == 26
             assert pms.collect { it.id }.sort(false) == pms.collect { it.id }   // pmIds from a single action should come in sequence
-            assert 'a' == context.clientDolphin.findPresentationModelById('a').char.value
-            assert 'z' == context.clientDolphin.findPresentationModelById('z').char.value
+            assert 'a' == context.clientDolphin.findPresentationModelById('a').getAt("char").value
+            assert 'z' == context.clientDolphin.findPresentationModelById('z').getAt("char").value
             context.assertionsDone() // make sure the assertions are really executed
         }
     }
@@ -211,19 +179,19 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     void testLoginUseCase() {
         registerAction serverDolphin, "loginCmd", { cmd, response ->
             def user = context.serverDolphin.findPresentationModelById('user')
-            if (user.name.value == 'Dierk' && user.password.value == 'Koenig') {
-                DefaultServerDolphin.changeValueCommand(response, user.loggedIn, 'true')
+            if (user.getAt("name").value == 'Dierk' && user.getAt("password").value == 'Koenig') {
+                DefaultServerDolphin.changeValueCommand(response, user.getAt("loggedIn"), 'true')
             }
         }
         def user = clientDolphin.presentationModel 'user', name: null, password: null, loggedIn: null
         clientDolphin.send "loginCmd", {
-            assert !user.loggedIn.value
+            assert !user.getAt("loggedIn").value
         }
-        user.name.value = "Dierk"
-        user.password.value = "Koenig"
+        user.getAt("name").value = "Dierk"
+        user.getAt("password").value = "Koenig"
 
         clientDolphin.send "loginCmd", {
-            assert user.loggedIn.value
+            assert user.getAt("loggedIn").value
             context.assertionsDone()
         }
     }
@@ -282,31 +250,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         context.assertionsDone()
     }
 
-    void testRebaseIsTransferred() {
-        ClientPresentationModel person = clientDolphin.presentationModel("person",null,name:'Dierk',other:'Dierk')
-
-        person.name.qualifier  = 'qualifier'
-        person.other.qualifier = 'qualifier'
-
-        assert person.name.value == "Dierk"
-        person.name.value = "Mittie"
-        assert person.name.dirty
-
-
-        clientDolphin.sync { assert serverDolphin["person"].name.value == "Mittie" }
-        person.name.rebase()
-        assert ! person.name.dirty
-        assert person.name.value      == "Mittie" // value unchanged
-        assert person.other.value     == "Mittie" // proliferated to attributes with same qualifier
-        assert person.name.baseValue  == "Mittie" // base value changed
-        assert person.other.baseValue == "Mittie" // proliferated to attributes with same qualifier
-        clientDolphin.sync {
-            assert serverDolphin["person"].name.baseValue  == "Mittie" // rebase is done on server
-            assert serverDolphin["person"].other.baseValue == "Mittie" // rebase is done on server
-            context.assertionsDone()
-        }
-    }
-
     // silly and only for the coverage, we test behavior when id is wrong ...
     void testIdNotFoundInVariousCommands() {
         clientDolphin.clientConnector.send new ValueChangedCommand(attributeId: 0)
@@ -327,29 +270,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         });
     }
 
-    void testPmReset() {
-        def myPm = clientDolphin.presentationModel("myPm", null, a:1)
-        assert ! myPm.dirty
-        myPm.a.value = 2
-        assert myPm.dirty
-        myPm.reset()
-        assert myPm.a.value == 1
-        assert ! myPm.dirty
-        myPm.a.value = 1
-        assert ! myPm.dirty
-        context.assertionsDone()
-    }
-
-    void testPmRebase() {
-        def myPm = clientDolphin.presentationModel("myPm", null, a:1)
-        myPm.a.value = 2
-        assert myPm.dirty
-        myPm.rebase()
-        assert myPm.a.value == 2
-        assert ! myPm.dirty
-        context.assertionsDone()
-    }
-
     void testActionAndSendJavaLike() {
         boolean reached = false
         registerAction(serverDolphin, "java", new NamedCommandHandler() {
@@ -365,23 +285,6 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
                 context.assertionsDone()
             }
         })
-    }
-
-
-
-    void testAttributeReset() {
-        ClientPresentationModel pm = clientDolphin.presentationModel('pm', attr: 1)
-
-        registerAction serverDolphin,'reset', { cmd, response ->
-            serverDolphin.resetCommand(response, serverDolphin['pm'].attr)
-        }
-        pm.attr.value = 2
-
-        clientDolphin.send 'reset', {
-            assert pm.attr.value == 1
-            assert ! pm.attr.dirty
-            context.assertionsDone()
-        }
     }
 
     void testRemovePresentationModel() {

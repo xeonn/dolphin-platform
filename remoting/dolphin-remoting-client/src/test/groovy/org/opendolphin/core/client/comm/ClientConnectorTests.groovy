@@ -40,7 +40,7 @@ class ClientConnectorTests extends GroovyTestCase {
 	 * seems not to be informed (reliably) of failing assertions.
 	 *
 	 * Therefore the following approach for the test methods has been taken to:
-	 * - initialize the CountDownLatch in {@code #setup()}
+	 * - initialize the CountDownLatch in {@code testBaseValueChange#setup()}
 	 * - after the 'act' section of a test method: call {@code syncAndWaitUntilDone()} which releases the latch inside a dolphin.sync handler and then (in the main thread) waits for the latch
 	 * - performs all assertions
 	 */
@@ -112,12 +112,6 @@ class ClientConnectorTests extends GroovyTestCase {
 	//	assert msg == exceptionMessage
 	//}
 
-	void testPropertyChange_DirtyPropertyIgnored() {
-		attributeChangeListener.propertyChange(new PropertyChangeEvent("dummy", Attribute.DIRTY_PROPERTY, null, null))
-		syncAndWaitUntilDone()
-		assertOnlySyncCommandWasTransmitted()
-	}
-
 	void testValueChange_OldAndNewValueSame() {
 		attributeChangeListener.propertyChange(new PropertyChangeEvent("dummy", Attribute.VALUE, 'sameValue', 'sameValue'))
 		syncAndWaitUntilDone()
@@ -167,27 +161,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		}
 	}
 
-	void testBaseValueChange_OldAndNewValueSame() {
-		attributeChangeListener.propertyChange(new PropertyChangeEvent("dummy", Attribute.BASE_VALUE, 'sameValue', 'sameValue'))
-		syncAndWaitUntilDone()
-		assertOnlySyncCommandWasTransmitted()
-	}
-
-	void testBaseValueChange() {
-		ClientAttribute attribute                  = new ClientAttribute('attr', 'initialValue',       'qualifier')
-		ClientAttribute secondAttWithSameQualifier = new ClientAttribute('attr2', 'otherInitialValue', 'qualifier')
-		attribute.value = 'newValue'
-		assert attribute.baseValue == 'initialValue'
-		dolphin.clientModelStore.registerAttribute(attribute)
-		dolphin.clientModelStore.registerAttribute(secondAttWithSameQualifier)
-		attributeChangeListener.propertyChange(new PropertyChangeEvent(attribute, Attribute.BASE_VALUE, 'old_base_value', 'new_base_value'))
-		syncAndWaitUntilDone()
-		assertCommandsTransmitted(3 + 1)
-		assert attribute.baseValue                  == 'new_base_value'
-		assert secondAttWithSameQualifier.baseValue == 'new_base_value'
-		assert clientConnector.transmittedCommands.any { it instanceof ChangeAttributeMetadataCommand }
-	}
-
 	void test_that_notWellKnown_property_causes_MetaDataChange() {
 		ClientAttribute attribute = new ExtendedAttribute('attr', 'initialValue', 'qualifier')
 		dolphin.clientModelStore.registerAttribute(attribute)
@@ -206,15 +179,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		assertCommandsTransmitted(2)
 		assert ChangeAttributeMetadataCommand == clientConnector.transmittedCommands[0].class
 		assert 'oldValue' == attribute.additionalParam
-	}
-
-	void testHandle_PresentationModelReseted() {
-		dolphin.presentationModel('p1')
-		assert clientConnector.dispatchHandle(new PresentationModelResetedCommand(pmId: 'p1'))
-	}
-
-	void testHandle_PresentationModelReseted_PmNotExists() {
-		assert !clientConnector.dispatchHandle(new PresentationModelResetedCommand(pmId: 'notExist'))
 	}
 
 	void testHandle_InitializeAttribute() {
@@ -258,21 +222,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		assert null == dolphin.getAt('p1').getAt('newProp').value
 		assert null == syncedAttribute1.value
 		assert null == syncedAttribute2.value
-	}
-
-	void testHandle_SwitchPresentationModel_PmNotExists() {
-		assert !clientConnector.dispatchHandle(new SwitchPresentationModelCommand(sourcePmId: 'p1', pmId: 'p2'))
-		dolphin.presentationModel('p2')
-		assert !clientConnector.dispatchHandle(new SwitchPresentationModelCommand(sourcePmId: 'p1', pmId: 'p2'))
-	}
-
-	void testHandle_SwitchPresentationModel() {
-		ClientPresentationModel model_one = dolphin.presentationModel('p1')
-		model_one._internal_addAttribute(new ClientAttribute('attr', 'one'))
-		ClientPresentationModel model_two = dolphin.presentationModel('p2')
-		model_two._internal_addAttribute(new ClientAttribute('attr', 'two'))
-		assert clientConnector.dispatchHandle(new SwitchPresentationModelCommand(sourcePmId: 'p1', pmId: 'p2'))
-		assert 'one' == dolphin.getAt('p2').getAt('attr').value
 	}
 
 	void testHandle_ValueChanged_AttrNotExists() {
@@ -374,21 +323,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		assert data == clientConnector.dispatchHandle(new DataCommand(data))
 	}
 
-	void testHandleSavedPMNotificationForKnownPm() {
-		def pm = dolphin.presentationModel('wasSaved',null,a:1,b:1)
-		pm.a.value = 2
-		pm.b.value = 2
-		def result = clientConnector.dispatchHandle(new SavedPresentationModelNotification(pmId:'wasSaved'))
-		assert pm.a.value == 2
-		assert ! pm.a.dirty
-		assert pm.b.value == 2
-		assert ! pm.b.dirty
-		assert result == pm
-	}
-
-	void testHandleSavedPMNotificationForUnKnownPmIsSilentlyIgnored() {
-		assert null == clientConnector.dispatchHandle(new SavedPresentationModelNotification(pmId:'no-such-id'))
-	}
 
 }
 
@@ -428,9 +362,6 @@ class TestClientConnector extends AbstractClientConnector {
 		[]
 	}
 
-	List construct(ResetPresentationModelCommand command) {
-		[new PresentationModelResetedCommand(pmId: command.pmId)]
-	}
 }
 
 class ExtendedAttribute extends ClientAttribute {

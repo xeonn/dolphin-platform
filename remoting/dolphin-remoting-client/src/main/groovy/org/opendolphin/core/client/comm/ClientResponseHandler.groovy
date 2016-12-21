@@ -77,7 +77,6 @@ class ClientResponseHandler {
             if(attr.id?.toString()?.endsWith('S')) {
                 attribute.id = attr.id
             }
-            attribute.baseValue = attr.baseValue
             attributes << attribute
         }
         ClientPresentationModel model = new ClientPresentationModel(serverCommand.pmId, attributes)
@@ -107,21 +106,6 @@ class ClientResponseHandler {
         log.info "C: updating '$attribute.propertyName' id '$serverCommand.attributeId' from '$attribute.value' to '$serverCommand.newValue'"
         attribute.value = serverCommand.newValue
         return null // this command is not expected to be sent explicitly, so no pm needs to be returned
-    }
-
-    ClientPresentationModel handle(SwitchPresentationModelCommand serverCommand) {
-        def switchPm = clientModelStore.findPresentationModelById(serverCommand.pmId)
-        if (!switchPm) {
-            log.warning "C: switch pm with id '$serverCommand.pmId' not found, cannot switch"
-            return null
-        }
-        def sourcePm = clientModelStore.findPresentationModelById(serverCommand.sourcePmId)
-        if (!sourcePm) {
-            log.warning "C: source pm with id '$serverCommand.sourcePmId' not found, cannot switch"
-            return null
-        }
-        switchPm.syncWith sourcePm                  // ==  clientDolphin.apply sourcePm to switchPm
-        return (ClientPresentationModel) switchPm
     }
 
     ClientPresentationModel handle(InitializeAttributeCommand serverCommand) {
@@ -158,26 +142,6 @@ class ClientResponseHandler {
         }
         clientDolphin.updateQualifiers(presentationModel)
         return presentationModel // todo dk: check and test
-    }
-
-    ClientPresentationModel handle(SavedPresentationModelNotification serverCommand) {
-        if (!serverCommand.pmId) return null
-        ClientPresentationModel model = clientModelStore.findPresentationModelById(serverCommand.pmId)
-        if (null == model) {
-            log.warning("model with id '$serverCommand.pmId' not found, cannot rebase")
-            return null
-        }
-        model.attributes*.rebase() // rebase sends update command if needed through PCL
-        return model
-    }
-
-    ClientPresentationModel handle(PresentationModelResetedCommand serverCommand) {
-        if (!serverCommand.pmId) return null
-        PresentationModel model = clientModelStore.findPresentationModelById(serverCommand.pmId)
-        // reset locally first
-        if (!model) return null
-        model.attributes*.reset()
-        return model
     }
 
     ClientPresentationModel handle(AttributeMetadataChangedCommand serverCommand) {

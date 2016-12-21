@@ -47,7 +47,6 @@ public class CreatePresentationModelCommand extends Command {
             attributeMap.put("id", attr.getId());
             attributeMap.put("qualifier", attr.getQualifier());
             attributeMap.put("value", attr.getValue());
-            attributeMap.put("baseValue", attr.getBaseValue());
             result.getAttributes().add(attributeMap);
         }
 

@@ -2,7 +2,6 @@ package org.opendolphin.core.server;
 
 import org.opendolphin.StringUtil;
 import org.opendolphin.core.AbstractDolphin;
-import org.opendolphin.core.BaseAttribute;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 import org.opendolphin.core.comm.DeletePresentationModelCommand;
@@ -165,17 +164,6 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
     }
 
     /**
-     * Convenience method to let Dolphin reset the value of an attribute
-     */
-    public static void resetCommand(List<Command> response, ServerAttribute attribute) {
-        if (response == null || attribute == null) {
-            LOG.severe("Cannot reset null attribute");
-            return;
-        }
-        response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), attribute.getBaseValue()));
-    }
-
-    /**
      * Convenience method to change an attribute value on the server side.
      *
      * @param response  must not be null or the method silently ignores the call
@@ -203,7 +191,7 @@ public class DefaultServerDolphin extends AbstractDolphin<ServerAttribute, Serve
      * @deprecated use {@link #changeValueCommand(List, ServerAttribute, Object)}, which enforces the value change by default. Will be removed in version 1.0!
      */
     public static void forceChangeValueCommand(Object value, List<Command> response, ServerAttribute attribute) {
-        response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), BaseAttribute.checkValue(value)));
+        response.add(new ValueChangedCommand(attribute.getId(), attribute.getValue(), value));
     }
 
     /**

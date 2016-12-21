@@ -80,12 +80,12 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
 
         // register a server-side action that sees the second PM
         registerAction (serverDolphin, "checkPmIsThere", { cmd, list ->
-            assert serverDolphin.getAt("pm1").a.value == 1
-            assert clientDolphin.getAt("pm1").a.value == 1
+            assert serverDolphin.getAt("pm1").getAt("a").value == 1
+            assert clientDolphin.getAt("pm1").getAt("a").value == 1
             context.assertionsDone()
         });
 
-        assert clientDolphin.getAt("pm1").a.value == 0
+        assert clientDolphin.getAt("pm1").getAt("a").value == 0
         clientDolphin.delete(clientDolphin.getAt("pm1"))
         clientDolphin.presentationModel("pm1", new ClientAttribute("a", 1 ))
         clientDolphin.send("checkPmIsThere")
@@ -109,25 +109,25 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
             serverDolphin.presentationModel(null, "myType", new DTO(new Slot('a',1))) // recreate
 
             assert serverDolphin.findAllPresentationModelsByType("myType").size() == 2
-            assert serverDolphin.findAllPresentationModelsByType("myType")[0].a.value == 0
-            assert serverDolphin.findAllPresentationModelsByType("myType")[1].a.value == 1
+            assert serverDolphin.findAllPresentationModelsByType("myType")[0].getAt("a").value == 0
+            assert serverDolphin.findAllPresentationModelsByType("myType")[1].getAt("a").value == 1
         });
 
         registerAction( serverDolphin, ("assertRetainedServerState"), { cmd, list ->
             assert serverDolphin.findAllPresentationModelsByType("myType").size() == 2
-            assert serverDolphin.findAllPresentationModelsByType("myType")[0].a.value == 0
-            assert serverDolphin.findAllPresentationModelsByType("myType")[1].a.value == 1
+            assert serverDolphin.findAllPresentationModelsByType("myType")[0].getAt("a").value == 0
+            assert serverDolphin.findAllPresentationModelsByType("myType")[1].getAt("a").value == 1
             context.assertionsDone()
         });
 
         clientDolphin.send("createPM"){
             assert clientDolphin.findAllPresentationModelsByType("myType").size() == 1
-            assert clientDolphin.findAllPresentationModelsByType("myType").first().a.value == 0
+            assert clientDolphin.findAllPresentationModelsByType("myType").first().getAt("a").value == 0
         }
         clientDolphin.send("deleteAndRecreate") {
             assert clientDolphin.findAllPresentationModelsByType("myType").size() == 2
-            assert clientDolphin.findAllPresentationModelsByType("myType")[0].a.value == 0
-            assert clientDolphin.findAllPresentationModelsByType("myType")[1].a.value == 1
+            assert clientDolphin.findAllPresentationModelsByType("myType")[0].getAt("a").value == 0
+            assert clientDolphin.findAllPresentationModelsByType("myType")[1].getAt("a").value == 1
         }
         clientDolphin.send("assertRetainedServerState")
     }
@@ -139,15 +139,15 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
         });
         registerAction( serverDolphin, ("changeValueMultipleTimesAndBackToBase"), { cmd, list ->
             def myPm = serverDolphin.getAt("myPm")
-            myPm.a.value = 1
-            myPm.a.value = 2
-            myPm.a.value = 0
+            myPm.getAt("a").value = 1
+            myPm.getAt("a").value = 2
+            myPm.getAt("a").value = 0
         });
 
         clientDolphin.send("createPM")
         clientDolphin.send("changeValueMultipleTimesAndBackToBase") {
             def myPm = clientDolphin.getAt("myPm")
-            assert myPm.a.value == 0
+            assert myPm.getAt("a").value == 0
             context.assertionsDone()
         }
     }
@@ -177,8 +177,8 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
         });
         registerAction(serverDolphin, "setAndUnsetQualifier", { cmd, list ->
             def myPm = serverDolphin.findAllPresentationModelsByType("myType").first()
-            myPm.a.qualifier = "myQualifier"
-            myPm.a.qualifier = "othervalue"
+            myPm.getAt("a").qualifier = "myQualifier"
+            myPm.getAt("a").qualifier = "othervalue"
         });
 
         clientDolphin.send("createPM"){
@@ -191,58 +191,26 @@ class ServerControlledFunctionalTests extends GroovyTestCase {
             })
         }
         clientDolphin.send("setAndUnsetQualifier") {
-            assert "myQualifier" == clientDolphin.findAllPresentationModelsByType("myType").first().a.qualifier
+            assert "myQualifier" == clientDolphin.findAllPresentationModelsByType("myType").first().getAt("a").qualifier
             context.assertionsDone()
         }
     }
 
-    void testServerSideSetQualifierPlusServerSideApply() {
+    void testServerSideSetQualifier() {
         registerAction( serverDolphin, ("createPM"), { cmd, list ->
             serverDolphin.presentationModel(null, "myType", new DTO(new Slot('a',0)))
             serverDolphin.presentationModel("target", null, new DTO(new Slot('a',1)))
         });
         registerAction( serverDolphin, ("setQualifier"), { cmd, list ->
             def myPm = serverDolphin.findAllPresentationModelsByType("myType").first()
-            myPm.a.qualifier = "myQualifier"
+            myPm.getAt("a").qualifier = "myQualifier"
         })
-        registerAction( serverDolphin, ("apply"), { cmd, list ->
-            def source = serverDolphin.findAllPresentationModelsByType("myType").first()
-            def target = serverDolphin.getAt("target")
-            target.syncWith(source)
-            assert target.a.value == 0
-            assert target.a.qualifier == "myQualifier"
-        });
 
         clientDolphin.send("createPM"){
             assert clientDolphin.findAllPresentationModelsByType("myType").first()
         }
         clientDolphin.send("setQualifier") {
-            assert clientDolphin.findAllPresentationModelsByType("myType").first().a.qualifier == "myQualifier"
-        }
-        clientDolphin.send("apply") {
-            assert clientDolphin.getAt("target").a.value == 0
-            assert clientDolphin.getAt("target").a.qualifier == "myQualifier"
-            context.assertionsDone()
-        }
-    }
-
-
-    void testServerSideRebase() {
-        registerAction(serverDolphin, "createPM", { cmd, list ->
-            serverDolphin.presentationModel(null, "myType", new DTO(new Slot('a',0)))
-        });
-        registerAction(serverDolphin, "rebase", { cmd, list ->
-            def myPm = serverDolphin.findAllPresentationModelsByType("myType").first()
-            myPm.a.value = 1
-            myPm.rebase()
-        });
-
-        clientDolphin.send("createPM")
-        clientDolphin.send("rebase") {
-            def pm = clientDolphin.findAllPresentationModelsByType("myType").first()
-            assert ! pm.dirty
-            assert pm.a.value == 1
-            assert pm.a.baseValue == 1
+            assert clientDolphin.findAllPresentationModelsByType("myType").first().getAt("a").qualifier == "myQualifier"
             context.assertionsDone()
         }
     }

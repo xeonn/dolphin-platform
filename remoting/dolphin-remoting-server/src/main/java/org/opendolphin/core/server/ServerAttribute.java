@@ -46,27 +46,6 @@ public class ServerAttribute extends BaseAttribute {
         });
     }
 
-    @Override
-    public void setBaseValue(final Object value) {
-        if (notifyClient) {
-            getPresentationModel().getModelStore().getCurrentResponse().add(new AttributeMetadataChangedCommand(getId(), Attribute.BASE_VALUE, value));
-        }
-
-        super.setBaseValue(value);
-        // on the server side, we have no listener on the model store to care for the distribution of
-        // baseValue changes to all attributes of the same qualifier so we must care for that ourselves
-        forAllQualified(new Closure<Object>(this, this) {
-            public void doCall(ServerAttribute attribute) {
-                if (value == null && attribute.getBaseValue() != null || value != null && attribute.getBaseValue() == null || !value.equals(attribute.getBaseValue())) {
-                    attribute.setBaseValue(value);
-                }
-
-            }
-
-        });
-
-    }
-
     protected void forAllQualified(Closure yield) {
         if (getQualifier() == null) {
             return;
@@ -95,29 +74,6 @@ public class ServerAttribute extends BaseAttribute {
             getPresentationModel().getModelStore().getCurrentResponse().add(new AttributeMetadataChangedCommand(getId(), Attribute.QUALIFIER_PROPERTY, value));
         }
 
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        if (notifyClient) {
-            DefaultServerDolphin.resetCommand(getPresentationModel().getModelStore().getCurrentResponse(), this);
-        }
-
-    }
-
-    /**
-     * Rebasing on the server side must set the base value to the current value as seen on the server side.
-     * This will send a command to the client that instructs him to also set his base value to the exact
-     * same (server-side) value.
-     * NB: This is subtly different from just calling "rebase" on the client side since the attribute value
-     * on the client side may have changed due to user input or value change listeners to a state that the
-     * server has not yet seen.
-     */
-    @Override
-    public void rebase() {// todo dk: delete before 1.0 final
-        super.rebase();
-        // we are no longer sending RebaseCommand
     }
 
     public String getOrigin() {

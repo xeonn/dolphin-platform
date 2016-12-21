@@ -15,10 +15,7 @@
  */
 package org.opendolphin.core;
 
-import groovy.lang.GString;
-
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,29 +29,28 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     static private long  instanceCount = 0;
 
     private final String propertyName;
+
     private       Object value;
-    private       Object baseValue;
-    private      boolean dirty = false;
 
     private PresentationModel presentationModel;
 
     private String id ;
+
     private String qualifier; // application specific semantics apply
 
     public BaseAttribute(String propertyName) {
         this(propertyName, null, null);
     }
 
-    public BaseAttribute(String propertyName, Object baseValue) {
-        this(propertyName, baseValue, null);
+    public BaseAttribute(String propertyName, Object value) {
+        this(propertyName, value, null);
     }
 
 
-    public BaseAttribute(String propertyName, Object baseValue, String qualifier) {
+    public BaseAttribute(String propertyName, Object value, String qualifier) {
         this.id = (instanceCount++) + getOrigin();
         this.propertyName = propertyName;
-        this.baseValue = baseValue;
-        this.value = baseValue;
+        this.value = value;
         this.qualifier = qualifier;
     }
 
@@ -62,14 +58,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
      * @return 'C' for client or 'S' for server
      */
     public abstract String getOrigin();
-
-    public boolean isDirty() {
-        return dirty;
-    }
-
-    public Object getBaseValue() {
-        return baseValue;
-    }
 
     public void setPresentationModel(PresentationModel presentationModel) {
         if (this.presentationModel != null) {
@@ -87,56 +75,15 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
         return value;
     }
 
-    /** Check whether value is of allowed type and convert to an allowed type if possible. */
-    public static Object checkValue(Object value) {
-        if (null == value) return null;
-        Object result = value;
-        if (result instanceof GString) result = value.toString();
-        if (result instanceof BaseAttribute) {
-            if (log.isLoggable(Level.WARNING)) log.warning("An Attribute may not itself contain an attribute as a value. Assuming you forgot to call getValue().");
-            result = checkValue((((BaseAttribute) value).getValue()));
-        }
-        boolean ok = false;
-        for (Class type : SUPPORTED_VALUE_TYPES ) {
-            if (type.isAssignableFrom(result.getClass())) { ok = true; break; }
-        }
-        if (!ok) {
-            throw new IllegalArgumentException("Attribute values of this type are not allowed: " + result.getClass().getSimpleName());
-        }
-        return result;
-    }
-
     // todo dk: think about specific method versions for each allowed type
     public void setValue(Object newValue) {
-        Object checkedValue = checkValue(newValue);
-        setDirty(isDifferent(baseValue, checkedValue));
-        if (isDifferent(value, checkedValue)){ // firePropertyChange doesn't do this check sufficiently
-            firePropertyChange(VALUE, value, value = checkedValue); // set inline to avoid recursion
+        if (isDifferent(value, newValue)){ // firePropertyChange doesn't do this check sufficiently
+            firePropertyChange(VALUE, value, value = newValue); // set inline to avoid recursion
         }
     }
 
     private boolean isDifferent(Object oldValue, Object newValue) {
         return oldValue == null ? newValue != null : !oldValue.equals(newValue);
-    }
-
-    private void setDirty(boolean dirty) {
-        firePropertyChange(DIRTY_PROPERTY, this.dirty, this.dirty = dirty);
-        if (null != presentationModel) presentationModel.updateDirty();
-    }
-
-    public void setBaseValue(Object baseValue) {
-        setDirty(isDifferent(baseValue, value));
-        firePropertyChange(BASE_VALUE, this.baseValue, this.baseValue = baseValue);
-    }
-
-    public void rebase() {
-        setBaseValue(getValue());
-        setDirty(false);
-    }
-
-    public void reset() {
-        setValue(getBaseValue());
-        setDirty(false);
     }
 
     public String toString() {
@@ -156,6 +103,7 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -172,7 +120,6 @@ public abstract class BaseAttribute extends AbstractObservable implements Attrib
         if (this == source || null == source) return;
         //order is important
         setQualifier(source.getQualifier());
-        setBaseValue(source.getBaseValue());
         setValue(source.getValue());
     }
 }

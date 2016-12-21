@@ -30,8 +30,6 @@ package org.opendolphin.core;
  */
 public interface Attribute extends Observable {
     String QUALIFIER_PROPERTY   = "qualifier";
-    String DIRTY_PROPERTY       = "dirty";
-    String BASE_VALUE           = "baseValue";
     String VALUE                = "value";
 
     /** Returns the current value of this attribute. */
@@ -54,41 +52,10 @@ public interface Attribute extends Observable {
      */
     String getId();
 
-    /** Copies the source attribute's qualifier, base value, and value to this attribute, thus "synchronizing" the
-     * two attributes.
-     * @param source attribute whose values are to be copied into this attribute
-     */
-    void syncWith(Attribute source);
-
-    /**
-     *
-     * @return the dirty flag, true if the current value differs from the base value (unless overridden)
-     */
-    boolean isDirty();
-
-    /**
-     * Returns the original (or "base") value of the attribute.  Used to determine if the attribute is dirty.
-     */
-    Object getBaseValue();
-
-    /**
-     * Sets the original (or "base") value of the attribute.
-     * @param newValue
-     */
-    void   setBaseValue(Object newValue);
-
     /**
      * Every attribute belongs to at most one presentation model.  If it has been added to a presentation model,
      * then this method returns that model, otherwise null.
      * @return the presentation model to which this attribute belongs.
      */
     PresentationModel getPresentationModel();
-
-    // todo dk: add rebase to BasePresentationModel or to facade
-
-    /** Sets the base value to the current value, effectively providing a new base for "dirty" calculations. */
-    void rebase();
-
-    /** Sets the current value back to the last known base, stored in the base value. */
-    void reset();
 }

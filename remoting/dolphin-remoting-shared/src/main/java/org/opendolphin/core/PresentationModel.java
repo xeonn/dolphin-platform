@@ -24,7 +24,6 @@ import java.util.List;
  * @see Attribute
  */
 public interface PresentationModel<A extends Attribute> extends Observable {
-    String DIRTY_PROPERTY = "dirty";
 
     /**
      *
@@ -75,12 +74,6 @@ public interface PresentationModel<A extends Attribute> extends Observable {
     A findAttributeById(String id);
 
     /**
-     * Copies (synchronizes) all attributes from the other presentation model to this model.
-     * @see Attribute#syncWith(Attribute)
-     */
-    void syncWith(PresentationModel other);
-
-    /**
      * Returns the type (a String value) of the presentation model.  The type defaults to null.
      * @return
      */
@@ -93,15 +86,4 @@ public interface PresentationModel<A extends Attribute> extends Observable {
      */
     void _internal_addAttribute(A attribute);
 
-    /**
-     *
-     * @return true if any attributes are dirty.
-     * @see Attribute#isDirty()
-     */
-    boolean isDirty();
-
-    /**
-     * Sets the presentation model's dirty flag if any of its attributes are dirty, else clears the dirty flag.
-     */
-    void updateDirty();
 }

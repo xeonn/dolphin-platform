@@ -67,7 +67,7 @@ class DeletePresentationModelTests extends GroovyTestCase {
         String modelId = 'modelId'
         def model = clientDolphin.presentationModel(modelId, someAttribute:"someValue")
         // sanity check: we have a least the client model store listening to changes of someAttribute
-        assert model.someAttribute.propertyChangeListeners
+        assert model.getAt("someAttribute").propertyChangeListeners
         // the model is in the client model store
         def found = clientDolphin.getAt(modelId)
         assert model == found

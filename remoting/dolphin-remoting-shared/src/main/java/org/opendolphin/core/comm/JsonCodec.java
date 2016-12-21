@@ -4,7 +4,6 @@ import groovy.json.JsonBuilder;
 import groovy.json.JsonSlurper;
 import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.opendolphin.core.BaseAttribute;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -80,7 +79,7 @@ public class JsonCodec implements Codec {
     }
 
     protected Object encodeBaseValue(Object entryValue) {
-        Object result = BaseAttribute.checkValue(entryValue);
+        Object result = entryValue;
         if (result instanceof Date) {
             Map map = new HashMap();
             map.put(DATE_TYPE_KEY, new SimpleDateFormat(ISO8601_FORMAT).format((Date) result));

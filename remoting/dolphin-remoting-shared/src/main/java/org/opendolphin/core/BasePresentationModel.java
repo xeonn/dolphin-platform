@@ -15,9 +15,6 @@
  */
 package org.opendolphin.core;
 
-import groovy.lang.MissingPropertyException;
-import groovy.util.Eval;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,10 +26,13 @@ import java.util.List;
  */
 
 public class BasePresentationModel<A extends Attribute> extends AbstractObservable implements PresentationModel<A> {
+
     protected final List<A> attributes = new LinkedList<A>();
+
     private final String id;
+
     private       String presentationModelType;
-    private boolean dirty = false;
+
 
     /**
      * @throws AssertionError if the list of attributes is null or empty
@@ -42,16 +42,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         for (A attr : attributes) {
             _internal_addAttribute(attr);
         }
-    }
-
-    public void updateDirty() {
-        for (A attr : attributes) {
-            if (attr.isDirty()) {
-                setDirty(true);
-                return;
-            }
-        }
-        setDirty(false);
     }
 
     public void _internal_addAttribute(A attribute) {
@@ -67,7 +57,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         }
         ((BaseAttribute)attribute).setPresentationModel(this);
         attributes.add(attribute);
-        updateDirty(); // the new attribute may be dirty
     }
 
     public String getId() {
@@ -80,27 +69,6 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
 
     public void setPresentationModelType(String presentationModelType) {
         this.presentationModelType = presentationModelType;
-    }
-
-    @Override
-    public boolean isDirty() {
-        return dirty;
-    }
-
-    public void setDirty(boolean dirty) {
-        firePropertyChange(DIRTY_PROPERTY, this.dirty, this.dirty = dirty);
-    }
-
-    public void reset() {
-        for (A attr : attributes) {
-            attr.reset();
-        }
-    }
-
-    public void rebase() {
-        for (A attr : attributes) {
-            attr.rebase();
-        }
     }
 
     /**
@@ -164,26 +132,4 @@ public class BasePresentationModel<A extends Attribute> extends AbstractObservab
         }
         return null;
     }
-
-    public Object propertyMissing(String propName) {
-        A result = findAttributeByPropertyName(propName);
-        if (null == result) {
-            String message = "The presentation model doesn't understand '" + propName + "'. \n";
-            message += "Known attribute names are: " + Eval.x(attributes, "x.collect{it.propertyName}");
-            throw new MissingPropertyException(message, propName, this.getClass());
-        }
-        return result;
-    }
-
-    /**
-     * Synchronizes all attributes of the source with all matching attributes of this presentation model
-     * @param sourcePresentationModel may not be null since this most likely indicates an error
-     */
-    public void syncWith(PresentationModel sourcePresentationModel) {
-        for (A targetAttribute : attributes) {
-            Attribute sourceAttribute = sourcePresentationModel.getAt(targetAttribute.getPropertyName());
-            if (sourceAttribute != null) targetAttribute.syncWith(sourceAttribute);
-        }
-    }
-
 }

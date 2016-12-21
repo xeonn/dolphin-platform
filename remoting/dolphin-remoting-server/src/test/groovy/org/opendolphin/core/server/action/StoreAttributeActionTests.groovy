@@ -59,13 +59,6 @@ class StoreAttributeActionTests extends GroovyTestCase {
         assert '' == dolphin.getAt('model').getAt('newAttribute').value
     }
 
-    void testChangeAttributeMetadata_AttributeNotFound() {
-        new StoreAttributeAction(serverDolphin: dolphin).registerIn registry
-        ServerAttribute attribute = new ServerAttribute('newAttribute', '')
-        registry.getAt('ChangeAttributeMetadata').first().handleCommand(new ChangeAttributeMetadataCommand(attributeId: attribute.id, metadataName: 'dirty', value: true), [])
-        assert !attribute.dirty
-    }
-
     void testChangeAttributeMetadata() {
         new StoreAttributeAction(serverDolphin: dolphin).registerIn registry
         ServerAttribute attribute = new ServerAttribute('newAttribute', '')
