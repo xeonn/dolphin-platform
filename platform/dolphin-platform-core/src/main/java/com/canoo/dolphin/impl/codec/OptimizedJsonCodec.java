@@ -112,7 +112,7 @@ public class OptimizedJsonCodec implements Codec {
             LOG.trace("Decoded command list with {} commands", commands.size());
             return commands;
         } catch (ClassCastException | NullPointerException ex) {
-            throw new JsonParseException("Illegal JSON detected");
+            throw new JsonParseException("Illegal JSON detected", ex);
         }
     }
 

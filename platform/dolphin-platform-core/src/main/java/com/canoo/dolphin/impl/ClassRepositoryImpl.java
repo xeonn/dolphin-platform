@@ -29,8 +29,6 @@ import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
 import org.opendolphin.core.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -43,8 +41,6 @@ import java.util.Map;
  * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
  */
 public class ClassRepositoryImpl implements ClassRepository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
 
     private final PresentationModelBuilderFactory builderFactory;
     private final Converters converters;
@@ -69,16 +65,18 @@ public class ClassRepositoryImpl implements ClassRepository {
                     classToClassInfoMap.put(beanClass, classInfo);
                     modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
                 } catch (ClassNotFoundException e) {
-                    // Ignore unknown classes
+                    throw new RuntimeException("Error in class info generation!", e);
                 }
             }
         });
     }
 
+    @Override
     public ClassInfo getClassInfo(final String modelType) {
         return modelTypeToClassInfoMap.get(modelType);
     }
 
+    @Override
     public ClassInfo getOrCreateClassInfo(final Class<?> beanClass) {
         final ClassInfo existingClassInfo = classToClassInfoMap.get(beanClass);
         if (existingClassInfo != null) {

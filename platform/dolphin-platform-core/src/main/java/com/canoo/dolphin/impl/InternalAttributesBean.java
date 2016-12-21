@@ -28,16 +28,16 @@ public class InternalAttributesBean {
     private static final String MODEL = "model";
 
     private final BeanRepository beanRepository;
-    private final Attribute controllerName;
-    private final Attribute controllerId;
-    private final Attribute model;
+    private final Attribute controllerNameAttribute;
+    private final Attribute controllerIdAttribute;
+    private final Attribute modelAttribute;
 
     public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModel pm) {
         this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
         Assert.requireNonNull(pm, "pm");
-        controllerName = pm.findAttributeByPropertyName(CONTROLLER_NAME);
-        controllerId = pm.findAttributeByPropertyName(CONTROLLER_ID);
-        model = pm.findAttributeByPropertyName(MODEL);
+        controllerNameAttribute = pm.findAttributeByPropertyName(CONTROLLER_NAME);
+        controllerIdAttribute = pm.findAttributeByPropertyName(CONTROLLER_ID);
+        modelAttribute = pm.findAttributeByPropertyName(MODEL);
     }
 
     public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModelBuilder builder) {
@@ -52,29 +52,29 @@ public class InternalAttributesBean {
     }
 
     public String getControllerName() {
-        return (String) controllerName.getValue();
+        return (String) controllerNameAttribute.getValue();
     }
 
     public void setControllerName(String controllerName) {
-        this.controllerName.setValue(controllerName);
+        this.controllerNameAttribute.setValue(controllerName);
     }
 
     public String getControllerId() {
-        return (String) controllerId.getValue();
+        return (String) controllerIdAttribute.getValue();
     }
 
     public void setControllerId(String controllerId) {
-        this.controllerId.setValue(controllerId);
+        this.controllerIdAttribute.setValue(controllerId);
     }
 
     public <T> T getModel() {
-        if(model.getValue() == null) {
+        if(modelAttribute.getValue() == null) {
             throw new RuntimeException("Dolphin Platform internal error: No model defined");
         }
-        return (T) beanRepository.getBean(model.getValue().toString());
+        return (T) beanRepository.getBean(modelAttribute.getValue().toString());
     }
 
     public void setModel(Object model) {
-        this.model.setValue(beanRepository.getDolphinId(model));
+        this.modelAttribute.setValue(beanRepository.getDolphinId(model));
     }
 }

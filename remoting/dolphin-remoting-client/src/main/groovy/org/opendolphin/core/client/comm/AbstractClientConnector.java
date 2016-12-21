@@ -98,7 +98,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         startCommandProcessing();
     }
 
-    private void startCommandProcessing() {
+    protected void startCommandProcessing() {
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -138,6 +138,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     protected abstract List<Command> transmit(List<Command> commands);
 
+    @Override
     public void send(Command command, OnFinishedHandler callback) {
         // we have some change so regardless of the batching we may have to release a push
         if (!command.equals(pushListener)) {
@@ -150,6 +151,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         commandBatcher.batch(handler);
     }
 
+    @Override
     public void send(Command command) {
         send(command, null);
     }
@@ -162,12 +164,12 @@ public abstract class AbstractClientConnector implements ClientConnector {
                 for (Command c : response) {
                     commands.add(c.getId());
                 }
+                LOG.info("C: server responded with {}" + response.size() + " command(s): {}" + commands);
             }
-            LOG.info("C: server responded with " + response.size() + " command(s): " + commands);
         }
 
         List<ClientPresentationModel> touchedPresentationModels = new LinkedList<>();
-        List<Map> touchedDataMaps = new LinkedList<Map>();
+        List<Map> touchedDataMaps = new LinkedList<>();
         for (Command serverCommand : response) {
             Object touched = dispatchHandle(serverCommand);
             if (touched != null && touched instanceof ClientPresentationModel) {
@@ -182,7 +184,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         if (callback != null) {
             callback.onFinished((List<ClientPresentationModel>) DefaultGroovyMethods.unique(touchedPresentationModels, new Closure<String>(this, this) {
                 public String doCall(ClientPresentationModel it) {
-                    return ((ClientPresentationModel) it).getId();
+                    return it.getId();
                 }
 
                 public String doCall() {
@@ -234,6 +236,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
     /**
      * listens for the pushListener to return. The pushListener must be set and pushEnabled must be true.
      */
+    @Override
     public void listen() {
         if (!pushEnabled) {
             return; // allow the loop to end
@@ -295,6 +298,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return uiThreadHandler;
     }
 
+    @Override
     public void setUiThreadHandler(UiThreadHandler uiThreadHandler) {
         this.uiThreadHandler = uiThreadHandler;
     }
@@ -315,6 +319,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return pushListener;
     }
 
+    @Override
     public void setPushListener(NamedCommand pushListener) {
         this.pushListener = pushListener;
     }
@@ -323,6 +328,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return releaseCommand;
     }
 
+    @Override
     public void setReleaseCommand(SignalCommand releaseCommand) {
         this.releaseCommand = releaseCommand;
     }
