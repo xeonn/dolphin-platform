@@ -3,17 +3,13 @@ package org.opendolphin.core.comm;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
@@ -21,7 +17,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonCodec implements Codec {
 
@@ -49,23 +47,7 @@ public class JsonCodec implements Codec {
                 return element;
             }
         });
-        gsonBuilder.registerTypeAdapter(Float.TYPE, new JsonSerializer<Float>() {
-            @Override
-            public JsonElement serialize(Float src, Type typeOfSrc, JsonSerializationContext context) {
-                JsonObject element = new JsonObject();
-                element.addProperty(Float.class.toString(), Float.toString(src));
-                return element;
-            }
-        });
         gsonBuilder.registerTypeAdapter(Double.class, new JsonSerializer<Double>() {
-            @Override
-            public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
-                JsonObject element = new JsonObject();
-                element.addProperty(Double.class.toString(), Double.toString(src));
-                return element;
-            }
-        });
-        gsonBuilder.registerTypeAdapter(Double.TYPE, new JsonSerializer<Double>() {
             @Override
             public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
                 JsonObject element = new JsonObject();
@@ -81,29 +63,6 @@ public class JsonCodec implements Codec {
                 return element;
             }
         });
-        gsonBuilder.registerTypeAdapter(Integer.class, new JsonDeserializer<Integer>() {
-            @Override
-            public Integer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                System.out.println("TADA");
-                return json.getAsInt();
-            }
-        });
-        gsonBuilder.registerTypeAdapter(Integer.TYPE, new JsonDeserializer<Integer>() {
-            @Override
-            public Integer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                System.out.println("TADA");
-                return json.getAsInt();
-            }
-        });
-        gsonBuilder.registerTypeAdapterFactory(new TypeAdapterFactory() {
-            @Override
-            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-                System.out.println(type.getRawType());
-                return null;
-            }
-        });
-
-
         GSON = gsonBuilder.serializeNulls().create();
     }
 
@@ -123,28 +82,122 @@ public class JsonCodec implements Codec {
                 ret.add(element);
             }
         }
+
+        System.out.println("-> " + GSON.toJson(ret));
         return GSON.toJson(ret);
     }
 
     @Override
     public List<Command> decode(String transmitted) {
-        System.out.println(transmitted);
+        System.out.println("<- " + transmitted);
         LOG.trace("Decoding message: {}", transmitted);
         try {
             final List<Command> commands = new ArrayList<>();
             final JsonArray array = (JsonArray) new JsonParser().parse(transmitted);
 
             for (final JsonElement jsonElement : array) {
-                final JsonObject command = (JsonObject) jsonElement;
-                final String className = command.getAsJsonPrimitive("className").getAsString();
+                final JsonObject commandElement = (JsonObject) jsonElement;
+                final String className = commandElement.getAsJsonPrimitive("className").getAsString();
                 LOG.trace("Decoding command type: {}", className);
                 Class<? extends Command> commandClass = (Class<? extends Command>) Class.forName(className);
-                commands.add(GSON.fromJson(jsonElement, commandClass));
+                if(commandClass.equals(ValueChangedCommand.class)) {
+                    commands.add(createValueChangedCommand(commandElement));
+                } else if(commandClass.equals(CreatePresentationModelCommand.class)) {
+                    commands.add(createCreatePresentationModelCommand(commandElement));
+                } else {
+                    commands.add(GSON.fromJson(commandElement, commandClass));
+                }
             }
             LOG.trace("Decoded command list with {} commands", commands.size());
             return commands;
         } catch (Exception ex) {
             throw new JsonParseException("Illegal JSON detected", ex);
         }
+    }
+
+    private Command createCreatePresentationModelCommand(JsonObject commandElement) {
+        CreatePresentationModelCommand command = new CreatePresentationModelCommand();
+        command.setPmId(stringOrNull(commandElement.get("pmId")));
+        command.setPmType(stringOrNull(commandElement.get("pmType")));
+        command.setClientSideOnly(booleanOrFalse(commandElement.get("clientSideOnly")));
+
+        if(commandElement.has("attributes")) {
+            for(JsonElement attributeElement : commandElement.getAsJsonArray("attributes")) {
+                JsonObject attributeObject = attributeElement.getAsJsonObject();
+                System.out.println("");
+                Map<String, Object> attributeMap = new HashMap<>();
+                for(Map.Entry<String, JsonElement> entry : attributeObject.entrySet()) {
+                    attributeMap.put(entry.getKey(), toValidValue(entry.getValue()));
+                }
+                command.getAttributes().add(attributeMap);
+            }
+        }
+
+        return command;
+    }
+
+    private Command createValueChangedCommand(JsonObject commandElement) {
+        ValueChangedCommand command = new ValueChangedCommand();
+        command.setAttributeId(stringOrNull(commandElement.get("attributeId")));
+        command.setOldValue(toValidValue(commandElement.get("oldValue")));
+        command.setNewValue(toValidValue(commandElement.get("newValue")));
+        return command;
+    }
+
+    private boolean booleanOrFalse(JsonElement element) {
+        if(element.isJsonNull()) {
+            return false;
+        }
+        return element.getAsBoolean();
+    }
+
+    private String stringOrNull(JsonElement element) {
+        if(element.isJsonNull()) {
+            return null;
+        }
+        return element.getAsString();
+    }
+
+    private Object toValidValue(JsonElement jsonElement) {
+        if(jsonElement.isJsonNull()) {
+            return null;
+        } else if(jsonElement.isJsonPrimitive()) {
+            JsonPrimitive primitive = jsonElement.getAsJsonPrimitive();
+             if(primitive.isBoolean()) {
+                return primitive.getAsBoolean();
+            } else if(primitive.isString()) {
+                return primitive.getAsString();
+            } else {
+                return primitive.getAsNumber();
+            }
+        } else if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            if(jsonObject.has(Date.class.toString())) {
+                try {
+                    return new SimpleDateFormat(ISO8601_FORMAT).parse(jsonObject.getAsJsonPrimitive(Date.class.toString()).getAsString());
+                } catch (Exception e) {
+                    throw new RuntimeException("Can not converte!", e);
+                }
+            } else if(jsonObject.has(BigDecimal.class.toString())) {
+                try {
+                    return new BigDecimal(jsonObject.getAsJsonPrimitive(BigDecimal.class.toString()).getAsString());
+                } catch (Exception e) {
+                    throw new RuntimeException("Can not converte!", e);
+                }
+            } else if(jsonObject.has(Float.class.toString())) {
+                try {
+                    return Float.valueOf(jsonObject.getAsJsonPrimitive(Float.class.toString()).getAsString());
+                } catch (Exception e) {
+                    throw new RuntimeException("Can not converte!", e);
+                }
+            } else if(jsonObject.has(Double.class.toString())) {
+                try {
+                    return Double.valueOf(jsonObject.getAsJsonPrimitive(Double.class.toString()).getAsString());
+                } catch (Exception e) {
+                    throw new RuntimeException("Can not converte!", e);
+                }
+            }
+        }
+        throw new RuntimeException("Can not converte!");
     }
 }
