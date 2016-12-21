@@ -78,6 +78,10 @@ public class CreatePresentationModelCommand extends Command {
         return clientSideOnly;
     }
 
+    public boolean isClientSideOnly() {
+        return clientSideOnly;
+    }
+
     public void setClientSideOnly(boolean clientSideOnly) {
         this.clientSideOnly = clientSideOnly;
     }
