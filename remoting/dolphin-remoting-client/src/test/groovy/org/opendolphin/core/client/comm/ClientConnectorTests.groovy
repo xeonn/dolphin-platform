@@ -161,16 +161,6 @@ class ClientConnectorTests extends GroovyTestCase {
 		}
 	}
 
-	void test_that_notWellKnown_property_causes_MetaDataChange() {
-		ClientAttribute attribute = new ExtendedAttribute('attr', 'initialValue', 'qualifier')
-		dolphin.clientModelStore.registerAttribute(attribute)
-		attributeChangeListener.propertyChange(new PropertyChangeEvent(attribute, 'additionalParam', null, 'newTag'))
-		syncAndWaitUntilDone()
-		assertCommandsTransmitted(2)
-		assert ChangeAttributeMetadataCommand == clientConnector.transmittedCommands[0].class
-		assert 'newTag' == attribute.additionalParam
-	}
-
 	void testMetaDataChange_UnregisteredAttribute() {
 		ClientAttribute attribute = new ExtendedAttribute('attr', 'initialValue', 'qualifier')
 		attribute.additionalParam = 'oldValue'
@@ -313,50 +303,50 @@ class ClientConnectorTests extends GroovyTestCase {
 	}
 
 
-}
+	@Log
+	class TestClientConnector extends AbstractClientConnector {
 
-@Log
-class TestClientConnector extends AbstractClientConnector {
+		List<Command> transmittedCommands = []
 
-	List<Command> transmittedCommands = []
-
-	TestClientConnector(ClientDolphin clientDolphin) {
-		super(clientDolphin)
-	}
-
-	int getTransmitCount() {
-		transmittedCommands.size()
-	}
-
-	List<Command> transmit(List<Command> commands) {
-		println "transmit: ${commands.size()}"
-		def result = new LinkedList<Command>()
-		commands.each() { Command cmd ->
-			result.addAll(transmitCommand(cmd))
+		TestClientConnector(ClientDolphin clientDolphin) {
+			super(clientDolphin)
 		}
-		result
+
+		int getTransmitCount() {
+			transmittedCommands.size()
+		}
+
+		List<Command> transmit(List<Command> commands) {
+			println "transmit: ${commands.size()}"
+			def result = new LinkedList<Command>()
+			commands.each() { Command cmd ->
+				result.addAll(transmitCommand(cmd))
+			}
+			result
+		}
+
+		List<Command> transmitCommand(Command command) {
+			println "transmitCommand: $command"
+			transmittedCommands << command
+			return construct(command)
+		}
+
+		List construct(ChangeAttributeMetadataCommand command) {
+			[new AttributeMetadataChangedCommand(attributeId: command.attributeId, metadataName: command.metadataName, value: command.value)]
+		}
+
+		List construct(Command command) {
+			[]
+		}
+
 	}
 
-	List<Command> transmitCommand(Command command) {
-		println "transmitCommand: $command"
-		transmittedCommands << command
-		return construct(command)
+	class ExtendedAttribute extends ClientAttribute {
+		String additionalParam
+
+		ExtendedAttribute(String propertyName, Object initialValue, String qualifier) {
+			super(propertyName, initialValue, qualifier)
+		}
 	}
 
-	List construct(ChangeAttributeMetadataCommand command) {
-		[new AttributeMetadataChangedCommand(attributeId: command.attributeId, metadataName: command.metadataName, value: command.value)]
-	}
-
-	List construct(Command command) {
-		[]
-	}
-
-}
-
-class ExtendedAttribute extends ClientAttribute {
-	String additionalParam
-
-	ExtendedAttribute(String propertyName, Object initialValue, String qualifier) {
-		super(propertyName, initialValue, qualifier)
-	}
 }
