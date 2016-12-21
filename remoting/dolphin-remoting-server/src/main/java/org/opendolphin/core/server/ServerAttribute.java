@@ -1,6 +1,5 @@
 package org.opendolphin.core.server;
 
-import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.BaseAttribute;
@@ -35,18 +34,7 @@ public class ServerAttribute extends BaseAttribute {
         super.setValue(newValue);
         // on the server side, we have no listener on the model store to care for the distribution of
         // baseValue changes to all attributes of the same qualifier so we must care for that ourselves
-        forAllQualified(new Closure<Object>(this, this) {
-            public void doCall(ServerAttribute attribute) {
-                if (newValue == null && attribute.getValue() != null || newValue != null && attribute.getValue() == null || !newValue.equals(attribute.getValue())) {
-                    attribute.setValue(newValue);
-                }
 
-            }
-
-        });
-    }
-
-    protected void forAllQualified(Closure yield) {
         if (getQualifier() == null) {
             return;
 
@@ -62,9 +50,10 @@ public class ServerAttribute extends BaseAttribute {
                 continue;
             }
 
-            yield.call(sameQualified);
+            if (newValue == null && sameQualified.getValue() != null || newValue != null && sameQualified.getValue() == null || !newValue.equals(sameQualified.getValue())) {
+                sameQualified.setValue(newValue);
+            }
         }
-
     }
 
     @Override
