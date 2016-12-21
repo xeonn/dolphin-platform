@@ -1,6 +1,5 @@
 package org.opendolphin.core.client;
 
-import groovy.lang.Closure;
 import org.opendolphin.core.AbstractDolphin;
 import org.opendolphin.core.ModelStore;
 import org.opendolphin.core.client.comm.ClientConnector;
@@ -100,18 +99,6 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
 
     public void send(String commandName) {
         clientConnector.send(new NamedCommand(commandName), null);
-    }
-
-    /**
-     * groovy-friendly convenience method for sending a named command that expects only PM responses
-     */
-    public void send(String commandName, final Closure onFinished) {
-        clientConnector.send(new NamedCommand(commandName), new OnFinishedHandlerAdapter() {
-            public void onFinished(List<ClientPresentationModel> presentationModels) {
-                onFinished.call(presentationModels);
-            }
-
-        });
     }
 
     /**

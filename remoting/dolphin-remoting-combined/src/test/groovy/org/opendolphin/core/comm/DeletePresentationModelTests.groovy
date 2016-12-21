@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.client.comm.OnFinishedDataAdapter
+import org.opendolphin.core.client.ClientPresentationModel
+import org.opendolphin.core.client.comm.OnFinishedHandler
 import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerDolphin
 import org.opendolphin.core.server.action.DolphinServerAction
@@ -106,19 +106,21 @@ class DeletePresentationModelTests extends GroovyTestCase {
             }
         });
         // when we now delete the pm
-        clientDolphin.send 'triggerDelete', OnFinishedDataAdapter.withAction({
-            clientDolphin.sync {
-                // ... it is no longer in the client model store
-                assert !clientDolphin.getPresentationModel(modelId)
+        clientDolphin.send 'triggerDelete', new OnFinishedHandler() {
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                clientDolphin.sync {
+                    // ... it is no longer in the client model store
+                    assert !clientDolphin.getPresentationModel(modelId)
+                }
+                clientDolphin.sync {
+                    // the model is also gone from the server model store
+                    assert !serverDolphin.getPresentationModel(modelId)
+                    // we are done
+                    context.assertionsDone()
+                }
             }
-            clientDolphin.sync {
-                // the model is also gone from the server model store
-                assert !serverDolphin.getPresentationModel(modelId)
-                // we are done
-                context.assertionsDone()
-            }
-        });
-
+        }
     }
 
 }

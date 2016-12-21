@@ -20,6 +20,8 @@ import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent
 import org.opendolphin.core.ModelStoreListener
 import org.opendolphin.core.client.ClientDolphin
+import org.opendolphin.core.client.ClientPresentationModel
+import org.opendolphin.core.client.comm.OnFinishedHandler
 import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
@@ -88,9 +90,13 @@ class ServerPresentationModelTests extends GroovyTestCase {
         }
 
         clientDolphin.send "setValue"
-        clientDolphin.send "assertValue", {
-            assert 1 == model.getAttribute("att1").value
-            context.assertionsDone()
+        clientDolphin.send "assertValue", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert 1 == model.getAttribute("att1").value
+                context.assertionsDone()
+            }
         }
     }
 
@@ -188,11 +194,15 @@ class ServerPresentationModelTests extends GroovyTestCase {
             context.assertionsDone()
         }
 
-        clientDolphin.send "create", {
-            assert clientDolphin.getPresentationModel("PM1").getAttribute("att1").value == 1
-            clientDolphin.getPresentationModel("PM1").getAttribute("att1").value = 2
+        clientDolphin.send "create", new OnFinishedHandler() {
 
-            clientDolphin.send "assertValueChange"
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert clientDolphin.getPresentationModel("PM1").getAttribute("att1").value == 1
+                clientDolphin.getPresentationModel("PM1").getAttribute("att1").value = 2
+
+                clientDolphin.send "assertValueChange"
+            }
         }
 
     }
@@ -236,14 +246,18 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
         clientDolphin.presentationModel("client-side-with-id", null, attr1:1)
 
-        clientDolphin.send "create", {
-            assert receivedCommands.get(0).pmId == "client-side-with-id"
-            assert receivedCommands.get(1).pmId == "server-side-with-id"
-            assert receivedCommands.get(2).pmId == "0-AUTO-SRV"
-            assert receivedEvents.get(0).presentationModel.id == "client-side-with-id"
-            assert receivedEvents.get(1).presentationModel.id == "server-side-with-id"
-            assert receivedEvents.get(2).presentationModel.id == "0-AUTO-SRV"
-            context.assertionsDone()
+        clientDolphin.send "create", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert receivedCommands.get(0).pmId == "client-side-with-id"
+                assert receivedCommands.get(1).pmId == "server-side-with-id"
+                assert receivedCommands.get(2).pmId == "0-AUTO-SRV"
+                assert receivedEvents.get(0).presentationModel.id == "client-side-with-id"
+                assert receivedEvents.get(1).presentationModel.id == "server-side-with-id"
+                assert receivedEvents.get(2).presentationModel.id == "0-AUTO-SRV"
+                context.assertionsDone()
+            }
         }
     }
 
@@ -260,11 +274,14 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
         assert clientDolphin.getPresentationModel("client-side-with-id")
 
-        clientDolphin.send "remove", {
-            assert null == clientDolphin.getPresentationModel("client-side-with-id") // removed from client before callback
-            context.assertionsDone()
-        }
+        clientDolphin.send "remove", new OnFinishedHandler() {
 
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert null == clientDolphin.getPresentationModel("client-side-with-id") // removed from client before callback
+                context.assertionsDone()
+            }
+        }
     }
 
     void testServerSideBaseValueChange() {
@@ -274,9 +291,13 @@ class ServerPresentationModelTests extends GroovyTestCase {
             def attribute = serverDolphin.getPresentationModel("source").getAttribute("attr1")
         }
 
-        clientDolphin.send "changeBaseValue", {
-            assert source.getAttribute("attr1").value     == "sourceValue"
-            context.assertionsDone()
+        clientDolphin.send "changeBaseValue", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr1").value     == "sourceValue"
+                context.assertionsDone()
+            }
         }
     }
 
@@ -292,10 +313,14 @@ class ServerPresentationModelTests extends GroovyTestCase {
             assert attribute.qualifier == "changed"
         }
 
-        clientDolphin.send "changeBaseValue", {
-            assert source.getAttribute("attr1").value     == "sourceValue"
-            assert source.getAttribute("attr1").qualifier == "changed"
-            context.assertionsDone()
+        clientDolphin.send "changeBaseValue", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr1").value     == "sourceValue"
+                assert source.getAttribute("attr1").qualifier == "changed"
+                context.assertionsDone()
+            }
         }
     }
 
@@ -310,9 +335,13 @@ class ServerPresentationModelTests extends GroovyTestCase {
             assert pm.getAttribute("attr2").value == "initial"
         }
 
-        clientDolphin.send "addAttribute", {
-            assert source.getAttribute("attr2").value == "initial"
-            context.assertionsDone()
+        clientDolphin.send "addAttribute", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr2").value == "initial"
+                context.assertionsDone()
+            }
         }
     }
 

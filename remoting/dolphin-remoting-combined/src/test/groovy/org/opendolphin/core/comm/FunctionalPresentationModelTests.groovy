@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
+
 import core.client.comm.InMemoryClientConnector
 import org.opendolphin.core.PresentationModel
 import org.opendolphin.core.client.comm.SynchronousInMemoryClientConnector
@@ -30,6 +31,7 @@ import org.opendolphin.core.server.comm.NamedCommandHandler
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+
 /**
  * Showcase for how to test an application without the GUI by
  * issuing the respective commands and model changes against the
@@ -70,7 +72,7 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     }
 
     void testPerformanceWithBlindCommandBatcher() {
-        def batcher = new BlindCommandBatcher(mergeValueChanges:true, deferMillis: 100)
+        def batcher = new BlindCommandBatcher(mergeValueChanges: true, deferMillis: 100)
         def connector = new InMemoryClientConnector(context.clientDolphin, serverDolphin.serverConnector, batcher)
         connector.uiThreadHandler = new RunLaterUiThreadHandler()
         context.clientDolphin.clientConnector = connector
@@ -93,15 +95,22 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         }
         def start = System.nanoTime()
         100.times { soOften ->
-            clientDolphin.send "performance", { List<ClientPresentationModel> pms ->
-                assert pms.size() == 100
-                pms.each { pm -> clientDolphin.delete(pm) }
+            clientDolphin.send "performance", new OnFinishedHandler() {
+                @Override
+                void onFinished(List<ClientPresentationModel> presentationModels) {
+                    assert presentationModels.size() == 100
+                    presentationModels.each { pm -> clientDolphin.delete(pm) }
+                }
             }
         }
-        clientDolphin.send "performance", { List<ClientPresentationModel> pms ->
-            assert pms.size() == 100
-            println ((System.nanoTime() - start).intdiv(1_000_000))
-            context.assertionsDone() // make sure the assertions are really executed
+        clientDolphin.send "performance", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert presentationModels.size() == 100
+                println((System.nanoTime() - start).intdiv(1_000_000))
+                context.assertionsDone() // make sure the assertions are really executed
+            }
         }
     }
 
@@ -114,11 +123,19 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
             assert serverDolphin.getPresentationModel("id")
         }
 
-        clientDolphin.send "create", { List<ClientPresentationModel> pms ->
-            assert pms.size() == 1
-            assert 'attr' == pms.first().getAttribute("attr").value
-            clientDolphin.send "checkNotificationReached", { List<ClientPresentationModel> xxx ->
-                context.assertionsDone() // make sure the assertions are really executed
+        clientDolphin.send "create", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert presentationModels.size() == 1
+                assert 'attr' == presentationModels.first().getAttribute("attr").value
+                clientDolphin.send "checkNotificationReached", new OnFinishedHandler() {
+
+                    @Override
+                    void onFinished(List<ClientPresentationModel> pms) {
+                        context.assertionsDone() // make sure the assertions are really executed
+                    }
+                }
             }
         }
     }
@@ -132,9 +149,17 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         registerAction serverDolphin, "checkTagIsKnownOnServerSide", { cmd, response ->
         }
 
-        clientDolphin.send "create", { List<ClientPresentationModel> pms ->
-            clientDolphin.send "checkTagIsKnownOnServerSide", { List<ClientPresentationModel> xxx ->
-                context.assertionsDone()
+        clientDolphin.send "create", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                clientDolphin.send "checkTagIsKnownOnServerSide", new OnFinishedHandler() {
+
+                    @Override
+                    void onFinished(List<ClientPresentationModel> pms) {
+                        context.assertionsDone()
+                    }
+                }
             }
         }
     }
@@ -142,17 +167,22 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     void testFetchingAnInitialListOfData() {
         registerAction serverDolphin, "fetchData", { cmd, response ->
             ('a'..'z').each {
-                DTO dto = new DTO(new Slot('char',it))
+                DTO dto = new DTO(new Slot('char', it))
                 // sending CreatePresentationModelCommand _without_ adding the pm to the server model store
                 serverDolphin.presentationModelCommand(response, it, null, dto)
             }
         }
-        clientDolphin.send "fetchData", { List<ClientPresentationModel> pms ->
-            assert pms.size() == 26
-            assert pms.collect { it.id }.sort(false) == pms.collect { it.id }   // pmIds from a single action should come in sequence
-            assert 'a' == context.clientDolphin.getPresentationModel('a').getAttribute("char").value
-            assert 'z' == context.clientDolphin.getPresentationModel('z').getAttribute("char").value
-            context.assertionsDone() // make sure the assertions are really executed
+        clientDolphin.send "fetchData", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert presentationModels.size() == 26
+                assert presentationModels.collect { it.id }.sort(false) == presentationModels.collect { it.id }
+                // pmIds from a single action should come in sequence
+                assert 'a' == context.clientDolphin.getPresentationModel('a').getAttribute("char").value
+                assert 'z' == context.clientDolphin.getPresentationModel('z').getAttribute("char").value
+                context.assertionsDone() // make sure the assertions are really executed
+            }
         }
     }
 
@@ -174,15 +204,23 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
             }
         }
         def user = clientDolphin.presentationModel 'user', name: null, password: null, loggedIn: null
-        clientDolphin.send "loginCmd", {
-            assert !user.getAttribute("loggedIn").value
+        clientDolphin.send "loginCmd", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert !user.getAttribute("loggedIn").value
+            }
         }
         user.getAttribute("name").value = "Dierk"
         user.getAttribute("password").value = "Koenig"
 
-        clientDolphin.send "loginCmd", {
-            assert user.getAttribute("loggedIn").value
-            context.assertionsDone()
+        clientDolphin.send "loginCmd", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert user.getAttribute("loggedIn").value
+                context.assertionsDone()
+            }
         }
     }
 
@@ -195,16 +233,24 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
             throw new RuntimeException("EXPECTED: some arbitrary exception on the server")
         }
 
-        clientDolphin.send "someCmd", {
-            fail "the onFinished handler will not be reached in this case"
+        clientDolphin.send "someCmd", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                fail "the onFinished handler will not be reached in this case"
+            }
         }
         clientDolphin.sync {
             assert count == 1
         }
 
         // provoke a second exception
-        clientDolphin.send "someCmd", {
-            fail "the onFinished handler will not be reached either"
+        clientDolphin.send "someCmd", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                fail "the onFinished handler will not be reached either"
+            }
         }
         clientDolphin.sync {
             assert count == 2
@@ -216,24 +262,34 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
 
     void testAsynchronousExceptionInOnFinishedHandler() {
 
-        clientDolphin.clientConnector.uiThreadHandler = { it() } as UiThreadHandler // not "run later" we need it immediately here
+        clientDolphin.clientConnector.uiThreadHandler = { it() } as UiThreadHandler
+        // not "run later" we need it immediately here
         clientDolphin.clientConnector.onException = { context.assertionsDone() }
 
         registerAction serverDolphin, "someCmd", { cmd, response ->
             // nothing to do
         }
-        clientDolphin.send "someCmd", {
-            throw new RuntimeException("EXPECTED: some arbitrary exception in the onFinished handler")
+        clientDolphin.send "someCmd", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                throw new RuntimeException("EXPECTED: some arbitrary exception in the onFinished handler")
+            }
         }
     }
 
     void testUnregisteredCommandWithLog() {
         serverDolphin.serverConnector.setLogLevel(Level.ALL);
-        clientDolphin.send "no-such-action-registered", {
-            // unknown actions are silently ignored and logged as warnings on the server side.
+        clientDolphin.send "no-such-action-registered", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+// unknown actions are silently ignored and logged as warnings on the server side.
+            }
         }
         context.assertionsDone()
     }
+
     void testUnregisteredCommandWithoutLog() {
         serverDolphin.serverConnector.setLogLevel(Level.OFF);
         clientDolphin.send "no-such-action-registered"
@@ -244,19 +300,27 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     void testIdNotFoundInVariousCommands() {
         clientDolphin.clientConnector.send new ValueChangedCommand(attributeId: 0)
         DefaultServerDolphin.changeValueCommand(null, null, null)
-        DefaultServerDolphin.changeValueCommand(null, new ServerAttribute('a',42), 42)
+        DefaultServerDolphin.changeValueCommand(null, new ServerAttribute('a', 42), 42)
         context.assertionsDone()
     }
 
     void testDataRequest() {
-        registerAction serverDolphin,"myData", { cmd, resp ->
-            resp << new DataCommand([a:1, b:2])
+        registerAction serverDolphin, "myData", { cmd, resp ->
+            resp << new DataCommand([a: 1, b: 2])
         }
-        clientDolphin.send "myData", OnFinishedDataAdapter.withAction({ data ->
-            assert data.size() == 1
-            assert data[0].a == 1
-            assert data[0].b == 2
-            context.assertionsDone()
+        clientDolphin.send("myData", new OnFinishedData() {
+            @Override
+            void onFinishedData(List<Map> data) {
+                assert data.size() == 1
+                assert data[0].a == 1
+                assert data[0].b == 2
+                context.assertionsDone()
+            }
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+
+            }
         });
     }
 
@@ -280,32 +344,40 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
     void testRemovePresentationModel() {
         clientDolphin.presentationModel('pm', attr: 1)
 
-        registerAction serverDolphin,'delete', { cmd, response ->
+        registerAction serverDolphin, 'delete', { cmd, response ->
 //            serverDolphin.delete(response, serverDolphin['pm']) // deprecated
             serverDolphin.remove(serverDolphin.getPresentationModel('pm'))
             assert serverDolphin.getPresentationModel('pm') == null
         }
         assert clientDolphin.getPresentationModel('pm')
 
-        clientDolphin.send 'delete', {
-            assert clientDolphin.getPresentationModel('pm') == null
-            context.assertionsDone()
+        clientDolphin.send 'delete', new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert clientDolphin.getPresentationModel('pm') == null
+                context.assertionsDone()
+            }
         }
     }
 
     void testWithNullResponses() {
         clientDolphin.presentationModel('pm', attr: 1)
 
-        registerAction serverDolphin,'arbitrary', { cmd, response ->
+        registerAction serverDolphin, 'arbitrary', { cmd, response ->
             serverDolphin.deleteCommand([], (ServerPresentationModel) null)
             serverDolphin.deleteCommand([], '')
             serverDolphin.deleteCommand(null, '')
-            serverDolphin.presentationModelCommand(null, null,null,null)
+            serverDolphin.presentationModelCommand(null, null, null, null)
             serverDolphin.changeValueCommand([], null, null)
         }
-        clientDolphin.send('arbitrary'){
-            context.assertionsDone()
-        }
+        clientDolphin.send('arbitrary', new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                context.assertionsDone()
+            }
+        });
     }
 
     void testStateConflictBetweenClientAndServer() {
@@ -314,28 +386,32 @@ class FunctionalPresentationModelTests extends GroovyTestCase {
         def pm = clientDolphin.presentationModel('pm', attr: 1)
         def attr = pm.getAttribute('attr')
 
-        registerAction serverDolphin,'set2', { cmd, response ->
+        registerAction serverDolphin, 'set2', { cmd, response ->
             latch.await() // mimic a server delay such that the client has enough time to change the value concurrently
             serverDolphin.getPresentationModel('pm').getAttribute('attr').value == 1
-            serverDolphin.getPresentationModel('pm').getAttribute('attr').value  = 2
+            serverDolphin.getPresentationModel('pm').getAttribute('attr').value = 2
             serverDolphin.getPresentationModel('pm').getAttribute('attr').value == 2 // immediate change of server state
         }
-        registerAction serverDolphin,'assert3', { cmd, response ->
+        registerAction serverDolphin, 'assert3', { cmd, response ->
             assert serverDolphin.getPresentationModel('pm').getAttribute('attr').value == 3
         }
 
         clientDolphin.send('set2') // a conflict could arise when the server value is changed ...
         attr.value = 3            // ... while the client value is changed concurrently
         latch.countDown()
-        clientDolphin.send('assert3') // since from the client perspective, the last change was to 3, server and client should both see the 3
+        clientDolphin.send('assert3')
+        // since from the client perspective, the last change was to 3, server and client should both see the 3
 
         // in between these calls a conflicting value change could be transferred, setting both value to 2
 
-        clientDolphin.send('assert3'){
-            assert attr.value == 3
-            context.assertionsDone()
-        }
+        clientDolphin.send('assert3', new OnFinishedHandler() {
 
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert attr.value == 3
+                context.assertionsDone()
+            }
+        });
 
     }
 
