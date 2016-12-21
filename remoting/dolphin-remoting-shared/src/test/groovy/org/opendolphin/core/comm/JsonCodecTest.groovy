@@ -49,7 +49,7 @@ public class JsonCodecTest extends GroovyTestCase {
     }
 
     void testCodingCreatePresentationModelWithStructuredEntry() {
-        def map = [propertyName: 'x', qualifier: "q"]
+        def map = [propertyName: 'x', qualifier: null]
         map.value = "ok"
         assertCodingCreatePresentationModel(map)
     }
