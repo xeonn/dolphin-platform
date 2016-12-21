@@ -1,7 +1,5 @@
 package org.opendolphin.core.comm;
 
-import org.codehaus.groovy.runtime.StringGroovyMethods;
-
 import java.io.Serializable;
 
 /**
@@ -24,7 +22,12 @@ public class Command implements Serializable {
     }
 
     public static String idFor(Class commandClass) {
-        return StringGroovyMethods.minus(StringGroovyMethods.minus(commandClass.getSimpleName(), "Command"), "Notification");
+
+
+        String id = commandClass.getSimpleName();
+        id = id.replace("Command", "");
+        id = id.replace("Notification", "");
+        return id;
     }
 
     public String toString() {

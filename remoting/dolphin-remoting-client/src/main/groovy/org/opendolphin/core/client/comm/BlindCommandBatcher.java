@@ -1,7 +1,5 @@
 package org.opendolphin.core.client.comm;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.codehaus.groovy.runtime.DefaultGroovyStaticMethods;
 import org.opendolphin.core.comm.GetPresentationModelCommand;
 import org.opendolphin.core.comm.ValueChangedCommand;
 
@@ -30,7 +28,7 @@ public class BlindCommandBatcher extends CommandBatcher {
 
     @Override
     public void batch(CommandAndHandler commandWithHandler) {
-        LOG.log(Level.FINEST, "batching " + commandWithHandler.getCommand() + " with" + (DefaultGroovyMethods.asBoolean(commandWithHandler.getHandler()) ? "" : "out") + " handler");
+        LOG.log(Level.FINEST, "batching " + commandWithHandler.getCommand() + " with" + (commandWithHandler.getHandler() != null ? "" : "out") + " handler");
 
         if (canBeDropped(commandWithHandler)) {
             LOG.log(Level.FINEST, "dropping duplicate GetPresentationModelCommand");
@@ -71,7 +69,7 @@ public class BlindCommandBatcher extends CommandBatcher {
 
         boolean found = false;
         for (CommandAndHandler commandAndHandler : cacheGetPmCmds) {
-            if (((GetPresentationModelCommand) commandAndHandler.getCommand()).getPmId().equals(pmId) && ((handler == null) || DefaultGroovyMethods.is(handler, commandAndHandler.getHandler()))) {
+            if (((GetPresentationModelCommand) commandAndHandler.getCommand()).getPmId().equals(pmId) && ((handler == null) || handler.equals(commandAndHandler.getHandler()))) {
                 found = true;
             }
 
@@ -99,7 +97,11 @@ public class BlindCommandBatcher extends CommandBatcher {
                 while (deferralNeeded.get() && count > 0) {
                     count = count--;
                     deferralNeeded.set(false);
-                    DefaultGroovyStaticMethods.sleep(null, getDeferMillis());
+                    try {
+                        Thread.sleep(getDeferMillis());
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException("ERROR", e);
+                    }
                     // while we sleep, new requests may have arrived that request deferral
                 }
 
@@ -148,11 +150,11 @@ public class BlindCommandBatcher extends CommandBatcher {
         shallWeEvenTryToMerge = false;
         while (val != null && val.isBatchable() && counter-- > 0) {// we do have a blind
             addToBlindsOrMerge(blindCommands, val);
-            val = DefaultGroovyMethods.asBoolean(counter) ? take(queue) : null;
+            val = counter != 0 ? take(queue) : null;
         }
 
         LOG.log(Level.FINEST, "batching " + blindCommands.size() + " blinds");
-        if (DefaultGroovyMethods.asBoolean(blindCommands)) {
+        if (!blindCommands.isEmpty()) {
             getWaitingBatches().add(blindCommands);
         }
         return val;// may be null or a cwh that has a handler
@@ -182,7 +184,7 @@ public class BlindCommandBatcher extends CommandBatcher {
             return false;
         }
 
-        if (!DefaultGroovyMethods.asBoolean(val.getCommand())) {
+        if (val.getCommand() == null) {
             return false;
         }
 

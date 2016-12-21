@@ -15,8 +15,6 @@
  */
 package org.opendolphin.core.client.comm;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.comm.Command;
@@ -169,13 +167,13 @@ public abstract class AbstractClientConnector implements ClientConnector {
         for (Command serverCommand : response) {
             Object touched = dispatchHandle(serverCommand);
             if (touched != null && touched instanceof ClientPresentationModel) {
-                DefaultGroovyMethods.leftShift(touchedPresentationModels, (ClientPresentationModel) touched);
+                touchedPresentationModels.add((ClientPresentationModel) touched);
             } else if (touched != null && touched instanceof Map) {
-                DefaultGroovyMethods.leftShift(touchedDataMaps, (Map) touched);
+                touchedDataMaps.add((Map) touched);
             }
 
         }
-        OnFinishedHandler callback = DefaultGroovyMethods.first(commandsAndHandlers).getHandler();// there can only be one relevant handler anyway
+        OnFinishedHandler callback = commandsAndHandlers.get(0).getHandler();// there can only be one relevant handler anyway
         // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
         if (callback != null) {
             List<ClientPresentationModel> uniqueModels = new ArrayList<>();
@@ -205,7 +203,6 @@ public abstract class AbstractClientConnector implements ClientConnector {
         try {
             processing.run();
         } catch (Exception e) {
-            StackTraceUtils.deepSanitize(e);
             onException.handle(e);
         } finally {
             if (atLeast != null) {

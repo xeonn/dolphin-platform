@@ -1,6 +1,5 @@
 package org.opendolphin.core.server.action;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.comm.AttributeCreatedNotification;
@@ -25,7 +24,7 @@ public class StoreAttributeAction extends DolphinServerAction {
             public void handleCommand(AttributeCreatedNotification command, List response) {
                 ServerModelStore modelStore = getServerDolphin().getServerModelStore();
                 Attribute existing = modelStore.findAttributeById(command.getAttributeId());
-                if (DefaultGroovyMethods.asBoolean(existing)) {
+                if (existing != null) {
                     LOG.info("trying to store an already existing attribute: " + command);
                     return;
                 }
@@ -46,7 +45,7 @@ public class StoreAttributeAction extends DolphinServerAction {
             @Override
             public void handleCommand(final ChangeAttributeMetadataCommand command, List response) {
                 final Attribute attribute = getServerDolphin().findAttributeById(command.getAttributeId());
-                if (!DefaultGroovyMethods.asBoolean(attribute)) {
+                if (attribute == null) {
                     LOG.warning("Cannot find attribute with id '" + command.getAttributeId() + "'. Metadata remains unchanged.");
                     return;
                 }
@@ -54,7 +53,17 @@ public class StoreAttributeAction extends DolphinServerAction {
                 ((ServerAttribute) attribute).silently(new Runnable() {
                     @Override
                     public void run() {
-                        DefaultGroovyMethods.putAt(attribute, command.getMetadataName(), command.getValue());
+                        if(command.getMetadataName().equals(Attribute.VALUE)) {
+                            attribute.setValue(command.getValue());
+                        } else if(command.getMetadataName().equals(Attribute.QUALIFIER_PROPERTY)) {
+                            if(command.getValue() == null) {
+                                ((ServerAttribute) attribute).setQualifier(null);
+                            } else {
+                                ((ServerAttribute) attribute).setQualifier(command.getValue().toString());
+                            }
+                        } else {
+                            throw new RuntimeException("Metadata type wrong!");
+                        }
                     }
 
                 });

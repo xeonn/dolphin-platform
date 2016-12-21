@@ -4,7 +4,6 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
@@ -57,7 +56,7 @@ public class HttpClientConnector extends AbstractClientConnector {
             StringEntity entity = new StringEntity(content, charset);
             httpPost.setEntity(entity);
 
-            if (commands.size() == 1 && DefaultGroovyMethods.first(commands).equals(getReleaseCommand())) {// todo dk: ok, this is not nice...
+            if (commands.size() == 1 && commands.get(0).equals(getReleaseCommand())) {// todo dk: ok, this is not nice...
                 signalHttpClient.execute(httpPost, signalResponseHandler);
             } else {
                 String response = httpClient.execute(httpPost, responseHandler);

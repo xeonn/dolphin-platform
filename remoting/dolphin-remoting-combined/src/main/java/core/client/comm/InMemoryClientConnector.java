@@ -1,6 +1,5 @@
 package core.client.comm;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.ICommandBatcher;
@@ -34,7 +33,7 @@ public class InMemoryClientConnector extends AbstractClientConnector {
     @Override
     public List<Command> transmit(List<Command> commands) {
         LOGGER.trace("transmitting {} commands", commands.size());
-        if (!DefaultGroovyMethods.asBoolean(serverConnector)) {
+        if (serverConnector == null) {
             LOGGER.warn("no server connector wired for in-memory connector");
             return Collections.EMPTY_LIST;
         }

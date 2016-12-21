@@ -1,7 +1,5 @@
 package org.opendolphin.core.server;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.codehaus.groovy.runtime.StackTraceUtils;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.SignalCommand;
@@ -34,7 +32,7 @@ public class ServerConnector {
 
 
         List<CommandHandler> actions = registry.getAt(command.getId());
-        if (!DefaultGroovyMethods.asBoolean(actions)) {
+        if (actions.isEmpty()) {
             LOG.warning("S: there is no server action registered for received command: " + String.valueOf(command) + ", known commands are " + String.valueOf(registry.getActions().keySet()));
             return response;
         }
@@ -49,7 +47,6 @@ public class ServerConnector {
             }
 
         } catch (Exception exception) {
-            StackTraceUtils.deepSanitize(exception);
             LOG.log(Level.SEVERE, "S: an error ocurred while processing " + command, exception);
             throw exception;
         }

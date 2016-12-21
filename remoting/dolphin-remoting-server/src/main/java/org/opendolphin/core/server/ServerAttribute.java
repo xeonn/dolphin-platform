@@ -1,6 +1,5 @@
 package org.opendolphin.core.server;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.BaseAttribute;
 import org.opendolphin.core.comm.AttributeMetadataChangedCommand;
@@ -46,7 +45,7 @@ public class ServerAttribute extends BaseAttribute {
         }
         // we may not know the pm, yet
         for (ServerAttribute sameQualified : (List<ServerAttribute>)getPresentationModel().getModelStore().findAllAttributesByQualifier(getQualifier())) {
-            if (DefaultGroovyMethods.is(sameQualified, this)) {
+            if (sameQualified.equals(this)) {
                 continue;
             }
 
