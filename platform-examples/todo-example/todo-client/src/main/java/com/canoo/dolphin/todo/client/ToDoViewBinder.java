@@ -34,9 +34,6 @@ import javafx.scene.layout.VBox;
 import static com.canoo.dolphin.todo.TodoAppConstants.ADD_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CONTROLLER_NAME;
 
-/**
- * Created by hendrikebbers on 16.09.15.
- */
 public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
 
     private final TextField createField;
