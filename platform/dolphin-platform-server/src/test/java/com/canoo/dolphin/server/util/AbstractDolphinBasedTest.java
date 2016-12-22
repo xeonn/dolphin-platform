@@ -33,7 +33,7 @@ import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
 import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.DefaultInMemoryConfig;
+import core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 

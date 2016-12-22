@@ -28,7 +28,8 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Dolphin;
 import org.opendolphin.core.ModelStoreEvent;
 import org.opendolphin.core.ModelStoreListener;
-import org.opendolphin.core.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import java.util.Map;
  * object keeps information on class level about the properties and ObservableLists of a DolphinBean.
  */
 public class ClassRepositoryImpl implements ClassRepository {
+
+ private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
 
     private final PresentationModelBuilderFactory builderFactory;
     private final Converters converters;
@@ -58,7 +61,7 @@ public class ClassRepositoryImpl implements ClassRepository {
             public void modelStoreChanged(final ModelStoreEvent event) {
                 Assert.requireNonNull(event, "event");
                 try {
-                    final String className = (String) event.getPresentationModel().findAttributeByPropertyName(PlatformConstants.JAVA_CLASS).getValue();
+                    final String className = (String) event.getPresentationModel().getAttribute(PlatformConstants.JAVA_CLASS).getValue();
                     final Class<?> beanClass = Class.forName(className);
                     final ClassInfo classInfo = createClassInfoForClass(beanClass);
                     Assert.requireNonNull(classInfo, "classInfo");
@@ -104,7 +107,7 @@ public class ClassRepositoryImpl implements ClassRepository {
                     throw new MappingException("Can't define generic type for field " + attributeName + " in bean " + beanClass);
                 }
                 final int type = converters.getFieldType(clazz);
-                builder.withAttribute(attributeName, type, Tag.VALUE);
+                builder.withAttribute(attributeName, type);
             }
         }
 

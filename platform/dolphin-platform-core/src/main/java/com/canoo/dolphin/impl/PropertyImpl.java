@@ -46,7 +46,7 @@ public class PropertyImpl<T> implements Property<T> {
         this.attribute = Assert.requireNonNull(attribute, "attribute");
         this.propertyInfo = Assert.requireNonNull(propertyInfo, "propertyInfo");
 
-        attribute.addPropertyChangeListener(Attribute.VALUE, new PropertyChangeListener() {
+        attribute.addPropertyChangeListener(Attribute.VALUE_NAME, new PropertyChangeListener() {
             @SuppressWarnings("unchecked")
             @Override
             public void propertyChange(final PropertyChangeEvent evt) {

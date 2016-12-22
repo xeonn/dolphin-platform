@@ -59,13 +59,13 @@ public class ClientControllerActionCallBean extends AbstractControllerActionCall
         if (pm == null) {
             throw new IllegalStateException("ClientControllerActionCallBean was already unregistered");
         }
-        return Boolean.TRUE.equals(pm.findAttributeByPropertyName(ERROR_CODE).getValue());
+        return Boolean.TRUE.equals(pm.getAttribute(ERROR_CODE).getValue());
     }
 
     @SuppressWarnings("unchecked")
     public void unregister() {
         if (pm != null) {
-            dolphin.remove(pm);
+            dolphin.removePresentationModel(pm);
             pm = null;
         }
     }

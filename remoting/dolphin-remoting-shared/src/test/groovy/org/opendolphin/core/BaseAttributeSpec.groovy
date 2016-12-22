@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 package org.opendolphin.core
-
 import spock.lang.Specification
-
-import java.beans.PropertyChangeListener
 
 class BaseAttributeSpec extends Specification {
 
@@ -52,183 +49,9 @@ class BaseAttributeSpec extends Specification {
 
         then:
 
-        attribute.baseValue == null
         attribute.value == null
         attribute.toString().contains "name"
-        attribute.toString().contains " [VALUE] "
     }
-
-    def "check isDirty triggers when value changes (initialValue == null)"() {
-        given:
-
-        def attribute = new MyAttribute("name")
-        def changeListener = Mock(PropertyChangeListener)
-
-        when:
-
-        attribute.addPropertyChangeListener(Attribute.DIRTY_PROPERTY, changeListener)
-        attribute.value = 'foo'
-
-        then:
-
-        1 * changeListener.propertyChange(_)
-        !attribute.baseValue
-        attribute.value == 'foo'
-        attribute.dirty
-
-        when:
-
-        attribute.value = 'foo'
-
-        then:
-
-        0 * changeListener.propertyChange(_)
-        !attribute.baseValue
-        attribute.value == 'foo'
-        attribute.dirty
-
-        when:
-
-        attribute.value = null
-
-        then:
-
-        1 * changeListener.propertyChange(_)
-        !attribute.baseValue
-        !attribute.value
-        !attribute.dirty
-    }
-
-    def "check isDirty triggers when value changes (initialValue == bar)"() {
-        given:
-
-        def attribute = new MyAttribute("name", 'bar')
-        def changeListener = Mock(PropertyChangeListener)
-
-        when:
-
-        attribute.addPropertyChangeListener(Attribute.DIRTY_PROPERTY, changeListener)
-        attribute.value = 'foo'
-
-        then:
-
-        1 * changeListener.propertyChange(_)
-        attribute.baseValue == 'bar'
-        attribute.value == 'foo'
-        attribute.dirty
-
-        when:
-
-        attribute.value = 'foo'
-
-        then:
-
-        0 * changeListener.propertyChange(_)
-        attribute.baseValue == 'bar'
-        attribute.value == 'foo'
-        attribute.dirty
-
-        when:
-
-        attribute.value = null
-
-        then:
-
-        0 * changeListener.propertyChange(_)
-        attribute.baseValue == 'bar'
-        !attribute.value
-        attribute.dirty
-
-        when:
-
-        attribute.value = 'bar'
-
-        then:
-
-        1 * changeListener.propertyChange(_)
-        attribute.baseValue == 'bar'
-        attribute.value == 'bar'
-        !attribute.dirty
-    }
-
-    def "saving an attribute updates dirty flag and initial value"() {
-        given:
-
-        def attribute = new MyAttribute("name", 'bar')
-        def dirtyChecker = Mock(PropertyChangeListener)
-        def initialValueChecker = Mock(PropertyChangeListener)
-        attribute.addPropertyChangeListener(Attribute.DIRTY_PROPERTY, dirtyChecker)
-        attribute.addPropertyChangeListener(Attribute.BASE_VALUE, initialValueChecker)
-
-        when:
-
-        attribute.value = 'foo'
-
-        then:
-
-        1 * dirtyChecker.propertyChange(_)
-        0 * initialValueChecker.propertyChange(_)
-        attribute.dirty
-        attribute.baseValue == 'bar'
-        attribute.value == 'foo'
-
-        when:
-
-        attribute.rebase()
-
-        then:
-
-        1 * dirtyChecker.propertyChange(_)
-        1 * initialValueChecker.propertyChange(_)
-        !attribute.dirty
-        attribute.baseValue == 'foo'
-        attribute.value == 'foo'
-    }
-
-    def "resetting an attribute updates dirty flag and value"() {
-        given:
-
-        def attribute = new MyAttribute("name", 'bar')
-        def dirtyChecker = Mock(PropertyChangeListener)
-        def valueChecker = Mock(PropertyChangeListener)
-        attribute.addPropertyChangeListener(Attribute.DIRTY_PROPERTY, dirtyChecker)
-        attribute.addPropertyChangeListener(Attribute.VALUE, valueChecker)
-
-        when:
-
-        attribute.value = 'foo'
-
-        then:
-
-        1 * dirtyChecker.propertyChange(_)
-        1 * valueChecker.propertyChange(_)
-        attribute.dirty
-        attribute.baseValue == 'bar'
-        attribute.value == 'foo'
-
-        when:
-
-        attribute.reset()
-
-        then:
-
-        1 * dirtyChecker.propertyChange(_)
-        1 * valueChecker.propertyChange(_)
-        !attribute.dirty
-        attribute.baseValue == 'bar'
-        attribute.value == 'bar'
-    }
-
-    def "checkValue() auto-maps values"() {
-        given:
-        def valueAttribute = new MyAttribute("ValueAttribute", "value")
-        def mainAttribute = new MyAttribute("MainAttribute", null)
-        when:
-        mainAttribute.value = valueAttribute
-        then:
-        mainAttribute.getValue() == "value"
-    }
-
 }
 
 class MyAttribute extends BaseAttribute {
@@ -236,12 +59,8 @@ class MyAttribute extends BaseAttribute {
         super(propertyName)
     }
 
-    MyAttribute(String propertyName, Object initialValue) {
-        super(propertyName, initialValue)
-    }
-
-    MyAttribute(String propertyName, Object baseValue, Tag tag) {
-        super(propertyName, baseValue, tag)
+    MyAttribute(String propertyName, Object baseValue) {
+        super(propertyName, baseValue)
     }
 
     @Override

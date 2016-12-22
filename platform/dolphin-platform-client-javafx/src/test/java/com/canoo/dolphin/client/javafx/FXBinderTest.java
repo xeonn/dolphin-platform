@@ -694,7 +694,7 @@ public class FXBinderTest {
         dolphinList.add(3, "D");
         check.run();
 
-        //remove first
+        //removePresentationModel first
         dolphinList.clear();
         dolphinList.addAll(Arrays.asList("X", "A", "B", "C", "D"));
         dolphinList.remove(0);
@@ -717,7 +717,7 @@ public class FXBinderTest {
         dolphinList.remove("X2");
         check.run();
 
-        //remove any
+        //removePresentationModel any
         dolphinList.clear();
         dolphinList.addAll(Arrays.asList("A", "B", "X", "C", "D"));
         dolphinList.remove(2);
@@ -740,7 +740,7 @@ public class FXBinderTest {
         dolphinList.remove("X2");
         check.run();
 
-        //remove last
+        //removePresentationModel last
         dolphinList.clear();
         dolphinList.addAll(Arrays.asList("A", "B", "C", "D", "X"));
         dolphinList.remove(4);

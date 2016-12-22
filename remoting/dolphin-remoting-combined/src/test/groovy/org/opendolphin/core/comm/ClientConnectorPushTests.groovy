@@ -23,6 +23,7 @@ import spock.lang.Specification
 
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 
 class ClientConnectorPushTests extends Specification {
 
@@ -34,7 +35,7 @@ class ClientConnectorPushTests extends Specification {
         app = new TestInMemoryConfig()
         serverDolphin = app.serverDolphin
         clientDolphin = app.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     // make sure the tests only count as ok if context.assertionsDone() has been reached

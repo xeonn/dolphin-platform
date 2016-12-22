@@ -22,8 +22,10 @@ import org.opendolphin.core.client.ClientModelStore
 import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.client.comm.AbstractClientConnector
 import org.opendolphin.core.server.ServerConnector
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
+import java.util.logging.Level
 
 /**
  * Tests for the sequence between client requests and server responses.
@@ -36,11 +38,11 @@ class CommunicationTests extends GroovyTestCase {
 	AbstractClientConnector clientConnector
     ClientModelStore    clientModelStore
     ClientDolphin       clientDolphin
-    TestInMemoryConfig  config
+    TestInMemoryConfig config
 
     @Override
 	protected void setUp() {
-		LogConfig.logCommunication()
+		LogConfig.logOnLevel(Level.INFO);
 		config = new TestInMemoryConfig()
         serverConnector  = config.serverDolphin.serverConnector
         clientConnector  = config.clientDolphin.clientConnector
@@ -54,14 +56,18 @@ class CommunicationTests extends GroovyTestCase {
     }
 
 	void testSimpleAttributeChangeIsVisibleOnServer() {
-		def ca  = new ClientAttribute('name')
+		def ca  = new ClientAttribute('name', null)
         def cpm = new ClientPresentationModel('model', [ca])
         clientModelStore.add cpm
 
 		Command receivedCommand = null
-		def testServerAction = { ValueChangedCommand command, response ->
-			receivedCommand = command
-		}
+		def testServerAction = new CommandHandler<ValueChangedCommand>() {
+
+            @Override
+            void handleCommand(ValueChangedCommand command, List<Command> response) {
+                receivedCommand = command
+            }
+        }
 		serverConnector.registry.register ValueChangedCommand, testServerAction
 		ca.value = 'initial'
 
@@ -78,12 +84,16 @@ class CommunicationTests extends GroovyTestCase {
 	void testServerIsNotifiedAboutNewAttributesAndTheirPms() {
 
 		Command receivedCommand = null
-		def testServerAction = { CreatePresentationModelCommand command, response ->
-			receivedCommand = command
-		}
+		def testServerAction = new CommandHandler<CreatePresentationModelCommand>() {
+
+            @Override
+            void handleCommand(CreatePresentationModelCommand command, List<Command> response) {
+                receivedCommand = command
+            }
+        }
 		serverConnector.registry.register CreatePresentationModelCommand, testServerAction
 
-        clientModelStore.add new ClientPresentationModel('testPm', [new ClientAttribute('name')])
+        clientModelStore.add new ClientPresentationModel('testPm', [new ClientAttribute('name', null)])
 
         clientDolphin.sync {
             assert receivedCommand.id == "CreatePresentationModel"
@@ -95,25 +105,33 @@ class CommunicationTests extends GroovyTestCase {
 	}
 
 	void testWhenServerChangesValueThisTriggersUpdateOnClient() {
-		def ca = new ClientAttribute('name')
+		def ca = new ClientAttribute('name', null)
 
-		def setValueAction = { CreatePresentationModelCommand command, response ->
-			response << new ValueChangedCommand(
-					attributeId: command.attributes.id.first(),
-					newValue: "set from server",
-					oldValue: null
-			)
-		}
+		def setValueAction = new CommandHandler<CreatePresentationModelCommand>() {
+
+            @Override
+            void handleCommand(CreatePresentationModelCommand command, List<Command> response) {
+                response << new ValueChangedCommand(
+                        attributeId: command.attributes.id.first(),
+                        newValue: "set from server",
+                        oldValue: null
+                )
+            }
+        };
 
 		Command receivedCommand = null
-		def valueChangedAction = { ValueChangedCommand command, response ->
-			receivedCommand = command
-            clientDolphin.sync {                            // there is no onFinished for value changes, so we have to do it here
-                assert ca.value == "set from server"        // client is updated
-                assert receivedCommand.attributeId == ca.id // client notified server about value change
-                config.assertionsDone()
+		def valueChangedAction = new CommandHandler<ValueChangedCommand>() {
+
+            @Override
+            void handleCommand(ValueChangedCommand command, List<Command> response) {
+                receivedCommand = command
+                clientDolphin.sync {                            // there is no onFinished for value changes, so we have to do it here
+                    assert ca.value == "set from server"        // client is updated
+                    assert receivedCommand.attributeId == ca.id // client notified server about value change
+                    config.assertionsDone()
+                }
             }
-		}
+        };
 
         serverConnector.registry.register CreatePresentationModelCommand, setValueAction
 		serverConnector.registry.register ValueChangedCommand, valueChangedAction
@@ -123,7 +141,13 @@ class CommunicationTests extends GroovyTestCase {
 
 	void testRequestingSomeGeneralCommandExecution() {
 		boolean reached = false
-		serverConnector.registry.register "ButtonAction", { cmd, resp -> reached = true }
+		serverConnector.registry.register("ButtonAction", new CommandHandler<NamedCommand>(){
+
+            @Override
+            void handleCommand(NamedCommand command, List response) {
+                reached = true
+            }
+        });
 		clientConnector.send(new NamedCommand(id: "ButtonAction"))
 
         clientDolphin.sync {

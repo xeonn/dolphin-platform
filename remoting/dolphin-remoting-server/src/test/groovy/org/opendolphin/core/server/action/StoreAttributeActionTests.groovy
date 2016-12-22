@@ -38,38 +38,31 @@ class StoreAttributeActionTests extends GroovyTestCase {
         StoreAttributeAction action = new StoreAttributeAction(serverDolphin: dolphin)
         action.registerIn(registry)
         registry.getAt('AttributeCreated').first().handleCommand(new AttributeCreatedNotification(pmId: 'model', propertyName: 'newAttribute', newValue: 'value'), [])
-        assert dolphin.getAt('model').getAt('newAttribute')
-        assert 'value' == dolphin.getAt('model').getAt('newAttribute').value
+        assert dolphin.getPresentationModel('model').getAttribute('newAttribute')
+        assert 'value' == dolphin.getPresentationModel('model').getAttribute('newAttribute').value
     }
 
     void testStoreAttribute_ModelExists() {
         StoreAttributeAction action = new StoreAttributeAction(serverDolphin: dolphin)
         action.registerIn(registry)
-        dolphin.add(new ServerPresentationModel('model', [], dolphin.serverModelStore))
+        dolphin.addPresentationModel(new ServerPresentationModel('model', [], dolphin.serverModelStore))
         registry.getAt('AttributeCreated').first().handleCommand(new AttributeCreatedNotification(pmId: 'model', propertyName: 'newAttribute', newValue: 'value'), [])
-        assert dolphin.getAt('model').getAt('newAttribute')
-        assert 'value' == dolphin.getAt('model').getAt('newAttribute').value
+        assert dolphin.getPresentationModel('model').getAttribute('newAttribute')
+        assert 'value' == dolphin.getPresentationModel('model').getAttribute('newAttribute').value
     }
 
     void testStoreAttribute_AlreadyExistingAttribute() {
         new StoreAttributeAction(serverDolphin: dolphin).registerIn registry
         ServerAttribute attribute = new ServerAttribute('newAttribute', '')
-        dolphin.add(new ServerPresentationModel('model', [attribute], dolphin.serverModelStore))
+        dolphin.addPresentationModel(new ServerPresentationModel('model', [attribute], dolphin.serverModelStore))
         registry.getAt('AttributeCreated').first().handleCommand(new AttributeCreatedNotification(pmId: 'model', attributeId: attribute.id, propertyName: 'newAttribute', newValue: 'value'), [])
-        assert '' == dolphin.getAt('model').getAt('newAttribute').value
-    }
-
-    void testChangeAttributeMetadata_AttributeNotFound() {
-        new StoreAttributeAction(serverDolphin: dolphin).registerIn registry
-        ServerAttribute attribute = new ServerAttribute('newAttribute', '')
-        registry.getAt('ChangeAttributeMetadata').first().handleCommand(new ChangeAttributeMetadataCommand(attributeId: attribute.id, metadataName: 'dirty', value: true), [])
-        assert !attribute.dirty
+        assert '' == dolphin.getPresentationModel('model').getAttribute('newAttribute').value
     }
 
     void testChangeAttributeMetadata() {
         new StoreAttributeAction(serverDolphin: dolphin).registerIn registry
         ServerAttribute attribute = new ServerAttribute('newAttribute', '')
-        dolphin.add(new ServerPresentationModel('model', [attribute], dolphin.serverModelStore))
+        dolphin.addPresentationModel(new ServerPresentationModel('model', [attribute], dolphin.serverModelStore))
         registry.getAt('ChangeAttributeMetadata').first().handleCommand(new ChangeAttributeMetadataCommand(attributeId: attribute.id, metadataName: 'value', value: 'newValue'), [])
         assert 'newValue' == attribute.value
     }

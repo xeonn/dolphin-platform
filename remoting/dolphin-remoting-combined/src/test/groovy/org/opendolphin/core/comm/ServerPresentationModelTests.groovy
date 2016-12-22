@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.LogConfig
 import org.opendolphin.core.ModelStoreConfig
 import org.opendolphin.core.ModelStoreEvent
 import org.opendolphin.core.ModelStoreListener
 import org.opendolphin.core.client.ClientDolphin
-import org.opendolphin.core.server.DTO
-import org.opendolphin.core.server.DefaultServerDolphin
-import org.opendolphin.core.server.ServerAttribute
-import org.opendolphin.core.server.ServerModelStore
-import org.opendolphin.core.server.ServerPresentationModel
-import org.opendolphin.core.server.Slot
+import org.opendolphin.core.client.ClientPresentationModel
+import org.opendolphin.core.client.comm.OnFinishedHandler
+import org.opendolphin.core.server.*
 import org.opendolphin.core.server.action.DolphinServerAction
 import org.opendolphin.core.server.comm.ActionRegistry
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-
+import java.util.logging.Level
 /**
  * Functional tests for the server-side state changes.
  */
@@ -47,18 +44,29 @@ class ServerPresentationModelTests extends GroovyTestCase {
         context = new TestInMemoryConfig()
         serverDolphin = context.serverDolphin
         clientDolphin = context.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     @Override
     protected void tearDown() {
-        assert context.done.await(5, TimeUnit.SECONDS)
+        assert context.done.await(10, TimeUnit.SECONDS)
     }
 
     void testServerModelStoreAcceptsConfig() {
         new ServerModelStore(new ModelStoreConfig())
         context.assertionsDone()
     }
+
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
+        serverDolphin.register(new DolphinServerAction() {
+
+            @Override
+            void registerIn(ActionRegistry registry) {
+                registry.register(name, handler);
+            }
+        });
+    }
+
 
     void testServerPresentationModelDoesNotRejectAutoId() {
         // re-enable the shouldFail once we have proper Separation of commands and notifications
@@ -71,105 +79,38 @@ class ServerPresentationModelTests extends GroovyTestCase {
     void testSecondServerActionCanRelyOnAttributeValueChange() {
         def model = clientDolphin.presentationModel("PM1", ["att1"] )
 
-        serverDolphin.action "setValue", { cmd, response ->
-            serverDolphin.getAt("PM1").getAt("att1").value = 1
+        registerAction serverDolphin, "setValue", { cmd, response ->
+            serverDolphin.getPresentationModel("PM1").getAttribute("att1").value = 1
         }
 
-        serverDolphin.action "assertValue", { cmd, response ->
-            assert 1 == serverDolphin.getAt("PM1").getAt("att1").value
+        registerAction serverDolphin, "assertValue", { cmd, response ->
+            assert 1 == serverDolphin.getPresentationModel("PM1").getAttribute("att1").value
         }
 
         clientDolphin.send "setValue"
-        clientDolphin.send "assertValue", {
-            assert 1 == model.att1.value
-            context.assertionsDone()
-        }
-    }
+        clientDolphin.send "assertValue", new OnFinishedHandler() {
 
-    void testSecondServerActionCanRelyOnAttributeReset() {
-        def model = clientDolphin.presentationModel("PM1", att1:'base' )
-        model.att1.value = 'changed'
-        assert model.att1.dirty
-
-        serverDolphin.action "reset", { cmd, response ->
-            def at = serverDolphin.getAt("PM1").getAt("att1")
-            assert at.dirty
-            at.reset()
-            assert ! at.dirty
-        }
-
-        serverDolphin.action "assertPristine", { cmd, response ->
-            def at = serverDolphin.getAt("PM1").getAt("att1")
-            assert ! at.dirty
-            assert at.value == "base"
-        }
-
-        clientDolphin.send "reset"
-        clientDolphin.send "assertPristine"
-
-        clientDolphin.sync {
-            assert ! model.att1.dirty
-            assert model.att1.value == "base"
-            context.assertionsDone()
-        }
-    }
-
-    void testSecondServerActionCanRelyOnAttributeRebase() {
-        def model = clientDolphin.presentationModel("PM1", att1:'base', att2:'base')
-        model.att1.qualifier = 'qualifier'
-        model.att2.qualifier = 'qualifier'
-
-        model.att1.value = 'changed'
-        assert model.att1.dirty
-
-        serverDolphin.action "rebase", { cmd, response ->
-            def at = serverDolphin.getAt("PM1").getAt("att1")
-            assert at.dirty
-            at.rebase()
-            assert ! at.dirty
-            assert ! serverDolphin.getAt("PM1").getAt("att2").dirty
-        }
-
-        serverDolphin.action "assertNewPristine", { cmd, response ->
-            def at = serverDolphin.getAt("PM1").getAt("att1")
-            assert ! at.dirty
-            assert at.value == "changed"
-            assert ! serverDolphin.getAt("PM1").getAt("att2").dirty
-        }
-
-        clientDolphin.send "rebase"
-        clientDolphin.send "assertNewPristine"
-
-        clientDolphin.sync {
-            assert ! model.att1.dirty
-            assert ! model.att2.dirty
-            assert model.att1.value == "changed"
-            assert model.att2.value == "changed"
-            context.assertionsDone()
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert 1 == model.getAttribute("att1").value
+                context.assertionsDone()
+            }
         }
     }
 
     void testServerSideValueChangesUseQualifiers() {
         def model = clientDolphin.presentationModel("PM1", att1:'base', att2:'base')
-        model.att1.qualifier = 'qualifier'
-        model.att2.qualifier = 'qualifier'
+        model.getAttribute("att1").qualifier = 'qualifier'
+        model.getAttribute("att2").qualifier = 'qualifier'
 
-        serverDolphin.action "changeValue", { cmd, response ->
-            def at1 = serverDolphin.getAt("PM1").getAt("att1")
+        registerAction serverDolphin, "changeValue", { cmd, response ->
+            def at1 = serverDolphin.getPresentationModel("PM1").getAttribute("att1")
             assert at1.value == 'base'
             at1.value = 'changed'
-            assert serverDolphin.getAt("PM1").getAt("att2").value == 'changed'
-        }
-
-        serverDolphin.action "changeBaseValue", { cmd, response ->
-            def at1 = serverDolphin.getAt("PM1").getAt("att1")
-            assert at1.baseValue == 'base'
-            at1.baseValue = 'changedBase'
-            assert serverDolphin.getAt("PM1").getAt("att2").baseValue == 'changedBase'
+            assert serverDolphin.getPresentationModel("PM1").getAttribute("att2").value == 'changed'
         }
 
         clientDolphin.send "changeValue"
-        clientDolphin.send "changeBaseValue"
 
         clientDolphin.sync {
             context.assertionsDone()
@@ -179,137 +120,48 @@ class ServerPresentationModelTests extends GroovyTestCase {
     void testServerSideEventListenerCanChangeSelfValue() {
         def model = clientDolphin.presentationModel("PM1", att1:'base')
 
-        serverDolphin.action "attachListener", { cmd, response ->
-            ServerAttribute at1 = serverDolphin.getAt("PM1").getAt("att1")
+        registerAction serverDolphin, "attachListener", { cmd, response ->
+            ServerAttribute at1 = serverDolphin.getPresentationModel("PM1").getAttribute("att1")
             at1.addPropertyChangeListener("value") { event ->
                 at1.setValue("changed from PCL")
             }
         }
 
-        serverDolphin.action "changeBaseValue", { cmd, response ->
-            def at1 = serverDolphin.getAt("PM1").getAt("att1")
+        registerAction serverDolphin, "changeBaseValue", { cmd, response ->
+            def at1 = serverDolphin.getPresentationModel("PM1").getAttribute("att1")
             assert at1.baseValue == 'base'
             at1.baseValue = 'changedBase'
-            assert serverDolphin.getAt("PM1").getAt("att2").baseValue == 'changedBase'
+            assert serverDolphin.getPresentationModel("PM1").getAttribute("att2").baseValue == 'changedBase'
         }
 
         clientDolphin.send "attachListener"
 
         clientDolphin.sync {
-            model.getAt("att1").setValue("changed")
+            model.getAttribute("att1").setValue("changed")
             clientDolphin.sync {
-                assert model.getAt("att1").getValue() == "changed from PCL"
+                assert model.getAttribute("att1").getValue() == "changed from PCL"
                 context.assertionsDone()
             }
         }
     }
 
-
-    void testServerSideEventListenerCanRebaseSelf() {
-        def model = clientDolphin.presentationModel("PM1", att1:'base')
-
-        serverDolphin.action "attachListener", { cmd, response ->
-            ServerAttribute at1 = serverDolphin.getAt("PM1").getAt("att1")
-            at1.addPropertyChangeListener("value") { event ->
-                at1.setValue("anotherChange")
-                at1.rebase()
-            }
-        }
-
-        serverDolphin.action "assertRebased", { cmd, response ->
-            def at1 = serverDolphin.getAt("PM1").getAt("att1")
-            assert at1.baseValue == 'anotherChange'
-            assert at1.value == 'anotherChange'
-            assert at1.dirty == false
-        }
-
-        clientDolphin.send "attachListener"
-
-        clientDolphin.sync {
-            model.getAt("att1").setValue("changed")
-            assert model.getAt("att1").dirty
-            clientDolphin.send "assertRebased", {
-                def at1 =  model.getAt("att1")
-                assert at1.baseValue == 'anotherChange'
-                assert at1.value == 'anotherChange'
-                assert at1.dirty == false
-                context.assertionsDone()
-            }
-        }
-    }
-
-    void testSecondServerActionCanRelyOnPmReset() {
-        def model = clientDolphin.presentationModel("PM1", att1:'base' )
-        model.att1.value = 'changed'
-        assert model.dirty
-
-        serverDolphin.action "reset", { cmd, response ->
-            def pm = serverDolphin.getAt("PM1")
-            assert pm.dirty
-            pm.reset()
-            assert ! pm.dirty
-        }
-
-        serverDolphin.action "assertPristine", { cmd, response ->
-            def pm = serverDolphin.getAt("PM1")
-            assert ! pm.dirty
-            assert pm.att1.value == "base"
-        }
-
-        clientDolphin.send "reset"
-        clientDolphin.send "assertPristine"
-
-        clientDolphin.sync {
-            assert ! model.dirty
-            assert model.att1.value == "base"
-            context.assertionsDone()
-        }
-    }
-    void testSecondServerActionCanRelyOnPmRebase() {
-        def model = clientDolphin.presentationModel("PM1", att1:'base' )
-        model.att1.value = 'changed'
-        assert model.dirty
-
-        serverDolphin.action "rebase", { cmd, response ->
-            def pm = serverDolphin.getAt("PM1")
-            assert pm.dirty
-            pm.rebase()
-            assert ! pm.dirty
-            DefaultServerDolphin.rebase(null, (ServerAttribute) null) // throws no exception but logs and returns
-        }
-
-        serverDolphin.action "assertNewPristine", { cmd, response ->
-            def pm = serverDolphin.getAt("PM1")
-            assert ! pm.dirty
-            assert pm.att1.baseValue == "changed"
-        }
-
-        clientDolphin.send "rebase"
-        clientDolphin.send "assertNewPristine"
-
-        clientDolphin.sync {
-            assert ! model.dirty
-            assert model.att1.baseValue == "changed"
-            context.assertionsDone()
-        }
-    }
 
     void testSecondServerActionCanRelyOnPmCreate() {
 
         def pmWithNullId
 
-        serverDolphin.action "create", { cmd, response ->
+        registerAction serverDolphin, "create", { cmd, response ->
             def dto = new DTO(new Slot("att1", 1))
             def pm = serverDolphin.presentationModel("PM1", null, dto)
             pmWithNullId = serverDolphin.presentationModel(null, "pmType", dto)
             assert pm
             assert pmWithNullId
-            assert serverDolphin.getAt("PM1")
+            assert serverDolphin.getPresentationModel("PM1")
             assert serverDolphin.findAllPresentationModelsByType("pmType").first() == pmWithNullId
         }
 
-        serverDolphin.action "assertVisible", { cmd, response ->
-            assert serverDolphin.getAt("PM1")
+        registerAction serverDolphin, "assertVisible", { cmd, response ->
+            assert serverDolphin.getPresentationModel("PM1")
             assert serverDolphin.findAllPresentationModelsByType("pmType").first() == pmWithNullId
         }
 
@@ -317,7 +169,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
         clientDolphin.send "assertVisible"
 
         clientDolphin.sync {
-            assert clientDolphin.getAt("PM1")
+            assert clientDolphin.getPresentationModel("PM1")
             assert clientDolphin.findAllPresentationModelsByType("pmType").size() == 1
             println clientDolphin.findAllPresentationModelsByType("pmType").first().id
             context.assertionsDone()
@@ -328,23 +180,27 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
         AtomicBoolean pclReached = new AtomicBoolean(false)
 
-        serverDolphin.action "create", { cmd, response ->
+        registerAction serverDolphin, "create", { cmd, response ->
             def dto = new DTO(new Slot("att1", 1))
             serverDolphin.presentationModel("PM1", null, dto)
-            serverDolphin.getAt("PM1").getAt("att1").addPropertyChangeListener("value",{ pclReached.set(true) })
+            serverDolphin.getPresentationModel("PM1").getAttribute("att1").addPropertyChangeListener("value",{ pclReached.set(true) })
         }
 
-        serverDolphin.action "assertValueChange", { cmd, response ->
+        registerAction serverDolphin, "assertValueChange", { cmd, response ->
             assert pclReached.get()
-            assert serverDolphin.getAt("PM1").getAt("att1").value == 2
+            assert serverDolphin.getPresentationModel("PM1").getAttribute("att1").value == 2
             context.assertionsDone()
         }
 
-        clientDolphin.send "create", {
-            assert clientDolphin.getAt("PM1").getAt("att1").value == 1
-            clientDolphin.getAt("PM1").getAt("att1").value = 2
+        clientDolphin.send "create", new OnFinishedHandler() {
 
-            clientDolphin.send "assertValueChange"
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert clientDolphin.getPresentationModel("PM1").getAttribute("att1").value == 1
+                clientDolphin.getPresentationModel("PM1").getAttribute("att1").value = 2
+
+                clientDolphin.send "assertValueChange"
+            }
         }
 
     }
@@ -354,7 +210,7 @@ class ServerPresentationModelTests extends GroovyTestCase {
         List<CreatePresentationModelCommand> receivedCommands = new ArrayList<>();
         List<ModelStoreEvent> receivedEvents = new ArrayList<>();
 
-        serverDolphin.action "registerMSL", { cmd, response ->
+        registerAction serverDolphin, "registerMSL", { cmd, response ->
             serverDolphin.addModelStoreListener(new ModelStoreListener() {
                 @Override void modelStoreChanged(ModelStoreEvent event) {
                     receivedEvents << event
@@ -365,13 +221,17 @@ class ServerPresentationModelTests extends GroovyTestCase {
         serverDolphin.register(new DolphinServerAction() {
             @Override
             void registerIn(ActionRegistry registry) {
-                registry.register(CreatePresentationModelCommand) { cmd, resp ->
-                    receivedCommands << cmd
-                }
+                registry.register(CreatePresentationModelCommand.class, new CommandHandler<CreatePresentationModelCommand>() {
+
+                    @Override
+                    void handleCommand(CreatePresentationModelCommand command, List<Command> response) {
+                        receivedCommands << command
+                    }
+                });
             }
         })
 
-        serverDolphin.action "create", { cmd, response ->
+        registerAction serverDolphin, "create", { cmd, response ->
             def dto = new DTO(new Slot("att1", 1))
             serverDolphin.presentationModel("server-side-with-id", null, dto)
             // will lead to log: [INFO] There already is a PM with id server-side-with-id. Create PM ignored.
@@ -384,14 +244,18 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
         clientDolphin.presentationModel("client-side-with-id", null, attr1:1)
 
-        clientDolphin.send "create", {
-            assert receivedCommands.get(0).pmId == "client-side-with-id"
-            assert receivedCommands.get(1).pmId == "server-side-with-id"
-            assert receivedCommands.get(2).pmId == "0-AUTO-SRV"
-            assert receivedEvents.get(0).presentationModel.id == "client-side-with-id"
-            assert receivedEvents.get(1).presentationModel.id == "server-side-with-id"
-            assert receivedEvents.get(2).presentationModel.id == "0-AUTO-SRV"
-            context.assertionsDone()
+        clientDolphin.send "create", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert receivedCommands.get(0).pmId == "client-side-with-id"
+                assert receivedCommands.get(1).pmId == "server-side-with-id"
+                assert receivedCommands.get(2).pmId == "0-AUTO-SRV"
+                assert receivedEvents.get(0).presentationModel.id == "client-side-with-id"
+                assert receivedEvents.get(1).presentationModel.id == "server-side-with-id"
+                assert receivedEvents.get(2).presentationModel.id == "0-AUTO-SRV"
+                context.assertionsDone()
+            }
         }
     }
 
@@ -399,126 +263,83 @@ class ServerPresentationModelTests extends GroovyTestCase {
 
         clientDolphin.presentationModel("client-side-with-id", null, attr1:1)
 
-        serverDolphin.action "remove", { cmd, response ->
-            def pm = serverDolphin.getAt("client-side-with-id")
+        registerAction serverDolphin, "remove", { cmd, response ->
+            def pm = serverDolphin.getPresentationModel("client-side-with-id")
             assert pm
-            serverDolphin.remove(pm)
-            assert null == serverDolphin.getAt("client-side-with-id") // immediately removed on server
+            serverDolphin.removePresentationModel(pm)
+            assert null == serverDolphin.getPresentationModel("client-side-with-id") // immediately removed on server
         }
 
-        assert clientDolphin.getAt("client-side-with-id")
+        assert clientDolphin.getPresentationModel("client-side-with-id")
 
-        clientDolphin.send "remove", {
-            assert null == clientDolphin.getAt("client-side-with-id") // removed from client before callback
-            context.assertionsDone()
-        }
+        clientDolphin.send "remove", new OnFinishedHandler() {
 
-    }
-
-    void testServerSideAllPmRemoval() {
-
-        clientDolphin.presentationModel(null, "client-side-type", attr1:1)
-        clientDolphin.presentationModel(null, "client-side-type", attr1:1)
-
-        serverDolphin.action "remove", { cmd, response ->
-            assert serverDolphin.findAllPresentationModelsByType("client-side-type").size() == 2
-            serverDolphin.removeAllPresentationModelsOfType("client-side-type")
-            // immediately removed on server
-            assert serverDolphin.findAllPresentationModelsByType("client-side-type").size() == 0
-        }
-
-        assert clientDolphin.findAllPresentationModelsByType("client-side-type").size() == 2
-
-        clientDolphin.send "remove", {
-            // removed from client before callback
-            assert clientDolphin.findAllPresentationModelsByType("client-side-type").size() == 0
-            context.assertionsDone()
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert null == clientDolphin.getPresentationModel("client-side-with-id") // removed from client before callback
+                context.assertionsDone()
+            }
         }
     }
-
-    void testServerSideSwitch() {
-
-        def source = clientDolphin.presentationModel("source", null, attr1:"sourceValue")
-        def target = clientDolphin.presentationModel("target", null, attr1:"targetValue")
-
-        source.getAt("attr1").qualifier = "source.qualifier"
-
-        assert source.getAt("attr1").value     != target.getAt("attr1").value
-        assert source.getAt("attr1").baseValue != target.getAt("attr1").baseValue
-        assert source.getAt("attr1").qualifier != target.getAt("attr1").qualifier
-
-        serverDolphin.action "switch", { cmd, response ->
-            def sourcePM = serverDolphin.getAt("source")
-            def targetPM = serverDolphin.getAt("target")
-            targetPM.syncWith(sourcePM)
-            // immediately applied on server
-            assert targetPM.getAt("attr1").value     == sourcePM.getAt("attr1").value
-            assert targetPM.getAt("attr1").baseValue == sourcePM.getAt("attr1").baseValue
-            assert targetPM.getAt("attr1").qualifier == sourcePM.getAt("attr1").qualifier
-        }
-
-        clientDolphin.send "switch", {
-            // synced on client before callback
-            assert source.getAt("attr1").value     == target.getAt("attr1").value
-            assert source.getAt("attr1").baseValue == target.getAt("attr1").baseValue
-            assert source.getAt("attr1").qualifier == target.getAt("attr1").qualifier
-            context.assertionsDone()
-        }
-    }
-
 
     void testServerSideBaseValueChange() {
         def source = clientDolphin.presentationModel("source", null, attr1:"sourceValue")
 
-        source.getAt("attr1").baseValue = "sourceValue"
-
-        serverDolphin.action "changeBaseValue", { cmd, response ->
-            def attribute = serverDolphin.getAt("source").getAt("attr1")
-            attribute.baseValue = "changed"
-            // immediately applied on server
-            assert attribute.baseValue == "changed"
+        registerAction serverDolphin, "changeBaseValue", { cmd, response ->
+            def attribute = serverDolphin.getPresentationModel("source").getAttribute("attr1")
         }
 
-        clientDolphin.send "changeBaseValue", {
-            assert source.getAt("attr1").value     == "sourceValue"
-            assert source.getAt("attr1").baseValue == "changed"
-            context.assertionsDone()
+        clientDolphin.send "changeBaseValue", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr1").value     == "sourceValue"
+                context.assertionsDone()
+            }
         }
     }
 
     void testServerSideQualifierChange() {
         def source = clientDolphin.presentationModel("source", null, attr1:"sourceValue")
 
-        source.getAt("attr1").qualifier = "qualifier"
+        source.getAttribute("attr1").qualifier = "qualifier"
 
-        serverDolphin.action "changeBaseValue", { cmd, response ->
-            def attribute = serverDolphin.getAt("source").getAt("attr1")
+        registerAction serverDolphin, "changeBaseValue", { cmd, response ->
+            def attribute = serverDolphin.getPresentationModel("source").getAttribute("attr1")
             attribute.qualifier = "changed"
             // immediately applied on server
             assert attribute.qualifier == "changed"
         }
 
-        clientDolphin.send "changeBaseValue", {
-            assert source.getAt("attr1").value     == "sourceValue"
-            assert source.getAt("attr1").qualifier == "changed"
-            context.assertionsDone()
+        clientDolphin.send "changeBaseValue", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr1").value     == "sourceValue"
+                assert source.getAttribute("attr1").qualifier == "changed"
+                context.assertionsDone()
+            }
         }
     }
 
     void testServerSideAddingOfAttributesToAnExistingModel() {
         def source = clientDolphin.presentationModel("source", null, attr1:"sourceValue")
 
-        serverDolphin.action "addAttribute", { cmd, response ->
-            def pm = serverDolphin.getAt("source")
+        registerAction serverDolphin, "addAttribute", { cmd, response ->
+            def pm = serverDolphin.getPresentationModel("source")
             def attr2 = new ServerAttribute("attr2","initial")
             pm.addAttribute(attr2)
             // immediately applied on server
-            assert pm.getAt("attr2").value == "initial"
+            assert pm.getAttribute("attr2").value == "initial"
         }
 
-        clientDolphin.send "addAttribute", {
-            assert source.getAt("attr2").value == "initial"
-            context.assertionsDone()
+        clientDolphin.send "addAttribute", new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+                assert source.getAttribute("attr2").value == "initial"
+                context.assertionsDone()
+            }
         }
     }
 

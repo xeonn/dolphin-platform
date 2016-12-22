@@ -15,7 +15,6 @@
  */
 package org.opendolphin.core.server
 
-import org.opendolphin.core.Tag
 import spock.lang.Specification
 
 class SlotTest extends Specification {
@@ -26,14 +25,12 @@ class SlotTest extends Specification {
 
         expect:
         slot.value      == value
-        slot.baseValue  == baseValue
         slot.qualifier  == qualifier
-        slot.tag        == tag
 
         where:
-        value | baseValue | qualifier | tag
-        null  | null      | null      | Tag.VALUE
-        1     | 1         | null      | Tag.VALUE
-        "x"   | "x"       | null      | Tag.VALUE
+        value | qualifier
+        null  | null
+        1     | null
+        "x"   | null
     }
 }

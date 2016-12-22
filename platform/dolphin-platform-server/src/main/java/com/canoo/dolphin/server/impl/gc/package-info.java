@@ -19,7 +19,7 @@
  * Dolphin Platform model is a hierarchy of several Dolphin Platform beans. All the beans will automatically be synchronized
  * between server and client. To do so the remoting layer holds a representation of each Dolphin Platform Bean.
  * When the server controller removes a bean out of the hierarchy the garbage collection should notice this and automatically
- * remove the bean representation from the remoting layer. By doing so the bean will automatically be deleted on the client.
+ * removePresentationModel the bean representation from the remoting layer. By doing so the bean will automatically be deleted on the client.
  * How a bean can be created and removed is defined by the {@link com.canoo.dolphin.BeanManager}. by using the garbage collection
  * an application developer doesn't need to call {@link com.canoo.dolphin.BeanManager#remove(Object)} anymore.
  *

@@ -37,7 +37,7 @@ import java.util.List;
  * </p>
  * <p>When using the MVC API of Dolphin Platform the lifecycle of the model is defined by the MVC group and the model
  * will automatically be removed when the MVC group is removed. If the {@link com.canoo.dolphin.BeanManager} is used as
- * standalone API the developer must handle the lifecycle of the models and remove them by using the {@link com.canoo.dolphin.BeanManager}</p>
+ * standalone API the developer must handle the lifecycle of the models and removePresentationModel them by using the {@link com.canoo.dolphin.BeanManager}</p>
  * <p>All synchronized models must follow some specific rules that are described in the {@link com.canoo.dolphin.mapping.DolphinBean} annotation</p>
  *
  * <p>By using the default Spring or JavaEE implementation of the Dolphin platform the {@link com.canoo.dolphin.BeanManager}
@@ -60,9 +60,9 @@ import java.util.List;
  *     beanManager.onAdded(MyModel.class, model -> System.out.println("Model of type MyModel added"));
  * </pre>
  * </blockquote>
- * There are no method to remove registered handler from the {@link com.canoo.dolphin.BeanManager}. Here Dolphin Platform
+ * There are no method to removePresentationModel registered handler from the {@link com.canoo.dolphin.BeanManager}. Here Dolphin Platform
  * implement an approach by using the Subscription Pattern: Each hander registration returns a {@link com.canoo.dolphin.event.Subscription}
- * instance that provides the {@link com.canoo.dolphin.event.Subscription#unsubscribe()} method to remove the handler.
+ * instance that provides the {@link com.canoo.dolphin.event.Subscription#unsubscribe()} method to removePresentationModel the handler.
  * </p>
  * <p>To deleta a synchronized model the {@link com.canoo.dolphin.BeanManager} provides several methods. Here a developer can
  * for example choose to delete a specific instance (see {@link #remove(Object)}) or all instances for a given type (see {@link #removeAll(Class)}).</p>
@@ -92,8 +92,8 @@ public interface BeanManager {
      * synced with the client.
      *
      * @param bean the bean
-     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
-     * value to null and the gc will remove the bean.
+     * @deprecated with the new garbage collection support you should never removePresentationModel a bean by hand. Just set the property
+     * value to null and the gc will removePresentationModel the bean.
      */
     @Deprecated
     void remove(Object bean);
@@ -102,8 +102,8 @@ public interface BeanManager {
      * Remove all beans of the given type.
      *
      * @param beanClass the class that defines the bean type.
-     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
-     * value to null and the gc will remove the bean.
+     * @deprecated with the new garbage collection support you should never removePresentationModel a bean by hand. Just set the property
+     * value to null and the gc will removePresentationModel the bean.
      */
     @Deprecated
     void removeAll(Class<?> beanClass);
@@ -112,8 +112,8 @@ public interface BeanManager {
      * Remove all given beans.
      *
      * @param beans the beans that should be removed.
-     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
-     * value to null and the gc will remove the bean.
+     * @deprecated with the new garbage collection support you should never removePresentationModel a bean by hand. Just set the property
+     * value to null and the gc will removePresentationModel the bean.
      */
     @Deprecated
     void removeAll(Object... beans);
@@ -122,8 +122,8 @@ public interface BeanManager {
      * Remove all beans of the given type.
      *
      * @param beans the beans that should be removed.
-     * @deprecated with the new garbage collection support you should never remove a bean by hand. Just set the property
-     * value to null and the gc will remove the bean.
+     * @deprecated with the new garbage collection support you should never removePresentationModel a bean by hand. Just set the property
+     * value to null and the gc will removePresentationModel the bean.
      */
     @Deprecated
     void removeAll(Collection<?> beans);

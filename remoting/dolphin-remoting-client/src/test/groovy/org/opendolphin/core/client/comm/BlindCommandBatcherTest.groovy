@@ -16,6 +16,7 @@
 package org.opendolphin.core.client.comm
 
 import org.opendolphin.LogConfig
+import org.opendolphin.core.client.ClientPresentationModel
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.CreatePresentationModelCommand
 import org.opendolphin.core.comm.GetPresentationModelCommand
@@ -61,7 +62,13 @@ class BlindCommandBatcherTest extends GroovyTestCase {
     void doNonBlindForcesBatch() {
         assert batcher.isEmpty()
         def list = [new CommandAndHandler(), new CommandAndHandler(), new CommandAndHandler()]
-        list << new CommandAndHandler(handler: new OnFinishedHandlerAdapter())
+        list << new CommandAndHandler(handler: new OnFinishedHandler() {
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+
+            }
+        })
 
         list.each { commandAndHandler -> batcher.batch(commandAndHandler) }
         assert batcher.waitingBatches.val == list[0..2]

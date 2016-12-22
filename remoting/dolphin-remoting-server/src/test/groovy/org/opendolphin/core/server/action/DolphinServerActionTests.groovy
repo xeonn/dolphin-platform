@@ -19,6 +19,7 @@ import org.opendolphin.core.comm.CreatePresentationModelCommand
 import org.opendolphin.core.comm.InitializeAttributeCommand
 import org.opendolphin.core.comm.ValueChangedCommand
 import org.opendolphin.core.server.DTO
+import org.opendolphin.core.server.DefaultServerDolphin
 import org.opendolphin.core.server.ServerAttribute
 import org.opendolphin.core.server.comm.ActionRegistry
 
@@ -52,10 +53,9 @@ class DolphinServerActionTests extends GroovyTestCase {
     }
 
     void testInitializeAt() {
-        action.initAt('p1', 'attr', 'qualifier')
+        DefaultServerDolphin.initAt(action.dolphinResponse, 'p1', 'attr', 'qualifier', null)
         assert 1 == action.dolphinResponse.size()
         assert InitializeAttributeCommand == action.dolphinResponse.first().class
-
     }
 
 }

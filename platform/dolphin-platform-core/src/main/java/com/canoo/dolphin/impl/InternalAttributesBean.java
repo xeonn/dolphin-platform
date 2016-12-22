@@ -35,9 +35,9 @@ public class InternalAttributesBean {
     public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModel pm) {
         this.beanRepository = Assert.requireNonNull(beanRepository, "beanRepository");
         Assert.requireNonNull(pm, "pm");
-        controllerNameAttribute = pm.findAttributeByPropertyName(CONTROLLER_NAME);
-        controllerIdAttribute = pm.findAttributeByPropertyName(CONTROLLER_ID);
-        modelAttribute = pm.findAttributeByPropertyName(MODEL);
+        controllerNameAttribute = pm.getAttribute(CONTROLLER_NAME);
+        controllerIdAttribute = pm.getAttribute(CONTROLLER_ID);
+        modelAttribute = pm.getAttribute(MODEL);
     }
 
     public InternalAttributesBean(final BeanRepository beanRepository, final PresentationModelBuilder builder) {

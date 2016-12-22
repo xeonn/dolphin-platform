@@ -130,7 +130,7 @@ public class BeanRepositoryImpl implements BeanRepository{
         final PresentationModel model = objectPmToDolphinPm.remove(bean);
         if (model != null) {
             dolphinIdToObjectPm.remove(model.getId());
-            dolphin.remove(model);
+            dolphin.removePresentationModel(model);
         }
     }
 

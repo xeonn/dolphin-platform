@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package org.opendolphin.core.comm
-
 import org.opendolphin.LogConfig
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.server.DefaultServerDolphin
+import org.opendolphin.core.server.ServerDolphin
+import org.opendolphin.core.server.action.DolphinServerAction
+import org.opendolphin.core.server.comm.ActionRegistry
+import org.opendolphin.core.server.comm.CommandHandler
 
 import java.util.concurrent.TimeUnit
-
+import java.util.logging.Level
 /**
  * Showcase for how to set up a workflow on the server side where a series of actions
  * depend on each other and the effect that an earlier action had on the model store.
@@ -37,7 +40,7 @@ class ControllingWorkflowTests extends GroovyTestCase {
         context = new TestInMemoryConfig()
         serverDolphin = context.serverDolphin
         clientDolphin = context.clientDolphin
-        LogConfig.noLogs()
+        LogConfig.logOnLevel(Level.OFF);
     }
 
     @Override
@@ -45,25 +48,36 @@ class ControllingWorkflowTests extends GroovyTestCase {
         assert context.done.await(10, TimeUnit.SECONDS)
     }
 
+    void registerAction(ServerDolphin serverDolphin, String name, CommandHandler<NamedCommand> handler) {
+        serverDolphin.register(new DolphinServerAction() {
+
+            @Override
+            void registerIn(ActionRegistry registry) {
+                registry.register(name, handler);
+            }
+        });
+    }
+
+
     void testABCSequentialWorkflow() {
 
         final ACTION_A          = "A"
         final ACTION_B          = "B"
         final ACTION_C          = "C"
 
-        serverDolphin.action(ACTION_A) { cmd, response ->
+        registerAction(serverDolphin, (ACTION_A), { cmd, response ->
             println "in $ACTION_A"
             response << new CallNamedActionCommand(ACTION_B)
-        }
-        serverDolphin.action(ACTION_B) { cmd, response ->
+        });
+        registerAction(serverDolphin, (ACTION_B), { cmd, response ->
             println "in $ACTION_B"
             response << new CallNamedActionCommand(ACTION_C)
-        }
-        serverDolphin.action(ACTION_C) { cmd, response ->
+        });
+        registerAction(serverDolphin, (ACTION_C), { cmd, response ->
             println "in $ACTION_C"
             context.assertionsDone()
             // the last step in the sequence has nothing to do
-        }
+        });
 
         clientDolphin.send(ACTION_A)
 
@@ -77,21 +91,21 @@ class ControllingWorkflowTests extends GroovyTestCase {
 
         boolean reachedB = false
 
-        serverDolphin.action(ACTION_A) { cmd, response ->
+        registerAction(serverDolphin, (ACTION_A), { cmd, response ->
             println "in $ACTION_A"
             response << new CallNamedActionCommand(ACTION_B)
             response << new CallNamedActionCommand(ACTION_C)
-        }
-        serverDolphin.action(ACTION_B) { cmd, response ->
+        });
+        registerAction(serverDolphin, (ACTION_B), { cmd, response ->
             println "in $ACTION_B"
             reachedB = true
-        }
-        serverDolphin.action(ACTION_C) { cmd, response ->
+        });
+        registerAction(serverDolphin, (ACTION_C), { cmd, response ->
             println "in $ACTION_C"
             assert reachedB
             context.assertionsDone()
             // the last step in the sequence has nothing to do
-        }
+        });
 
         clientDolphin.send(ACTION_A)
 

@@ -56,8 +56,8 @@ public class ListMapperImpl implements ListMapper {
             @SuppressWarnings("unchecked")
             public void onEvent(PresentationModel model) {
                 try {
-                    final String sourceId = model.findAttributeByPropertyName("source").getValue().toString();
-                    final String attributeName = model.findAttributeByPropertyName("attribute").getValue().toString();
+                    final String sourceId = model.getAttribute("source").getValue().toString();
+                    final String attributeName = model.getAttribute("attribute").getValue().toString();
 
                     final Object bean = ListMapperImpl.this.beanRepository.getBean(sourceId);
                     final ClassInfo classInfo = ListMapperImpl.this.classRepository.getOrCreateClassInfo(bean.getClass());
@@ -65,13 +65,13 @@ public class ListMapperImpl implements ListMapper {
 
                     final ObservableArrayList list = (ObservableArrayList) observableListInfo.getPrivileged(bean);
 
-                    final int from = ((Number) model.findAttributeByPropertyName("from").getValue()).intValue();
-                    final int to = ((Number) model.findAttributeByPropertyName("to").getValue()).intValue();
-                    final int count = ((Number) model.findAttributeByPropertyName("count").getValue()).intValue();
+                    final int from = ((Number) model.getAttribute("from").getValue()).intValue();
+                    final int to = ((Number) model.getAttribute("to").getValue()).intValue();
+                    final int count = ((Number) model.getAttribute("count").getValue()).intValue();
 
                     final List<Object> newElements = new ArrayList<Object>(count);
                     for (int i = 0; i < count; i++) {
-                        final Object dolphinValue = model.findAttributeByPropertyName(Integer.toString(i)).getValue();
+                        final Object dolphinValue = model.getAttribute(Integer.toString(i)).getValue();
                         final Object value = observableListInfo.convertFromDolphin(dolphinValue);
                         newElements.add(value);
                     }
@@ -82,7 +82,7 @@ public class ListMapperImpl implements ListMapper {
                     LOG.error("Invalid LIST_SPLICE command received: " + model, ex);
                 } finally {
                     if (model != null) {
-                        ListMapperImpl.this.dolphin.remove(model);
+                        ListMapperImpl.this.dolphin.removePresentationModel(model);
                     }
                 }
 

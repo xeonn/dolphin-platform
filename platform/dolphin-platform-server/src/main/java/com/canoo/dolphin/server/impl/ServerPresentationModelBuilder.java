@@ -18,7 +18,6 @@ package com.canoo.dolphin.server.impl;
 import com.canoo.dolphin.impl.AbstractPresentationModelBuilder;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.server.DTO;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
@@ -51,20 +50,8 @@ public class ServerPresentationModelBuilder extends AbstractPresentationModelBui
     }
 
     @Override
-    public ServerPresentationModelBuilder withAttribute(String name, Object value, Tag tag) {
-        slots.add(new Slot(name, value, null, tag));
-        return this;
-    }
-
-    @Override
     public ServerPresentationModelBuilder withAttribute(String name, Object value, String qualifier) {
         slots.add(new Slot(name, value, qualifier));
-        return this;
-    }
-
-    @Override
-    public ServerPresentationModelBuilder withAttribute(String name, Object value, String qualifier, Tag tag) {
-        slots.add(new Slot(name, value, qualifier, tag));
         return this;
     }
 

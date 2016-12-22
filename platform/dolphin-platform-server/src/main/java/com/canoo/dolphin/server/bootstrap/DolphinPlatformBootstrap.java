@@ -36,7 +36,7 @@ import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
 import com.canoo.dolphin.server.servlet.DolphinPlatformServlet;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
-import org.opendolphin.server.adapter.InvalidationServlet;
+import com.canoo.dolphin.server.servlet.InvalidationServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
