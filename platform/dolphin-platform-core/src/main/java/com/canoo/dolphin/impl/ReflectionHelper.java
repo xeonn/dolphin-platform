@@ -18,6 +18,8 @@ package com.canoo.dolphin.impl;
 import com.canoo.dolphin.collections.ObservableList;
 import com.canoo.dolphin.mapping.Property;
 import com.canoo.dolphin.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -32,6 +34,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ReflectionHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReflectionHelper.class);
+
 
     private ReflectionHelper() {
     }
@@ -174,7 +179,7 @@ public class ReflectionHelper {
                 return (Class) pType.getActualTypeArguments()[0];
             }
         } catch (ClassCastException ex) {
-            // do nothing
+            LOG.warn("can not extract parameterized type!", ex);
         }
         return null;
     }

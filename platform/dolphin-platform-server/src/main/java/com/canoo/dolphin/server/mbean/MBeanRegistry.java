@@ -33,7 +33,7 @@ public class MBeanRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(MBeanRegistry.class);
 
-    private final static MBeanRegistry INSTANCE = new MBeanRegistry();
+    private static final MBeanRegistry INSTANCE = new MBeanRegistry();
 
     private MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
@@ -74,11 +74,18 @@ public class MBeanRegistry {
                 };
             }
         } catch (Exception e) {
+            //TODO: Throw exception
             LOG.warn("Can not register MBean!", e);
         }
         return new Subscription() {
             @Override
             public void unsubscribe() {
+                try {
+                    final ObjectName objectName = new ObjectName(name);
+                    server.unregisterMBean(objectName);
+                }catch (Exception e) {
+                    LOG.warn("Can not unregister MBean!", e);
+                }
             }
         };
     }
@@ -100,7 +107,7 @@ public class MBeanRegistry {
     }
 
     private String getNextId() {
-        return idGenerator.getAndIncrement() + "";
+        return  Long.toString(idGenerator.getAndIncrement());
     }
 
     /**

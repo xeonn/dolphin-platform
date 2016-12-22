@@ -13,7 +13,10 @@ before_install:
   - sudo apt-get install oracle-java8-installer
 
 script:
-  - ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S
+  - if [ "$TRAVIS_BRANCH" == "master" ];
+    then ./gradlew clean sonarqube jacocoTestReport jacocoRootMergeReport -S -Dsonar.host.url=https://sonarqube.com -Dsonar.login=${SONAR_TOKEN};
+    else ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S;
+    fi
 
 after_success:
   - ./gradlew coveralls

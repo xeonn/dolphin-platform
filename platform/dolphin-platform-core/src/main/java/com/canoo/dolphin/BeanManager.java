@@ -19,7 +19,6 @@ import com.canoo.dolphin.event.BeanAddedListener;
 import com.canoo.dolphin.event.BeanRemovedListener;
 import com.canoo.dolphin.event.Subscription;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -68,7 +67,7 @@ import java.util.List;
  * <p>To deleta a synchronized model the {@link com.canoo.dolphin.BeanManager} provides several methods. Here a developer can
  * for example choose to delete a specific instance (see {@link #remove(Object)}) or all instances for a given type (see {@link #removeAll(Class)}).</p>
  */
-public interface BeanManager extends Serializable {
+public interface BeanManager {
 
     /**
      * Checks if the given object is a dolphin bean that is synced with the client

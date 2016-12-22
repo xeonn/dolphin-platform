@@ -30,53 +30,55 @@ import java.io.IOException;
 
 public class HttpClientMock implements HttpClient {
 
+    private final static String ERROR_MESSAGE = "Functionality not supported for tests since in memory mode is used!";
+
     @Override
     public HttpParams getParams() {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public ClientConnectionManager getConnectionManager() {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionallity not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public HttpResponse execute(HttpUriRequest request, HttpContext context) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionallity not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 
     @Override
     public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException, ClientProtocolException {
-        throw new RuntimeException("Functionality not supported for tests since in memory mode is used!");
+        throw new RuntimeException(ERROR_MESSAGE);
     }
 }

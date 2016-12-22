@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public class ClassRepositoryImpl implements ClassRepository {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
+ private static final Logger LOG = LoggerFactory.getLogger(ClassRepositoryImpl.class);
 
     private final PresentationModelBuilderFactory builderFactory;
     private final Converters converters;
@@ -68,16 +68,18 @@ public class ClassRepositoryImpl implements ClassRepository {
                     classToClassInfoMap.put(beanClass, classInfo);
                     modelTypeToClassInfoMap.put(classInfo.getModelType(), classInfo);
                 } catch (ClassNotFoundException e) {
-                    // Ignore unknown classes
+                    throw new RuntimeException("Error in class info generation!", e);
                 }
             }
         });
     }
 
+    @Override
     public ClassInfo getClassInfo(final String modelType) {
         return modelTypeToClassInfoMap.get(modelType);
     }
 
+    @Override
     public ClassInfo getOrCreateClassInfo(final Class<?> beanClass) {
         final ClassInfo existingClassInfo = classToClassInfoMap.get(beanClass);
         if (existingClassInfo != null) {

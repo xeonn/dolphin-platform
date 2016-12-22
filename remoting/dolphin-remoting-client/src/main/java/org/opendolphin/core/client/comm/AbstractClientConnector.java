@@ -134,6 +134,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
 
     protected abstract List<Command> transmit(List<Command> commands);
 
+    @Override
     public void send(Command command, OnFinishedHandler callback) {
         // we have some change so regardless of the batching we may have to release a push
         if (!command.equals(pushListener)) {
@@ -146,6 +147,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         commandBatcher.batch(handler);
     }
 
+    @Override
     public void send(Command command) {
         send(command, null);
     }
@@ -158,12 +160,12 @@ public abstract class AbstractClientConnector implements ClientConnector {
                 for (Command c : response) {
                     commands.add(c.getId());
                 }
+                LOG.info("C: server responded with {}" + response.size() + " command(s): {}" + commands);
             }
-            LOG.info("C: server responded with " + response.size() + " command(s): " + commands);
         }
 
         List<ClientPresentationModel> touchedPresentationModels = new LinkedList<>();
-        List<Map> touchedDataMaps = new LinkedList<Map>();
+        List<Map> touchedDataMaps = new LinkedList<>();
         for (Command serverCommand : response) {
             Object touched = dispatchHandle(serverCommand);
             if (touched != null && touched instanceof ClientPresentationModel) {
@@ -173,7 +175,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
             }
 
         }
-        OnFinishedHandler callback = commandsAndHandlers.get(0).getHandler();// there can only be one relevant handler anyway
+OnFinishedHandler callback = commandsAndHandlers.get(0).getHandler();// there can only be one relevant handler anyway
         // added != null check instead of using simple Groovy truth because of NPE through GROOVY-7709
         if (callback != null) {
             List<ClientPresentationModel> uniqueModels = new ArrayList<>();
@@ -194,6 +196,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
             }
         }
     }
+
 
     public Object dispatchHandle(Command command) {
         return responseHandler.dispatchHandle(command);
@@ -232,6 +235,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
     /**
      * listens for the pushListener to return. The pushListener must be set and pushEnabled must be true.
      */
+    @Override
     public void listen() {
         if (!pushEnabled) {
             return; // allow the loop to end
@@ -292,6 +296,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         this.onException = onException;
     }
 
+    @Override
     public void setPushListener(NamedCommand pushListener) {
         this.pushListener = pushListener;
     }
@@ -300,6 +305,7 @@ public abstract class AbstractClientConnector implements ClientConnector {
         return releaseCommand;
     }
 
+    @Override
     public void setReleaseCommand(SignalCommand releaseCommand) {
         this.releaseCommand = releaseCommand;
     }
