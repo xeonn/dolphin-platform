@@ -22,7 +22,7 @@ public class DolphinRuntimeException extends RuntimeException {
 
     private static final Logger LOG = LoggerFactory.getLogger(DolphinRuntimeException.class);
 
-    private final Thread thread;
+    private final transient Thread thread;
 
     public DolphinRuntimeException(String message, Throwable cause) {
         this(Thread.currentThread(), message, cause);

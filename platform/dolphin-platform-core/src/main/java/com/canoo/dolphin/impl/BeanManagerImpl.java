@@ -23,11 +23,10 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.util.Assert;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public class BeanManagerImpl implements Serializable, BeanManager {
+public class BeanManagerImpl implements BeanManager {
 
     protected final BeanRepository beanRepository;
     private final BeanBuilder beanBuilder;

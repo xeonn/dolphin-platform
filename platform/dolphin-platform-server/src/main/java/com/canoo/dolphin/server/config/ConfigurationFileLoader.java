@@ -69,6 +69,9 @@ public class ConfigurationFileLoader {
 
     private static final String MAX_POLL_TIME = "maxPollTime";
 
+    private ConfigurationFileLoader() {
+    }
+
     public static DolphinPlatformConfiguration loadConfiguration() {
         DolphinPlatformConfiguration configuration = null;
         try {
@@ -117,23 +120,23 @@ public class ConfigurationFileLoader {
 
         if (prop.containsKey(OPEN_DOLPHIN_LOG_LEVEL)) {
             String level = prop.getProperty(OPEN_DOLPHIN_LOG_LEVEL);
-            if (level.trim().toLowerCase().equals("info")) {
+            if ("info".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.INFO);
-            } else if (level.trim().toLowerCase().equals("severe")) {
+            } else if ("severe".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.SEVERE);
-            } else if (level.trim().toLowerCase().equals("all")) {
+            } else if ("all".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.ALL);
-            } else if (level.trim().toLowerCase().equals("config")) {
+            } else if ("config".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.CONFIG);
-            } else if (level.trim().toLowerCase().equals("fine")) {
+            } else if ("fine".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.FINE);
-            } else if (level.trim().toLowerCase().equals("finer")) {
+            } else if ("finer".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.FINER);
-            } else if (level.trim().toLowerCase().equals("finest")) {
+            } else if ("finest".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.FINEST);
-            } else if (level.trim().toLowerCase().equals("off")) {
+            } else if ("off".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.OFF);
-            } else if (level.trim().toLowerCase().equals("warning")) {
+            } else if ("warning".equalsIgnoreCase(level.trim())) {
                 configuration.setOpenDolphinLogLevel(Level.WARNING);
             }
         }

@@ -29,6 +29,9 @@ public class DolphinContextUtils {
 
     private static final ThreadLocal<DolphinContext> currentContext = new ThreadLocal<>();
 
+    private DolphinContextUtils() {
+    }
+
     public static DolphinContext getClientInSession(HttpSession session, String clientId) {
         Assert.requireNonNull(session, "session");
         Assert.requireNonBlank(clientId, "clientId");

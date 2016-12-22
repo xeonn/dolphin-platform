@@ -77,7 +77,7 @@ public class DolphinPlatformBootstrap {
         }
     };
 
-    private static final DolphinSessionLifecycleHandler sessionLifecycleHandler = new DolphinSessionLifecycleHandlerImpl();;
+    private static final DolphinSessionLifecycleHandler sessionLifecycleHandler = new DolphinSessionLifecycleHandlerImpl();
 
     private DolphinPlatformBootstrap() {
     }
@@ -157,7 +157,6 @@ public class DolphinPlatformBootstrap {
         for (final Class<?> listenerClass : listeners) {
             try {
                 if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {
-                    final DolphinSessionListener listener = (DolphinSessionListener) containerManager.createListener(listenerClass);
                     getSessionLifecycleHandler().addSessionDestroyedListener(new Callback<DolphinSession>() {
                         @Override
                         public void call(DolphinSession dolphinSession) {
