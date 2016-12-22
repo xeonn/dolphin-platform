@@ -52,7 +52,7 @@ public class ClientDolphin extends AbstractDolphin<ClientAttribute, ClientPresen
     public ClientPresentationModel presentationModel(String id, List<String> attributeNames) {
         List<ClientAttribute> attributes = new ArrayList<ClientAttribute>();
         for (String name : attributeNames) {
-            ((ArrayList<ClientAttribute>) attributes).add(new ClientAttribute(name, null));
+            attributes.add(new ClientAttribute(name, null));
         }
 
         ClientPresentationModel result = new ClientPresentationModel(id, attributes);
