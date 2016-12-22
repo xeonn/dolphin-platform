@@ -145,6 +145,7 @@ subprojects { subprj ->
 
         if (subprj.name.startsWith('dolphin-remoting')) {
             dependencies {
+                compile "org.codehaus.groovy:groovy:$groovyVersion"
                 testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
                 testCompile 'cglib:cglib-nodep:3.2.4'
                 testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {

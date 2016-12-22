@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opendolphin.core.server;
+package org.opendolphin.core.server
+import org.opendolphin.core.ModelStore
+import org.opendolphin.core.ModelStoreConfig
+import org.opendolphin.core.PresentationModel
+import org.opendolphin.core.comm.Command
 
-import org.opendolphin.core.ModelStore;
-import org.opendolphin.core.ModelStoreConfig;
-import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.comm.Command;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.concurrent.atomic.AtomicInteger
 /**
  * The ServerModelStore is a {@link org.opendolphin.core.ModelStore} with customized behavior appropriate to the
  * server side of a Dolphin connection.  There is one ServerModelSore for each user session.
@@ -58,7 +55,6 @@ public class ServerModelStore extends ModelStore {
         this.currentResponse = currentResponse;
     }
 
-    @Override
     public boolean add(PresentationModel model) {
         boolean added = super.add(model);
         if (! added) return false;
