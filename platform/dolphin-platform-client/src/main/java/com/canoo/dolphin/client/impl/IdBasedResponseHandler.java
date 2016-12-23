@@ -47,12 +47,12 @@ public class IdBasedResponseHandler implements ResponseHandler<String> {
         final HttpEntity entity = response.getEntity();
 
         if (statusLine.getStatusCode() == 408) {
-            EntityUtils.consume(entity);
+            //EntityUtils.consume(entity);
             throw new DolphinSessionException("Server can not handle Dolphin Client ID");
         }
 
         if (statusLine.getStatusCode() >= 300) {
-            EntityUtils.consume(entity);
+            //EntityUtils.consume(entity);
             throw new HttpResponseException(statusLine.getStatusCode(),
                     statusLine.getReasonPhrase());
         }

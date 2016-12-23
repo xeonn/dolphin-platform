@@ -18,16 +18,18 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.client.impl.DolphinPlatformThreadFactoryImpl;
 import com.canoo.dolphin.util.Assert;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpParams;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-import java.net.URL;
 
 /**
  * Configuration class for a Dolphin Platform client. A configuration is needed to create a {@link ClientContext} by
@@ -71,7 +73,12 @@ public class ClientConfiguration {
         this.dolphinLogLevel = Level.SEVERE;
         this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
-        httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
+
+        DefaultHttpClient dummyClient = new DefaultHttpClient();
+        SchemeRegistry schemeRegistry = dummyClient.getConnectionManager().getSchemeRegistry();
+        HttpParams params = dummyClient.getParams();
+
+        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
         dolphinPlatformThreadFactory = new DolphinPlatformThreadFactoryImpl();
         backgroundExecutor = Executors.newCachedThreadPool(dolphinPlatformThreadFactory);
     }

@@ -41,7 +41,7 @@ public class SessionAffinityCheckingResponseHandler implements ResponseHandler<S
         StatusLine statusLine = response.getStatusLine();
         HttpEntity entity = response.getEntity();
         if (statusLine.getStatusCode() >= 300) {
-            EntityUtils.consume(entity);
+            //EntityUtils.consume(entity);
             throw new HttpResponseException(statusLine.getStatusCode(),
                     statusLine.getReasonPhrase());
         }
