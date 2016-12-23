@@ -19,8 +19,7 @@ include 'platform-examples/todo-example/todo-server-spring'
 include 'platform-examples/todo-example/todo-server-kumuluzee'
 include 'platform-examples/todo-example/todo-server-javaee'
 include 'platform-examples/todo-example/todo-client'
-include 'documentation/dolphin-platform-documentation'
-include 'documentation/dolphin-remoting-documentation'
+include 'documentation'
 include 'integration-tests'
 
 rootProject.children.each { project ->
