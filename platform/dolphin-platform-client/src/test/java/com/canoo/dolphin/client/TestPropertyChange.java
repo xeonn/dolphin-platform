@@ -22,10 +22,12 @@ import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.client.util.SimpleTestModel;
 import com.canoo.dolphin.client.util.SingleReferenceModel;
 import com.canoo.dolphin.event.Subscription;
+import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import mockit.Mocked;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,11 +44,14 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final SimpleAnnotatedTestModel model = manager.create(SimpleAnnotatedTestModel.class);
 
         final ListerResults<String> results = new ListerResults<>();
-        ValueChangeListener<String> myListener = evt -> {
-            assertThat(evt.getSource(), is(model.myProperty()));
-            results.newValue = evt.getNewValue();
-            results.oldValue = evt.getOldValue();
-            results.listenerCalls++;
+        ValueChangeListener<String> myListener = new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                Assert.assertEquals(evt.getSource(), model.myProperty());
+                results.newValue = evt.getNewValue();
+                results.oldValue = evt.getOldValue();
+                results.listenerCalls++;
+            }
         };
 
         final Subscription subscription = model.myProperty().onChanged(myListener);
@@ -87,11 +92,14 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final SimpleTestModel model = manager.create(SimpleTestModel.class);
 
         final ListerResults<String> results = new ListerResults<>();
-        ValueChangeListener<String> myListener = evt -> {
-            assertThat(evt.getSource(), is(model.getTextProperty()));
-            results.newValue = evt.getNewValue();
-            results.oldValue = evt.getOldValue();
-            results.listenerCalls++;
+        ValueChangeListener<String> myListener = new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                Assert.assertEquals(evt.getSource(), model.getTextProperty());
+                results.newValue = evt.getNewValue();
+                results.oldValue = evt.getOldValue();
+                results.listenerCalls++;
+            }
         };
 
         final Subscription subscription = model.getTextProperty().onChanged(myListener);
@@ -137,11 +145,14 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
         final ListerResults<SimpleTestModel> results = new ListerResults<>();
-        final ValueChangeListener<SimpleTestModel> myListener = evt -> {
-            assertThat(evt.getSource(), is(model.getReferenceProperty()));
-            results.newValue = evt.getNewValue();
-            results.oldValue = evt.getOldValue();
-            results.listenerCalls++;
+        final ValueChangeListener<SimpleTestModel> myListener = new ValueChangeListener<SimpleTestModel>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends SimpleTestModel> evt) {
+                Assert.assertEquals(evt.getSource(), model.getReferenceProperty());
+                results.newValue = evt.getNewValue();
+                results.oldValue = evt.getOldValue();
+                results.listenerCalls++;
+            }
         };
 
         final Subscription subscription = model.getReferenceProperty().onChanged(myListener);
@@ -182,18 +193,24 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
         final ChildModel model = manager.create(ChildModel.class);
 
         final ListerResults<String> childResults = new ListerResults<>();
-        ValueChangeListener<String> childListener = evt -> {
-            assertThat(evt.getSource(), is(model.getChildProperty()));
-            childResults.newValue = evt.getNewValue();
-            childResults.oldValue = evt.getOldValue();
-            childResults.listenerCalls++;
+        ValueChangeListener<String> childListener = new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                Assert.assertEquals(evt.getSource(), model.getChildProperty());
+                childResults.newValue = evt.getNewValue();
+                childResults.oldValue = evt.getOldValue();
+                childResults.listenerCalls++;
+            }
         };
         final ListerResults<String> parentResults = new ListerResults<>();
-        ValueChangeListener<String> parentListener = evt -> {
-            assertThat(evt.getSource(), is(model.getParentProperty()));
-            parentResults.newValue = evt.getNewValue();
-            parentResults.oldValue = evt.getOldValue();
-            parentResults.listenerCalls++;
+        ValueChangeListener<String> parentListener = new ValueChangeListener<String>() {
+            @Override
+            public void valueChanged(ValueChangeEvent<? extends String> evt) {
+                Assert.assertEquals(evt.getSource(), model.getParentProperty());
+                parentResults.newValue = evt.getNewValue();
+                parentResults.oldValue = evt.getOldValue();
+                parentResults.listenerCalls++;
+            }
         };
 
         model.getChildProperty().onChanged(childListener);

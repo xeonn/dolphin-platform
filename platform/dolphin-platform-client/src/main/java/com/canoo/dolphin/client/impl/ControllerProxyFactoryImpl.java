@@ -22,6 +22,7 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
 
@@ -46,8 +47,11 @@ public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
         final InternalAttributesBean bean = platformBeanRepository.getInternalAttributesBean();
         bean.setControllerName(name);
 
-        return dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).thenApply((v) -> {
-            return new ControllerProxyImpl<>(bean.getControllerId(), (T) bean.getModel(), clientDolphin, platformBeanRepository);
+        return dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).thenApply(new Function<Void, ControllerProxy<T>>() {
+            @Override
+            public ControllerProxy<T> apply(Void aVoid) {
+                return new ControllerProxyImpl<>(bean.getControllerId(), (T) bean.getModel(), clientDolphin, platformBeanRepository);
+            }
         });
     }
 }

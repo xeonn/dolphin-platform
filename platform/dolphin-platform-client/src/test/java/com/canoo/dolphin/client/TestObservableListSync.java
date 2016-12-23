@@ -976,7 +976,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .create();
 
         // then :
-        assertThat(model.getObjectList(), is(Collections.singletonList(null)));
+        assertThat(model.getObjectList(), is(Collections.singletonList((SimpleTestModel)null)));
         assertThat(dolphin.findAllPresentationModelsByType(PlatformConstants.LIST_SPLICE), empty());
     }
 
@@ -1025,7 +1025,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .create();
 
         // then :
-        assertThat(model.getPrimitiveList(), is(Collections.singletonList(null)));
+        assertThat(model.getPrimitiveList(), is(Collections.singletonList((String)null)));
         assertThat(dolphin.findAllPresentationModelsByType(PlatformConstants.LIST_SPLICE), empty());
     }
 
@@ -1240,7 +1240,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .create();
 
         // then :
-        assertThat(model.getObjectList(), is(Collections.singletonList(null)));
+        assertThat(model.getObjectList(), is(Collections.singletonList((SimpleTestModel)null)));
         assertThat(dolphin.findAllPresentationModelsByType(PlatformConstants.LIST_SPLICE), empty());
     }
 
@@ -1265,7 +1265,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .withAttribute("count", 1)
                 .withAttribute("0", null)
                 .create();
-        assertThat(model.getObjectList(), is(Collections.singletonList(null)));
+        assertThat(model.getObjectList(), is(Collections.singletonList((SimpleTestModel)null)));
 
         // when :
         new PresentationModelBuilder(dolphin, PlatformConstants.LIST_SPLICE)
@@ -1349,7 +1349,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .create();
 
         // then :
-        assertThat(model.getPrimitiveList(), is(Collections.singletonList(null)));
+        assertThat(model.getPrimitiveList(), is(Collections.singletonList((String)null)));
         assertThat(dolphin.findAllPresentationModelsByType(PlatformConstants.LIST_SPLICE), empty());
     }
 
@@ -1371,7 +1371,7 @@ public class TestObservableListSync extends AbstractDolphinBasedTest {
                 .withAttribute("count", 1)
                 .withAttribute("0", null)
                 .create();
-        assertThat(model.getPrimitiveList(), is(Collections.singletonList(null)));
+        assertThat(model.getPrimitiveList(), is(Collections.singletonList((String)null)));
 
         // when :
         new PresentationModelBuilder(dolphin, PlatformConstants.LIST_SPLICE)

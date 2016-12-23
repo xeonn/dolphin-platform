@@ -154,11 +154,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(dateAttribute.getValue(), nullValue());
 
         model.getDateProperty().set(date1.getTime());
-        assertThat(dateAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(dateAttribute.getValue().toString(), is("2016-02-29T22:01:02.003Z"));
         assertThat(model.getDateProperty().get(), is(date1.getTime()));
 
         dateAttribute.setValue("2016-02-29T00:01:02.003Z");
-        assertThat(dateAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(dateAttribute.getValue().toString(), is("2016-02-29T00:01:02.003Z"));
         assertThat(model.getDateProperty().get(), is(date2.getTime()));
 
 
@@ -166,11 +166,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(calendarAttribute.getValue(), nullValue());
 
         model.getCalendarProperty().set(date1);
-        assertThat(calendarAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(calendarAttribute.getValue().toString(), is("2016-02-29T22:01:02.003Z"));
         assertThat(model.getCalendarProperty().get().getTimeInMillis(), is(date1.getTimeInMillis()));
 
         calendarAttribute.setValue("2016-02-29T00:01:02.003Z");
-        assertThat(calendarAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(calendarAttribute.getValue().toString(), is("2016-02-29T00:01:02.003Z"));
         assertThat(model.getCalendarProperty().get(), is(date2));
 
 
@@ -178,11 +178,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(enumAttribute.getValue(), nullValue());
 
         model.getEnumProperty().set(VALUE_1);
-        assertThat(enumAttribute.getValue(), is("VALUE_1"));
+        assertThat(enumAttribute.getValue().toString(), is("VALUE_1"));
         assertThat(model.getEnumProperty().get(), is(VALUE_1));
 
         enumAttribute.setValue("VALUE_2");
-        assertThat(enumAttribute.getValue(), is("VALUE_2"));
+        assertThat(enumAttribute.getValue().toString(), is("VALUE_2"));
         assertThat(model.getEnumProperty().get(), is(VALUE_2));
     }
 

@@ -53,11 +53,12 @@ public class TestDolphinPlatformHttpClientConnector {
             }
         };
 
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<DolphinRemotingException>(), new DummyUiThreadHandler());
 
         CreatePresentationModelCommand command = new CreatePresentationModelCommand();
         command.setPmId("p1");
-        List<Command> result = connector.transmit(Collections.singletonList(command));
+        Command rawCommand = command;
+        List<Command> result = connector.transmit(Collections.singletonList(rawCommand));
 
         Assert.assertEquals(result.size(), 1);
         Assert.assertTrue(result.get(0) instanceof CreatePresentationModelCommand);
@@ -96,14 +97,14 @@ public class TestDolphinPlatformHttpClientConnector {
                 return (T) "[]";
             }
         };
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<DolphinRemotingException>(), new DummyUiThreadHandler());
 
         connector.transmit(Collections.singletonList(new Command()));
     }
 
     @Test(expectedExceptions = DolphinRemotingException.class)
     public void testCallWithException() {
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), new DefaultHttpClient(), getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), new DefaultHttpClient(), getDummyURL(), new ForwardableCallback<DolphinRemotingException>(), new DummyUiThreadHandler());
         connector.transmit(Collections.singletonList(new Command()));
     }
 
