@@ -36,6 +36,40 @@ import java.util.logging.Logger;
  * when synchronizing back to the server.
  */
 public class BlindCommandBatcher extends CommandBatcher {
+
+    private static final Logger LOG = Logger.getLogger(BlindCommandBatcher.class.getName());
+
+    private final int MAX_GET_PM_CMD_CACHE_SIZE = 200;
+
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
+    private LinkedList<CommandAndHandler> commandsAndHandlers = new LinkedList<CommandAndHandler>();
+
+    private Lock commandsAndHandlersLock = new ReentrantLock();
+
+    /**
+     * Time allowed to fill the queue before a batch is assembled
+     */
+    private long deferMillis = 10;
+
+    /**
+     * Must be > 0
+     */
+    private int maxBatchSize = 100;
+
+    /**
+     * when attribute x changes its value from 0 to 1 and then from 1 to 2, merge this into one change from 0 to 2
+     */
+    private boolean mergeValueChanges = false;
+
+    protected final AtomicBoolean inProcess = new AtomicBoolean(false);
+
+    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false);
+
+    protected boolean shallWeEvenTryToMerge = false;
+
+    protected LinkedList<CommandAndHandler> cacheGetPmCmds = new LinkedList();
+
     @Override
     public boolean isEmpty() {
         return getWaitingBatches().length() < 1;
@@ -110,7 +144,7 @@ public class BlindCommandBatcher extends CommandBatcher {
             public void run() {
                 int count = getMaxBatchSize();// never wait for more than those
                 while (deferralNeeded.get() && count > 0) {
-                    count = count--;
+                    count--;
                     deferralNeeded.set(false);
                     try {
                         Thread.sleep(getDeferMillis());
@@ -239,7 +273,7 @@ public class BlindCommandBatcher extends CommandBatcher {
         return intern.remove(0);
     }
 
-    public LinkedList<CommandAndHandler> getCommandsAndHandlers() {
+    public List<CommandAndHandler> getCommandsAndHandlers() {
         return commandsAndHandlers;
     }
 
@@ -267,25 +301,4 @@ public class BlindCommandBatcher extends CommandBatcher {
         this.mergeValueChanges = mergeValueChanges;
     }
 
-    private static final Logger LOG = Logger.getLogger(BlindCommandBatcher.class.getName());
-    private ExecutorService executorService = Executors.newCachedThreadPool();
-    private LinkedList<CommandAndHandler> commandsAndHandlers = new LinkedList<CommandAndHandler>();
-    private Lock commandsAndHandlersLock = new ReentrantLock();
-    /**
-     * Time allowed to fill the queue before a batch is assembled
-     */
-    private long deferMillis = 10;
-    /**
-     * Must be > 0
-     */
-    private int maxBatchSize = 100;
-    /**
-     * when attribute x changes its value from 0 to 1 and then from 1 to 2, merge this into one change from 0 to 2
-     */
-    private boolean mergeValueChanges = false;
-    protected final AtomicBoolean inProcess = new AtomicBoolean(false);
-    protected final AtomicBoolean deferralNeeded = new AtomicBoolean(false);
-    protected boolean shallWeEvenTryToMerge = false;
-    protected final int MAX_GET_PM_CMD_CACHE_SIZE = 200;
-    protected LinkedList<CommandAndHandler> cacheGetPmCmds = new LinkedList();
 }
