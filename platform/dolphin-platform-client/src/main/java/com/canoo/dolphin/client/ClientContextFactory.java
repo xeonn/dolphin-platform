@@ -82,7 +82,7 @@ public class ClientContextFactory {
                     final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
                     final ClientDolphin clientDolphin = new ClientDolphin();
                     clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-                    final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
+                    final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientConfiguration, clientDolphin, new OptimizedJsonCodec(), remotingErrorHandler);
                     ExceptionHandler exceptionHandler = new ExceptionHandler() {
 
                         @Override

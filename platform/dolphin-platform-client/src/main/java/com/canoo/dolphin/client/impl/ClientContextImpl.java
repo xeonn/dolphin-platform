@@ -51,8 +51,6 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientConfiguration clientConfiguration;
 
-    private final HttpClient httpClient;
-
     private ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
     public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) throws ExecutionException, InterruptedException {
@@ -63,7 +61,6 @@ public class ClientContextImpl implements ClientContext {
         this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
         this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
-        this.httpClient = clientConfiguration.getHttpClient();
         try {
             dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle(new BiFunction<Void, Throwable, Object>() {
                 @Override
@@ -158,10 +155,5 @@ public class ClientContextImpl implements ClientContext {
             case DESTROYING:
                 throw new IllegalStateException("The client is disconnecting!");
         }
-    }
-
-    @Override
-    public HttpClient getHttpClient() {
-        return httpClient;
     }
 }

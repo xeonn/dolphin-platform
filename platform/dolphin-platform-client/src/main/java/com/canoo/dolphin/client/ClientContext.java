@@ -64,9 +64,4 @@ public interface ClientContext {
      */
     Subscription onRemotingError(Callback<DolphinRemotingException> callback);
 
-    /**
-     * Returns the internally used http client
-     * @return the http client
-     */
-    HttpClient getHttpClient();
 }

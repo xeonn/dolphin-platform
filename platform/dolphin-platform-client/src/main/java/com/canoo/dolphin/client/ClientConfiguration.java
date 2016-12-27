@@ -15,17 +15,16 @@
  */
 package com.canoo.dolphin.client;
 
+import com.canoo.dolphin.client.impl.DefaultHttpURLConnectionFactory;
+import com.canoo.dolphin.client.impl.DefaultHttpURLConnectionResponseHandler;
 import com.canoo.dolphin.client.impl.DolphinPlatformThreadFactoryImpl;
 import com.canoo.dolphin.util.Assert;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.HttpParams;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.CookieManager;
+import java.net.CookieStore;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,9 +56,13 @@ public class ClientConfiguration {
 
     private long connectionTimeout;
 
-    private HttpClient httpClient;
-
     private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
+
+    private HttpURLConnectionFactory connectionFactory;
+
+    private CookieStore cookieStore;
+
+    private HttpURLConnectionResponseHandler responseHandler;
 
     /**
      * Default constructor of a client configuration
@@ -72,15 +75,11 @@ public class ClientConfiguration {
         this.uiThreadHandler = Assert.requireNonNull(uiThreadHandler, "uiThreadHandler");
         this.dolphinLogLevel = Level.SEVERE;
         this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-
-
-        DefaultHttpClient dummyClient = new DefaultHttpClient();
-        SchemeRegistry schemeRegistry = dummyClient.getConnectionManager().getSchemeRegistry();
-        HttpParams params = dummyClient.getParams();
-
-        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
         dolphinPlatformThreadFactory = new DolphinPlatformThreadFactoryImpl();
         backgroundExecutor = Executors.newCachedThreadPool(dolphinPlatformThreadFactory);
+        cookieStore = new CookieManager().getCookieStore();
+        connectionFactory = new DefaultHttpURLConnectionFactory();
+        responseHandler = new DefaultHttpURLConnectionResponseHandler();
     }
 
     /**
@@ -143,19 +142,35 @@ public class ClientConfiguration {
         }
     }
 
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public void setHttpClient(HttpClient httpClient) {
-        this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
-    }
-
     public ExecutorService getBackgroundExecutor() {
         return backgroundExecutor;
     }
 
     public DolphinPlatformThreadFactory getDolphinPlatformThreadFactory() {
         return dolphinPlatformThreadFactory;
+    }
+
+    public HttpURLConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    public CookieStore getCookieStore() {
+        return cookieStore;
+    }
+
+    public HttpURLConnectionResponseHandler getResponseHandler() {
+        return responseHandler;
+    }
+
+    public void setConnectionFactory(HttpURLConnectionFactory connectionFactory) {
+        this.connectionFactory = Assert.requireNonNull(connectionFactory, "connectionFactory");
+    }
+
+    public void setCookieStore(CookieStore cookieStore) {
+        this.cookieStore = Assert.requireNonNull(cookieStore, "cookieStore");
+    }
+
+    public void setResponseHandler(HttpURLConnectionResponseHandler responseHandler) {
+        this.responseHandler = Assert.requireNonNull(responseHandler, "responseHandler");
     }
 }
