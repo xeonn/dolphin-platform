@@ -23,8 +23,12 @@ lifecycle and by extending the class for a custom client a developer only needs 
 public class MyCustomClient extends DolphinPlatformApplication { // <1>
 
     @Override
-    protected String getServerEndpoint() {
-        return "http://localhost:8080/dolphin"; // <2>
+    protected URL getServerEndpoint() {
+        URL url = null;
+        try {
+            url = new URL("http://localhost:8080/dolphin"); // <2>
+        } catch (MalformedURLException e) {}
+        return url;
     }
 
      @Override
@@ -48,39 +52,43 @@ established and JavaFX is ready. In addition this client already provides a disc
 user and some raw error handling. All this is defined in the `DolphinPlatformApplication` class but can simply be overwritten.
 If you want more control of the error handling you can simply provide a custom implementation for the methods
 `void onInitializationError(Stage primaryStage, ClientInitializationException initializationException)` and
-`void onShutdownException(ClientShutdownException shutdownException)`. In addition you can add some general functionality
-to the shutdown of the client by defining a specific implementation of the `void onShutdown()` method. A client that defines
+`void onShutdownError(ClientShutdownException shutdownException)`. A client that defines
 specific functionallity for all this states of the lifecycle might look like this:
 
 [source,java]
 ----
 public class MyCustomClient extends DolphinPlatformApplication {
 
-    private Log LOG = LoggerFactory.getLogger(MyCustomClient.class); // <1>
+    private Logger LOG = LoggerFactory.getLogger(MyCustomClient.class);
 
     @Override
-    protected String getServerEndpoint() {
-        return "http://localhost:8080/dolphin";
+    protected URL getServerEndpoint() {
+        URL url = null;
+        try {
+            url = new URL("http://localhost:8080/dolphin");
+        } catch (MalformedURLException e) {e.printStackTrace();}
+        return url;
     }
 
-     @Override
-     protected void start(Stage s, ClientContext c) throws Exception {
-         LOG.info("Dolphin Platform Lifecycle init successful"); // <2>
-         s.setScene(new Scene(new Label("Hello Dolphin")));
-         s.show();
-     }
+    @Override
+    protected void start(Stage s, ClientContext c) throws Exception {
+        LOG.info("Dolphin Platform Lifecycle init successful");
+        s.setScene(new Scene(new Label("Hello Dolphin")));
+        s.show();
+    }
 
-     @Override
-     protected void onInitializationError(Stage s, ClientInitializationException e) {
-         LOG.error("Dolphin Platform Lifecycle error on init", e); // <3>
-         super.onInitializationError(s, e);
-     }
+    @Override
+    protected void onInitializationError(Stage s, ClientInitializationException e) {
+        LOG.error("Dolphin Platform Lifecycle error on init", e);
+        super.onInitializationError(s, e);
+    }
 
-     @Override
-     protected void onShutdownException(ClientShutdownException e) {
-         LOG.error("Dolphin Platform Lifecycle error on shutdown", e); // <4>
-         super.onShutdownException(e);
-     }
+    @Override
+    protected void onShutdownError(ClientShutdownException e) {
+        LOG.error("Dolphin Platform Lifecycle error on shutdown", e);
+        super.onShutdownError(e);
+    }
+
 
      @Override
      protected void onShutdown() {
@@ -98,6 +106,7 @@ implementation since a clear shutdown is already defined in the `DolphinPlatform
 <5> Once the start method is called the Dolphin Platform shutdown has been done and the client can be destroyed. You
 should call the super method in a custom implementation since a clear shutdown is already defined in the
 `DolphinPlatformApplication` class.
+Note: `onShutdown()` is not supported anymore in 0.8.8.
 
 To be true these are not the only moments in that the Dolphin Platform can throw an exception. Maybe the server shuts
 down when a client is still connected to the server. In this case the `DolphinPlatformApplication` class
@@ -129,6 +138,7 @@ public class MyCustomClient extends DolphinPlatformApplication {
 ----
 <1> This method is called for a remoting error that is thrown at runtime. You should call the super method in a custom
 implementation since a clear shutdown is already defined in the `DolphinPlatformApplication` class.
+Note: `onRemotingError()` is not supported anymore in 0.8.8.
 
 == The Dolphin Platform Lifecycle on the server
 
@@ -153,14 +163,14 @@ destroyed session. A basic implementation of such a class might look like this:
 @DolphinListener
 public class MyCustomListener implements DolphinSessionListener {
 
-    private Log LOG = LoggerFactory.getLogger(MyCustomListener.class);
+    private Logger LOG = LoggerFactory.getLogger(MyCustomListener.class);
 
-    void sessionCreated(DolphinSession s) {
-         LOG.info("Session with id {0} created!", s.getId());    // <1>
+    public void sessionCreated(DolphinSession s) {
+        LOG.info("Session with id {0} created!", s.getId());    // <1>
     }
 
-    void sessionDestroyed(DolphinSession s) {
-         LOG.info("Session with id {0} destroyed!", s.getId());  // <2>
+    public void sessionDestroyed(DolphinSession s) {
+        LOG.info("Session with id {0} destroyed!", s.getId());  // <2>
     }
 
 }
