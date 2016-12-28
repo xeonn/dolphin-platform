@@ -26,7 +26,7 @@ import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import mockit.Mocked;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.nullValue;
 public class TestPropertyChange extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithAnnotatedSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -85,7 +85,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -134,7 +134,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithSingleReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -186,7 +186,7 @@ public class TestPropertyChange extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
+    public void testWithInheritedModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 

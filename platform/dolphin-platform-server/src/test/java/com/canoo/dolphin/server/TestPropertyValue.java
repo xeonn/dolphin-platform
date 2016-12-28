@@ -26,7 +26,7 @@ import com.canoo.dolphin.server.util.SingleReferenceModel;
 import mockit.Mocked;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerPresentationModel;
 import org.testng.annotations.Test;
@@ -134,7 +134,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithComplexDataTypesModel(@Mocked ClientConnector connector) {
         final Calendar date1 = new GregorianCalendar(2016, Calendar.MARCH, 1, 0, 1, 2);
         date1.set(Calendar.MILLISECOND, 3);
         date1.setTimeZone(TimeZone.getTimeZone("GMT+2:00"));

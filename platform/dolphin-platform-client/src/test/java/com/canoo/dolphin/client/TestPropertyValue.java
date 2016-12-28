@@ -28,7 +28,7 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.annotations.Test;
 
 import java.util.Calendar;
@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.nullValue;
 public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithAnnotatedSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -66,7 +66,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -87,7 +87,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithAllPrimitiveDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithAllPrimitiveDataTypesModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -134,7 +134,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithComplexDataTypesModel(@Mocked ClientConnector connector) {
         final Calendar date1 = new GregorianCalendar(2016, Calendar.MARCH, 1, 0, 1, 2);
         date1.set(Calendar.MILLISECOND, 3);
         date1.setTimeZone(TimeZone.getTimeZone("GMT+2:00"));
@@ -188,7 +188,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithSingleReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -217,7 +217,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
+    public void testWithInheritedModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 

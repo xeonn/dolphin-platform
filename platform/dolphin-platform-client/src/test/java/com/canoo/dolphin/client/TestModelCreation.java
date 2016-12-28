@@ -44,7 +44,7 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -64,7 +64,7 @@ import static org.testng.Assert.fail;
 public class TestModelCreation extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithAnnotatedSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -118,7 +118,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -172,7 +172,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test(expectedExceptions = BeanDefinitionException.class)
-    public void testWithWrongModelType(@Mocked HttpClientConnector connector) {
+    public void testWithWrongModelType(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -180,7 +180,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test(expectedExceptions = NullPointerException.class)
-    public void testWithNull(@Mocked HttpClientConnector connector) {
+    public void testWithNull(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -188,7 +188,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithAllPrimitiveDatatypes(@Mocked HttpClientConnector connector) {
+    public void testWithAllPrimitiveDatatypes(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -266,7 +266,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithComplexDataTypesModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -345,7 +345,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithSingleReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -399,7 +399,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithListReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithListReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -452,7 +452,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
+    public void testWithInheritedModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
