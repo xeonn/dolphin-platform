@@ -18,10 +18,13 @@ import java.text.SimpleDateFormat
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
     }
 
     dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
         classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
@@ -72,101 +75,101 @@ jacoco {
 }
 
 subprojects { subprj ->
-    if(!subprj.name.toLowerCase().contains("android")) {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    if (subprj.name.toLowerCase().contains("android")) {
+        apply plugin: 'com.android.library'
+    }
+    if (!subprj.name.toLowerCase().contains("android")) {
         apply plugin: 'java'
         apply plugin: 'org.kordamp.gradle.stats'
         apply from: rootProject.file('gradle/code-quality.gradle')
-
-        if (subprj.name.startsWith('dolphin-remoting')) {
-            apply plugin: 'groovy'
-        }
 
         subprj.tasks.withType(JavaCompile) {
             sourceCompatibility = subprj.sourceCompatibility
             targetCompatibility = subprj.targetCompatibility
         }
-
+    }
+    if (subprj.name.startsWith('dolphin-remoting')) {
+        apply plugin: 'groovy'
         subprj.tasks.withType(GroovyCompile) {
             sourceCompatibility = subprj.sourceCompatibility
             targetCompatibility = subprj.targetCompatibility
         }
+    }
+    if (!subprj.name.toLowerCase().contains("android") && subprj.publishJars.toBoolean()) {
+        subprj.apply from: rootProject.file('gradle/publishing.gradle')
+        subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
+        projectsWithCoverage << subprj
 
-        repositories {
-            mavenLocal()
-            jcenter()
+        javadoc {
+            excludes = ['**/*.html', 'META-INF/**']
+
+            options.use = true
+            options.splitIndex = true
+            options.encoding = 'UTF-8'
+            options.author = true
+            options.version = true
+            options.windowTitle = "$project.name $project.version API"
+            options.docTitle = "$project.name $project.version API"
+            options.links = ['http://docs.oracle.com/javase/8/docs/api/',
+                             'http://docs.oracle.com/javase/8/javafx/api/']
         }
 
-        if (subprj.publishJars.toBoolean()) {
-            subprj.apply from: rootProject.file('gradle/publishing.gradle')
-            subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
-            projectsWithCoverage << subprj
+        task sourcesJar(type: Jar) {
+            group 'Build'
+            description 'An archive of the source code'
+            classifier 'sources'
+            from sourceSets.main.allSource
+        }
 
-            javadoc {
-                excludes = ['**/*.html', 'META-INF/**']
+        task javadocJar(type: Jar) {
+            group 'Build'
+            description 'An archive of the javadoc'
+            classifier 'javadoc'
+            from javadoc.destinationDir
+        }
 
-                options.use = true
-                options.splitIndex = true
-                options.encoding = 'UTF-8'
-                options.author = true
-                options.version = true
-                options.windowTitle = "$project.name $project.version API"
-                options.docTitle = "$project.name $project.version API"
-                options.links = ['http://docs.oracle.com/javase/8/docs/api/',
-                                 'http://docs.oracle.com/javase/8/javafx/api/']
-            }
+        jar.finalizedBy sourcesJar
+        jar.finalizedBy javadocJar
 
-            task sourcesJar(type: Jar) {
-                group 'Build'
-                description 'An archive of the source code'
-                classifier 'sources'
-                from sourceSets.main.allSource
-            }
+        artifacts {
+            sourcesJar
+            javadocJar
+        }
 
-            task javadocJar(type: Jar) {
-                group 'Build'
-                description 'An archive of the javadoc'
-                classifier 'javadoc'
-                from javadoc.destinationDir
-            }
+        dependencies {
+            compile "org.slf4j:slf4j-api:$slf4jVersion"
+            testCompile "org.testng:testng:$testngVersion"
+            testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+            testCompile "org.jmockit:jmockit:$jmockitVersion"
+        }
 
-            jar.finalizedBy sourcesJar
-            jar.finalizedBy javadocJar
+        test.useTestNG()
 
-            artifacts {
-                sourcesJar
-                javadocJar
-            }
-
+        if (subprj.name.startsWith('dolphin-remoting')) {
             dependencies {
-                compile "org.slf4j:slf4j-api:$slf4jVersion"
-                testCompile "org.testng:testng:$testngVersion"
-                testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
-                testCompile "org.jmockit:jmockit:$jmockitVersion"
+                testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+                testCompile 'cglib:cglib-nodep:3.2.4'
+                testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {
+                    exclude group: 'org.codehaus.groovy'
+                }
             }
 
-            test.useTestNG()
-
-            if (subprj.name.startsWith('dolphin-remoting')) {
-                dependencies {
-                    testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
-                    testCompile 'cglib:cglib-nodep:3.2.4'
-                    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {
-                        exclude group: 'org.codehaus.groovy'
-                    }
-                }
-
-                test {
-                    useJUnit()
-                    testLogging {
-                        exceptionFormat 'full'
-                        showCauses true
-                        showExceptions true
-                        showStackTraces true
-                    }
+            test {
+                useJUnit()
+                testLogging {
+                    exceptionFormat 'full'
+                    showCauses true
+                    showExceptions true
+                    showStackTraces true
                 }
             }
         }
     }
+
 }
 
 evaluationDependsOnChildren()
