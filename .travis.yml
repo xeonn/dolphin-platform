@@ -1,4 +1,4 @@
-language: android
+language: java
 install: true
 jdk: oraclejdk8
 
@@ -8,14 +8,6 @@ env:
 
 services:
   - docker
-
-android:
-    update_sdk: true
-    components:
-        - platform-tools
-        - tools
-        - build-tools-25.0.0
-        - android-25
 
 before_install:
   - export DISPLAY=:99.0
