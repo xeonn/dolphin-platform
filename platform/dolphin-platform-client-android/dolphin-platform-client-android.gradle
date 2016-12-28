@@ -15,5 +15,6 @@
  */
 
 dependencies {
-    compile project(':dolphin-remoting-shared')
+    compile project(':dolphin-platform-client')
+    compileOnly 'com.google.android:android:4.1.1.4'
 }
