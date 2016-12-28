@@ -72,95 +72,97 @@ jacoco {
 }
 
 subprojects { subprj ->
-    apply plugin: 'java'
-    apply plugin: 'org.kordamp.gradle.stats'
-    apply from: rootProject.file('gradle/code-quality.gradle')
-
-    if (subprj.name.startsWith('dolphin-remoting')) {
-        apply plugin: 'groovy'
-    }
-
-    subprj.tasks.withType(JavaCompile) {
-        sourceCompatibility = subprj.sourceCompatibility
-        targetCompatibility = subprj.targetCompatibility
-    }
-
-    subprj.tasks.withType(GroovyCompile) {
-        sourceCompatibility = subprj.sourceCompatibility
-        targetCompatibility = subprj.targetCompatibility
-    }
-
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-
-    if (subprj.publishJars.toBoolean()) {
-        subprj.apply from: rootProject.file('gradle/publishing.gradle')
-        subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
-        projectsWithCoverage << subprj
-
-        javadoc {
-            excludes = ['**/*.html', 'META-INF/**']
-
-            options.use = true
-            options.splitIndex = true
-            options.encoding = 'UTF-8'
-            options.author = true
-            options.version = true
-            options.windowTitle = "$project.name $project.version API"
-            options.docTitle = "$project.name $project.version API"
-            options.links = ['http://docs.oracle.com/javase/8/docs/api/',
-                             'http://docs.oracle.com/javase/8/javafx/api/']
-        }
-
-        task sourcesJar(type: Jar) {
-            group 'Build'
-            description 'An archive of the source code'
-            classifier 'sources'
-            from sourceSets.main.allSource
-        }
-
-        task javadocJar(type: Jar) {
-            group 'Build'
-            description 'An archive of the javadoc'
-            classifier 'javadoc'
-            from javadoc.destinationDir
-        }
-
-        jar.finalizedBy sourcesJar
-        jar.finalizedBy javadocJar
-
-        artifacts {
-            sourcesJar
-            javadocJar
-        }
-
-        dependencies {
-            compile "org.slf4j:slf4j-api:$slf4jVersion"
-            testCompile "org.testng:testng:$testngVersion"
-            testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
-            testCompile "org.jmockit:jmockit:$jmockitVersion"
-        }
-
-        test.useTestNG()
+    if(!subprj.name.toLowerCase().contains("android")) {
+        apply plugin: 'java'
+        apply plugin: 'org.kordamp.gradle.stats'
+        apply from: rootProject.file('gradle/code-quality.gradle')
 
         if (subprj.name.startsWith('dolphin-remoting')) {
-            dependencies {
-                testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
-                testCompile 'cglib:cglib-nodep:3.2.4'
-                testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {
-                    exclude group: 'org.codehaus.groovy'
-                }
+            apply plugin: 'groovy'
+        }
+
+        subprj.tasks.withType(JavaCompile) {
+            sourceCompatibility = subprj.sourceCompatibility
+            targetCompatibility = subprj.targetCompatibility
+        }
+
+        subprj.tasks.withType(GroovyCompile) {
+            sourceCompatibility = subprj.sourceCompatibility
+            targetCompatibility = subprj.targetCompatibility
+        }
+
+        repositories {
+            mavenLocal()
+            jcenter()
+        }
+
+        if (subprj.publishJars.toBoolean()) {
+            subprj.apply from: rootProject.file('gradle/publishing.gradle')
+            subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
+            projectsWithCoverage << subprj
+
+            javadoc {
+                excludes = ['**/*.html', 'META-INF/**']
+
+                options.use = true
+                options.splitIndex = true
+                options.encoding = 'UTF-8'
+                options.author = true
+                options.version = true
+                options.windowTitle = "$project.name $project.version API"
+                options.docTitle = "$project.name $project.version API"
+                options.links = ['http://docs.oracle.com/javase/8/docs/api/',
+                                 'http://docs.oracle.com/javase/8/javafx/api/']
             }
 
-            test {
-                useJUnit()
-                testLogging {
-                    exceptionFormat 'full'
-                    showCauses true
-                    showExceptions true
-                    showStackTraces true
+            task sourcesJar(type: Jar) {
+                group 'Build'
+                description 'An archive of the source code'
+                classifier 'sources'
+                from sourceSets.main.allSource
+            }
+
+            task javadocJar(type: Jar) {
+                group 'Build'
+                description 'An archive of the javadoc'
+                classifier 'javadoc'
+                from javadoc.destinationDir
+            }
+
+            jar.finalizedBy sourcesJar
+            jar.finalizedBy javadocJar
+
+            artifacts {
+                sourcesJar
+                javadocJar
+            }
+
+            dependencies {
+                compile "org.slf4j:slf4j-api:$slf4jVersion"
+                testCompile "org.testng:testng:$testngVersion"
+                testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+                testCompile "org.jmockit:jmockit:$jmockitVersion"
+            }
+
+            test.useTestNG()
+
+            if (subprj.name.startsWith('dolphin-remoting')) {
+                dependencies {
+                    testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+                    testCompile 'cglib:cglib-nodep:3.2.4'
+                    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4', {
+                        exclude group: 'org.codehaus.groovy'
+                    }
+                }
+
+                test {
+                    useJUnit()
+                    testLogging {
+                        exceptionFormat 'full'
+                        showCauses true
+                        showExceptions true
+                        showStackTraces true
+                    }
                 }
             }
         }
