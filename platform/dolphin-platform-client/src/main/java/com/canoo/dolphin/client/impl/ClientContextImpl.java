@@ -26,7 +26,6 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpClient;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
@@ -60,12 +59,12 @@ public class ClientContextImpl implements ClientContext {
         this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
         this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
-        this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
+        this.clientConfiguration = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         try {
             dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle(new BiFunction<Void, Throwable, Object>() {
                 @Override
                 public Object apply(Void aVoid, Throwable throwable) {
-                    if(throwable != null) {
+                    if (throwable != null) {
                         state = State.DESTROYED;
                         throw new ClientInitializationException("Can't call init action!", throwable);
                     } else {

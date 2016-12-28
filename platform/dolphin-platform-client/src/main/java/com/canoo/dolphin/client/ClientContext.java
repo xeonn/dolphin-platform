@@ -18,7 +18,6 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpClient;
 
 import java.util.concurrent.CompletableFuture;
 

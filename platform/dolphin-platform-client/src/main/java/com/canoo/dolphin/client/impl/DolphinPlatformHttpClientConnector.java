@@ -22,7 +22,6 @@ import com.canoo.dolphin.client.HttpURLConnectionResponseHandler;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpResponseException;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
@@ -114,7 +113,7 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
                 throw new DolphinSessionException("Server can not handle Dolphin Client ID");
             }
             if (responseCode >= 300) {
-                throw new HttpResponseException(responseCode, conn.getResponseMessage());
+                throw new DolphinHttpResponseException(responseCode, conn.getResponseMessage());
             }
             updateCookiesFromResponse(conn);
             updateClientId(conn);
