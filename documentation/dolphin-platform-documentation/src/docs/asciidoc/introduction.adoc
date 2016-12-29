@@ -19,3 +19,24 @@ image::getting-started-1.png[]
 
 The Dolphin Platform provides a server and client framework that let you easily write applications based on the described pattern. To do so the platform contains support for well known sever framework like JavaEE or Spring and several implementations to create clients by using for example JavaFX or Polymer.
 
+== Sources
+
+The Dolphin Platform provides implementations fo several platforms. Therefore the APIs
+and implementations of the Dolphin Platform can be found in several GitHub repositories:
+
+* The Java based server API and the basic client API can be found in the main repository
+of the Dolphin Platform. This repository contains the JavaFX client API, this documentation
+and some samples, too. The repository can be find https://github.com/canoo/dolphin-platform[here].
+* The Android client API can be found in a https://github.com/canoo/dolphin-platform-android[separate repository].
+* For JavaScript the Dolphin Platform provides a basic framework independend implementation
+that can be found https://github.com/canoo/dolphin-platform-js[here].
+* For Google Polymer the Dolphin Platform provides a client API that is based on the
+basic JavaScript cient API. The Polymer client API can be found
+https://github.com/canoo/dolphin-platform-polymer[in this repository].
+* The Dolphin Platform provides a Maven archetype to create the initial structure of
+a Dolphin Platform based project. The sources of the archetype can be found
+https://github.com/canoo/dolphin-platform-spring-boot-archetype[here].
+* The Dolphin Platform provides a Lazybones template to create the initial structure of
+a Dolphin Platform based project. The sources of the template can be found
+https://github.com/canoo/open-dolphin-lazybones-templates[here].
+
