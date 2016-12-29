@@ -38,5 +38,5 @@ a Dolphin Platform based project. The sources of the archetype can be found
 https://github.com/canoo/dolphin-platform-spring-boot-archetype[here].
 * The Dolphin Platform provides a Lazybones template to create the initial structure of
 a Dolphin Platform based project. The sources of the template can be found
-https://github.com/canoo/open-dolphin-lazybones-templates[here].
+https://github.com/canoo/dolphin-platform-lazybones-templates[here].
 
