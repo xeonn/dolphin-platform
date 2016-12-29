@@ -14,6 +14,7 @@ method of the API is annotated by `@Deprecated` since we plan to remove all this
 * The http connection of the Java client can be accessed and customized to provide custom security or
 authentification mechanisms.
 * Dependency to Apache HttpClient library is removed. Java basic HttpUrlConnection is used now.
+* Removed some unneeded dependencies
 
 == Version 0.8.9
 _Release date: Dec 16, 2016_
