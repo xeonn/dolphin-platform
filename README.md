@@ -6,7 +6,7 @@
 
 This repository contains all Java related sources of the Dolphin Platform. Clients for 
 other languages can be found in seperate repositories 
-([JavaScript](https://github.com/canoo/dolphin-platform-js), AngularJS, 
+([JavaScript](https://github.com/canoo/dolphin-platform-js), [AngularJS](https://github.com/canoo/dolphin-platform-angularjs), 
 [Polymer](https://github.com/canoo/dolphin-platform-polymer) and [Android](https://github.com/canoo/dolphin-platform-android)).
 
 ![Dolphin Platform Logo](http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png)
@@ -73,6 +73,7 @@ A complete "Getting started" documentation can be found [here](https://canoo.git
 The following GitHub repositories provides additional sources for the Dolphin Platform 
 * [Android client API Repository](https://github.com/canoo/dolphin-platform-android)
 * [JavaScript client API Repository](https://github.com/canoo/dolphin-platform-js)
+* [AngularJS client API Repository](https://github.com/canoo/dolphin-platform-angularjs)
 * [Polymer client API Repository](https://github.com/canoo/dolphin-platform-polymer)
 * [Maven archetype Repository](https://github.com/canoo/dolphin-platform-spring-boot-archetype)
 * [Lazybones template Repository](https://github.com/canoo/dolphin-platform-lazybones-templates)
