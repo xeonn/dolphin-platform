@@ -1,0 +1,20 @@
+{
+  "name": "process-monitor-client-polymer",
+  "version": "0.8.9",
+  "authors": [
+    "Hendrik Ebbers <hendrik.ebbers@web.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "paper-elements": "PolymerElements/paper-elements#1.0.x",
+    "polymer": "Polymer/polymer#1.4.x",
+    "dolphin-polymer": "0.8.9"
+  }
+}
