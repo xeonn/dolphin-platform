@@ -32,11 +32,7 @@ import com.canoo.dolphin.internal.collections.ListMapper;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
 import org.opendolphin.core.client.comm.HttpClientConnector;
-import core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.server.ServerDolphin;
-import org.opendolphin.core.server.ServerModelStore;
-
-import java.util.ArrayList;
 
 public abstract class AbstractDolphinBasedTest {
 
@@ -68,12 +64,8 @@ public abstract class AbstractDolphinBasedTest {
     }
 
     protected DolphinTestConfiguration createDolphinTestConfiguration() {
-        DefaultInMemoryConfig config = new DefaultInMemoryConfig();
-        config.getServerDolphin().registerDefaultActions();
-        ServerModelStore store = config.getServerDolphin().getModelStore();
-        store.setCurrentResponse(new ArrayList<>());
 
-        return new DolphinTestConfiguration(config.getClientDolphin(), config.getServerDolphin());
+        return null;
     }
 
     protected BeanManager createBeanManager(ClientDolphin dolphin) {
