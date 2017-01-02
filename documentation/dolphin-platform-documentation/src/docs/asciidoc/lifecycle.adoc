@@ -24,11 +24,11 @@ public class MyCustomClient extends DolphinPlatformApplication { // <1>
 
     @Override
     protected URL getServerEndpoint() {
-        URL url = null;
         try {
-            url = new URL("http://localhost:8080/dolphin"); // <2>
-        } catch (MalformedURLException e) {}
-        return url;
+            return new URL("http://localhost:8080/dolphin"); // <2>
+        } catch (MalformedURLException e) {
+             throw new RuntimeException("Can not create URL!", e);
+        }
     }
 
      @Override
@@ -61,13 +61,12 @@ public class MyCustomClient extends DolphinPlatformApplication {
 
     private Logger LOG = LoggerFactory.getLogger(MyCustomClient.class);
 
-    @Override
     protected URL getServerEndpoint() {
-        URL url = null;
         try {
-            url = new URL("http://localhost:8080/dolphin");
-        } catch (MalformedURLException e) {e.printStackTrace();}
-        return url;
+            return new URL("http://localhost:8080/dolphin");
+        } catch (MalformedURLException e) {
+             throw new RuntimeException("Can not create URL!", e);
+        }
     }
 
     @Override
@@ -118,9 +117,12 @@ public class MyCustomClient extends DolphinPlatformApplication {
 
     private Log LOG = LoggerFactory.getLogger(MyCustomClient.class);
 
-    @Override
-    protected String getServerEndpoint() {
-        return "http://localhost:8080/dolphin";
+    protected URL getServerEndpoint() {
+        try {
+            return new URL("http://localhost:8080/dolphin");
+        } catch (MalformedURLException e) {
+             throw new RuntimeException("Can not create URL!", e);
+        }
     }
 
      @Override
@@ -130,15 +132,30 @@ public class MyCustomClient extends DolphinPlatformApplication {
          s.show();
      }
 
-     protected void onRemotingError(Stage s, DolphinRemotingException e) {
-         LOG.error("Dolphin Platform remoting error", e); // <1>
-         super.onRemotingError(primaryStage, e);
+     @Override
+     protected void onInitializationError(Stage primaryStage, ClientInitializationException initializationException) {
+         LOG.error("Dolphin Platform initialization error", initializationException); // <1>
+         super.onInitializationError(primaryStage, initializationException);
+     }
+
+     @Override
+     protected void onRuntimeError(final Stage primaryStage, final DolphinRuntimeException runtimeException) {
+         LOG.error("Dolphin Platform runtime error in thread " + runtimeException.getThread().getName(), runtimeException); // <2>
+         super.onRuntimeError(primaryStage, runtimeException);
+     }
+
+     @Override
+     protected void onShutdownError(ClientShutdownException shutdownException) {
+         LOG.error("Dolphin Platform shutdown error", shutdownException); // <3>
+         super.onShutdownError(shutdownException);
      }
 }
 ----
-<1> This method is called for a remoting error that is thrown at runtime. You should call the super method in a custom
-implementation since a clear shutdown is already defined in the `DolphinPlatformApplication` class.
-Note: `onRemotingError()` is not supported anymore in 0.8.8.
+<1> This method is called if the connection to the Dolphin Platform server can't be created.
+<2> This method is called if the connection to the Dolphin Platform server throws an exception at runtime.
+<3> This method is called if the connection to the Dolphin Platform server can't be closed.
+
+You should call the super methods in a custom implementation of the error handlers since a clear shutdown is already defined in the `DolphinPlatformApplication` class.
 
 == The Dolphin Platform Lifecycle on the server
 
