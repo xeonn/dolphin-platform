@@ -1,7 +1,7 @@
 
 = Controller API
 
-When using Dolphin Platform the frontend of an application is splitted in several view. For each view instance in the
+When using Dolphin Platform the frontend of an application is split into several views. For each view instance in the
 client a controller instance is managed in the server.
 
 .Views and Controllers
@@ -10,7 +10,7 @@ image::mvc1.png[]
 == Defining a controller
 
 A controller type is defined as a Java class on the server. This is done with the `@DolphinController` annotation. Each
-controller class on the must be annotated by using this annotation to define the class as a Dolphin Platform controller:
+controller class on the server must be annotated by using this annotation to define the class as a Dolphin Platform controller:
 
 [source,java]
 ----
@@ -96,10 +96,10 @@ the model API.
 == Controller actions
 
 Actions are endpoints of the controller that can be triggered by the view. For example this can happen when a user
-clicks a button in the client. This button action will than trigger an action in the server controller instance that
-maybe stores some date in the database or refresh the model.
+clicks a button in the client. This button action will then trigger an action in the server controller instance that
+maybe stores some date in the database or refreshes the model.
 
-.Ccalling an action
+.Calling an action
 image::action.png[]
 
 A controller action is defined as a method in the controller that is annotated by `@DolphinAction`:
@@ -161,7 +161,7 @@ public class MyViewController {
 ----
 
 Even if in this example only one parameter is defined the Dolphin Platform actions support any count of parameters. Here
-it's only important that each parameter has a unique identifier in the context of the action and that the parameter are
+it's only important that each parameter has a unique identifier in the context of the action and that the parameters are
 of a supported type. Currently Dolphin Platform supports the following types for parameters: `Integer`, `Long`, `Double`,
 `Float`, `Boolean`, `String`. It's best practice to not use primitives here since null values are always supported and
 can end in an Exception since Java autoboxing can't convert null to a primitive number or boolean. Some additional
@@ -169,11 +169,11 @@ common types like `Date` will be added in future releases.
 
 == Benefits of managed controllers
 
-Since a controller is always created and managed by the underlying platform (like Spring or JavaEE) a developer don't
+Since a controller is always created and managed by the underlying platform (like Spring or JavaEE) a developer doesn't
 need to care about controller and model creation. The last sample already defines a full useable controller that will
 automatically be created (and a new model instance will be injected) whenever the related view is created on the client.
 Next to this the controller offers all the benefit that a managed beans offers based on the underlying platform. Based
-on this it's no problem to use CDI If Dolphin Platform is used in a JavaEE environment. In addition default annotations
+on this it's no problem to use CDI if Dolphin Platform is used in a JavaEE environment. In addition default annotations
 like `@PostConstruct` and `@PreDestroy` are supported. The following example shows how such a controller could look like:
 
 [source,java]
@@ -212,7 +212,7 @@ communication between controllers and / or additional services.
 
 Dolphin Platform provides an additional custom Scope called `ClientScope`. This scope is currently implemented for
 JavaEE and Spring and it's defined as a scope that is "lower than the session scope". This scope is important if you
-want to create web application, for example. Since all the tabs of a browser share the same session it's hard to define
+want to create web applications, for example. Since all the tabs of a browser share the same session it's hard to define
 data that is only related to one tab in the browser. In that case the lifecycle of a client scope is bound to a tab in
 the browser and ends when the tab will be closed.
 
@@ -266,7 +266,7 @@ any controller.
 
 === The bean manager
 
-The Dolphin Platform bean manager provides methods to manages the model layer. More information about the model layer
+The Dolphin Platform bean manager provides methods to manage the model layer. More information about the model layer
 and how to use the bean manager can be found in the *Model API* chapter. The bean manager is defined by the
 `com.canoo.dolphin.BeanManager` interface. Instances are managed objects in the client session scope.
 
