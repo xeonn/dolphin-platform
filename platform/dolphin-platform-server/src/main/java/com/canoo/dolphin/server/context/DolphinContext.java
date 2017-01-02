@@ -206,6 +206,11 @@ public class DolphinContext {
                 registry.register(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
+                        if(UnstableFeatureFlags.isUseGc()) {
+                            LOG.trace("Handling GarbageCollection for DolphinContext {}", getId());
+                            onGarbageCollection();
+                        }
+
                         LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, getId());
                         onPollEventBus();
                     }
@@ -214,11 +219,6 @@ public class DolphinContext {
                 registry.register(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        if(UnstableFeatureFlags.isUseGc()) {
-                            LOG.trace("Handling GarbageCollection for DolphinContext {}", getId());
-                            onGarbageCollection();
-                        }
-
                         LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, getId());
                         onReleaseEventBus();
                     }
