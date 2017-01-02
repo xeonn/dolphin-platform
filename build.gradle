@@ -32,6 +32,11 @@ buildscript {
     }
 }
 
+plugins {
+    id "org.sonarqube" version "2.2"
+}
+
+
 Date buildTimeAndDate = new Date()
 ext {
     buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)

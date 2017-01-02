@@ -4,7 +4,10 @@
 # Dolphin Platform [![Travis Build](https://travis-ci.org/canoo/dolphin-platform.svg?branch=master)](https://travis-ci.org/canoo/dolphin-platform) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.canoo.dolphin-platform/dolphin-platform-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.canoo.dolphin-platform/dolphin-platform-core)
                                                                                                                                
 
-This repository contains all Java related sources of the Dolphin Platform. Clients for other languages can be found in seperate repositories ([JavaScript](https://github.com/canoo/dolphin-platform-js), AngularJS, [Polymer](https://github.com/canoo/dolphin-platform-polymer)).
+This repository contains all Java related sources of the Dolphin Platform. Clients for 
+other languages can be found in seperate repositories 
+([JavaScript](https://github.com/canoo/dolphin-platform-js), [AngularJS](https://github.com/canoo/dolphin-platform-angularjs), 
+[Polymer](https://github.com/canoo/dolphin-platform-polymer) and [Android](https://github.com/canoo/dolphin-platform-android)).
 
 ![Dolphin Platform Logo](http://www.guigarage.com/wordpress/wp-content/uploads/2015/10/logo.png)
 
@@ -20,7 +23,7 @@ By doing so you can create enterprise application with a single server and sever
 <img src="http://www.dolphin-platform.io/assets/img/features/pm1.png"/>
 </p>
 
-For more information visit [our website](http://www.dolphin-platform.io) or the [documentation](https://canoo.github.io/dolphin-platform/).
+For more information read the [documentation](https://canoo.github.io/dolphin-platform/) of the Dolphin Platform.
 
 ## How to use it
 You can simply integrate Dolphin Platform in a Spring based application. To do so you only need to add our Spring plugin:
@@ -28,7 +31,7 @@ You can simply integrate Dolphin Platform in a Spring based application. To do s
 <dependency>
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-server-spring</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.9</version>
 </dependency>
 ```
 
@@ -37,7 +40,7 @@ Next to Spring we provide support for JavaEE. To do so you only need to add our 
 <dependency>
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-server-javaee</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.9</version>
 </dependency>
 ```
 
@@ -47,11 +50,11 @@ For a JavaFX based client you need to add the following dependency:
 <dependency>
     <groupId>com.canoo.dolphin-platform</groupId>
     <artifactId>dolphin-platform-client-javafx</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.9</version>
 </dependency>
 ```
 
-Next to JavaFX you can use Dolphin Platform in any web client. You can find additonal information in the readme of the client libraries: ([JavaScript](https://github.com/canoo/dolphin-platform-js) or [Polymer](https://github.com/canoo/dolphin-platform-polymer))
+Next to JavaFX you can use Dolphin Platform in any web client. You can find additonal information in the readme of the client libraries: ([JavaScript](https://github.com/canoo/dolphin-platform-js), [Polymer](https://github.com/canoo/dolphin-platform-polymer) or [Android](https://github.com/canoo/dolphin-platform-android))
 
 In addition you can use [our Maven archetype](http://www.guigarage.com/2015/12/dolphin-platform-jumpstart/) to create a complete server-client-project based on Dolphin Platform.
 If you want to create your new project from command line by using an archetype you can simply call this Maven command and select one of the shown Dolphin Platform archetypes:
@@ -63,19 +66,17 @@ Currently the projects contains only a JavaFX based client but it’s planned to
 A complete "Getting started" documentation can be found [here](https://canoo.github.io/dolphin-platform/).
 
 ## Useful links
-* [Dolphin Platform website](http://www.dolphin-platform.io)
 * [Documentation](https://canoo.github.io/dolphin-platform/)
-* [Getting started](http://www.dolphin-platform.io/documentation/getting-started.html)
-* [Tutorial](http://www.dolphin-platform.io/documentation/tutorial.html)
-* [JavaDoc](http://www.dolphin-platform.io/javadoc/index.html)
 * [Dolphin Platform @ Twitter](https://twitter.com/DolphinPlatform)
 * [StackOverflow](http://stackoverflow.com/questions/tagged/dolphin-platform)
-* [Blog Posts](http://www.guigarage.com/2015/10/dolphin-platform-a-sneak-peek/)
-* [JavaScript Github Repo](https://github.com/canoo/dolphin-platform-js)
-* [Polymer Github Repo](https://github.com/canoo/dolphin-platform-polymer)
-* [Spring Boot based Maven archetype](https://github.com/canoo/dolphin-platform-spring-boot-archetype)
-* [KumuluzEE based Maven archetype](https://github.com/canoo/dolphin-platform-kumuluz-archetype)
-* [Lazybones templates for Dolphin Platform](https://github.com/canoo/dolphin-platform-lazybones-templates)
+
+The following GitHub repositories provides additional sources for the Dolphin Platform 
+* [Android client API Repository](https://github.com/canoo/dolphin-platform-android)
+* [JavaScript client API Repository](https://github.com/canoo/dolphin-platform-js)
+* [AngularJS client API Repository](https://github.com/canoo/dolphin-platform-angularjs)
+* [Polymer client API Repository](https://github.com/canoo/dolphin-platform-polymer)
+* [Maven archetype Repository](https://github.com/canoo/dolphin-platform-spring-boot-archetype)
+* [Lazybones template Repository](https://github.com/canoo/dolphin-platform-lazybones-templates)
 
 ## License
 The project is released as open source under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)

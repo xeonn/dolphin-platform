@@ -32,9 +32,6 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
 
     private int sessionTimeoutInSeconds = DolphinPlatformConfiguration.SESSION_TIMEOUT_DEFAULT_VALUE;
 
-    public DolphinHttpSessionListener() {
-    }
-
     public void init(final DolphinPlatformConfiguration configuration) {
         this.sessionTimeoutInSeconds = Assert.requireNonNull(configuration, "configuration").getSessionTimeout();
     }
@@ -45,7 +42,7 @@ public class DolphinHttpSessionListener implements HttpSessionListener {
         try {
             sessionEvent.getSession().setMaxInactiveInterval(sessionTimeoutInSeconds);
         } catch (Exception e) {
-            LOG.warn("Can not set the defined session timeout!");
+            LOG.warn("Can not set the defined session timeout!", e);
         }
     }
 

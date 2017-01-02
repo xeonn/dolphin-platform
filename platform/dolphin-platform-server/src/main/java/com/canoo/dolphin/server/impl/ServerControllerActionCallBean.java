@@ -22,7 +22,6 @@ import com.canoo.dolphin.mapping.MappingException;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
-import org.opendolphin.core.Tag;
 
 public class ServerControllerActionCallBean extends AbstractControllerActionCallBean {
 
@@ -35,20 +34,20 @@ public class ServerControllerActionCallBean extends AbstractControllerActionCall
     }
 
     public String getControllerId() {
-        return (String) pm.findAttributeByPropertyName(CONTROLLER_ID).getValue();
+        return (String) pm.getAttribute(CONTROLLER_ID).getValue();
     }
 
     public String getActionName() {
-        return (String) pm.findAttributeByPropertyName(ACTION_NAME).getValue();
+        return (String) pm.getAttribute(ACTION_NAME).getValue();
     }
 
     public void setError(boolean error) {
-        pm.findAttributeByPropertyName(ERROR_CODE).setValue(error);
+        pm.getAttribute(ERROR_CODE).setValue(error);
     }
 
     public Object getParam(String name, Class<?> type) {
         final String internalName = PARAM_PREFIX + name;
-        final Attribute valueAttribute = pm.findAttributeByPropertyNameAndTag(internalName, Tag.VALUE);
+        final Attribute valueAttribute = pm.getAttribute(internalName);
         if (valueAttribute == null) {
             throw new IllegalArgumentException(String.format("Invoking DolphinAction requires parameter '%s', but it was not send", name));
         }

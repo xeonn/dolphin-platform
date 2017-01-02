@@ -8,6 +8,20 @@ be true most of the public API of the Dolphin Platform is stable since 0.8.5 and
 package structure or adding additional methods to public interfaces. In addition it will be best practice to not use any
 method of the API is annotated by `@Deprecated` since we plan to remove all this methods and classes for the final 1.0.0 release.
 
+== Version 0.8.10
+
+* All classes of the Dolphin Platform are refactored to Java. The Dolphin Platform do not provide any
+Groovy based implementations any more.
+* Groovy was removed as dependency (for runtime). Currently only the unit tests of the remoting modules still
+depend on Groovy.
+* Several sources of the remoting layer are refactored and unused functionality was removed.
+* GSON is used as JSON parser for the remoting layer
+* The Dolphin Platform provides Docker based integration tests. Currently the integration tests will be executed
+against server applications that run in Payara, TomEE and Wildfly.
+* The Dolphin Platform publish reports to sonar. An overview of the current state of the Dolphin Platform can be
+found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolphin-platform[here]
+* Some issues and code smells that were reported by sonar are refactored.
+
 == Version 0.8.9
 
 * Provide functionality to step into the DP lifecycle on the server (https://github.com/canoo/dolphin-platform/issues/267[issue])

@@ -64,14 +64,12 @@ public class IdBasedResponseHandler implements ResponseHandler<String> {
             throw new DolphinSessionException("Error in handling Dolphin Client ID", e);
         }
 
-        String sessionID = null;
         Header cookieHeader = response.getFirstHeader("Set-Cookie");
         if (cookieHeader != null) {
-            sessionID = cookieHeader.getValue();
             if (lastSessionId != null) {
-                throw new DolphinSessionException("Http session must not change but did. Old: " + lastSessionId + ", new: " + sessionID);
+                throw new DolphinSessionException("Http session must not change but did. Old: " + lastSessionId + ", new: " + cookieHeader.getValue());
             }
-            lastSessionId = sessionID;
+            lastSessionId = cookieHeader.getValue();
         }
         return entity == null ? null : EntityUtils.toString(entity);
     }

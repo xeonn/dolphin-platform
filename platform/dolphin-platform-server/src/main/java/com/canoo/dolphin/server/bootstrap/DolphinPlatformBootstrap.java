@@ -36,7 +36,7 @@ import com.canoo.dolphin.server.servlet.CrossSiteOriginFilter;
 import com.canoo.dolphin.server.servlet.DolphinPlatformServlet;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
-import org.opendolphin.server.adapter.InvalidationServlet;
+import com.canoo.dolphin.server.servlet.InvalidationServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class DolphinPlatformBootstrap {
         }
     };
 
-    private static final DolphinSessionLifecycleHandler sessionLifecycleHandler = new DolphinSessionLifecycleHandlerImpl();;
+    private static final DolphinSessionLifecycleHandler sessionLifecycleHandler = new DolphinSessionLifecycleHandlerImpl();
 
     private DolphinPlatformBootstrap() {
     }
@@ -157,7 +157,6 @@ public class DolphinPlatformBootstrap {
         for (final Class<?> listenerClass : listeners) {
             try {
                 if (DolphinSessionListener.class.isAssignableFrom(listenerClass)) {
-                    final DolphinSessionListener listener = (DolphinSessionListener) containerManager.createListener(listenerClass);
                     getSessionLifecycleHandler().addSessionDestroyedListener(new Callback<DolphinSession>() {
                         @Override
                         public void call(DolphinSession dolphinSession) {

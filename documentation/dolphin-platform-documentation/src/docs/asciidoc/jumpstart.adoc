@@ -27,8 +27,8 @@ in a shell wizard:
 .The shell wizard
 image::jumpstart.png[]
 
-As a first step you need to choice on what archetype your project should depend. Dolphin Platform provides several
-archetypes to create for example projects that uses Spring Boot or JavaEE on the server. After you have defined the
+As a first step you need to choose on what archetype your project should depend. Dolphin Platform provides several
+archetypes to create for example projects that use Spring Boot or JavaEE on the server. After you have defined the
 archetype you need to select a version of the archetype. This version is related to the Dolphin Platform version the
 archetype depends on. Here it's best practice to simply select the last version. As a last step you need to specify
 `groupId`, `artifactId` and the `version` of your new project. Once this is done the generation might tackle some time

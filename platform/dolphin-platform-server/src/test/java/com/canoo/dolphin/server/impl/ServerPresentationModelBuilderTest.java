@@ -53,8 +53,8 @@ public class ServerPresentationModelBuilderTest extends AbstractDolphinBasedTest
         ServerPresentationModel model = builder.withAttribute("testName").create();
         assertNotNull(model);
         assertEquals(model.getAttributes().size(), 2);
-        assertNotNull(model.getAt(PlatformConstants.SOURCE_SYSTEM));
-        assertNotNull(model.getAt("testName"));
+        assertNotNull(model.getAttribute(PlatformConstants.SOURCE_SYSTEM));
+        assertNotNull(model.getAttribute("testName"));
     }
 
     @Test
@@ -64,9 +64,9 @@ public class ServerPresentationModelBuilderTest extends AbstractDolphinBasedTest
         ServerPresentationModel model = builder.withAttribute("testName", "testValue").create();
         assertNotNull(model);
         assertEquals(model.getAttributes().size(), 2);
-        assertNotNull(model.getAt(PlatformConstants.SOURCE_SYSTEM));
-        assertNotNull(model.getAt("testName"));
-        assertEquals(model.getAt("testName").getValue(), "testValue");
+        assertNotNull(model.getAttribute(PlatformConstants.SOURCE_SYSTEM));
+        assertNotNull(model.getAttribute("testName"));
+        assertEquals(model.getAttribute("testName").getValue(), "testValue");
     }
 
     @Test

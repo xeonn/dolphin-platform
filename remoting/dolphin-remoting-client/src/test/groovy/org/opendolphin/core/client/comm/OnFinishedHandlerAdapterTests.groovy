@@ -15,14 +15,27 @@
  */
 package org.opendolphin.core.client.comm
 
+import org.opendolphin.core.client.ClientPresentationModel
+
 class OnFinishedHandlerAdapterTests extends GroovyTestCase{
 
     void testAdapter() {
-        new OnFinishedHandlerAdapter().onFinished([])
-        def dataAdapter = new OnFinishedDataAdapter(){
+        new OnFinishedHandler(){
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+
+            }
+        }.onFinished([])
+        def dataAdapter = new OnFinishedData() {
             @Override
             void onFinishedData(List<Map> data) {
-                // nothing
+
+            }
+
+            @Override
+            void onFinished(List<ClientPresentationModel> presentationModels) {
+
             }
         }
         dataAdapter.onFinished([])

@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.client.comm
 
+import core.client.comm.InMemoryClientConnector
 import org.opendolphin.core.client.ClientDolphin
 import org.opendolphin.core.comm.Command
 import org.opendolphin.core.server.ServerConnector

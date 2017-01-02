@@ -15,6 +15,7 @@
  */
 package org.opendolphin.core.server.comm
 
+import org.opendolphin.core.comm.Command
 import org.opendolphin.core.comm.NamedCommand
 
 class SimpleCommandHandlerTests extends GroovyTestCase {
@@ -26,11 +27,13 @@ class SimpleCommandHandlerTests extends GroovyTestCase {
     }
 }
 
-class TestSimpleCommandHandler extends SimpleCommandHandler {
+class TestSimpleCommandHandler implements CommandHandler<NamedCommand> {
+
     boolean callForwarded
 
+
     @Override
-    void handleCommand() {
+    void handleCommand(NamedCommand command, List<Command> response) {
         callForwarded = true
     }
 }

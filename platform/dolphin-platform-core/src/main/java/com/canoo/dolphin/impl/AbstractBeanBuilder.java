@@ -112,7 +112,7 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
             @Override
             public void call(final PropertyInfo propertyInfo) {
                 Assert.requireNonNull(propertyInfo, "propertyInfo");
-                final Attribute attribute = model.findAttributeByPropertyName(propertyInfo.getAttributeName());
+                final Attribute attribute = model.getAttribute(propertyInfo.getAttributeName());
                 final Property property = create(attribute, propertyInfo);
                 propertyInfo.setPriviliged(bean, property);
             }

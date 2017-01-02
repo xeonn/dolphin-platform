@@ -53,7 +53,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
         PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SimpleAnnotatedTestModel.class.getName()).get(0);
 
-        Attribute textAttribute = dolphinModel.findAttributeByPropertyName("myProperty");
+        Attribute textAttribute = dolphinModel.getAttribute("myProperty");
         assertThat(textAttribute.getValue(), nullValue());
 
         model.myProperty().set("Hallo Platform");
@@ -74,7 +74,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
         PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName()).get(0);
 
-        Attribute textAttribute = dolphinModel.findAttributeByPropertyName("text");
+        Attribute textAttribute = dolphinModel.getAttribute("text");
         assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
@@ -95,7 +95,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
         PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(PrimitiveDataTypesModel.class.getName()).get(0);
 
-        Attribute textAttribute = dolphinModel.findAttributeByPropertyName("textProperty");
+        Attribute textAttribute = dolphinModel.getAttribute("textProperty");
         assertThat(textAttribute.getValue(), nullValue());
 
         model.getTextProperty().set("Hallo Platform");
@@ -107,7 +107,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(model.getTextProperty().get(), is("Hallo Dolphin"));
 
 
-        Attribute intAttribute = dolphinModel.findAttributeByPropertyName("integerProperty");
+        Attribute intAttribute = dolphinModel.getAttribute("integerProperty");
         assertThat(intAttribute.getValue(), nullValue());
 
         model.getIntegerProperty().set(1);
@@ -119,7 +119,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(model.getIntegerProperty().get(), is(2));
 
 
-        Attribute booleanAttribute = dolphinModel.findAttributeByPropertyName("booleanProperty");
+        Attribute booleanAttribute = dolphinModel.getAttribute("booleanProperty");
         assertThat(booleanAttribute.getValue(), nullValue());
 
         model.getBooleanProperty().set(true);
@@ -150,7 +150,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ComplexDataTypesModel.class.getName()).get(0);
 
 
-        Attribute dateAttribute = dolphinModel.findAttributeByPropertyName("dateProperty");
+        Attribute dateAttribute = dolphinModel.getAttribute("dateProperty");
         assertThat(dateAttribute.getValue(), nullValue());
 
         model.getDateProperty().set(date1.getTime());
@@ -162,7 +162,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(model.getDateProperty().get(), is(date2.getTime()));
 
 
-        Attribute calendarAttribute = dolphinModel.findAttributeByPropertyName("calendarProperty");
+        Attribute calendarAttribute = dolphinModel.getAttribute("calendarProperty");
         assertThat(calendarAttribute.getValue(), nullValue());
 
         model.getCalendarProperty().set(date1);
@@ -174,7 +174,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(model.getCalendarProperty().get(), is(date2));
 
 
-        Attribute enumAttribute = dolphinModel.findAttributeByPropertyName("enumProperty");
+        Attribute enumAttribute = dolphinModel.getAttribute("enumProperty");
         assertThat(enumAttribute.getValue(), nullValue());
 
         model.getEnumProperty().set(VALUE_1);
@@ -197,14 +197,14 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         final SimpleTestModel ref2 = manager.create(SimpleTestModel.class);
         ref2.getTextProperty().set("ref2_text");
         final List<ClientPresentationModel> refPMs = dolphin.findAllPresentationModelsByType(SimpleTestModel.class.getName());
-        final PresentationModel ref1PM = "ref1_text".equals(refPMs.get(0).findAttributeByPropertyName("text").getValue())? refPMs.get(0) : refPMs.get(1);
-        final PresentationModel ref2PM = "ref2_text".equals(refPMs.get(0).findAttributeByPropertyName("text").getValue())? refPMs.get(0) : refPMs.get(1);
+        final PresentationModel ref1PM = "ref1_text".equals(refPMs.get(0).getAttribute("text").getValue())? refPMs.get(0) : refPMs.get(1);
+        final PresentationModel ref2PM = "ref2_text".equals(refPMs.get(0).getAttribute("text").getValue())? refPMs.get(0) : refPMs.get(1);
 
         final SingleReferenceModel model = manager.create(SingleReferenceModel.class);
 
         final PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(SingleReferenceModel.class.getName()).get(0);
 
-        final Attribute referenceAttribute = dolphinModel.findAttributeByPropertyName("referenceProperty");
+        final Attribute referenceAttribute = dolphinModel.getAttribute("referenceProperty");
         assertThat(referenceAttribute.getValue(), nullValue());
 
         model.getReferenceProperty().set(ref1);
@@ -225,9 +225,9 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
         PresentationModel dolphinModel = dolphin.findAllPresentationModelsByType(ChildModel.class.getName()).get(0);
 
-        Attribute childAttribute = dolphinModel.findAttributeByPropertyName("childProperty");
+        Attribute childAttribute = dolphinModel.getAttribute("childProperty");
         assertThat(childAttribute.getValue(), nullValue());
-        Attribute parentAttribute = dolphinModel.findAttributeByPropertyName("parentProperty");
+        Attribute parentAttribute = dolphinModel.getAttribute("parentProperty");
         assertThat(parentAttribute.getValue(), nullValue());
 
         model.getChildProperty().set("Hallo Platform");

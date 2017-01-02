@@ -20,7 +20,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import org.opendolphin.core.Tag;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
 
 import java.util.ArrayList;
@@ -28,7 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.canoo.dolphin.impl.codec.CommandConstants.*;
+import static com.canoo.dolphin.impl.codec.CommandConstants.ATTRIBUTE_ID;
+import static com.canoo.dolphin.impl.codec.CommandConstants.ATTRIBUTE_NAME;
+import static com.canoo.dolphin.impl.codec.CommandConstants.ATTRIBUTE_VALUE;
+import static com.canoo.dolphin.impl.codec.CommandConstants.ID;
+import static com.canoo.dolphin.impl.codec.CommandConstants.PM_ATTRIBUTES;
+import static com.canoo.dolphin.impl.codec.CommandConstants.PM_ID;
+import static com.canoo.dolphin.impl.codec.CommandConstants.PM_TYPE;
 import static com.canoo.dolphin.impl.codec.ValueEncoder.decodeValue;
 import static com.canoo.dolphin.impl.codec.ValueEncoder.encodeValue;
 
@@ -50,10 +55,6 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
             final Object value = attribute.get("value");
             if (value != null) {
                 jsonAttribute.add(ATTRIBUTE_VALUE, encodeValue(attribute.get("value")));
-            }
-            final Object tag = attribute.get("tag");
-            if (tag != null && !Tag.VALUE.getName().equals(tag)) {
-                jsonAttribute.addProperty(ATTRIBUTE_TAG, tag.toString());
             }
             jsonArray.add(jsonAttribute);
         }
@@ -85,7 +86,6 @@ public class  CreatePresentationModelEncoder implements CommandEncoder<CreatePre
                 map.put("value", value);
                 map.put("baseValue", value);
                 map.put("qualifier", null);
-                map.put("tag", attribute.has(ATTRIBUTE_TAG)? Tag.tagFor.get(attribute.getAsJsonPrimitive(ATTRIBUTE_TAG).getAsString()) : Tag.VALUE);
                 attributes.add(map);
             }
             command.setAttributes(attributes);
