@@ -24,12 +24,10 @@ import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
-import org.opendolphin.core.client.comm.OnFinishedDataAdapter;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
 import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
-import org.opendolphin.core.comm.NamedCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +35,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -80,17 +77,6 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
         super.send(command, callback);
         if(gc && !gcSend.get()) {
             gcSend.set(true);
-            getUiThreadHandler().executeInsideUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    send(new NamedCommand(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME), new OnFinishedDataAdapter() {
-                        @Override
-                        public void onFinishedData(List<Map> data) {
-                            gcSend.set(false);
-                        }
-                    });
-                }
-            });
         }
     }
 

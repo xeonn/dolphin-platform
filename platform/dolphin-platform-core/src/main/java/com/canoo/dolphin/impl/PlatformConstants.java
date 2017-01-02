@@ -35,8 +35,6 @@ public interface PlatformConstants {
 
     String DESTROY_CONTEXT_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "disconnectClientContext";
 
-    String GARBAGE_COLLECTION_COMMAND_NAME = DOLPHIN_PLATFORM_PREFIX + "garbageCollection";
-
     String DOLPHIN_BEAN = "@@@ DOLPHIN_BEAN @@@";
 
     String SOURCE_SYSTEM = "@@@ SOURCE_SYSTEM @@@";

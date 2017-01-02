@@ -214,18 +214,13 @@ public class DolphinContext {
                 registry.register(PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, getId());
-                        onReleaseEventBus();
-                    }
-                });
-
-                registry.register(PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, new CommandHandler() {
-                    @Override
-                    public void handleCommand(Command command, List response) {
                         if(UnstableFeatureFlags.isUseGc()) {
-                            LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.GARBAGE_COLLECTION_COMMAND_NAME, getId());
+                            LOG.trace("Handling GarbageCollection for DolphinContext {}", getId());
                             onGarbageCollection();
                         }
+
+                        LOG.trace("Handling {} for DolphinContext {}", PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME, getId());
+                        onReleaseEventBus();
                     }
                 });
             }
