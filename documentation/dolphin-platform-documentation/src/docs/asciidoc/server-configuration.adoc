@@ -1,4 +1,4 @@
-
+[[server-configuration]]
 = Server configuration
 
 The Dolphin Platform can simply be configured by a property file. To configure the server part of the Dolphin Platform

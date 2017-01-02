@@ -15,6 +15,17 @@ method of the API is annotated by `@Deprecated` since we plan to remove all this
 authentification mechanisms.
 * Dependency to Apache HttpClient library is removed. Java basic HttpUrlConnection is used now.
 * Removed some unneeded dependencies
+* All classes of the Dolphin Platform are refactored to Java. The Dolphin Platform do not provide any
+Groovy based implementations any more.
+* Groovy was removed as dependency (for runtime). Currently only the unit tests of the remoting modules still
+depend on Groovy.
+* Several sources of the remoting layer are refactored and unused functionality was removed.
+* GSON is used as JSON parser for the remoting layer
+* The Dolphin Platform provides Docker based integration tests. Currently the integration tests will be executed
+against server applications that run in Payara, TomEE and Wildfly.
+* The Dolphin Platform publish reports to sonar. An overview of the current state of the Dolphin Platform can be
+found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolphin-platform[here]
+* Some issues and code smells that were reported by sonar are refactored.
 
 == Version 0.8.9
 _Release date: Dec 16, 2016_
