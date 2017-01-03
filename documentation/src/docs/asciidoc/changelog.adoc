@@ -11,16 +11,17 @@ method of the API is annotated by `@Deprecated` since we plan to remove all this
 == Version 0.8.10
 
 * All classes of the Dolphin Platform are refactored to Java. The Dolphin Platform do not provide any
-Groovy based implementations any more.
+Groovy based implementations any more. (https://github.com/canoo/dolphin-platform/issues/237[issue], https://github.com/canoo/dolphin-platform/issues/238[issue])
 * Groovy was removed as dependency (for runtime). Currently only the unit tests of the remoting modules still
-depend on Groovy.
-* Several sources of the remoting layer are refactored and unused functionality was removed.
-* GSON is used as JSON parser for the remoting layer
+depend on Groovy. (https://github.com/canoo/dolphin-platform/issues/237[issue], https://github.com/canoo/dolphin-platform/issues/238[issue])
+* Several sources of the remoting layer are refactored and unused functionality was removed. (https://github.com/canoo/dolphin-platform/issues/237[issue], https://github.com/canoo/dolphin-platform/issues/238[issue])
+* GSON is used as JSON parser for the remoting layer (https://github.com/canoo/dolphin-platform/issues/175[issue])
 * The Dolphin Platform provides Docker based integration tests. Currently the integration tests will be executed
-against server applications that run in Payara, TomEE and Wildfly.
+against server applications that run in Payara, TomEE and Wildfly. (https://github.com/canoo/dolphin-platform/issues/248[issue])
 * The Dolphin Platform publish reports to sonar. An overview of the current state of the Dolphin Platform can be
-found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolphin-platform[here]
-* Some issues and code smells that were reported by sonar are refactored.
+found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolphin-platform[here] (https://github.com/canoo/dolphin-platform/issues/38[issue])
+* JavaDocs hosted at GitHub pages. (https://github.com/canoo/dolphin-platform/issues/234[issue])
+* Some issues and code smells that were reported by sonar are refactored. (https://github.com/canoo/dolphin-platform/issues/38[issue])
 
 == Version 0.8.9
 
