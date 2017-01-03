@@ -23,7 +23,6 @@ include 'platform-examples/process-monitor-sample/process-monitor-common'
 include 'platform-examples/process-monitor-sample/process-monitor-server'
 include 'platform-examples/process-monitor-sample/process-monitor-server-spring'
 include 'platform-examples/process-monitor-sample/process-monitor-client-javafx'
-include 'documentation/dolphin-platform-documentation'
 include 'documentation'
 include 'integration-tests'
 
