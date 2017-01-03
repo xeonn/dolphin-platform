@@ -5,7 +5,7 @@ The Dolphin Platform is based on some modules. The following diagram shows the m
 of the Dolphin Platform and the dependecies between the modules:
 
 .Module dependencies of the Dolphin Platform
-image::deps.png.png[]
+image::deps.png[]
 
 The JavaDoc for the modules can be found here:
 

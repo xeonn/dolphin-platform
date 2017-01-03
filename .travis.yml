@@ -33,7 +33,7 @@ after_success:
     mkdir javadoc/client-jfx;
     cp -a ../../../../platform/dolphin-platform-client-javafx/build/docs/javadoc/. javadoc/client-jfx;
     mkdir javadoc/core;
-    cp -a ../../../../platform/dolphin-platform-client-javafx/build/docs/javadoc/. javadoc/core;
+    cp -a ../../../../platform/dolphin-platform-core/build/docs/javadoc/. javadoc/core;
     mkdir javadoc/server;
     cp -a ../../../../platform/dolphin-platform-server/build/docs/javadoc/. javadoc/server;
     mkdir javadoc/server-jee;
