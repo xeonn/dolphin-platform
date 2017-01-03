@@ -17,7 +17,7 @@ before_install:
 
 script:
   - if [ "$TRAVIS_BRANCH" == "master" ];
-    then ./gradlew clean sonarqube jacocoTestReport jacocoRootMergeReport -S -Dsonar.host.url=https://sonarqube.com -Dsonar.login=${SONAR_TOKEN};
+    then ./gradlew clean sonarqube jacocoTestReport jacocoRootMergeReport -S -Dsonar.login=${SONAR_TOKEN};
     else ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S;
     fi
 

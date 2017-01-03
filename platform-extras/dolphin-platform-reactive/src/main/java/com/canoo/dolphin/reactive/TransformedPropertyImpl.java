@@ -16,26 +16,19 @@
 package com.canoo.dolphin.reactive;
 
 import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.event.ValueChangeEvent;
-import com.canoo.dolphin.event.ValueChangeListener;
-import com.canoo.dolphin.mapping.Property;
+import com.canoo.dolphin.impl.AbstractProperty;
 import com.canoo.dolphin.util.Assert;
 import rx.functions.Action1;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Default implementation for {@link TransformedProperty}
  * @param <T> type of the property
  */
-public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Action1<T> {
+public class TransformedPropertyImpl<T> extends AbstractProperty<T> implements TransformedProperty<T>, Action1<T> {
 
     private T value;
 
     private final Subscription subscription;
-
-    private final List<ValueChangeListener<? super T>> listeners = new CopyOnWriteArrayList<>();
 
     public TransformedPropertyImpl(final Subscription subscription) {
         Assert.requireNonNull(subscription, "subscription");
@@ -50,39 +43,6 @@ public class TransformedPropertyImpl<T> implements TransformedProperty<T>, Actio
     @Override
     public T get() {
         return value;
-    }
-
-    @Override
-    public Subscription onChanged(final ValueChangeListener<? super T> listener) {
-        listeners.add(listener);
-        return new Subscription() {
-            @Override
-            public void unsubscribe() {
-                listeners.remove(listener);
-            }
-        };
-    }
-
-    protected void firePropertyChanged(final T oldValue, final T newValue) {
-        final ValueChangeEvent<T> event = new ValueChangeEvent<T>() {
-            @Override
-            public Property<T> getSource() {
-                return TransformedPropertyImpl.this;
-            }
-
-            @Override
-            public T getOldValue() {
-                return oldValue;
-            }
-
-            @Override
-            public T getNewValue() {
-                return newValue;
-            }
-        };
-        for(ValueChangeListener<? super T> listener : listeners) {
-            listener.valueChanged(event);
-        }
     }
 
     @Override
