@@ -109,6 +109,14 @@ subprojects { subprj ->
         subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
         projectsWithCoverage << subprj
 
+        sonarqube {
+            sonarqube {
+                properties {
+                    property "sonar.exclusions", "**/*Exception.java"
+                }
+            }
+        }
+
         javadoc {
             excludes = ['**/*.html', 'META-INF/**']
 
