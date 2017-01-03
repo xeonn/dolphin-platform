@@ -61,4 +61,3 @@ mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:
 
 This will start a Maven build that creates a full client-server Maven project for you. A full documentation of the
 jumpstart can be found here.
-

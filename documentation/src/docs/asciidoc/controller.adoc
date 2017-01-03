@@ -7,6 +7,9 @@ client a controller instance is managed in the server.
 .Views and Controllers
 image::mvc1.png[]
 
+TIP: The public API of the server layer is defined in the `dolphin-platform-server module`. The JavaDoc of the module can
+be found link:javadoc/server/[here]
+
 == Defining a controller
 
 A controller type is defined as a Java class on the server. This is done with the `@DolphinController` annotation. Each

@@ -11,6 +11,9 @@ image::model-sync.png[]
 Such a model can be a bean or a hierarchy of several beans. Dolphin Platform provides an API to create full observable
 beans for the model layer.
 
+TIP: The public API of the module layer is defined in the `dolphin-platform-core module`. The JavaDoc of the module can
+be found link:javadoc/core/[here]
+
 == Creating a bean
 
 A model for the Dolphin Platform can simply be defined as a Java bean but instead of using primitive date types for all
