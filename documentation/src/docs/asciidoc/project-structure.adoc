@@ -57,3 +57,32 @@ and mobile clients (JavaFX and Android) and a JavaScript implementation with spe
 
 ==== Java based clients
 
+For a desktop or Android client a developer only need to add the specific Java modules
+of the Dolphin Platform as dependencies to the client project.
+
+The following snippet shows the dependency for a JavaFX based client as a Maven dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.canoo.dolphin-platform</groupId>
+    <artifactId>dolphin-platform-client-javafx</artifactId>
+    <version>0.8.9</version>
+</dependency>
+----
+
+If you want to create a Android application you need to add the follwoing dependency to your
+application:
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.canoo.dolphin-platform</groupId>
+    <artifactId>dolphin-platform-client-android</artifactId>
+    <version>0.8.9</version>
+</dependency>
+----
+
+==== JavaScript based clients
+
+TODO
