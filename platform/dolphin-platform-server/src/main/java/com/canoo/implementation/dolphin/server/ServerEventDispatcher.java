@@ -26,7 +26,7 @@ public class ServerEventDispatcher extends EventDispatcherImpl {
     }
 
     @Override
-    protected String getLocalSystemIdentifier() {
+    public String getLocalSystemIdentifier() {
         return PlatformConstants.SOURCE_SYSTEM_SERVER;
     }
 }

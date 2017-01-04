@@ -16,11 +16,12 @@
 package com.canoo.implementation.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
-import com.canoo.dolphin.server.session.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
+import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.javaee.ClientScoped;
+import com.canoo.dolphin.server.session.DolphinSession;
 import com.canoo.implementation.dolphin.server.binding.PropertyBinderImpl;
 import com.canoo.implementation.dolphin.server.bootstrap.DolphinPlatformBootstrap;
-import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.implementation.dolphin.server.event.DefaultDolphinEventBus;
 
 import javax.enterprise.context.ApplicationScoped;
