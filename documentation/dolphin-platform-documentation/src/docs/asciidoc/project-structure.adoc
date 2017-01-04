@@ -1,0 +1,52 @@
+
+= Creating a Dolphin Platform application from sratch
+
+Maybe some developers don't want to use the Maven archetype to create a new Dolphin Platform based application or want to
+integrate the Dolphin Platform in an existing application. Even if the Maven archetype is the fasted way to set up a
+startable project it's quite easy to create such an application from scratch.
+
+== Definition of the needed server and client modules
+
+The API and implementation of the Dolphin Platform is splitted in several modules. Depending on the application
+infrastructure a developer needs to add different modules to the application dependencies. The following diagramm
+gives an overview of all Dolphin Platform modules:
+
+.Dolphin Platform modules
+image::modules.png[]
+
+=== Dolphin Platform on the server
+
+On the server side you can choose between a JavaEE or a Spring integration. Each of this
+modules depends on the basic server module of the Dolphin Platform that contains the public
+API for the server part. Based on this you only need to add one dependency to your server
+application:
+
+You can simply integrate Dolphin Platform in a Spring based application. To do so you only need to add the Spring
+module. All Java modules of the Dolphin Platform are available at Maven Central and JCenter. The following snippet
+shows the spring module as a Maven dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.canoo.dolphin-platform</groupId>
+    <artifactId>dolphin-platform-server-spring</artifactId>
+    <version>0.8.9</version>
+</dependency>
+----
+
+Next to this the Dolphin Platform provides support for JavaEE. The following snippet shows the JavaEE module of the
+Dolphin Platform as a Maven dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.canoo.dolphin-platform</groupId>
+    <artifactId>dolphin-platform-server-javaee</artifactId>
+    <version>0.8.9</version>
+</dependency>
+----
+
+NOTE: Additional information can be found in the JavaEE and Spring chapter of this documentation.
+
+=== Dolphin Platform on the client
+
