@@ -69,4 +69,6 @@ public interface ClientContext {
      * @return the http client
      */
     HttpClient getHttpClient();
+
+    String getId();
 }
