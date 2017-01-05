@@ -44,6 +44,16 @@ public class ToDoItem {
         return completed;
     }
 
+    public ToDoItem withText(final String text) {
+        setText(text);
+        return this;
+    }
+
+    public ToDoItem withState(final boolean state) {
+        setCompleted(state);
+        return this;
+    }
+
     @Override
     public String toString() {
         return text.get();
