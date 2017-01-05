@@ -21,29 +21,23 @@ import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.event.DolphinEventBus;
-import com.canoo.dolphin.server.event.Message;
-import com.canoo.dolphin.server.event.Topic;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static com.canoo.dolphin.todo.TodoAppConstants.ADD_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CHANGE_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CONTROLLER_NAME;
 import static com.canoo.dolphin.todo.TodoAppConstants.REMOVE_ACTION;
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_ADDED;
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_MARK_CHANGED;
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_REMOVED;
 
 @DolphinController(CONTROLLER_NAME)
 public class ToDoController {
-
-    public final static Topic<String> ITEM_MARK_CHANGED = Topic.create("item_mark_changed");
-
-    public final static Topic<String> ITEM_ADDED = Topic.create("item_added");
-
-    public final static Topic<String> ITEM_REMOVED = Topic.create("item_removed");
 
     @Inject
     private BeanManager beanManager;
@@ -59,27 +53,41 @@ public class ToDoController {
 
     @PostConstruct
     public void onInit() {
-        Function<Message<String>, Optional<ToDoItem>> getItemByName = m -> toDoList.getItems().stream().
-                filter(i -> i.getText().equals(m.getData())).findAny();
-        eventBus.subscribe(ITEM_MARK_CHANGED, m -> getItemByName.apply(m).ifPresent(i -> i.setCompleted(todoItemStore.getState(i.getText()))));
-        eventBus.subscribe(ITEM_REMOVED, m -> getItemByName.apply(m).ifPresent(i -> toDoList.getItems().remove(i)));
-        eventBus.subscribe(ITEM_ADDED, m -> toDoList.getItems().add(beanManager.create(ToDoItem.class).withText(m.getData())));
-        todoItemStore.itemStream().forEach(name -> toDoList.getItems().add(beanManager.create(ToDoItem.class).withText(name).withState(todoItemStore.getState(name))));
+        eventBus.subscribe(ITEM_MARK_CHANGED, message -> updateItemState(message.getData()));
+        eventBus.subscribe(ITEM_REMOVED, message -> removeItem(message.getData()));
+        eventBus.subscribe(ITEM_ADDED, message -> addItem(message.getData()));
+        todoItemStore.itemStream().forEach(name -> addItem(name));
     }
 
     @DolphinAction(ADD_ACTION)
-    public void add() {
+    public void onItemAddAction() {
         todoItemStore.addItem(toDoList.getNewItemText().get());
         toDoList.getNewItemText().set("");
     }
 
     @DolphinAction(CHANGE_ACTION)
-    public void markChanged(@Param("itemName") String name) {
+    public void onItemStateChangedAction(@Param("itemName") String name) {
         todoItemStore.changeItemState(name);
     }
 
     @DolphinAction(REMOVE_ACTION)
-    public void remove(@Param("itemName") String name) {
+    public void onItemRemovedAction(@Param("itemName") String name) {
         todoItemStore.removeItem(name);
+    }
+
+    private void addItem(String name) {
+        toDoList.getItems().add(beanManager.create(ToDoItem.class).withText(name).withState(todoItemStore.getState(name)));
+    }
+
+    private void removeItem(String name) {
+        getItemByName(name).ifPresent(i -> toDoList.getItems().remove(i));
+    }
+
+    private void updateItemState(String name) {
+        getItemByName(name).ifPresent(i -> i.setCompleted(todoItemStore.getState(name)));
+    }
+
+    private Optional<ToDoItem> getItemByName(String name) {
+        return toDoList.getItems().stream().filter(i -> i.getText().equals(name)).findAny();
     }
 }

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_ADDED;
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_MARK_CHANGED;
+import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_REMOVED;
+
 public class TodoItemStore {
 
     private final DolphinEventBus eventBus;
@@ -18,17 +22,17 @@ public class TodoItemStore {
 
     void addItem(String name) {
         items.put(name, false);
-        eventBus.publish(ToDoController.ITEM_ADDED, name);
+        eventBus.publish(ITEM_ADDED, name);
     }
 
     void removeItem(String name) {
         items.remove(name);
-        eventBus.publish(ToDoController.ITEM_REMOVED, name);
+        eventBus.publish(ITEM_REMOVED, name);
     }
 
     void changeItemState(String name) {
         items.put(name, !items.get(name));
-        eventBus.publish(ToDoController.ITEM_MARK_CHANGED, name);
+        eventBus.publish(ITEM_MARK_CHANGED, name);
     }
 
     Stream<String> itemStream() {
