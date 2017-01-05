@@ -51,10 +51,6 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
         this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
     }
 
-    public String getControllerId() {
-        return controllerId;
-    }
-
     @Override
     public T getModel() {
         return model;
