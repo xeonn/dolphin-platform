@@ -33,6 +33,11 @@ public class ToDoItem {
     public Property<String> getTextProperty() {
         return text;
     }
+    public ToDoItem withText(final String text) {
+        setText(text);
+        return this;
+    }
+
 
     public boolean isCompleted() {
         return Boolean.TRUE == completed.get();
@@ -43,19 +48,9 @@ public class ToDoItem {
     public Property<Boolean> getCompletedProperty() {
         return completed;
     }
-
-    public ToDoItem withText(final String text) {
-        setText(text);
-        return this;
-    }
-
     public ToDoItem withState(final boolean state) {
         setCompleted(state);
         return this;
     }
 
-    @Override
-    public String toString() {
-        return text.get();
-    }
 }
