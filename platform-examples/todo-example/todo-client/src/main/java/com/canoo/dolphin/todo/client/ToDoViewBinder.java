@@ -32,6 +32,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import static com.canoo.dolphin.todo.TodoAppConstants.ADD_ACTION;
+import static com.canoo.dolphin.todo.TodoAppConstants.CHANGE_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CONTROLLER_NAME;
 
 public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
@@ -51,7 +52,7 @@ public class ToDoViewBinder extends AbstractViewBinder<ToDoList> {
         itemList = new ListView<>();
         VBox vBox = new VBox(createComponent, itemList);
         root = new StackPane(vBox);
-        itemList.setCellFactory(c -> new ToDoItemCell(i -> invoke("markChanged", new Param("itemName", i.getText()))));
+        itemList.setCellFactory(c -> new ToDoItemCell(i -> invoke(CHANGE_ACTION, new Param("itemName", i.getText()))));
     }
 
     @Override

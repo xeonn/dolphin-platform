@@ -2,20 +2,22 @@ package com.canoo.dolphin.todo.server;
 
 import com.canoo.dolphin.server.event.DolphinEventBus;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 public class TodoItemStore {
 
-    @Inject
-    private DolphinEventBus eventBus;
+    private final DolphinEventBus eventBus;
 
-    private Map<String, Boolean> items = new HashMap<>();
+    private final Map<String, Boolean> items = new HashMap<>();
+
+    public TodoItemStore(DolphinEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
     void addItem(String name) {
-        items.put(name, true);
+        items.put(name, false);
         eventBus.publish(ToDoController.ITEM_ADDED, name);
     }
 

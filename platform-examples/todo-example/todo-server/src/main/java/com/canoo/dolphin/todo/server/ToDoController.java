@@ -61,7 +61,7 @@ public class ToDoController {
     public void onInit() {
         Function<Message<String>, Optional<ToDoItem>> getItemByName = m -> toDoList.getItems().stream().
                 filter(i -> i.getText().equals(m.getData())).findAny();
-        eventBus.subscribe(ITEM_MARK_CHANGED, m -> getItemByName.apply(m).ifPresent(i -> i.setCompleted(!i.isCompleted())));
+        eventBus.subscribe(ITEM_MARK_CHANGED, m -> getItemByName.apply(m).ifPresent(i -> i.setCompleted(todoItemStore.getState(i.getText()))));
         eventBus.subscribe(ITEM_REMOVED, m -> getItemByName.apply(m).ifPresent(i -> toDoList.getItems().remove(i)));
         eventBus.subscribe(ITEM_ADDED, m -> toDoList.getItems().add(beanManager.create(ToDoItem.class).withText(m.getData())));
         todoItemStore.itemStream().forEach(name -> toDoList.getItems().add(beanManager.create(ToDoItem.class).withText(name).withState(todoItemStore.getState(name))));
