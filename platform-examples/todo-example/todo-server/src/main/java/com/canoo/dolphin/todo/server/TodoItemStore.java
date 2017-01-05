@@ -35,7 +35,7 @@ public class TodoItemStore {
         eventBus.publish(ITEM_MARK_CHANGED, name);
     }
 
-    Stream<String> itemStream() {
+    Stream<String> itemNameStream() {
         return items.keySet().stream();
     }
 

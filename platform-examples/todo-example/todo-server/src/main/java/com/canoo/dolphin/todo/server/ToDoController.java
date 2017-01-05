@@ -31,6 +31,7 @@ import java.util.Optional;
 import static com.canoo.dolphin.todo.TodoAppConstants.ADD_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CHANGE_ACTION;
 import static com.canoo.dolphin.todo.TodoAppConstants.CONTROLLER_NAME;
+import static com.canoo.dolphin.todo.TodoAppConstants.ITEM_PARAM;
 import static com.canoo.dolphin.todo.TodoAppConstants.REMOVE_ACTION;
 import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_ADDED;
 import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_MARK_CHANGED;
@@ -56,7 +57,7 @@ public class ToDoController {
         eventBus.subscribe(ITEM_MARK_CHANGED, message -> updateItemState(message.getData()));
         eventBus.subscribe(ITEM_REMOVED, message -> removeItem(message.getData()));
         eventBus.subscribe(ITEM_ADDED, message -> addItem(message.getData()));
-        todoItemStore.itemStream().forEach(name -> addItem(name));
+        todoItemStore.itemNameStream().forEach(name -> addItem(name));
     }
 
     @DolphinAction(ADD_ACTION)
@@ -66,12 +67,12 @@ public class ToDoController {
     }
 
     @DolphinAction(CHANGE_ACTION)
-    public void onItemStateChangedAction(@Param("itemName") String name) {
+    public void onItemStateChangedAction(@Param(ITEM_PARAM) String name) {
         todoItemStore.changeItemState(name);
     }
 
     @DolphinAction(REMOVE_ACTION)
-    public void onItemRemovedAction(@Param("itemName") String name) {
+    public void onItemRemovedAction(@Param(ITEM_PARAM) String name) {
         todoItemStore.removeItem(name);
     }
 

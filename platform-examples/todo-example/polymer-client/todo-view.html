@@ -34,6 +34,7 @@
                 <paper-item>
                     <paper-item-body>[[item.text]]</paper-item-body>
                     <paper-checkbox checked="[[item.completed]]" on-tap="_onCheckboxClicked"></paper-checkbox>
+                    <paper-button raised class="colorful" on-tap="_onDeleteClicked">x</paper-button>
                 </paper-item>
             </template>
 
@@ -56,7 +57,11 @@
         },
 
         _onCheckboxClicked: function(e) {
-            this.invoke('markChanged', {itemName: e.model.item.text});
+            this.invoke('markChanged', {item: e.model.item.text});
+        },
+
+        _onDeleteClicked: function(e) {
+            this.invoke('remove', {item: e.model.item.text});
         }
     });
 </script>

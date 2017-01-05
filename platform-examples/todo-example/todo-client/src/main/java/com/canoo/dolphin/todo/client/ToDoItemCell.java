@@ -15,20 +15,51 @@
  */
 package com.canoo.dolphin.todo.client;
 
+import com.canoo.dolphin.client.ControllerProxy;
+import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.todo.pm.ToDoItem;
+import com.canoo.dolphin.todo.pm.ToDoList;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-import java.util.function.Consumer;
+import java.util.Optional;
+
+import static com.canoo.dolphin.todo.TodoAppConstants.CHANGE_ACTION;
+import static com.canoo.dolphin.todo.TodoAppConstants.ITEM_PARAM;
+import static com.canoo.dolphin.todo.TodoAppConstants.REMOVE_ACTION;
+import static javafx.scene.layout.Priority.ALWAYS;
+import static javafx.scene.layout.Priority.NEVER;
 
 public class ToDoItemCell extends ListCell<ToDoItem> {
 
-    public ToDoItemCell(Consumer<ToDoItem> actionConsumer) {
-        Text itemNameText = new Text();
+    private final ControllerProxy<ToDoList> controllerProxy;
 
-        itemNameText.visibleProperty().bind(emptyProperty().not());
-        setGraphic(itemNameText);
+    public ToDoItemCell(ControllerProxy<ToDoList> controllerProxy) {
+        this.controllerProxy = controllerProxy;
+
+        getStyleClass().add("todo-item-cell");
+        HBox layout = new HBox();
+        layout.visibleProperty().bind(emptyProperty().not());
+        setGraphic(layout);
+
+        Text itemNameText = new Text();
+        itemNameText.getStyleClass().add("name-text");
+        HBox.setHgrow(itemNameText, NEVER);
+        layout.getChildren().add(itemNameText);
+
+        Label spacer = new Label();
+        spacer.setMaxWidth(Double.MAX_VALUE - 1);
+        HBox.setHgrow(spacer, ALWAYS);
+        layout.getChildren().add(spacer);
+
+        Button deleteButton = new Button("delete");
+        deleteButton.setOnAction(e -> item().ifPresent(i -> controllerProxy.invoke(REMOVE_ACTION, new Param(ITEM_PARAM, i.getText()))));
+        HBox.setHgrow(deleteButton, NEVER);
+        layout.getChildren().add(deleteButton);
 
         itemProperty().addListener((obs, oldVal, newVal) -> {
             itemNameText.textProperty().unbind();
@@ -40,12 +71,12 @@ public class ToDoItemCell extends ListCell<ToDoItem> {
         });
 
         setOnMouseClicked(e -> {
-            if(getItem() != null) {
-                actionConsumer.accept(getItem());
-            }
+            item().ifPresent(i -> controllerProxy.invoke(CHANGE_ACTION, new Param(ITEM_PARAM, i.getText())));
         });
-
-        setStyle("-fx-background-color: white");
-        itemNameText.setStyle("-fx-font-size: 24px");
     }
+
+    private Optional<ToDoItem> item() {
+        return Optional.ofNullable(getItem());
+    }
+
 }
