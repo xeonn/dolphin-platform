@@ -32,8 +32,6 @@ public class ToDoServer {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public TodoItemStore createStore(DolphinEventBus eventBus) {
-        TodoItemStore todoItemStore = new TodoItemStore();
-        todoItemStore.setEventBus(eventBus);
-        return todoItemStore;
+        return new TodoItemStore(eventBus);
     }
 }

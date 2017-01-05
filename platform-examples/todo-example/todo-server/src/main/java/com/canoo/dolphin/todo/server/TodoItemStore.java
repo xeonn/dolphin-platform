@@ -12,11 +12,11 @@ import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_REMOVED;
 
 public class TodoItemStore {
 
-    private DolphinEventBus eventBus;
+    private final DolphinEventBus eventBus;
 
     private final Map<String, Boolean> items = new HashMap<>();
 
-    public void setEventBus(DolphinEventBus eventBus) {
+    public TodoItemStore(DolphinEventBus eventBus) {
         this.eventBus = eventBus;
     }
 
