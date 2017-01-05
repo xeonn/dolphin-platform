@@ -21,8 +21,10 @@ public class TodoItemStore {
     }
 
     void addItem(String name) {
-        items.put(name, false);
-        eventBus.publish(ITEM_ADDED, name);
+        if(name != null && !name.isEmpty() && !items.containsKey(name)) {
+            items.put(name, false);
+            eventBus.publish(ITEM_ADDED, name);
+        }
     }
 
     void removeItem(String name) {
