@@ -33,7 +33,6 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.canoo.dolphin.samples.processmonitor.ProcessMonitorConstants.CONTROLLER_NAME;
@@ -49,6 +48,9 @@ public class ProcessMonitorController {
     @Inject
     private DolphinSession session;
 
+    @Inject
+    private BackgroundTaskRunner backgroundTaskRunner;
+
     @DolphinModel
     private ProcessListBean processList;
 
@@ -63,21 +65,7 @@ public class ProcessMonitorController {
         SystemInfo si = new SystemInfo();
         os = si.getOperatingSystem();
         memory = si.getHardware().getMemory();
-
         update();
-
-        executor = Executors.newSingleThreadExecutor().submit(() -> {
-            boolean running = true;
-            while(running) {
-                try {
-                    Thread.sleep(250);
-                    session.runLater(() -> update());
-                } catch (InterruptedException e) {
-                    running =false;
-                }
-            }
-            return null;
-        });
     }
 
     @PreDestroy
@@ -87,8 +75,6 @@ public class ProcessMonitorController {
 
 
     private void update() {
-
-
         List<OSProcess> procs = Arrays.asList(os.getProcesses(10, OperatingSystem.ProcessSort.CPU));
         for (OSProcess process : procs) {
             ProcessBean bean = null;
@@ -98,14 +84,17 @@ public class ProcessMonitorController {
             } else {
                 bean = processList.getItems().get(procs.indexOf(process));
             }
-
-
-
             bean.setProcessID(new Integer(process.getProcessID()).toString());
             bean.setCpuPercentage(format.format(100d * (process.getKernelTime() + process.getUserTime()) / process.getUpTime()));
             bean.setMemoryPercentage(format.format(100d * process.getResidentSetSize() / memory.getTotal()));
             bean.setName(process.getName());
         }
+        backgroundTaskRunner.setTask(new Runnable() {
+            @Override
+            public void run() {
+                session.runLater(() -> update());
+            }
+        });
     }
 
 }
