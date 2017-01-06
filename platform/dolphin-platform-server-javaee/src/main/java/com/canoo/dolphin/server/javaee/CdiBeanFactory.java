@@ -26,7 +26,6 @@ import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.Future;
 
@@ -35,7 +34,7 @@ import java.util.concurrent.Future;
  *
  * @author Hendrik Ebbers
  */
-@Dependent
+@ApplicationScoped
 public class CdiBeanFactory {
 
     @Produces
