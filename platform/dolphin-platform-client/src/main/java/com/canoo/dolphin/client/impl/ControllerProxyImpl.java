@@ -16,6 +16,7 @@
 package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ControllerActionException;
+import com.canoo.dolphin.client.ControllerInitalizationException;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
 import com.canoo.dolphin.impl.InternalAttributesBean;
@@ -36,19 +37,18 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
     private final ClientPlatformBeanRepository platformBeanRepository;
 
+    private final ControllerProxyFactory controllerProxyFactory;
+
     private T model;
 
     private volatile boolean destroyed = false;
 
-    public ControllerProxyImpl(String controllerId, T model, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository) {
+    public ControllerProxyImpl(String controllerId, T model, ClientDolphin dolphin, ClientPlatformBeanRepository platformBeanRepository, ControllerProxyFactory controllerProxyFactory) {
         this.dolphin = Assert.requireNonNull(dolphin, "dolphin");
         this.controllerId = Assert.requireNonBlank(controllerId, "controllerId");
-        this.model = model;
+        this.controllerProxyFactory = Assert.requireNonNull(controllerProxyFactory, "controllerProxyFactory");
+        this.model = Assert.requireNonNull(model, "model");
         this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
-    }
-
-    public String getControllerId() {
-        return controllerId;
     }
 
     @Override
@@ -100,5 +100,22 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
             }
         });
         return ret;
+    }
+
+    @Override
+    public String getId() {
+        return controllerId;
+    }
+
+    @Override
+    public <C> CompletableFuture<ControllerProxy<C>> createController(String name) {
+        Assert.requireNonBlank(name, "name");
+
+        return controllerProxyFactory.<C>create(name).handle((c, e) -> {
+            if (e != null) {
+                throw new ControllerInitalizationException(e);
+            }
+            return c;
+        });
     }
 }

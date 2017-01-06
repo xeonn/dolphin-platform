@@ -47,7 +47,7 @@ public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
         bean.setControllerName(name);
 
         return dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.REGISTER_CONTROLLER_COMMAND_NAME).thenApply((v) -> {
-            return new ControllerProxyImpl<>(bean.getControllerId(), (T) bean.getModel(), clientDolphin, platformBeanRepository);
+            return new ControllerProxyImpl<>(bean.getControllerId(), (T) bean.getModel(), clientDolphin, platformBeanRepository, this);
         });
     }
 }

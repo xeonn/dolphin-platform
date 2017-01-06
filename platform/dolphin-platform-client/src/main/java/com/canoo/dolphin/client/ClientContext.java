@@ -69,4 +69,11 @@ public interface ClientContext {
      * @return the http client
      */
     HttpClient getHttpClient();
+
+    /**
+     * Returns the unique id of this client context.
+     * The related context on the server will use the same id.
+     * @return the unique id of this client context
+     */
+    String getId();
 }

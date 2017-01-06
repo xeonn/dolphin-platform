@@ -73,6 +73,12 @@ public class ClientContextImpl implements ClientContext {
                 }
                 return null;
             }).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
+
+            //Set the ID
+            //TODO: Workaround with Cast. Should be refactored in Remoting layer
+
+
+
         } catch (Exception e) {
             throw new ClientInitializationException("Can not connect to server!", e);
         }
@@ -151,5 +157,14 @@ public class ClientContextImpl implements ClientContext {
     @Override
     public HttpClient getHttpClient() {
         return httpClient;
+    }
+
+    @Override
+    public String getId() {
+        if(clientDolphin.getClientConnector() != null && clientDolphin.getClientConnector() instanceof  DolphinPlatformHttpClientConnector) {
+            return ((DolphinPlatformHttpClientConnector) clientDolphin.getClientConnector()).getClientId();
+        } else {
+            throw new RuntimeException("No id defined!");
+        }
     }
 }

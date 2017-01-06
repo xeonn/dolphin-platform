@@ -54,4 +54,20 @@ public interface ControllerProxy<T> {
      * server side the {@link CompletableFuture#get()} call will throw an exception.
      */
     CompletableFuture<Void> destroy();
+
+    /**
+     * Returns the unique ID for the controller.
+     * @return the unique ID for the controller
+     */
+    String getId();
+
+    /**
+     * Creates a {@link ControllerProxy} instance for the controller with the given name.
+     * Currently this methods does exactly the same as {@link ClientContext#createController(String)} but in a future
+     * release controller hierarchies will be supported by this method.
+     * @param name the unique name of the controller type
+     * @param <T> the type of the model that is bound to the controller and view
+     * @return a {@link CompletableFuture} that defines the creation of the controller.
+     */
+    <T> CompletableFuture<ControllerProxy<T>> createController(String name);
 }
