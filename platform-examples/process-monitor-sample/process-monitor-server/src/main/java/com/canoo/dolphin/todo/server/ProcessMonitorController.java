@@ -18,6 +18,7 @@ package com.canoo.dolphin.todo.server;
 import com.canoo.dolphin.BeanManager;
 import com.canoo.dolphin.samples.processmonitor.model.ProcessBean;
 import com.canoo.dolphin.samples.processmonitor.model.ProcessListBean;
+import com.canoo.dolphin.server.BackgroundRunner;
 import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.DolphinSession;
@@ -33,7 +34,6 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.canoo.dolphin.samples.processmonitor.ProcessMonitorConstants.CONTROLLER_NAME;
@@ -49,6 +49,12 @@ public class ProcessMonitorController {
     @Inject
     private DolphinSession session;
 
+    @Inject
+    private BackgroundRunner backgroundRunner;
+
+    @Inject
+    private BackgroundTaskRunner backgroundTaskRunner;
+
     @DolphinModel
     private ProcessListBean processList;
 
@@ -58,26 +64,17 @@ public class ProcessMonitorController {
 
     private GlobalMemory memory;
 
+    private String clientSessionId;
+
     @PostConstruct
     public void onInit() {
         SystemInfo si = new SystemInfo();
         os = si.getOperatingSystem();
         memory = si.getHardware().getMemory();
 
-        update();
+        clientSessionId = session.getId();
 
-        executor = Executors.newSingleThreadExecutor().submit(() -> {
-            boolean running = true;
-            while(running) {
-                try {
-                    Thread.sleep(250);
-                    session.runLater(() -> update());
-                } catch (InterruptedException e) {
-                    running =false;
-                }
-            }
-            return null;
-        });
+        update();
     }
 
     @PreDestroy
@@ -87,25 +84,26 @@ public class ProcessMonitorController {
 
 
     private void update() {
-
-
         List<OSProcess> procs = Arrays.asList(os.getProcesses(10, OperatingSystem.ProcessSort.CPU));
         for (OSProcess process : procs) {
             ProcessBean bean = null;
             if(processList.getItems().size() <= procs.indexOf(process)) {
-                bean = beanManager.create(ProcessBean.class);
+     //           bean = beanManager.create(ProcessBean.class);
                 processList.getItems().add(bean);
             } else {
                 bean = processList.getItems().get(procs.indexOf(process));
             }
-
-
-
-            bean.setProcessID(new Integer(process.getProcessID()).toString());
-            bean.setCpuPercentage(format.format(100d * (process.getKernelTime() + process.getUserTime()) / process.getUpTime()));
-            bean.setMemoryPercentage(format.format(100d * process.getResidentSetSize() / memory.getTotal()));
-            bean.setName(process.getName());
+           // bean.setProcessID(new Integer(process.getProcessID()).toString());
+           // bean.setCpuPercentage(format.format(100d * (process.getKernelTime() + process.getUserTime()) / process.getUpTime()));
+           // bean.setMemoryPercentage(format.format(100d * process.getResidentSetSize() / memory.getTotal()));
+           // bean.setName(process.getName());
         }
+        backgroundTaskRunner.setTask(new Runnable() {
+            @Override
+            public void run() {
+                backgroundRunner.runLaterInClientSession(clientSessionId, () -> update());
+            }
+        });
     }
 
 }
