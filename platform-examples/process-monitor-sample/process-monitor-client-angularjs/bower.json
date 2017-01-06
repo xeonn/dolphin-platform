@@ -15,9 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "^1.6.0",
-    "dolphin-js": "^0.8.8",
-    "core.js": "^2.4.1",
+    "dolphin-platform-angularjs": "0.8.9"
     "bootstrap": "^3.3.7"
   }
 }
