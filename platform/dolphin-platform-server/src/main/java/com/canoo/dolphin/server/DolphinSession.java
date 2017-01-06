@@ -62,5 +62,11 @@ public interface DolphinSession {
      */
     String getId();
 
+    /**
+     * Method can not be used in some szenarios in JavaEE (see https://github.com/canoo/dolphin-platform/issues/309).
+     * @param runnable
+     * @deprecated see {@link BackgroundRunner#runLaterInClientSession(String, Runnable)}
+     */
+    @Deprecated
     void runLater(Runnable runnable);
 }

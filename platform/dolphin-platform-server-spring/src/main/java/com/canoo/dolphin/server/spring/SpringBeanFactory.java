@@ -16,10 +16,12 @@
 package com.canoo.dolphin.server.spring;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.server.BackgroundRunner;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.context.DolphinSessionProvider;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
@@ -29,6 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import java.util.concurrent.Future;
+
 /**
  * Provides all Dolphin Platform Beans and Scopes for CDI
  */
@@ -37,15 +41,16 @@ public class SpringBeanFactory {
 
     /**
      * Method to create a spring managed {@link com.canoo.dolphin.impl.BeanManagerImpl} instance in client scope.
+     *
      * @return the instance
      */
-    @Bean(name="beanManager")
+    @Bean(name = "beanManager")
     @ClientScoped
     protected BeanManager createManager() {
         return DolphinPlatformBootstrap.getContextProvider().getCurrentContext().getBeanManager();
     }
 
-    @Bean(name="dolphinSession")
+    @Bean(name = "dolphinSession")
     @ClientScoped
     protected DolphinSession createDolphinSession() {
         return DolphinPlatformBootstrap.getContextProvider().getCurrentDolphinSession();
@@ -53,21 +58,34 @@ public class SpringBeanFactory {
 
     /**
      * Method to create a spring managed {@link DolphinEventBus} instance in singleton scope.
+     *
      * @return the instance
      */
-    @Bean(name="dolphinEventBus")
+    @Bean(name = "dolphinEventBus")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected DolphinEventBus createEventBus() {
         return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider(), DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
 
-    @Bean(name="propertyBinder")
+    @Bean(name = "propertyBinder")
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     protected PropertyBinder createPropertyBinder() {
         return new PropertyBinderImpl();
     }
 
-    @Bean(name="customScopeConfigurer")
+    @Bean(name = "backgroundRunner")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected BackgroundRunner createBackgroundRunner() {
+        return new BackgroundRunner() {
+
+            @Override
+            public Future<Void> runLaterInClientSession(final String clientSessionId, final Runnable task) {
+                return DolphinContextUtils.runLaterInClientSession(clientSessionId, task);
+            }
+        };
+    }
+
+    @Bean(name = "customScopeConfigurer")
     public static CustomScopeConfigurer createClientScope() {
         CustomScopeConfigurer configurer = new CustomScopeConfigurer();
         configurer.addScope(ClientScope.CLIENT_SCOPE, new ClientScope(new DolphinSessionProvider() {

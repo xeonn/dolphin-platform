@@ -18,10 +18,12 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.impl.IdentitySet;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.util.Assert;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -60,12 +62,25 @@ public class DolphinContextTaskQueue {
         this.maxExecutionTimeUnit = Assert.requireNonNull(maxExecutionTimeUnit, "maxExecutionTimeUnit");
     }
 
-    public void addTask(Runnable task) {
+    public Future<Void> addTask(final Runnable task) {
+        Assert.requireNonNull(task, "task");
         taskLock.lock();
         try {
-            tasks.add(task);
+            final SettableFuture<Void> future = SettableFuture.create();
+            tasks.add(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        task.run();
+                        future.set(null);
+                    } catch (Exception e) {
+                        future.setException(e);
+                    }
+                }
+            });
             LOG.trace("Tasks added to Dolphin Platform context {}", dolphinSessionId);
             taskCondition.signal();
+            return future;
         } finally {
             taskLock.unlock();
         }

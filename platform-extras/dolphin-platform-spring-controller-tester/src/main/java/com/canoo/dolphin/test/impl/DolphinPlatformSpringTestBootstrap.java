@@ -40,6 +40,7 @@ import com.canoo.dolphin.internal.BeanRepository;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.BackgroundRunner;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
@@ -73,6 +74,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Configuration
 public class DolphinPlatformSpringTestBootstrap {
@@ -204,6 +206,18 @@ public class DolphinPlatformSpringTestBootstrap {
                 return context.getDolphinSession();
             }
         }, DolphinPlatformBootstrap.getSessionLifecycleHandler());
+    }
+
+    @Bean(name = "backgroundRunner")
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    protected BackgroundRunner createBackgroundRunner() {
+        return new BackgroundRunner() {
+
+            @Override
+            public Future<Void> runLaterInClientSession(final String clientSessionId, final Runnable task) {
+                return DolphinContextUtils.runLaterInClientSession(clientSessionId, task);
+            }
+        };
     }
 
     @Bean(name = "propertyBinder")

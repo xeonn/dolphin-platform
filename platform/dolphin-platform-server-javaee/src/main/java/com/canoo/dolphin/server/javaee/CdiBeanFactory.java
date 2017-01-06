@@ -16,16 +16,19 @@
 package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.BeanManager;
+import com.canoo.dolphin.server.BackgroundRunner;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.binding.PropertyBinder;
 import com.canoo.dolphin.server.binding.impl.PropertyBinderImpl;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
+import com.canoo.dolphin.server.context.DolphinContextUtils;
 import com.canoo.dolphin.server.event.DolphinEventBus;
 import com.canoo.dolphin.server.event.impl.DefaultDolphinEventBus;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
+import java.util.concurrent.Future;
 
 /**
  * Factory that provides all needed Dolphin Platform extensions as CDI beans.
@@ -52,6 +55,19 @@ public class CdiBeanFactory {
     public DolphinEventBus createEventBus() {
         return new DefaultDolphinEventBus(DolphinPlatformBootstrap.getContextProvider(), DolphinPlatformBootstrap.getSessionLifecycleHandler());
     }
+
+    @Produces
+    @ApplicationScoped
+    public BackgroundRunner createBackgroundRunner() {
+        return new BackgroundRunner() {
+
+            @Override
+            public Future<Void> runLaterInClientSession(final String clientSessionId, final Runnable task) {
+                return DolphinContextUtils.runLaterInClientSession(clientSessionId, task);
+            }
+        };
+    }
+
 
     @Produces
     @ApplicationScoped
