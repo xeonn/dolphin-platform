@@ -158,11 +158,11 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
     }
 
     private void updateClientId(HttpURLConnection conn) {
-        String var = conn.getHeaderField(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
-        if (this.clientId != null && !this.clientId.equals(var)) {
+        String clientIdInHeader = conn.getHeaderField(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
+        if (this.clientId != null && !this.clientId.equals(clientIdInHeader)) {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
-        this.clientId = var;
+        this.clientId = clientIdInHeader;
     }
 
     private byte[] inputStreamToByte(InputStream is) throws IOException {
