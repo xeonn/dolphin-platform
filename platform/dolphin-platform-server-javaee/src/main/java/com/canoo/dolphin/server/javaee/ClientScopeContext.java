@@ -27,8 +27,6 @@ import java.lang.annotation.Annotation;
 
 public class ClientScopeContext extends AbstractContext {
 
-    private final static String CLIENT_STORE_ATTRIBUTE = "DolphinPlatformCdiClientScopeStore";
-
     private final static String CLIENT_STORAGE_ATTRIBUTE = "DolphinPlatformCdiContextualStorage";
 
     private final BeanManager beanManager;
