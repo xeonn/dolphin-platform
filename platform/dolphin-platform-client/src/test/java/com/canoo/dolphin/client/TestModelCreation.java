@@ -44,7 +44,7 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -64,7 +64,7 @@ import static org.testng.Assert.fail;
 public class TestModelCreation extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithAnnotatedSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -118,7 +118,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -172,7 +172,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test(expectedExceptions = BeanDefinitionException.class)
-    public void testWithWrongModelType(@Mocked HttpClientConnector connector) {
+    public void testWithWrongModelType(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -180,7 +180,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test(expectedExceptions = NullPointerException.class)
-    public void testWithNull(@Mocked HttpClientConnector connector) {
+    public void testWithNull(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -188,7 +188,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithAllPrimitiveDatatypes(@Mocked HttpClientConnector connector) {
+    public void testWithAllPrimitiveDatatypes(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -226,34 +226,34 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
         for(Attribute attribute : classAttributes) {
             if (PlatformConstants.JAVA_CLASS.equals(attribute.getPropertyName())) {
-                assertThat(attribute.getValue(), is(PrimitiveDataTypesModel.class.getName()));
+                assertThat(attribute.getValue().toString(), is(PrimitiveDataTypesModel.class.getName()));
             } else if (PlatformConstants.SOURCE_SYSTEM.equals(attribute.getPropertyName())) {
                 assertThat(attribute.getValue(), Matchers.<Object>is(PlatformConstants.SOURCE_SYSTEM_CLIENT));
             } else {
                 switch (attribute.getPropertyName()) {
                     case "byteProperty":
-                        assertThat(attribute.getValue(), is(ByteConverterFactory.FIELD_TYPE_BYTE));
+                        assertThat((Integer) attribute.getValue(), is(ByteConverterFactory.FIELD_TYPE_BYTE));
                         break;
                     case "shortProperty":
-                        assertThat(attribute.getValue(), is(ShortConverterFactory.FIELD_TYPE_SHORT));
+                        assertThat((Integer) attribute.getValue(), is(ShortConverterFactory.FIELD_TYPE_SHORT));
                         break;
                     case "integerProperty":
-                        assertThat(attribute.getValue(), is(IntegerConverterFactory.FIELD_TYPE_INT));
+                        assertThat((Integer) attribute.getValue(), is(IntegerConverterFactory.FIELD_TYPE_INT));
                         break;
                     case "longProperty":
-                        assertThat(attribute.getValue(), is(LongConverterFactory.FIELD_TYPE_LONG));
+                        assertThat((Integer) attribute.getValue(), is(LongConverterFactory.FIELD_TYPE_LONG));
                         break;
                     case "floatProperty":
-                        assertThat(attribute.getValue(), is(FloatConverterFactory.FIELD_TYPE_FLOAT));
+                        assertThat((Integer) attribute.getValue(), is(FloatConverterFactory.FIELD_TYPE_FLOAT));
                         break;
                     case "doubleProperty":
-                        assertThat(attribute.getValue(), is(DoubleConverterFactory.FIELD_TYPE_DOUBLE));
+                        assertThat((Integer) attribute.getValue(), is(DoubleConverterFactory.FIELD_TYPE_DOUBLE));
                         break;
                     case "booleanProperty":
-                        assertThat(attribute.getValue(), is(BooleanConverterFactory.FIELD_TYPE_BOOLEAN));
+                        assertThat((Integer) attribute.getValue(), is(BooleanConverterFactory.FIELD_TYPE_BOOLEAN));
                         break;
                     case "textProperty":
-                        assertThat(attribute.getValue(), is(StringConverterFactory.FIELD_TYPE_STRING));
+                        assertThat((Integer) attribute.getValue(), is(StringConverterFactory.FIELD_TYPE_STRING));
                         break;
                     default:
                         fail("Unknown attribute found: " + attribute);
@@ -266,7 +266,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithComplexDataTypesModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -345,7 +345,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithSingleReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -399,7 +399,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithListReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithListReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -452,7 +452,7 @@ public class TestModelCreation extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
+    public void testWithInheritedModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 

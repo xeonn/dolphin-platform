@@ -75,38 +75,46 @@ public class ClientContextFactory {
         Logger openDolphinLogger = Logger.getLogger("org.opendolphin");
         openDolphinLogger.setLevel(openDolphinLogLevel);
 
-        clientConfiguration.getBackgroundExecutor().execute(() -> {
-            try {
-                final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
-                final ClientDolphin clientDolphin = new ClientDolphin();
-                clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
-                final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientDolphin, new OptimizedJsonCodec(), clientConfiguration.getHttpClient(), clientConfiguration.getServerEndpoint(), remotingErrorHandler, clientConfiguration.getUiThreadHandler());
-                ExceptionHandler exceptionHandler = new ExceptionHandler() {
+        clientConfiguration.getBackgroundExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final ForwardableCallback<DolphinRemotingException> remotingErrorHandler = new ForwardableCallback<>();
+                    final ClientDolphin clientDolphin = new ClientDolphin();
+                    clientDolphin.setClientModelStore(new ClientModelStore(clientDolphin));
+                    final AbstractClientConnector clientConnector = new DolphinPlatformHttpClientConnector(clientConfiguration, clientDolphin, new OptimizedJsonCodec(), remotingErrorHandler);
+                    ExceptionHandler exceptionHandler = new ExceptionHandler() {
 
-                    @Override
-                    public void handle(Throwable e) {
-                        result.completeExceptionally(new DolphinRemotingException("Internal Exception", e));
-                    }
-                };
+                        @Override
+                        public void handle(Throwable e) {
+                            result.completeExceptionally(new DolphinRemotingException("Internal Exception", e));
+                        }
+                    };
 
-                clientConnector.setOnException(exceptionHandler);
-                clientDolphin.setClientConnector(clientConnector);
-                final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
-                final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
-                final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
-                final Converters converters = new Converters(beanRepository);
-                final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
-                final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, converters, builderFactory);
-                final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
-                final BeanBuilder beanBuilder = new ClientBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
-                final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
-                final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
-                final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
-                final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler);
-                clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
-                clientConfiguration.getUiThreadHandler().executeInsideUiThread(() -> result.complete(clientContext));
-            } catch (Exception e) {
-                result.obtrudeException(new ClientInitializationException("Can not connect to server!", e));
+                    clientConnector.setOnException(exceptionHandler);
+                    clientDolphin.setClientConnector(clientConnector);
+                    final DolphinCommandHandler dolphinCommandHandler = new DolphinCommandHandler(clientDolphin);
+                    final EventDispatcher dispatcher = new ClientEventDispatcher(clientDolphin);
+                    final BeanRepository beanRepository = new BeanRepositoryImpl(clientDolphin, dispatcher);
+                    final Converters converters = new Converters(beanRepository);
+                    final PresentationModelBuilderFactory builderFactory = new ClientPresentationModelBuilderFactory(clientDolphin);
+                    final ClassRepository classRepository = new ClassRepositoryImpl(clientDolphin, converters, builderFactory);
+                    final ListMapper listMapper = new ListMapperImpl(clientDolphin, classRepository, beanRepository, builderFactory, dispatcher);
+                    final BeanBuilder beanBuilder = new ClientBeanBuilderImpl(classRepository, beanRepository, listMapper, builderFactory, dispatcher);
+                    final ClientPlatformBeanRepository platformBeanRepository = new ClientPlatformBeanRepository(clientDolphin, beanRepository, dispatcher, converters);
+                    final ClientBeanManagerImpl clientBeanManager = new ClientBeanManagerImpl(beanRepository, beanBuilder, clientDolphin);
+                    final ControllerProxyFactory controllerProxyFactory = new ControllerProxyFactoryImpl(platformBeanRepository, dolphinCommandHandler, clientDolphin);
+                    final ClientContext clientContext = new ClientContextImpl(clientConfiguration, clientDolphin, controllerProxyFactory, dolphinCommandHandler, platformBeanRepository, clientBeanManager, remotingErrorHandler);
+                    clientDolphin.startPushListening(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, PlatformConstants.RELEASE_EVENT_BUS_COMMAND_NAME);
+                    clientConfiguration.getUiThreadHandler().executeInsideUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.complete(clientContext);
+                        }
+                    });
+                } catch (Exception e) {
+                    result.obtrudeException(new ClientInitializationException("Can not connect to server!", e));
+                }
             }
         });
         return result;

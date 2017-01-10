@@ -16,6 +16,4 @@
 
 dependencies {
     compile project(':dolphin-remoting-shared')
-    compileOnly "javax.servlet:javax.servlet-api:$servletApiVersion"
-    testCompile "javax.servlet:javax.servlet-api:$servletApiVersion"
 }

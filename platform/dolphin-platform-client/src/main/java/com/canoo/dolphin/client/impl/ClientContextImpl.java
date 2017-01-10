@@ -26,13 +26,13 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpClient;
 import org.opendolphin.core.client.ClientDolphin;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 public class ClientContextImpl implements ClientContext {
 
@@ -50,8 +50,6 @@ public class ClientContextImpl implements ClientContext {
 
     private final ClientConfiguration clientConfiguration;
 
-    private final HttpClient httpClient;
-
     private ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
     public ClientContextImpl(ClientConfiguration clientConfiguration, ClientDolphin clientDolphin, ControllerProxyFactory controllerProxyFactory, DolphinCommandHandler dolphinCommandHandler, ClientPlatformBeanRepository platformBeanRepository, ClientBeanManagerImpl clientBeanManager, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) throws ExecutionException, InterruptedException {
@@ -61,17 +59,19 @@ public class ClientContextImpl implements ClientContext {
         this.platformBeanRepository = Assert.requireNonNull(platformBeanRepository, "platformBeanRepository");
         this.clientBeanManager = Assert.requireNonNull(clientBeanManager, "clientBeanManager");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
-        this.clientConfiguration  = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
-        this.httpClient = clientConfiguration.getHttpClient();
+        this.clientConfiguration = Assert.requireNonNull(clientConfiguration, "clientConfiguration");
         try {
-            dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle((v, e) -> {
-                if(e != null) {
-                    state = State.DESTROYED;
-                    throw new ClientInitializationException("Can't call init action!");
-                } else {
-                    state = State.INITIALIZED;
+            dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.INIT_CONTEXT_COMMAND_NAME).handle(new BiFunction<Void, Throwable, Object>() {
+                @Override
+                public Object apply(Void aVoid, Throwable throwable) {
+                    if (throwable != null) {
+                        state = State.DESTROYED;
+                        throw new ClientInitializationException("Can't call init action!", throwable);
+                    } else {
+                        state = State.INITIALIZED;
+                    }
+                    return null;
                 }
-                return null;
             }).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
 
             //Set the ID
@@ -89,11 +89,14 @@ public class ClientContextImpl implements ClientContext {
         Assert.requireNonBlank(name, "name");
         checkForInitializedState();
 
-        return controllerProxyFactory.<T>create(name).handle((c, e) -> {
-            if (e != null) {
-                throw new ControllerInitalizationException(e);
+        return controllerProxyFactory.<T>create(name).handle(new BiFunction<ControllerProxy<T>, Throwable, ControllerProxy<T>>() {
+            @Override
+            public ControllerProxy<T> apply(ControllerProxy<T> controllerProxy, Throwable throwable) {
+                if (throwable != null) {
+                    throw new ControllerInitalizationException(throwable);
+                }
+                return controllerProxy;
             }
-            return c;
         });
     }
 
@@ -110,19 +113,24 @@ public class ClientContextImpl implements ClientContext {
         clientDolphin.stopPushListening();
         final CompletableFuture<Void> result = new CompletableFuture<>();
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-                    state = State.DESTROYED;
-                    dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME).handle((v, t) -> {
-                        if (t != null) {
-                            result.completeExceptionally(new DolphinRemotingException("Can't disconnect", t));
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                state = State.DESTROYED;
+                dolphinCommandHandler.invokeDolphinCommand(PlatformConstants.DESTROY_CONTEXT_COMMAND_NAME).handle(new BiFunction<Void, Throwable, Object>() {
+                    @Override
+                    public Object apply(Void aVoid, Throwable throwable) {
+                        if (throwable != null) {
+                            result.completeExceptionally(new DolphinRemotingException("Can't disconnect", throwable));
                         } else {
                             result.complete(null);
                         }
                         return null;
-                    });
-                    //TODO: Stop communication in client connector
-                }
-        );
+                    }
+                });
+                //TODO: Stop communication in client connector
+            }
+        });
 
         return result;
     }
@@ -151,20 +159,6 @@ public class ClientContextImpl implements ClientContext {
                 throw new IllegalStateException("The client is disconnected!");
             case DESTROYING:
                 throw new IllegalStateException("The client is disconnecting!");
-        }
-    }
-
-    @Override
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    @Override
-    public String getId() {
-        if(clientDolphin.getClientConnector() != null && clientDolphin.getClientConnector() instanceof  DolphinPlatformHttpClientConnector) {
-            return ((DolphinPlatformHttpClientConnector) clientDolphin.getClientConnector()).getClientId();
-        } else {
-            throw new RuntimeException("No id defined!");
         }
     }
 }

@@ -10,6 +10,11 @@ method of the API is annotated by `@Deprecated` since we plan to remove all this
 
 == Version 0.8.10
 
+* Provide a first implementation of an Android client API
+* The http connection of the Java client can be accessed and customized to provide custom security or
+authentification mechanisms.
+* Dependency to Apache HttpClient library is removed. Java basic HttpUrlConnection is used now.
+* Removed some unneeded dependencies
 * All classes of the Dolphin Platform are refactored to Java. The Dolphin Platform do not provide any
 Groovy based implementations any more. (https://github.com/canoo/dolphin-platform/issues/237[issue], https://github.com/canoo/dolphin-platform/issues/238[issue])
 * Groovy was removed as dependency (for runtime). Currently only the unit tests of the remoting modules still
@@ -24,6 +29,7 @@ found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolp
 * Some issues and code smells that were reported by sonar are refactored. (https://github.com/canoo/dolphin-platform/issues/38[issue])
 
 == Version 0.8.9
+_Release date: Dec 16, 2016_
 
 * Provide functionality to step into the DP lifecycle on the server (https://github.com/canoo/dolphin-platform/issues/267[issue])
 * Dependency to GParse is completely removed (https://github.com/canoo/dolphin-platform/issues/252[issue])

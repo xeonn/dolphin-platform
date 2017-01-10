@@ -169,7 +169,7 @@ public class ClientResponseHandler {
         // here we could have a pmType conflict and we may want to throw an Exception...
         // if there is no pmId, it is most likely an error and CreatePresentationModelCommand should have been used
         if (presentationModel == null) {
-            presentationModel = new ClientPresentationModel(serverCommand.getPmId(), Collections.emptyList());
+            presentationModel = new ClientPresentationModel(serverCommand.getPmId(), Collections.<ClientAttribute>emptyList());
             presentationModel.setPresentationModelType(serverCommand.getPmType());
             getClientModelStore().add(presentationModel);
         }

@@ -15,22 +15,31 @@
  */
 package com.canoo.dolphin.client.impl;
 
+import com.canoo.dolphin.client.ClientConfiguration;
+import com.canoo.dolphin.client.DolphinSessionException;
+import com.canoo.dolphin.client.HttpURLConnectionFactory;
+import com.canoo.dolphin.client.HttpURLConnectionResponseHandler;
 import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.comm.AbstractClientConnector;
 import org.opendolphin.core.client.comm.BlindCommandBatcher;
-import org.opendolphin.core.client.comm.UiThreadHandler;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.URL;
+import java.util.Map;
 
 /**
  * This class is used to sync the unique client scope id of the current dolphin
@@ -39,64 +48,132 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
     private static final String CHARSET = "UTF-8";
 
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+
+    private static final String ACCEPT_HEADER = "Accept";
+
+    private static final String COOKIE_HEADER = "Cookie";
+
+    private static final String SET_COOKIE_HEADER = "Set-Cookie";
+
+    private static final String POST_METHOD = "POST";
+
+    private static final String JSON_MIME_TYPE = "application/json";
+
     private final URL servletUrl;
-
-    private final HttpClient httpClient;
-
-    private final IdBasedResponseHandler responseHandler;
 
     private final ForwardableCallback<DolphinRemotingException> remotingErrorHandler;
 
     private final Codec codec;
 
+    private final CookieStore cookieStore;
+
+    private final HttpURLConnectionFactory connectionFactory;
+
+    private final HttpURLConnectionResponseHandler responseHandler;
+
     private String clientId;
 
-    public DolphinPlatformHttpClientConnector(ClientDolphin clientDolphin, Codec codec, HttpClient httpClient, URL servletUrl, ForwardableCallback<DolphinRemotingException> remotingErrorHandler, UiThreadHandler uiThreadHandler) {
+    public DolphinPlatformHttpClientConnector(ClientConfiguration configuration, ClientDolphin clientDolphin, Codec codec, ForwardableCallback<DolphinRemotingException> remotingErrorHandler) {
         super(clientDolphin, new BlindCommandBatcher());
-        setUiThreadHandler(uiThreadHandler);
-        this.servletUrl = Assert.requireNonNull(servletUrl, "servletUrl");
+        Assert.requireNonNull(configuration, "configuration");
+        setUiThreadHandler(configuration.getUiThreadHandler());
+        this.servletUrl = configuration.getServerEndpoint();
+
+        this.connectionFactory = configuration.getConnectionFactory();
+        this.cookieStore = configuration.getCookieStore();
+        this.responseHandler = configuration.getResponseHandler();
+
         this.codec = Assert.requireNonNull(codec, "codec");
         this.remotingErrorHandler = Assert.requireNonNull(remotingErrorHandler, "remotingErrorHandler");
-        this.httpClient = Assert.requireNonNull(httpClient, "httpClient");
-        this.responseHandler = new IdBasedResponseHandler(this);
+
     }
 
     public List<Command> transmit(List<Command> commands) {
         Assert.requireNonNull(commands, "commands");
-        List<Command> result = new ArrayList<>();
         try {
+            //REQUEST
+            HttpURLConnection conn = connectionFactory.create(servletUrl);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestProperty(CONTENT_TYPE_HEADER, JSON_MIME_TYPE);
+            conn.setRequestProperty(ACCEPT_HEADER, JSON_MIME_TYPE);
+            conn.setRequestMethod(POST_METHOD);
+            conn.setRequestProperty(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
+            setRequestCookies(conn);
             String content = codec.encode(commands);
-            HttpPost httpPost = new HttpPost(servletUrl.toString());
-            StringEntity entity = new StringEntity(content, CHARSET);
-            httpPost.setEntity(entity);
-            if(clientId != null) {
-                httpPost.addHeader(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME, clientId);
+            OutputStream w = conn.getOutputStream();
+            w.write(content.getBytes(CHARSET));
+            w.close();
+
+            //RESPONSE
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpStatus.SC_REQUEST_TIMEOUT) {
+                throw new DolphinSessionException("Server can not handle Dolphin Client ID");
             }
+            if (responseCode >= HttpStatus.SC_MULTIPLE_CHOICES) {
+                throw new DolphinHttpResponseException(responseCode, conn.getResponseMessage());
+            }
+            updateCookiesFromResponse(conn);
+            updateClientId(conn);
             if (commands.size() == 1 && commands.get(0) == getReleaseCommand()) {
-                httpClient.execute(httpPost, responseHandler);
+                return new ArrayList<>();
             } else {
-                String response = httpClient.execute(httpPost, responseHandler);
-                result = codec.decode(response);
+                String receivedContent = new String(inputStreamToByte(conn.getInputStream()), CHARSET);
+                return codec.decode(receivedContent);
             }
         } catch (Exception e) {
             DolphinRemotingException dolphinRemotingException = new DolphinRemotingException("Error in remoting layer", e);
             remotingErrorHandler.call(dolphinRemotingException);
             throw dolphinRemotingException;
         }
-        return result;
     }
 
-    public String getClientId() {
-        return clientId;
+    private void updateCookiesFromResponse(HttpURLConnection conn) throws URISyntaxException {
+        Map<String, List<String>> headerFields = conn.getHeaderFields();
+        List<String> cookiesHeader = headerFields.get(SET_COOKIE_HEADER);
+
+        if (cookiesHeader != null) {
+            for (String cookie : cookiesHeader) {
+                List<HttpCookie> cookies = HttpCookie.parse(cookie);
+                for(HttpCookie httpCookie : cookies) {
+                    cookieStore.add(servletUrl.toURI(), httpCookie);
+                }
+            }
+        }
     }
 
-    protected void setClientId(String clientId) {
-        if (this.clientId != null && !this.clientId.equals(clientId)) {
+    private void setRequestCookies(HttpURLConnection conn) throws URISyntaxException {
+        if (cookieStore.getCookies().size() > 0) {
+
+            String cookieValue = "";
+            for(HttpCookie cookie : cookieStore.get(servletUrl.toURI())) {
+                cookieValue = cookieValue + cookie + ";";
+            }
+            if(!cookieValue.isEmpty()) {
+                cookieValue = cookieValue.substring(0, cookieValue.length());
+                conn.setRequestProperty(COOKIE_HEADER, cookieValue);
+            }
+        }
+    }
+
+    private void updateClientId(HttpURLConnection conn) {
+        String clientIdInHeader = conn.getHeaderField(PlatformConstants.CLIENT_ID_HTTP_HEADER_NAME);
+        if (this.clientId != null && !this.clientId.equals(clientIdInHeader)) {
             throw new DolphinRemotingException("Error: client id conflict!");
         }
-        this.clientId = clientId;
+        this.clientId = clientIdInHeader;
     }
 
+    private byte[] inputStreamToByte(InputStream is) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        int read = is.read();
+        while (read != -1) {
+            byteArrayOutputStream.write(read);
+            read = is.read();
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
 }
 
 

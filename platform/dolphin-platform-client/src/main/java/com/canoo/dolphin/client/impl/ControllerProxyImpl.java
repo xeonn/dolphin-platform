@@ -28,6 +28,7 @@ import org.opendolphin.core.client.comm.OnFinishedHandler;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 
@@ -111,11 +112,14 @@ public class ControllerProxyImpl<T> implements ControllerProxy<T> {
     public <C> CompletableFuture<ControllerProxy<C>> createController(String name) {
         Assert.requireNonBlank(name, "name");
 
-        return controllerProxyFactory.<C>create(name).handle((c, e) -> {
-            if (e != null) {
-                throw new ControllerInitalizationException(e);
+        return controllerProxyFactory.<C>create(name).handle(new BiFunction<ControllerProxy<C>, Throwable, ControllerProxy<C>>() {
+            @Override
+            public ControllerProxy<C> apply(ControllerProxy<C> cControllerProxy, Throwable throwable) {
+                if (throwable != null) {
+                    throw new ControllerInitalizationException(throwable);
+                }
+                return cControllerProxy;
             }
-            return c;
         });
     }
 }

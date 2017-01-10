@@ -31,7 +31,7 @@ public class ClientPlatformBeanRepository {
 
     private InternalAttributesBean internalAttributesBean;
 
-    public ClientPlatformBeanRepository(ClientDolphin dolphin, BeanRepository beanRepository, EventDispatcher dispatcher, Converters converters) {
+    public ClientPlatformBeanRepository(final ClientDolphin dolphin, final BeanRepository beanRepository, final EventDispatcher dispatcher, final Converters converters) {
         this.dolphin = dolphin;
         this.converters = converters;
 
