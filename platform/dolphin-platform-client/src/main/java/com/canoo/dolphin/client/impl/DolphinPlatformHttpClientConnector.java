@@ -108,10 +108,10 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
             //RESPONSE
             int responseCode = conn.getResponseCode();
-            if (responseCode == 408) {
+            if (responseCode == HttpStatus.SC_REQUEST_TIMEOUT) {
                 throw new DolphinSessionException("Server can not handle Dolphin Client ID");
             }
-            if (responseCode >= 300) {
+            if (responseCode >= HttpStatus.SC_MULTIPLE_CHOICES) {
                 throw new DolphinHttpResponseException(responseCode, conn.getResponseMessage());
             }
             updateCookiesFromResponse(conn);
