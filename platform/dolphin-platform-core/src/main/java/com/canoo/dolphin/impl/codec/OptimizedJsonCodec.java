@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import org.opendolphin.core.comm.Codec;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
@@ -100,9 +101,17 @@ public class OptimizedJsonCodec implements Codec {
 
             for (final JsonElement jsonElement : array) {
                 final JsonObject command = (JsonObject) jsonElement;
-                final String id = command.getAsJsonPrimitive("id").getAsString();
+                JsonPrimitive idPrimitive = command.getAsJsonPrimitive("id");
+
+                String id = null;
+                if(idPrimitive != null) {
+                    id = idPrimitive.getAsString();
+                }
                 LOG.trace("Decoding command: {}", id);
-                final CommandEncoder<?> encoder = DECODERS.get(id);
+                CommandEncoder<?> encoder = null;
+                if (id != null) {
+                    encoder = DECODERS.get(id);
+                }
                 if (encoder != null) {
                     commands.add(encoder.decode(command));
                 } else {
