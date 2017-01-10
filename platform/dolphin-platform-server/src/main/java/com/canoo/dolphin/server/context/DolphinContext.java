@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -329,8 +330,6 @@ public class DolphinContext {
         return results;
     }
 
-
-
     public DolphinSession getDolphinSession() {
         return dolphinSession;
     }
@@ -343,7 +342,6 @@ public class DolphinContext {
         DolphinContext that = (DolphinContext) o;
 
         return id.equals(that.id);
-
     }
 
     @Override
@@ -351,7 +349,7 @@ public class DolphinContext {
         return id.hashCode();
     }
 
-    private void runLater(final Runnable runnable) {
-        taskQueue.addTask(runnable);
+    public Future<Void> runLater(final Runnable runnable) {
+        return taskQueue.addTask(runnable);
     }
 }

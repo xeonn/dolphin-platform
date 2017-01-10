@@ -19,6 +19,7 @@ import com.canoo.dolphin.util.Assert;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import java.io.Serializable;
@@ -30,8 +31,8 @@ public class ClientScopeExtension implements Extension, Serializable {
         event.addScope(ClientScoped.class, true, false);
     }
 
-    public void registerContext(@Observes final AfterBeanDiscovery event) {
+    public void registerContext(@Observes final AfterBeanDiscovery event, final BeanManager beanManager) {
         Assert.requireNonNull(event, "event");
-        event.addContext(new ClientScopeContext());
+        event.addContext(new ClientScopeContext(beanManager));
     }
 }

@@ -17,48 +17,42 @@ package com.canoo.dolphin.server.javaee;
 
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.server.bootstrap.DolphinPlatformBootstrap;
-import com.canoo.dolphin.util.Assert;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.ContextException;
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class ClientScopeContext implements Context {
+public class ClientScopeContext extends AbstractContext {
 
-    //see https://rpestano.wordpress.com/2013/06/30/cdi-custom-scope/
-    // https://github.com/rmpestano/cdi-custom-scope/tree/master/custom-scope-extension/src/main/java/custom/scope/extension
+    private final static String CLIENT_STORAGE_ATTRIBUTE = "DolphinPlatformCdiContextualStorage";
 
-    private final static String CLIENT_STORE_ATTRIBUTE = "DolphinPlatformCdiClientScopeStore";
+    private final BeanManager beanManager;
 
-    public ClientScopeContext() {
+    public ClientScopeContext(BeanManager beanManager) {
+        super(beanManager);
+        this.beanManager = beanManager;
     }
 
     @Override
-    public <T> T get(final Contextual<T> contextual) {
-        Assert.requireNonNull(contextual, "contextual");
-        Bean bean = (Bean) contextual;
-        if (getLocalStore().containsKey(bean.getBeanClass())) {
-            return (T) getLocalStore().get(bean.getBeanClass()).getInstance();
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        Object val = getDolphinSession().getAttribute(CLIENT_STORAGE_ATTRIBUTE);
+        if(val != null) {
+            if(val instanceof ContextualStorage) {
+                return (ContextualStorage) val;
+            } else {
+                throw new ContextException("No ClientContext specified!");
+            }
         } else {
-            return null;
-        }
-    }
-
-    @Override
-    public <T> T get(final Contextual<T> contextual, final CreationalContext<T> creationalContext) {
-        Assert.requireNonNull(contextual, "contextual");
-        Bean bean = (Bean) contextual;
-        if (getLocalStore().containsKey(bean.getBeanClass())) {
-            return (T) getLocalStore().get(bean.getBeanClass()).getInstance();
-        } else {
-            T instance = (T) bean.create(creationalContext);
-            ClientScopeInstanceHolder<T> instanceHolder = new ClientScopeInstanceHolder(bean, creationalContext, instance);
-            getLocalStore().put(bean.getBeanClass(), instanceHolder);
-            return instance;
+            if(createIfNotExist) {
+                ContextualStorage contextualStorage = new ContextualStorage(beanManager, false, false);
+                getDolphinSession().setAttribute(CLIENT_STORAGE_ATTRIBUTE, contextualStorage);
+                return contextualStorage;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -71,23 +65,14 @@ public class ClientScopeContext implements Context {
         return getDolphinSession() != null;
     }
 
-    private Map<Class<?>, ClientScopeInstanceHolder<?>> getLocalStore() {
-        Map<Class<?>, ClientScopeInstanceHolder<?>> localStore = getDolphinSession().getAttribute(CLIENT_STORE_ATTRIBUTE);
-        if(localStore == null) {
-            localStore = new ConcurrentHashMap<>();
-            getDolphinSession().setAttribute(CLIENT_STORE_ATTRIBUTE, localStore);
-        }
-        return localStore;
-    }
-
     private DolphinSession getDolphinSession() {
         return DolphinPlatformBootstrap.getContextProvider().getCurrentDolphinSession();
     }
 
     public void destroy() {
-        for(ClientScopeInstanceHolder<?> holder : getLocalStore().values()) {
-            holder.destroy();
+        Object val = getDolphinSession().getAttribute(CLIENT_STORAGE_ATTRIBUTE);
+        if(val != null && val instanceof ContextualStorage) {
+            AbstractContext.destroyAllActive((ContextualStorage) val);
         }
-        getLocalStore().clear();
     }
 }
