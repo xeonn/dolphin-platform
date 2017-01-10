@@ -73,6 +73,12 @@ public class ClientContextImpl implements ClientContext {
                     return null;
                 }
             }).get(clientConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS);
+
+            //Set the ID
+            //TODO: Workaround with Cast. Should be refactored in Remoting layer
+
+
+
         } catch (Exception e) {
             throw new ClientInitializationException("Can not connect to server!", e);
         }

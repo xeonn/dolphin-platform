@@ -36,6 +36,10 @@ plugins {
     id "org.sonarqube" version "2.2"
 }
 
+if (project.hasProperty('sonarToken')) {
+    System.setProperty("sonar.login", project.getProperty("sonarToken"))
+}
+
 Date buildTimeAndDate = new Date()
 ext {
     buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
@@ -73,7 +77,16 @@ subprojects { subprj ->
     apply plugin: 'org.kordamp.gradle.stats'
     apply from: rootProject.file('gradle/code-quality.gradle')
 
+    if (subprj.name.startsWith('dolphin-remoting')) {
+        apply plugin: 'groovy'
+    }
+
     subprj.tasks.withType(JavaCompile) {
+        sourceCompatibility = subprj.sourceCompatibility
+        targetCompatibility = subprj.targetCompatibility
+    }
+
+    subprj.tasks.withType(GroovyCompile) {
         sourceCompatibility = subprj.sourceCompatibility
         targetCompatibility = subprj.targetCompatibility
     }
@@ -83,11 +96,11 @@ subprojects { subprj ->
         jcenter()
     }
 
-    if (subprj.name.startsWith('dolphin-remoting')) {
-        apply plugin: 'groovy'
-        subprj.tasks.withType(GroovyCompile) {
-            sourceCompatibility = subprj.sourceCompatibility
-            targetCompatibility = subprj.targetCompatibility
+    if (!subprj.publishJars.toBoolean()) {
+        sonarqube {
+            sonarqube {
+                skipProject = true
+            }
         }
     }
 
@@ -95,6 +108,14 @@ subprojects { subprj ->
         subprj.apply from: rootProject.file('gradle/publishing.gradle')
         subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
         projectsWithCoverage << subprj
+
+        sonarqube {
+            sonarqube {
+                properties {
+                    property "sonar.exclusions", "**/*Exception.java"
+                }
+            }
+        }
 
         javadoc {
             excludes = ['**/*.html', 'META-INF/**']

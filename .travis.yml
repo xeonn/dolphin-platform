@@ -17,7 +17,7 @@ before_install:
 
 script:
   - if [ "$TRAVIS_BRANCH" == "master" ];
-    then ./gradlew clean sonarqube jacocoTestReport jacocoRootMergeReport -S -Dsonar.host.url=https://sonarqube.com -Dsonar.login=${SONAR_TOKEN};
+    then ./gradlew clean javadoc sonarqube jacocoTestReport jacocoRootMergeReport -S -Dsonar.login=${SONAR_TOKEN};
     else ./gradlew clean build jacocoTestReport jacocoRootMergeReport -S;
     fi
 
@@ -25,8 +25,21 @@ script:
 after_success:
   - ./gradlew coveralls
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    ./gradlew :dolphin-platform-documentation:asciidoctor;
-    cd documentation/dolphin-platform-documentation/build/asciidoc/html5/;
+    ./gradlew :documentation:asciidoctor;
+    cd documentation/build/asciidoc/html5/;
+    mkdir javadoc;
+    mkdir javadoc/client;
+    cp -a ../../../../platform/dolphin-platform-client/build/docs/javadoc/. javadoc/client;
+    mkdir javadoc/client-jfx;
+    cp -a ../../../../platform/dolphin-platform-client-javafx/build/docs/javadoc/. javadoc/client-jfx;
+    mkdir javadoc/core;
+    cp -a ../../../../platform/dolphin-platform-core/build/docs/javadoc/. javadoc/core;
+    mkdir javadoc/server;
+    cp -a ../../../../platform/dolphin-platform-server/build/docs/javadoc/. javadoc/server;
+    mkdir javadoc/server-jee;
+    cp -a ../../../../platform/dolphin-platform-server-javaee/build/docs/javadoc/. javadoc/server-jee;
+    mkdir javadoc/server-spring;
+    cp -a ../../../../platform/dolphin-platform-server-javaee/build/docs/javadoc/. javadoc/server-spring;
     git init;
     git config user.name "${GH_USER_NAME}";
     git config user.email "{GH_USER_EMAIL}";

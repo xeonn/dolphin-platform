@@ -41,10 +41,18 @@ public final class Qualifier<T> {
         return new Qualifier<>(UUID.randomUUID().toString());
     }
 
+    public static <T> Qualifier<T> create(String identifier) {
+        return new Qualifier<>(identifier);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Qualifier<?> qualifier = (Qualifier<?>) o;
 

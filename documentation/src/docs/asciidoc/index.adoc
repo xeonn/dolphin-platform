@@ -1,0 +1,25 @@
+= Dolphin Platform
+:revnumber: {revision-number}
+:toclevels: 10
+:numbered:
+
+include::_links.adoc[]
+
+:leveloffset: 1
+include::introduction.adoc[]
+include::remote-presentation-model.adoc[]
+include::jumpstart.adoc[]
+include::javadoc.adoc[]
+include::lifecycle.adoc[]
+include::model.adoc[]
+include::controller.adoc[]
+include::event-bus.adoc[]
+include::javaee-integration.adoc[]
+include::spring-integration.adoc[]
+include::server-configuration.adoc[]
+include::javafx-client.adoc[]
+include::security.adoc[]
+include::validation.adoc[]
+include::build.adoc[]
+include::changelog.adoc[]
+include::release.adoc[]

@@ -16,8 +16,6 @@
 package com.canoo.dolphin.impl;
 
 import com.canoo.dolphin.converter.ValueConverterException;
-import com.canoo.dolphin.event.Subscription;
-import com.canoo.dolphin.event.ValueChangeEvent;
 import com.canoo.dolphin.event.ValueChangeListener;
 import com.canoo.dolphin.internal.info.PropertyInfo;
 import com.canoo.dolphin.mapping.MappingException;
@@ -35,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @param <T> The type of the wrapped property.
  */
-public class PropertyImpl<T> implements Property<T> {
+public class PropertyImpl<T> extends AbstractProperty<T> {
 
     private final Attribute attribute;
     private final PropertyInfo propertyInfo;
@@ -79,46 +77,5 @@ public class PropertyImpl<T> implements Property<T> {
         } catch (ValueConverterException e) {
             throw new MappingException("Error in accessing property value!", e);
         }
-    }
-
-    @Override
-    public Subscription onChanged(final ValueChangeListener<? super T> listener) {
-        listeners.add(listener);
-        return new Subscription() {
-            @Override
-            public void unsubscribe() {
-                listeners.remove(listener);
-            }
-        };
-    }
-
-    protected void firePropertyChanged(final T oldValue, final T newValue) {
-        final ValueChangeEvent<T> event = new ValueChangeEvent<T>() {
-            @Override
-            public Property<T> getSource() {
-                return PropertyImpl.this;
-            }
-
-            @Override
-            public T getOldValue() {
-                return oldValue;
-            }
-
-            @Override
-            public T getNewValue() {
-                return newValue;
-            }
-        };
-        notifyInternalListeners(event);
-        notifyExternalListeners(event);
-    }
-
-    protected void notifyExternalListeners(ValueChangeEvent<T> event) {
-        for(ValueChangeListener<? super T> listener : listeners) {
-            listener.valueChanged(event);
-        }
-    }
-
-    protected void notifyInternalListeners(ValueChangeEvent<T> event) {
     }
 }
