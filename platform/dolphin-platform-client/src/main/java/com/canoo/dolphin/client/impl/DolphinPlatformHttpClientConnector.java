@@ -82,7 +82,6 @@ public class DolphinPlatformHttpClientConnector extends AbstractClientConnector 
 
         this.connectionFactory = configuration.getConnectionFactory();
         this.cookieStore = configuration.getCookieStore();
-        //new CookieManager().getCookieStore();
         this.responseHandler = configuration.getResponseHandler();
 
         this.codec = Assert.requireNonNull(codec, "codec");
