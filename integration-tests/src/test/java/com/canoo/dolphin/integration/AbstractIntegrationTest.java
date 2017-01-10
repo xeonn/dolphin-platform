@@ -20,6 +20,7 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientContextFactory;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
+import com.canoo.dolphin.client.impl.HttpStatus;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.testng.annotations.DataProvider;
 
@@ -49,7 +50,7 @@ public class AbstractIntegrationTest {
                 if(connection instanceof HttpURLConnection) {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
                     httpURLConnection.connect();
-                    if(httpURLConnection.getResponseCode() == 200) {
+                    if(httpURLConnection.getResponseCode() == HttpStatus.HTTP_OK) {
                         connected = true;
                     }
                 } else {
