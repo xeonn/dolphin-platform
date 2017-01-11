@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,6 @@ import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 
-/**
- * Created by hendrikebbers on 09.05.16.
- */
 public class ClientBeanBuilderImpl extends AbstractBeanBuilder {
 
     public ClientBeanBuilderImpl(ClassRepository classRepository, BeanRepository beanRepository, ListMapper listMapper, PresentationModelBuilderFactory builderFactory, EventDispatcher dispatcher) {

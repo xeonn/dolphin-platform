@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package com.canoo.dolphin.server.impl.gc;
 
-import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
+import com.canoo.dolphin.util.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -30,20 +29,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-/**
- * Created by hendrikebbers on 20.01.16.
- */
 public class TestGarbageCollection {
-
-    @BeforeMethod
-    public void beforeEachTest() {
-        UnstableFeatureFlags.setUseGc(true);
-    }
-
-    @AfterMethod
-    public void afterEachTest() {
-        UnstableFeatureFlags.setUseGc(false);
-    }
 
     @Test
     public void testForRootBean() {
@@ -780,8 +766,9 @@ public class TestGarbageCollection {
                 fail("GC should be deactivated!");
             }
         };
-        UnstableFeatureFlags.setUseGc(false);
-        GarbageCollector garbageCollector = new GarbageCollector(gcConsumer);
+        DolphinPlatformConfiguration configuration = new DolphinPlatformConfiguration();
+        configuration.setUseGc(false);
+        GarbageCollector garbageCollector = new GarbageCollector(configuration, gcConsumer);
 
         BeanWithLists parentBeanA = new BeanWithLists(garbageCollector);
         garbageCollector.onBeanCreated(parentBeanA, true);
@@ -856,7 +843,10 @@ public class TestGarbageCollection {
         return addedCount;
     }
 
-    private GarbageCollector createGarbageCollection(GarbageCollectionCallback gcConsumer) {
-        return new GarbageCollector(gcConsumer);
+    private GarbageCollector createGarbageCollection(final GarbageCollectionCallback gcConsumer) {
+        Assert.requireNonNull(gcConsumer, "gcConsumer");
+        final DolphinPlatformConfiguration configuration = new DolphinPlatformConfiguration();
+        configuration.setUseGc(true);
+        return new GarbageCollector(configuration, gcConsumer);
     }
 }

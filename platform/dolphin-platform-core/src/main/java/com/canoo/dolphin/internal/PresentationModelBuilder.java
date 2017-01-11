@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@ package com.canoo.dolphin.internal;
 
 import org.opendolphin.core.PresentationModel;
 
-/**
- * Created by hendrikebbers on 25.09.15.
- */
 public interface PresentationModelBuilder<T extends PresentationModel> {
 
     PresentationModelBuilder<T> withType(String type);

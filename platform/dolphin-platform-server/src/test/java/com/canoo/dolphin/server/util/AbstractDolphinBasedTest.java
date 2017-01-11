@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.server.impl.ServerBeanBuilderImpl;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
@@ -61,7 +62,9 @@ public abstract class AbstractDolphinBasedTest {
         final PresentationModelBuilderFactory builderFactory = new ServerPresentationModelBuilderFactory(dolphin);
         final ClassRepository classRepository = new ClassRepositoryImpl(dolphin, converters, builderFactory);
         final ListMapper listMapper = new ListMapperImpl(dolphin, classRepository, beanRepository, builderFactory, dispatcher);
-        final GarbageCollector garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
+        final DolphinPlatformConfiguration configurationForGc = new DolphinPlatformConfiguration();
+        configurationForGc.setUseGc(true);
+        final GarbageCollector garbageCollector = new GarbageCollector(configurationForGc, new GarbageCollectionCallback() {
             @Override
             public void onReject(Set<Instance> instances) {
 

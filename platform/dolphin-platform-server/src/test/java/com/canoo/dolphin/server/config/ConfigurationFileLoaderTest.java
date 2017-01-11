@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ import java.util.logging.Level;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
-/**
- * Created by hendrikebbers on 22.03.16.
- */
 public class ConfigurationFileLoaderTest {
 
     @Test

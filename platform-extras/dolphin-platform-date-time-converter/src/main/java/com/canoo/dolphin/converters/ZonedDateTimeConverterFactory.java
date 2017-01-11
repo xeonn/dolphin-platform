@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import com.canoo.dolphin.impl.converters.AbstractStringConverter;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Created by hendrikebbers on 25.10.16.
- */
 public class ZonedDateTimeConverterFactory extends AbstractConverterFactory {
 
     private final static Converter CONVERTER = new ZonedDateTimeConverter();

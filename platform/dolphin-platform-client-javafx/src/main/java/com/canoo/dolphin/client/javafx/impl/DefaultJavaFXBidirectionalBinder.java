@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import com.canoo.dolphin.client.javafx.binding.JavaFXBidirectionalBinder;
 import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;
 
-/**
- * Created by hendrikebbers on 28.09.15.
- */
 public class DefaultJavaFXBidirectionalBinder<S> extends DefaultJavaFXBinder<S> implements JavaFXBidirectionalBinder<S> {
 
     private final javafx.beans.property.Property<S> javaFxProperty;

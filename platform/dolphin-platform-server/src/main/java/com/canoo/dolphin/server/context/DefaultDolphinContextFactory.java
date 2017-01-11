@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 
-/**
- * Created by hendrikebbers on 31.05.16.
- */
 public class DefaultDolphinContextFactory implements DolphinContextFactory {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DefaultDolphinContextFactory.class);

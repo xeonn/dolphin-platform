@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-/**
- * Created by hendrikebbers on 18.02.16.
- */
 public class ServerPresentationModelBuilderTest extends AbstractDolphinBasedTest {
 
     @Test(expectedExceptions = NullPointerException.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.server.DolphinSession;
 import com.canoo.dolphin.util.Callback;
 
-/**
- * Created by hendrikebbers on 14.11.16.
- */
 public interface DolphinSessionLifecycleHandler {
 
     Subscription addSessionCreatedListener(Callback<DolphinSession> listener);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ import com.canoo.dolphin.mapping.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-/**
- * Created by hendrikebbers on 28.09.15.
- */
 public abstract class AbstractNumericDolphinBinder<T extends Number> extends DefaultDolphinBinder<T> implements NumericDolphinBinder<T> {
 
     private final Property<T> property;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.canoo.dolphin.impl.DolphinUtils;
 import com.canoo.dolphin.impl.IdentitySet;
 import com.canoo.dolphin.impl.ReflectionHelper;
 import com.canoo.dolphin.mapping.Property;
-import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
+import com.canoo.dolphin.server.config.DolphinPlatformConfiguration;
 import com.canoo.dolphin.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +59,16 @@ public class GarbageCollector {
 
     private long removedBeansCount = 0;
 
+    private final DolphinPlatformConfiguration configuration;
+
     /**
      * Constructor
      *
      * @param onRemoveCallback callback that will be called for each garbage collection call.
      */
-    public GarbageCollector(GarbageCollectionCallback onRemoveCallback) {
+    public GarbageCollector(DolphinPlatformConfiguration configuration, GarbageCollectionCallback onRemoveCallback) {
         this.onRemoveCallback = Assert.requireNonNull(onRemoveCallback, "onRemoveCallback");
+        this.configuration = Assert.requireNonNull(configuration, "configuration");
     }
 
     /**
@@ -76,7 +79,7 @@ public class GarbageCollector {
      * @param rootBean if this is true the bean is handled as a root bean. This bean don't need a reference.
      */
     public synchronized void onBeanCreated(Object bean, boolean rootBean) {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             return;
         }
         Assert.requireNonNull(bean, "bean");
@@ -102,7 +105,7 @@ public class GarbageCollector {
     }
 
     public synchronized void onBeanRemoved(Object bean) {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             return;
         }
         Assert.requireNonNull(bean, "bean");
@@ -137,7 +140,7 @@ public class GarbageCollector {
      * @param newValue the new value
      */
     public synchronized void onPropertyValueChanged(Property property, Object oldValue, Object newValue) {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             return;
         }
         removeReferenceAndCheckForGC(property, oldValue);
@@ -160,7 +163,7 @@ public class GarbageCollector {
      * @param value the added item
      */
     public synchronized void onAddedToList(ObservableList list, Object value) {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             return;
         }
         if (value != null && DolphinUtils.isDolphinBean(value.getClass())) {
@@ -181,7 +184,7 @@ public class GarbageCollector {
      * @param value the removed item
      */
     public synchronized void onRemovedFromList(ObservableList list, Object value) {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             return;
         }
         removeReferenceAndCheckForGC(list, value);
@@ -193,7 +196,7 @@ public class GarbageCollector {
      * will be called.
      */
     public synchronized void gc() {
-        if (!UnstableFeatureFlags.isUseGc()) {
+        if (!configuration.isUseGc()) {
             LOG.trace("GC deactivated, no beans will be removed!");
             return;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import com.canoo.dolphin.server.impl.ServerControllerActionCallBean;
 import com.canoo.dolphin.server.impl.ServerEventDispatcher;
 import com.canoo.dolphin.server.impl.ServerPlatformBeanRepository;
 import com.canoo.dolphin.server.impl.ServerPresentationModelBuilderFactory;
-import com.canoo.dolphin.server.impl.UnstableFeatureFlags;
 import com.canoo.dolphin.server.impl.gc.GarbageCollectionCallback;
 import com.canoo.dolphin.server.impl.gc.GarbageCollector;
 import com.canoo.dolphin.server.impl.gc.Instance;
@@ -117,7 +116,7 @@ public class DolphinContext {
         dolphin = dolphinFactory.create();
 
         //Init Garbage Collection
-        garbageCollector = new GarbageCollector(new GarbageCollectionCallback() {
+        garbageCollector = new GarbageCollector(configuration, new GarbageCollectionCallback() {
             @Override
             public void onReject(Set<Instance> instances) {
                 for (Instance instance : instances) {
@@ -207,7 +206,7 @@ public class DolphinContext {
                 registry.register(PlatformConstants.POLL_EVENT_BUS_COMMAND_NAME, new CommandHandler() {
                     @Override
                     public void handleCommand(Command command, List response) {
-                        if(UnstableFeatureFlags.isUseGc()) {
+                        if(configuration.isUseGc()) {
                             LOG.trace("Handling GarbageCollection for DolphinContext {}", getId());
                             onGarbageCollection();
                         }

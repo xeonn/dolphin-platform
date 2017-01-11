@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public class DolphinPlatformConfiguration {
     private long maxPollTime = 5_000;
 
     private int maxClientsPerSession = 10;
+
+    private boolean useGc = true;
 
     public int getSessionTimeout() {
         return sessionTimeout;
@@ -125,5 +127,13 @@ public class DolphinPlatformConfiguration {
 
     public void setMaxPollTime(long maxPollTime) {
         this.maxPollTime = maxPollTime;
+    }
+
+    public boolean isUseGc() {
+        return useGc;
+    }
+
+    public void setUseGc(boolean useGc) {
+        this.useGc = useGc;
     }
 }

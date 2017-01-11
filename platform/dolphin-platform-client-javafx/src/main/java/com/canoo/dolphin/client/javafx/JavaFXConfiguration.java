@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
  */
 package com.canoo.dolphin.client.javafx;
 
-import java.net.URL;
-
 import com.canoo.dolphin.client.ClientConfiguration;
 import javafx.application.Platform;
 
-/**
- * Created by hendrikebbers on 15.09.15.
- */
+import java.net.URL;
+
 public class JavaFXConfiguration extends ClientConfiguration {
 
     public JavaFXConfiguration(URL serverEndpoint) {

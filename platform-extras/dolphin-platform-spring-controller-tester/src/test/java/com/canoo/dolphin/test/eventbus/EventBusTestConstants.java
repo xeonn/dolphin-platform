@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Canoo Engineering AG.
+ * Copyright 2015-2017 Canoo Engineering AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@ package com.canoo.dolphin.test.eventbus;
 
 import com.canoo.dolphin.server.event.Topic;
 
-/**
- * Created by hendrikebbers on 02.11.16.
- */
 public interface EventBusTestConstants {
     String EVENT_BUS_SUBSCIBER_CONTROLLER_NAME = "EventBusSubscriberController";
     String EVENT_BUS_PUBLISHER_CONTROLLER_NAME = "EventBusPublisherController";
