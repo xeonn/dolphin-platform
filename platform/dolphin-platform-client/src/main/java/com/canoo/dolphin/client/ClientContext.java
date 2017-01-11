@@ -18,7 +18,6 @@ package com.canoo.dolphin.client;
 import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.client.HttpClient;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -64,9 +63,4 @@ public interface ClientContext {
      */
     Subscription onRemotingError(Callback<DolphinRemotingException> callback);
 
-    /**
-     * Returns the internally used http client
-     * @return the http client
-     */
-    HttpClient getHttpClient();
 }

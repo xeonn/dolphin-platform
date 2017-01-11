@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Created by hendrikebbers on 30.12.16.
@@ -40,6 +41,88 @@ public class IdentitySetTest {
         Assert.assertTrue(identitySet.isEmpty());
         Assert.assertEquals(identitySet.size(), 0);
     }
+
+    @Test
+    public void testIterator() {
+
+        IdentitySet<Date> identitySet = new IdentitySet<>();
+
+        Date date1 = new Date();
+        Date date2 = new Date(date1.getTime());
+        identitySet.add(date1);
+        identitySet.add(date2);
+
+        Iterator<Date> iterator = identitySet.iterator();
+
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(iterator.next(), date1);
+        Assert.assertTrue(iterator.hasNext());
+        Assert.assertEquals(iterator.next(), date2);
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void testToArray() {
+
+        IdentitySet<Date> identitySet = new IdentitySet<>();
+
+        Date date1 = new Date();
+        Date date2 = new Date(date1.getTime());
+        identitySet.add(date1);
+        identitySet.add(date2);
+
+        Object[] itemArray = identitySet.toArray();
+        Assert.assertEquals(itemArray.length, 2);
+        Assert.assertEquals(itemArray[0], date1);
+        Assert.assertEquals(itemArray[1], date2);
+
+        Date[] itemArray2 = identitySet.toArray(new Date[0]);
+        Assert.assertEquals(itemArray2.length, 2);
+        Assert.assertEquals(itemArray2[0], date1);
+        Assert.assertEquals(itemArray2[1], date2);
+    }
+
+    @Test
+    public void testAddAll() {
+
+        IdentitySet<Date> identitySet = new IdentitySet<>();
+
+        Date date1 = new Date();
+        Date date2 = new Date(date1.getTime());
+
+        identitySet.addAll(Arrays.asList(date1, date2));
+
+        Assert.assertEquals(identitySet.size(), 2);
+        Assert.assertTrue(identitySet.contains(date1));
+        Assert.assertTrue(identitySet.contains(date2));
+    }
+
+    @Test
+    public void testRemoveAll() {
+
+        IdentitySet<Date> identitySet = new IdentitySet<>();
+
+        Date date1 = new Date();
+        Date date2 = new Date(date1.getTime());
+
+        identitySet.addAll(Arrays.asList(date1, date2));
+
+        identitySet.removeAll(Arrays.asList(date1, date2));
+
+        Assert.assertEquals(identitySet.size(), 0);
+        Assert.assertFalse(identitySet.contains(date1));
+        Assert.assertFalse(identitySet.contains(date2));
+
+
+        identitySet.addAll(Arrays.asList(date1, date2));
+        identitySet.removeAll(Arrays.asList(date1));
+
+        Assert.assertEquals(identitySet.size(), 1);
+        Assert.assertFalse(identitySet.contains(date1));
+        Assert.assertTrue(identitySet.contains(date2));
+    }
+
+
 
     @Test
     public void testContains() {

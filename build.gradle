@@ -36,6 +36,9 @@ plugins {
     id "org.sonarqube" version "2.2"
 }
 
+if (project.hasProperty('sonarToken')) {
+    System.setProperty("sonar.login", project.getProperty("sonarToken"))
+}
 
 Date buildTimeAndDate = new Date()
 ext {
@@ -93,10 +96,26 @@ subprojects { subprj ->
         jcenter()
     }
 
+    if (!subprj.publishJars.toBoolean()) {
+        sonarqube {
+            sonarqube {
+                skipProject = true
+            }
+        }
+    }
+
     if (subprj.publishJars.toBoolean()) {
         subprj.apply from: rootProject.file('gradle/publishing.gradle')
         subprj.apply from: rootProject.file('gradle/code-coverage.gradle')
         projectsWithCoverage << subprj
+
+        sonarqube {
+            sonarqube {
+                properties {
+                    property "sonar.exclusions", "**/*Exception.java"
+                }
+            }
+        }
 
         javadoc {
             excludes = ['**/*.html', 'META-INF/**']
@@ -163,39 +182,13 @@ subprojects { subprj ->
             }
         }
     }
+
 }
 
 evaluationDependsOnChildren()
 
-/*
-subprojects {
-    configurations {
-        all*.exclude group: 'commons-lang', module: 'commons-lang'
-        all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
-        all*.exclude group: 'commons-logging', module: 'commons-logging'
-        all*.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
-    }
-}
-*/
-
 subprojects {
     task allDeps(type: DependencyReportTask) {}
-/*
-    configurations.all {
-        resolutionStrategy.force "org.slf4j:slf4j-api:$slf4jVersion",
-            "org.slf4j:jcl-over-slf4j:$slf4jVersion",
-            'org.aspectj:aspectjweaver:1.8.8',
-            "org.springframework:spring-aop:$springVersion",
-            "org.springframework:spring-beans:$springVersion",
-            "org.springframework:spring-core:$springVersion",
-            "org.springframework:spring-context:$springVersion",
-            "org.springframework:spring-jdbc:$springVersion",
-            "org.springframework:spring-orm:$springVersion",
-            "org.springframework:spring-tx:$springVersion"
-
-        resolutionStrategy.failOnVersionConflict()
-    }
-*/
 }
 
 coveralls {

@@ -20,14 +20,14 @@ import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientContextFactory;
 import com.canoo.dolphin.client.ControllerProxy;
 import com.canoo.dolphin.client.Param;
+import com.canoo.dolphin.client.impl.HttpStatus;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.testng.annotations.DataProvider;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -45,10 +45,16 @@ public class AbstractIntegrationTest {
                 throw new TimeoutException("Server " + host + " is still down after " + waitMillis + " ms");
             }
             try {
-                HttpClient client = new DefaultHttpClient();
-                HttpGet get = new HttpGet(host + "/health");
-                if(client.execute(get).getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    connected = true;
+                URL healthUrl = new URL(host + "/health");
+                URLConnection connection = healthUrl.openConnection();
+                if(connection instanceof HttpURLConnection) {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
+                    httpURLConnection.connect();
+                    if(httpURLConnection.getResponseCode() == HttpStatus.HTTP_OK) {
+                        connected = true;
+                    }
+                } else {
+                    throw new IOException("URL " + healthUrl + " do not provide a HttpURLConnection!");
                 }
             } catch (Exception e) {
                 //

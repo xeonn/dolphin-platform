@@ -21,7 +21,7 @@ import com.canoo.dolphin.client.util.SimpleAnnotatedTestModel;
 import com.canoo.dolphin.client.util.SimpleTestModel;
 import mockit.Mocked;
 import org.opendolphin.core.client.ClientDolphin;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 public class TestFindAll extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 

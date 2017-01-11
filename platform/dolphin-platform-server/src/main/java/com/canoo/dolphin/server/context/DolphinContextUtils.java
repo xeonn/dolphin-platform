@@ -18,10 +18,12 @@ package com.canoo.dolphin.server.context;
 import com.canoo.dolphin.util.Assert;
 
 import javax.servlet.http.HttpSession;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 public class DolphinContextUtils {
 
@@ -29,7 +31,20 @@ public class DolphinContextUtils {
 
     private static final ThreadLocal<DolphinContext> currentContext = new ThreadLocal<>();
 
+    private static final HashMap<String, WeakReference<DolphinContext>> weakContextMap = new HashMap<>();
+
     private DolphinContextUtils() {
+    }
+
+    public static Future<Void> runLaterInClientSession(String clientSessionId, Runnable runnable) {
+        Assert.requireNonBlank(clientSessionId, "clientSessionId");
+        Assert.requireNonNull(runnable, "runnable");
+
+        WeakReference<DolphinContext> ref = weakContextMap.get(clientSessionId);
+        DolphinContext dolphinContext = ref.get();
+        Assert.requireNonNull(dolphinContext, "dolphinContext");
+
+        return dolphinContext.runLater(runnable);
     }
 
     public static DolphinContext getClientInSession(HttpSession session, String clientId) {
@@ -52,6 +67,7 @@ public class DolphinContextUtils {
         Assert.requireNonNull(session, "session");
         Assert.requireNonNull(context, "context");
         getOrCreateContextMapInSession(session).remove(context.getId());
+        weakContextMap.remove(context.getId());
     }
 
     public static Map<String, DolphinContext> getOrCreateContextMapInSession(HttpSession session) {
@@ -79,5 +95,9 @@ public class DolphinContextUtils {
 
     public static void setContextForCurrentThread(DolphinContext dolphinContext) {
         currentContext.set(dolphinContext);
+
+        if(dolphinContext != null && !weakContextMap.containsKey(dolphinContext.getId())) {
+            weakContextMap.put(dolphinContext.getId(), new WeakReference<>(dolphinContext));
+        }
     }
 }

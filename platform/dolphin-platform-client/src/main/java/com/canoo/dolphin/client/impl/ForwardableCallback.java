@@ -29,7 +29,7 @@ public class ForwardableCallback<T> implements Callback<T> {
 
     private List<Callback<T>> registeredCallbacks = new CopyOnWriteArrayList<>();
 
-    public Subscription register(Callback<T> callback) {
+    public Subscription register(final Callback<T> callback) {
         Assert.requireNonNull(callback, "callback");
         registeredCallbacks.add(callback);
         return new Subscription() {

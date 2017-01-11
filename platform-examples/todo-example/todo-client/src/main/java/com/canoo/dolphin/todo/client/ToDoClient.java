@@ -24,18 +24,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -61,52 +54,21 @@ public class ToDoClient extends DolphinPlatformApplication {
 
     @Override
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
-        ToDoViewBinder viewController = new ToDoViewBinder(clientContext);
-        primaryStage.setScene(new Scene(viewController.getParent()));
-        primaryStage.setOnCloseRequest(e -> Platform.exit());
+        ToDoView viewController = new ToDoView(clientContext);
+        Scene scene = new Scene(viewController.getParent());
+        scene.getStylesheets().add(ToDoClient.class.getResource("style.css").toExternalForm());
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
     private void showError(Window parent, String header, String content, Exception e) {
         LOG.error("Dolphin Platform error!", e);
-
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(header);
         alert.setContentText(content);
-
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        String exceptionText = sw.toString();
-
-        Label label = new Label("The exception stacktrace was:");
-
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
-
-        ButtonType reconnect = new ButtonType("reconnect");
-        //alert.getButtonTypes().addAll(reconnect);
-
-        alert.getDialogPane().setExpandableContent(expContent);
-        ButtonType result = alert.showAndWait().orElse(null);
-
-        if(result != null && reconnect.equals(result)) {
-            reconnect(new Stage());
-        } else {
-            Platform.exit();
-        }
+        alert.showAndWait();
+        Platform.exit();
     }
 
     @Override
@@ -120,8 +82,6 @@ public class ToDoClient extends DolphinPlatformApplication {
     }
 
     public static void main(String[] args) {
-        Platform.setImplicitExit(false);
         Application.launch(args);
     }
-
 }

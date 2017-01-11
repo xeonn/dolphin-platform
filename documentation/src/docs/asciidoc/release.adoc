@@ -1,0 +1,116 @@
+
+= Dolphin Platform release documentation
+This chapter describes how a new release for the Dolphin Platform can be created.
+
+== Dolphin Platform repositories
+The sources of the Dolphin Platform are seperated in several repositories:
+
+* https://github.com/canoo/dolphin-platform[GitHub repository of the Java API]
+* https://github.com/canoo/dolphin-platform-js[GitHub repository of the JavaScript basic client API]
+* https://github.com/canoo/dolphin-platform-polymer[GitHub repository of the Polymer client API]
+
+In addition we provide several repositories that contain jumpstarts for the Dolphin Platform. This repositories
+should be released with each release of the Dolphin Platform:
+
+* https://github.com/canoo/dolphin-platform-lazybones-templates[Dolphin Platform Lazybones template for a Spring
+based jumpstart]
+* https://github.com/canoo/dolphin-platform-spring-boot-archetype[Dolphin Platform Maven archetype for a Spring
+based jumpstart]
+* https://github.com/canoo/dolphin-platform-kumuluz-archetype[Dolphin Platform Maven archetype for a JavaEE
+based jumpstart]
+
+== Dolphin Platform repositories walkthrough
+For a release the repositories shoud be released in a defined order to create a accurate release. The following
+documentation shows a step by step instruction to release all repositories. In general a release starts by releasing
+the sources of the JavaScript API repositores followed by the Java repository. Once this is done the jumpstart related
+repositories can be released in any order.
+
+=== Install needed tools for the release
+TODO: some tools must be installed on the local machine. Add overview for all tools
+
+=== Realising the JavaScript repositories
+A developer should always start to release the *JavaScript basic API*. To do so several steps are needed:
+
+* The https://github.com/canoo/dolphin-platform-js[JavaScript basic API repository] must be check out on the local
+machine
+* A release will always be done on the master branch.
+* If a developer has checked out the repository for the first time he needs to call `npm install` in
+the root folder of the repository to install all the npm dependencies
+* If a developer has checked out the repository for the first time he needs to call `bower install` in
+the root folder of the repository to install all the bower dependencies
+* In the root folder of the project the `npm update` command must be called to update all npm dependencies
+* In the root folder of the project the `bower update` command must be called to update all bower dependencies
+* As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
+folder of the project
+* If the build executes without any error the new version number for the release must be specified in the following
+files: `bower.json`, `package.json`, `gulpfile.js` (in `gulpfile.js` search for the `sonar` task)
+* Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
+release like `0.8.7`
+* Once the tag is uploaded to the global repository at GitHub the JavaScript basic API has been released
+
+As a next step the *Poylmer API* can be released. To do so several steps are needed:
+
+* The https://github.com/canoo/dolphin-platform-polymer[Polymer API repository] must be check out on the local
+machine
+* A release will always be done on the master branch.
+* The dependency of the Dolphin Platform JS client must be set to the new version in the `bower.json` file
+* If a developer has checked out the repository for the first time he needs to call `npm install` in
+the root folder of the repository to install all the npm dependencies
+* If a developer has checked out the repository for the first time he needs to call `bower install` in
+the root folder of the repository to install all the bower dependencies
+* In the root folder of the project the `npm update` command must be called to update all npm dependencies
+* In the root folder of the project the `bower update` command must be called to update all bower dependencies
+* Once this is done the dependency to the JavaScript basic API must be updated. To do so the `version` number of
+the `dolphin-js` dependency in the `bower.json` must be changed to the new version.
+* As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
+folder of the project.
+* If the build executes without any error the new version number for the release must be specified in the following
+files: `bower.json` and `package.json`
+* Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
+release like `0.8.7`
+* Once the tag is uploaded to the global repository at GitHub the Polymer basic API has been released
+
+As a next step the *AngularJS API* can be released. To do so several steps are needed:
+
+* The https://github.com/canoo/dolphin-platform-angularjs[AngularJS API repository] must be check out on the local
+machine
+* A release will always be done on the master branch.
+* The dependency of the Dolphin Platform JS client must be set to the new version in the `bower.json` file
+* If a developer has checked out the repository for the first time he needs to call `npm install` in
+the root folder of the repository to install all the npm dependencies
+* If a developer has checked out the repository for the first time he needs to call `bower install` in
+the root folder of the repository to install all the bower dependencies
+* In the root folder of the project the `npm update` command must be called to update all npm dependencies
+* In the root folder of the project the `bower update` command must be called to update all bower dependencies
+* Once this is done the dependency to the JavaScript basic API must be updated. To do so the `version` number of
+the `dolphin-js` dependency in the `bower.json` must be changed to the new version.
+* As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
+folder of the project.
+* If the build executes without any error the new version number for the release must be specified in the following
+files: `bower.json` and `package.json`
+* Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
+release like `0.8.7`
+* Once the tag is uploaded to the global repository at GitHub the AngularJS basic API has been released
+
+
+=== Realising the Java repository
+
+* Create a new branch `release/VERSION` where `VERSION` defines the version that should be released (like `release/0.8.7`)
+* Check out the created release branch
+* update the dependecies of all JavaScript modules in the `platform-examples` folder to the new version
+* Try all examples
+* update the version number in the `gradle.properties` file
+* check the changelog in the documentation if all changes are mentioned
+* Call `gradle clean build` from the project folder to check that the build is working
+* Call `gradle clean bintrayUpload` from the project folder
+* Create a tag from the release branch. The name of the tag must match the version of the new
+release like `0.8.7`
+* Upload the tag is to the global repository at GitHub
+* Login to Bintray and publish all artifacts to JCenter and Maven Central
+
+
+
+
+=== Realising the jumpstart repository
+
+TODO

@@ -29,10 +29,11 @@ import com.canoo.dolphin.internal.BeanBuilder;
 import com.canoo.dolphin.internal.ClassRepository;
 import com.canoo.dolphin.internal.EventDispatcher;
 import com.canoo.dolphin.internal.collections.ListMapper;
+import core.comm.DefaultInMemoryConfig;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientModelStore;
-import org.opendolphin.core.client.comm.HttpClientConnector;
-import core.comm.DefaultInMemoryConfig;
+import org.opendolphin.core.client.comm.ClientConnector;
+import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.server.ServerDolphin;
 import org.opendolphin.core.server.ServerModelStore;
 
@@ -60,7 +61,7 @@ public abstract class AbstractDolphinBasedTest {
         }
     }
 
-    protected ClientDolphin createClientDolphin(HttpClientConnector connector) {
+    protected ClientDolphin createClientDolphin(ClientConnector connector) {
         final ClientDolphin dolphin = new ClientDolphin();
         dolphin.setClientModelStore(new ClientModelStore(dolphin));
         dolphin.setClientConnector(connector);
@@ -71,7 +72,7 @@ public abstract class AbstractDolphinBasedTest {
         DefaultInMemoryConfig config = new DefaultInMemoryConfig();
         config.getServerDolphin().registerDefaultActions();
         ServerModelStore store = config.getServerDolphin().getModelStore();
-        store.setCurrentResponse(new ArrayList<>());
+        store.setCurrentResponse(new ArrayList<Command>());
 
         return new DolphinTestConfiguration(config.getClientDolphin(), config.getServerDolphin());
     }

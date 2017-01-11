@@ -8,3 +8,4 @@ out/
 target/
 dist/
 node_modules/
+local.properties

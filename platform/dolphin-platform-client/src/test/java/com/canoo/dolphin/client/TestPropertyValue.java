@@ -28,7 +28,7 @@ import org.opendolphin.core.Attribute;
 import org.opendolphin.core.PresentationModel;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.client.ClientPresentationModel;
-import org.opendolphin.core.client.comm.HttpClientConnector;
+import org.opendolphin.core.client.comm.ClientConnector;
 import org.testng.annotations.Test;
 
 import java.util.Calendar;
@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.nullValue;
 public class TestPropertyValue extends AbstractDolphinBasedTest {
 
     @Test
-    public void testWithAnnotatedSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithAnnotatedSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -66,7 +66,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithSimpleModel(@Mocked HttpClientConnector connector) {
+    public void testWithSimpleModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -87,7 +87,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithAllPrimitiveDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithAllPrimitiveDataTypesModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -134,7 +134,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
 
 
     @Test
-    public void testWithComplexDataTypesModel(@Mocked HttpClientConnector connector) {
+    public void testWithComplexDataTypesModel(@Mocked ClientConnector connector) {
         final Calendar date1 = new GregorianCalendar(2016, Calendar.MARCH, 1, 0, 1, 2);
         date1.set(Calendar.MILLISECOND, 3);
         date1.setTimeZone(TimeZone.getTimeZone("GMT+2:00"));
@@ -154,11 +154,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(dateAttribute.getValue(), nullValue());
 
         model.getDateProperty().set(date1.getTime());
-        assertThat(dateAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(dateAttribute.getValue().toString(), is("2016-02-29T22:01:02.003Z"));
         assertThat(model.getDateProperty().get(), is(date1.getTime()));
 
         dateAttribute.setValue("2016-02-29T00:01:02.003Z");
-        assertThat(dateAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(dateAttribute.getValue().toString(), is("2016-02-29T00:01:02.003Z"));
         assertThat(model.getDateProperty().get(), is(date2.getTime()));
 
 
@@ -166,11 +166,11 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(calendarAttribute.getValue(), nullValue());
 
         model.getCalendarProperty().set(date1);
-        assertThat(calendarAttribute.getValue(), is("2016-02-29T22:01:02.003Z"));
+        assertThat(calendarAttribute.getValue().toString(), is("2016-02-29T22:01:02.003Z"));
         assertThat(model.getCalendarProperty().get().getTimeInMillis(), is(date1.getTimeInMillis()));
 
         calendarAttribute.setValue("2016-02-29T00:01:02.003Z");
-        assertThat(calendarAttribute.getValue(), is("2016-02-29T00:01:02.003Z"));
+        assertThat(calendarAttribute.getValue().toString(), is("2016-02-29T00:01:02.003Z"));
         assertThat(model.getCalendarProperty().get(), is(date2));
 
 
@@ -178,17 +178,17 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
         assertThat(enumAttribute.getValue(), nullValue());
 
         model.getEnumProperty().set(VALUE_1);
-        assertThat(enumAttribute.getValue(), is("VALUE_1"));
+        assertThat(enumAttribute.getValue().toString(), is("VALUE_1"));
         assertThat(model.getEnumProperty().get(), is(VALUE_1));
 
         enumAttribute.setValue("VALUE_2");
-        assertThat(enumAttribute.getValue(), is("VALUE_2"));
+        assertThat(enumAttribute.getValue().toString(), is("VALUE_2"));
         assertThat(model.getEnumProperty().get(), is(VALUE_2));
     }
 
 
     @Test
-    public void testWithSingleReferenceModel(@Mocked HttpClientConnector connector) {
+    public void testWithSingleReferenceModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 
@@ -217,7 +217,7 @@ public class TestPropertyValue extends AbstractDolphinBasedTest {
     }
 
     @Test
-    public void testWithInheritedModel(@Mocked HttpClientConnector connector) {
+    public void testWithInheritedModel(@Mocked ClientConnector connector) {
         final ClientDolphin dolphin = createClientDolphin(connector);
         final BeanManager manager = createBeanManager(dolphin);
 

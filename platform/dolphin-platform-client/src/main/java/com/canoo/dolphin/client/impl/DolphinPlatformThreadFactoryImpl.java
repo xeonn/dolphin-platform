@@ -50,17 +50,20 @@ public class DolphinPlatformThreadFactoryImpl implements DolphinPlatformThreadFa
     @Override
     public Thread newThread(final Runnable task) {
         Assert.requireNonNull(task, "task");
-        return AccessController.doPrivileged((PrivilegedAction<Thread>) () -> {
-            final Thread backgroundThread = new Thread(task);
-            backgroundThread.setName("Dolphin-Platform-Background-Thread" + threadNumber.getAndIncrement());
-            backgroundThread.setDaemon(false);
-            uncaughtExceptionHandlerLock.lock();
-            try {
-                backgroundThread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
-            } finally {
-                uncaughtExceptionHandlerLock.unlock();
+        return AccessController.doPrivileged(new PrivilegedAction<Thread>() {
+            @Override
+            public Thread run() {
+                final Thread backgroundThread = new Thread(task);
+                backgroundThread.setName("Dolphin-Platform-Background-Thread" + threadNumber.getAndIncrement());
+                backgroundThread.setDaemon(false);
+                uncaughtExceptionHandlerLock.lock();
+                try {
+                    backgroundThread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
+                } finally {
+                    uncaughtExceptionHandlerLock.unlock();
+                }
+                return backgroundThread;
             }
-            return backgroundThread;
         });
     }
 

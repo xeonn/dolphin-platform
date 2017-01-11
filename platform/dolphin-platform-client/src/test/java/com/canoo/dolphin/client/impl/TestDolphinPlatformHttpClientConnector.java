@@ -15,18 +15,10 @@
  */
 package com.canoo.dolphin.client.impl;
 
+import com.canoo.dolphin.client.ClientConfiguration;
 import com.canoo.dolphin.client.DummyUiThreadHandler;
+import com.canoo.dolphin.client.HttpURLConnectionFactory;
 import com.canoo.dolphin.util.DolphinRemotingException;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpResponse;
 import org.opendolphin.core.client.ClientDolphin;
 import org.opendolphin.core.comm.Command;
 import org.opendolphin.core.comm.CreatePresentationModelCommand;
@@ -34,30 +26,61 @@ import org.opendolphin.core.comm.JsonCodec;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 public class TestDolphinPlatformHttpClientConnector {
 
     @Test
     public void testSimpleCall() {
-        HttpClient httpClient = new DefaultHttpClient() {
-
+        ClientConfiguration clientConfiguration = new ClientConfiguration(getDummyURL(), new DummyUiThreadHandler());
+        clientConfiguration.setConnectionFactory(new HttpURLConnectionFactory() {
             @Override
-            public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException, ClientProtocolException {
-                return (T) "[{\"pmId\":\"p1\",\"clientSideOnly\":false,\"id\":\"CreatePresentationModel\",\"attributes\":[],\"pmType\":null,\"className\":\"org.opendolphin.core.comm.CreatePresentationModelCommand\"}]";
-            }
-        };
+            public HttpURLConnection create(URL url) throws IOException {
+                return new HttpURLConnection(url) {
+                    @Override
+                    public void disconnect() {
 
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+                    }
+
+                    @Override
+                    public boolean usingProxy() {
+                        return false;
+                    }
+
+                    @Override
+                    public void connect() throws IOException {
+
+                    }
+
+                    @Override
+                    public OutputStream getOutputStream() throws IOException {
+                        return new ByteArrayOutputStream();
+                    }
+
+                    @Override
+                    public InputStream getInputStream() throws IOException {
+                        String response = "[{\"pmId\":\"p1\",\"clientSideOnly\":false,\"id\":\"CreatePresentationModel\",\"attributes\":[],\"pmType\":null,\"className\":\"org.opendolphin.core.comm.CreatePresentationModelCommand\"}]";
+                        return new ByteArrayInputStream(response.getBytes("UTF-8"));
+                    }
+                };
+            }
+        });
+
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(clientConfiguration, new ClientDolphin(), new JsonCodec(), new ForwardableCallback<DolphinRemotingException>());
 
         CreatePresentationModelCommand command = new CreatePresentationModelCommand();
         command.setPmId("p1");
-        List<Command> result = connector.transmit(Collections.singletonList(command));
+        Command rawCommand = command;
+        List<Command> result = connector.transmit(Collections.singletonList(rawCommand));
 
         Assert.assertEquals(result.size(), 1);
         Assert.assertTrue(result.get(0) instanceof CreatePresentationModelCommand);
@@ -66,44 +89,39 @@ public class TestDolphinPlatformHttpClientConnector {
 
     @Test(expectedExceptions = DolphinRemotingException.class)
     public void testBadResponse() {
-        final CountDownLatch httpWasCalled = new CountDownLatch(1);
 
-        HttpClient httpClient = new DefaultHttpClient() {
-
+        ClientConfiguration clientConfiguration = new ClientConfiguration(getDummyURL(), new DummyUiThreadHandler());
+        clientConfiguration.setConnectionFactory(new HttpURLConnectionFactory() {
             @Override
-            public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException, ClientProtocolException {
-                StatusLine statusLine = new StatusLine() {
+            public HttpURLConnection create(URL url) throws IOException {
+                return new HttpURLConnection(url) {
                     @Override
-                    public ProtocolVersion getProtocolVersion() {
-                        return new ProtocolVersion("Dummy-Protocol", 1, 1);
+                    public void disconnect() {
+
                     }
 
                     @Override
-                    public int getStatusCode() {
-                        return 500;
+                    public boolean usingProxy() {
+                        return false;
                     }
 
                     @Override
-                    public String getReasonPhrase() {
-                        return "Internal Server Error";
+                    public void connect() throws IOException {
+
                     }
+
+                    @Override
+                    public OutputStream getOutputStream() throws IOException {
+                        return new ByteArrayOutputStream();
+                    }
+
                 };
-                StringEntity entity = new StringEntity("failed");
-                HttpResponse response = new BasicHttpResponse(statusLine);
-                response.setEntity(entity);
-                responseHandler.handleResponse(response);
-                httpWasCalled.countDown();
-                return (T) "[]";
             }
-        };
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), httpClient, getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+        });
 
-        connector.transmit(Collections.singletonList(new Command()));
-    }
 
-    @Test(expectedExceptions = DolphinRemotingException.class)
-    public void testCallWithException() {
-        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(new ClientDolphin(), new JsonCodec(), new DefaultHttpClient(), getDummyURL(), new ForwardableCallback<>(), new DummyUiThreadHandler());
+        DolphinPlatformHttpClientConnector connector = new DolphinPlatformHttpClientConnector(clientConfiguration, new ClientDolphin(), new JsonCodec(), new ForwardableCallback<DolphinRemotingException>());
+
         connector.transmit(Collections.singletonList(new Command()));
     }
 

@@ -269,7 +269,7 @@ OnFinishedHandler callback = commandsAndHandlers.get(0).getHandler();// there ca
         backgroundExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                transmit(Collections.singletonList(getReleaseCommand()));
+                transmit(Collections.singletonList((Command)getReleaseCommand()));
             }
 
         });
