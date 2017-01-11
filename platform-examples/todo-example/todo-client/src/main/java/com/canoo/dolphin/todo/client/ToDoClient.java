@@ -45,7 +45,6 @@ public class ToDoClient extends DolphinPlatformApplication {
     protected JavaFXConfiguration getClientConfiguration() {
         try {
             JavaFXConfiguration configuration = new JavaFXConfiguration(new URL("http://localhost:8080/todo-app/dolphin"));
-            configuration.setGc(true);
             return configuration;
         } catch (MalformedURLException e) {
             throw new ClientInitializationException("Error in creating config", e);

@@ -62,8 +62,6 @@ public class ClientConfiguration {
 
     private CookieStore cookieStore;
 
-    private boolean gc = false;
-
     private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
 
     /**
@@ -176,11 +174,4 @@ public class ClientConfiguration {
         this.responseHandler = Assert.requireNonNull(responseHandler, "responseHandler");
     }
 
-    public boolean isGc() {
-        return gc;
-    }
-
-    public void setGc(boolean gc) {
-        this.gc = gc;
-    }
 }
