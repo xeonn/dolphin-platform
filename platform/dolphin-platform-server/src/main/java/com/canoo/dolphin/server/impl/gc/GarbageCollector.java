@@ -216,6 +216,8 @@ public class GarbageCollector {
         removedBeansCount = removedBeansCount + removeOnGC.size();
         removeOnGC.clear();
         gcCalls = gcCalls + 1;
+
+        LOG.trace("Garbage collection done! GC currently manages {} referenced beans!", allInstances.size());
     }
 
     public synchronized int getManagedInstancesCount() {
@@ -297,7 +299,7 @@ public class GarbageCollector {
     }
 
     private void removeFromGC(Instance instance) {
-        LOG.trace("Bean of type {} removed to GC and will not be removed on next GC run", instance.getBean().getClass());
+        LOG.trace("Bean of type {} removed from GC and will not be removed on next GC run", instance.getBean().getClass());
 
         Object removed = removeOnGC.remove(instance);
 

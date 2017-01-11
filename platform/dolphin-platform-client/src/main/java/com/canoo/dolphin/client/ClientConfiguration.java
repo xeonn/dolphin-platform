@@ -56,13 +56,13 @@ public class ClientConfiguration {
 
     private long connectionTimeout;
 
-    private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
-
     private HttpURLConnectionFactory connectionFactory;
+
+    private HttpURLConnectionResponseHandler responseHandler;
 
     private CookieStore cookieStore;
 
-    private HttpURLConnectionResponseHandler responseHandler;
+    private final static Logger LOG = LoggerFactory.getLogger(ClientConfiguration.class);
 
     /**
      * Default constructor of a client configuration
@@ -166,11 +166,12 @@ public class ClientConfiguration {
         this.connectionFactory = Assert.requireNonNull(connectionFactory, "connectionFactory");
     }
 
-    public void setCookieStore(CookieStore cookieStore) {
+ public void setCookieStore(CookieStore cookieStore) {
         this.cookieStore = Assert.requireNonNull(cookieStore, "cookieStore");
     }
 
     public void setResponseHandler(HttpURLConnectionResponseHandler responseHandler) {
         this.responseHandler = Assert.requireNonNull(responseHandler, "responseHandler");
     }
+
 }

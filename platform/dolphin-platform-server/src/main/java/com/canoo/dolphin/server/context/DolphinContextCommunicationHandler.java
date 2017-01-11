@@ -70,6 +70,8 @@ public class DolphinContextCommunicationHandler {
                 LOG.error("Can not parse request! (DolphinContext " + currentContext.getId() + ")", e);
                 return;
             }
+            LOG.trace("Request for DolphinContext {} in http session {} contains {} commands", currentContext.getId(), httpSession.getId(), commands.size());
+
 
             final List<Command> results = new ArrayList<>();
             try {
@@ -84,6 +86,7 @@ public class DolphinContextCommunicationHandler {
             response.setCharacterEncoding("UTF-8");
 
             LOG.trace("Sending response for DolphinContext {} in http session {} from client with user-agent {}", currentContext.getId(), httpSession.getId(), userAgent);
+            LOG.trace("Response for DolphinContext {} in http session {} contains {} commands", currentContext.getId(), httpSession.getId(), results.size());
 
             try {
                 final String jsonResponse = currentContext.getDolphin().getServerConnector().getCodec().encode(results);
