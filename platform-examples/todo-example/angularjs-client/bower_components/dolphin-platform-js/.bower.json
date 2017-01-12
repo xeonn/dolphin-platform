@@ -1,7 +1,7 @@
 {
-  "name": "dolphin-js",
-  "version": "0.8.9",
-  "main": "./dist/dolphin.js",
+  "name": "dolphin-platform-js",
+  "version": "0.8.10",
+  "main": "./dist/dolphin-platform.js",
   "homepage": "http://www.dolphin-platform.io",
   "authors": [
     "Michael Heinrichs <michael.heinrichs@canoo.com>"
@@ -30,13 +30,13 @@
   "devDependencies": {
     "core.js": "2.4.x"
   },
-  "_release": "0.8.9",
+  "_release": "0.8.10",
   "_resolution": {
     "type": "version",
-    "tag": "0.8.9",
-    "commit": "957717647f1675f1e348001c1ed7d63119cf1003"
+    "tag": "0.8.10",
+    "commit": "d514798e4dfe10751433b71b1e41d450a63be823"
   },
   "_source": "https://github.com/canoo/dolphin-platform-js.git",
-  "_target": "^0.8.9",
-  "_originalSource": "dolphin-js"
+  "_target": "^0.8.10",
+  "_originalSource": "dolphin-platform-js"
 }
