@@ -90,11 +90,10 @@ release like `0.8.7`
 
 
 === Realising the Java repository
-
-* Create a new branch `release/VERSION` where `VERSION` defines the version that should be released (like `release/0.8.7`)
-* Check out the created release branch
 * update the dependecies of all JavaScript modules in the `platform-examples` folder to the new version
 * Try all examples
+* Create a new branch `release/VERSION` where `VERSION` defines the version that should be released (like `release/0.8.7`)
+* Check out the created release branch
 * update the version number in the `gradle.properties` file
 * check the changelog in the documentation if all changes are mentioned
 * Call `gradle clean build` from the project folder to check that the build is working
