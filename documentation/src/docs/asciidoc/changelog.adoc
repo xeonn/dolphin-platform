@@ -27,6 +27,10 @@ against server applications that run in Payara, TomEE and Wildfly. (https://gith
 found https://sonarqube.com/dashboard/index?id=com.canoo.dolphin-platform%3Adolphin-platform[here] (https://github.com/canoo/dolphin-platform/issues/38[issue])
 * JavaDocs hosted at GitHub pages. (https://github.com/canoo/dolphin-platform/issues/234[issue])
 * Some issues and code smells that were reported by sonar are refactored. (https://github.com/canoo/dolphin-platform/issues/38[issue])
+* Garbage Collection is activated by default (https://github.com/canoo/dolphin-platform/issues/261[issue])
+* Garbage Collection will be automatically called by every long poll (https://github.com/canoo/dolphin-platform/issues/261[issue])
+* Sonar reports for all projects (https://github.com/canoo/dolphin-platform/issues/313[issue])
+
 
 == Version 0.8.9
 _Release date: Dec 16, 2016_
