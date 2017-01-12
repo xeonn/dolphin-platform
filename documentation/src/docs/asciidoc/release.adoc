@@ -43,7 +43,7 @@ the root folder of the repository to install all the bower dependencies
 * As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
 folder of the project
 * If the build executes without any error the new version number for the release must be specified in the following
-files: `bower.json`, `package.json`, `gulpfile.js` (in `gulpfile.js` search for the `sonar` task)
+files: `bower.json`, `package.json`, `sonar-project.properties`
 * Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
 release like `0.8.7`
 * Once the tag is uploaded to the global repository at GitHub the JavaScript basic API has been released
@@ -60,12 +60,10 @@ the root folder of the repository to install all the npm dependencies
 the root folder of the repository to install all the bower dependencies
 * In the root folder of the project the `npm update` command must be called to update all npm dependencies
 * In the root folder of the project the `bower update` command must be called to update all bower dependencies
-* Once this is done the dependency to the JavaScript basic API must be updated. To do so the `version` number of
-the `dolphin-js` dependency in the `bower.json` must be changed to the new version.
+* The new version number for the release must be specified in the following
+files: `bower.json`, `package.json` and `sonar-project.properties`
 * As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
 folder of the project.
-* If the build executes without any error the new version number for the release must be specified in the following
-files: `bower.json` and `package.json`
 * Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
 release like `0.8.7`
 * Once the tag is uploaded to the global repository at GitHub the Polymer basic API has been released
@@ -82,12 +80,10 @@ the root folder of the repository to install all the npm dependencies
 the root folder of the repository to install all the bower dependencies
 * In the root folder of the project the `npm update` command must be called to update all npm dependencies
 * In the root folder of the project the `bower update` command must be called to update all bower dependencies
-* Once this is done the dependency to the JavaScript basic API must be updated. To do so the `version` number of
-the `dolphin-js` dependency in the `bower.json` must be changed to the new version.
+* The new version number for the release must be specified in the following
+files: `bower.json`, `package.json` and `sonar-project.properties`
 * As a next step the project must be build by using gulp. To do so call `gulp clean verify build` in the root
 folder of the project.
-* If the build executes without any error the new version number for the release must be specified in the following
-files: `bower.json` and `package.json`
 * Once this is done the current state must be tagged in git. The name of the tag must match the version of the new
 release like `0.8.7`
 * Once the tag is uploaded to the global repository at GitHub the AngularJS basic API has been released

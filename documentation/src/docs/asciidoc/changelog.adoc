@@ -9,6 +9,7 @@ package structure or adding additional methods to public interfaces. In addition
 method of the API is annotated by `@Deprecated` since we plan to remove all this methods and classes for the final 1.0.0 release.
 
 == Version 0.8.10
+_Release date: Jan 12, 2017_
 
 * Provide a first implementation of an Android client API
 * The http connection of the Java client can be accessed and customized to provide custom security or
