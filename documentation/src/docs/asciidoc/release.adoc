@@ -117,7 +117,19 @@ release like `0.8.7`
 
 === Realising the jumpstart repository
 
-TODO
+* Change the version number of Dolphin Platform in `src/main/resources/archetype-resources/pom.xml`
+* Change the version number of Dolphin Platform in `src/main/resources/archetype-resources/polymer-client/bower.json`
+* Do `mvn clean install`
+* Create sample project by calling `mvn archetype:generate -Dfilter=com.canoo.dolphin-platform:`
+* Check everything in the sample project
+* Create a new branch `release/VERSION` where `VERSION` defines the version that should be released (like `release/0.8.7`)
+* Update version number in main `pom.xml`
+*  Call `mvn clean deploy` from the project folder. For step the bintray user name and api token
+  must be configured in the `.m2/setting.xml` Maven setting file.
+* Create a tag from the release branch. The name of the tag must match the version of the new
+release like `0.8.7`
+* Upload the tag is to the global repository at GitHub
+* Login to Bintray and publish all artifacts to JCenter and Maven Central
 
 === General release steps
 
