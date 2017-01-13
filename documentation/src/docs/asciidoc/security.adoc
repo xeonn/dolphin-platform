@@ -45,7 +45,7 @@ HttpURLConnectionResponseHandler myhandler = response -> {
 }
 
 ClientConfiguration configuration = new JavaFXConfiguration(serverEndpoint);
-configuration.setResponseHandler(myFactory);
+configuration.setResponseHandler(myhandler);
 ----
 
 Next to this the Dolphin Platform internally uses a cookie store to handle the
