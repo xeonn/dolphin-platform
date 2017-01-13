@@ -9,3 +9,5 @@ target/
 dist/
 node_modules/
 local.properties
+**/.nb-gradle
+
