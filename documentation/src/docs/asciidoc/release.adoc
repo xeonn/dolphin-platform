@@ -97,12 +97,12 @@ release like `0.8.7`
 * update the version number in the `gradle.properties` file
 * check the changelog in the documentation if all changes are mentioned
 * Call `./gradlew clean build` from the project folder to check that the build is working
-* Call `./gradlew clean bintrayUpload` from the project folder
+* Call `./gradlew clean bintrayUpload` from the project folder. For step the bintray user name and api token
+must be configured in the gradle.properties file (`/userHome/.gradle/gradle.properties`). Add the properties `bintrayUsername` and `bintrayApiKey` to the file.
 * Create a tag from the release branch. The name of the tag must match the version of the new
 release like `0.8.7`
 * Upload the tag is to the global repository at GitHub
 * Login to Bintray and publish all artifacts to JCenter and Maven Central
-
 
 
 
