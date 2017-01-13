@@ -109,3 +109,8 @@ release like `0.8.7`
 === Realising the jumpstart repository
 
 TODO
+
+=== General release steps
+
+Next to the release of the software the version numbers of the latest stable
+should be updated in tutorials and readme.md files of the repos.
