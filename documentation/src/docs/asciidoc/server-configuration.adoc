@@ -49,7 +49,7 @@ will be used.
 |A list that contains all endpoint that will be filtered by the id filter. This means that all requests for this
 endpoints must provide a client id in its header (Header name = dolphin_platform_intern_dolphinClientId).
 |a comma seperated list
-|/*
+|/dolphin
 
 |maxClientsPerSession
 |Defines how many clients can exist in a http session. By using the client scope you can have several clients that share

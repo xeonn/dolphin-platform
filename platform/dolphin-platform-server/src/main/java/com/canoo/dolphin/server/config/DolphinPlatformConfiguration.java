@@ -37,7 +37,7 @@ public class DolphinPlatformConfiguration {
 
     private String rootPackageForClasspathScan = null;
 
-    private List<String> idFilterUrlMappings = Arrays.asList("/*");
+    private List<String> idFilterUrlMappings = Arrays.asList("/dolphin");
 
     private Level openDolphinLogLevel = Level.SEVERE;
 
