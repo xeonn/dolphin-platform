@@ -67,7 +67,6 @@ public class CdiBeanFactory {
         };
     }
 
-
     @Produces
     @ApplicationScoped
     public PropertyBinder createPropertyBinder() {
