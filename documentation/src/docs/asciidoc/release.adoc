@@ -96,8 +96,8 @@ release like `0.8.7`
 * Check out the created release branch
 * update the version number in the `gradle.properties` file
 * check the changelog in the documentation if all changes are mentioned
-* Call `gradle clean build` from the project folder to check that the build is working
-* Call `gradle clean bintrayUpload` from the project folder
+* Call `./gradlew clean build` from the project folder to check that the build is working
+* Call `./gradlew clean bintrayUpload` from the project folder
 * Create a tag from the release branch. The name of the tag must match the version of the new
 release like `0.8.7`
 * Upload the tag is to the global repository at GitHub
