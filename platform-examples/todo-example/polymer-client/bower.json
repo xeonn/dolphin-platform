@@ -1,6 +1,5 @@
 {
-  "name": "polymer-client",
-  "version": "0.8.5",
+  "name": "todo-client-polymer",
   "authors": [
     "Hendrik Ebbers <hendrik.ebbers@web.de>"
   ],

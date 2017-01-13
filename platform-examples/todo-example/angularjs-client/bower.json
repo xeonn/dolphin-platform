@@ -1,6 +1,5 @@
 {
-  "name": "angularjs-client",
-  "version": "0.8.9",
+  "name": "todo-client-angularjs",
   "authors": [
     "Hendrik Ebbers <hendrik.ebbers@web.de>"
   ],
