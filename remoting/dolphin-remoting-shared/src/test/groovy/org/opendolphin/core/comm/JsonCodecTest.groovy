@@ -113,7 +113,7 @@ public class JsonCodecTest extends GroovyTestCase {
         assertCorrectEnAndDecoding(true, false)
         assertCorrectEnAndDecoding(Integer.MAX_VALUE, Integer.MIN_VALUE)
         assertCorrectEnAndDecoding(Long.MAX_VALUE, Long.MIN_VALUE)
-        assertCorrectEnAndDecoding(new Date(0, 0, 1900), new Date(1, 1, 2000))
+        assertCorrectEnAndDecoding(new Date(1900, 0, 0), new Date(2000, 0, 0))
         assertCorrectEnAndDecoding(new BigDecimal(Double.MAX_VALUE), new BigDecimal(Double.MIN_VALUE))
         // is decoded as Long !
         assertCorrectEnAndDecoding(Double.MAX_VALUE, Double.MIN_VALUE)              // is decoded as BigDecimal !
