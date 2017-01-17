@@ -27,7 +27,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 
 /**
  * A abstract JavaFX view controller that can be used as a basic for a JavaFX based view. Each instance will automatically
