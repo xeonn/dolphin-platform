@@ -27,8 +27,8 @@ import org.opendolphin.core.client.ClientPresentationModel;
 import org.opendolphin.core.client.comm.OnFinishedHandler;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
+import java8.util.concurrent.CompletableFuture;
+import java8.util.function.BiFunction;
 
 public class ControllerProxyImpl<T> implements ControllerProxy<T> {
 

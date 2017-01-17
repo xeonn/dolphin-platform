@@ -28,11 +28,11 @@ import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
 import org.opendolphin.core.client.ClientDolphin;
 
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
+import java8.util.function.BiFunction;
 
 public class ClientContextImpl implements ClientContext {
 

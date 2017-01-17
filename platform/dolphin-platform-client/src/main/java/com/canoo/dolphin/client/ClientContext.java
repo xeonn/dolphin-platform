@@ -19,7 +19,7 @@ import com.canoo.dolphin.event.Subscription;
 import com.canoo.dolphin.util.Callback;
 import com.canoo.dolphin.util.DolphinRemotingException;
 
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 
 /**
  * The client context defines a connection to the Dolphin Platform endpoint on the server.

@@ -17,7 +17,7 @@ package com.canoo.dolphin.client.impl;
 
 import com.canoo.dolphin.client.ControllerProxy;
 
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 
 public interface ControllerProxyFactory {
 

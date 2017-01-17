@@ -17,5 +17,6 @@
 dependencies {
     compile project(':dolphin-platform-core')
     compile project(':dolphin-remoting-client')
+    compile group: 'net.sourceforge.streamsupport', name: 'streamsupport-cfuture', version: '1.5.3'
     testCompile project(':dolphin-remoting-combined')
 }

@@ -21,8 +21,8 @@ import com.canoo.dolphin.impl.PlatformConstants;
 import com.canoo.dolphin.util.Assert;
 import org.opendolphin.core.client.ClientDolphin;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java8.util.concurrent.CompletableFuture;
+import java8.util.function.Function;
 
 public class ControllerProxyFactoryImpl implements ControllerProxyFactory {
 

@@ -15,7 +15,7 @@
  */
 package com.canoo.dolphin.client;
 
-import java.util.concurrent.CompletableFuture;
+import java8.util.concurrent.CompletableFuture;
 
 /**
  * A proxy that can be used to interact with the server side controller. Whenever a {@link ControllerProxy} is created
