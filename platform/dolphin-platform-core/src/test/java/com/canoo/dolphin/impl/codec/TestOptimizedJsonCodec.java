@@ -224,6 +224,36 @@ public class TestOptimizedJsonCodec {
     }
 
     @Test
+    public void shouldDecodeValueChangedCommandWithBigDecimal() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":3.1415,\"n\":2.7182,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(((Number) command.getOldValue()).doubleValue(), is(3.1415));
+        assertThat(((Number) command.getNewValue()).doubleValue(), is(2.7182));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithBigInteger() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":1234567890987654321,\"n\":987654321234567890,\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(((Number) command.getOldValue()).longValue(), is(1234567890987654321L));
+        assertThat(((Number) command.getNewValue()).longValue(), is(987654321234567890L));
+    }
+
+    @Test
+    public void shouldDecodeValueChangedCommandWithUuid() {
+        final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":\"8f0ef29c-279c-445a-abfd-c97a6b50a67a\",\"n\":\"{4b9e93fd-3738-4fe6-b2a4-1fea8d2e0dc4}\",\"id\":\"ValueChanged\"}]");
+
+        final ValueChangedCommand command = (ValueChangedCommand) commands.get(0);
+        assertThat(command.getAttributeId(), is("3357S"));
+        assertThat(command.getOldValue().toString(), is("8f0ef29c-279c-445a-abfd-c97a6b50a67a"));
+        assertThat(command.getNewValue().toString(), is("{4b9e93fd-3738-4fe6-b2a4-1fea8d2e0dc4}"));
+    }
+
+    @Test
     public void shouldDecodeValueChangedCommandWithBooleans() {
         final List<Command> commands = new OptimizedJsonCodec().decode("[{\"a\":\"3357S\",\"o\":true,\"n\":false,\"id\":\"ValueChanged\"}]");
 
