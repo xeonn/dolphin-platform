@@ -10,3 +10,6 @@ com.canoo.dolphin.impl.converters.IntegerConverterFactory
 com.canoo.dolphin.impl.converters.LongConverterFactory
 com.canoo.dolphin.impl.converters.ShortConverterFactory
 com.canoo.dolphin.impl.converters.StringConverterFactory
+com.canoo.dolphin.impl.converters.BigDecimalConverterFactory
+com.canoo.dolphin.impl.converters.BigIntegerConverterFactory
+com.canoo.dolphin.impl.converters.UuidConverterFactory
