@@ -21,6 +21,8 @@ import com.canoo.dolphin.server.DolphinController;
 import com.canoo.dolphin.server.DolphinModel;
 import com.canoo.dolphin.server.Param;
 import com.canoo.dolphin.server.event.DolphinEventBus;
+import com.canoo.dolphin.server.event.Message;
+import com.canoo.dolphin.server.event.MessageListener;
 import com.canoo.dolphin.todo.pm.ToDoItem;
 import com.canoo.dolphin.todo.pm.ToDoList;
 
@@ -36,6 +38,8 @@ import static com.canoo.dolphin.todo.TodoAppConstants.REMOVE_ACTION;
 import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_ADDED;
 import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_MARK_CHANGED;
 import static com.canoo.dolphin.todo.server.ToDoEventTopics.ITEM_REMOVED;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @DolphinController(CONTROLLER_NAME)
 public class ToDoController {
@@ -54,10 +58,30 @@ public class ToDoController {
 
     @PostConstruct
     public void onInit() {
-        eventBus.subscribe(ITEM_MARK_CHANGED, message -> updateItemState(message.getData()));
-        eventBus.subscribe(ITEM_REMOVED, message -> removeItem(message.getData()));
-        eventBus.subscribe(ITEM_ADDED, message -> addItem(message.getData()));
-        todoItemStore.itemNameStream().forEach(name -> addItem(name));
+        eventBus.subscribe(ITEM_MARK_CHANGED, new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                updateItemState(message.getData());
+            }
+        });
+        eventBus.subscribe(ITEM_REMOVED, new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                removeItem(message.getData());
+            }
+        });
+        eventBus.subscribe(ITEM_ADDED, new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                addItem(message.getData());
+            }
+        });
+        todoItemStore.itemNameStream().forEach(new Consumer<String>() {
+            @Override
+            public void accept(String name) {
+                addItem(name);
+            }
+        });
     }
 
     @DolphinAction(ADD_ACTION)
@@ -81,14 +105,29 @@ public class ToDoController {
     }
 
     private void removeItem(String name) {
-        getItemByName(name).ifPresent(i -> toDoList.getItems().remove(i));
+        getItemByName(name).ifPresent(new Consumer<ToDoItem>() {
+            @Override
+            public void accept(ToDoItem i) {
+                toDoList.getItems().remove(i);
+            }
+        });
     }
 
-    private void updateItemState(String name) {
-        getItemByName(name).ifPresent(i -> i.setCompleted(todoItemStore.getState(name)));
+    private void updateItemState(final String name) {
+        getItemByName(name).ifPresent(new Consumer<ToDoItem>() {
+            @Override
+            public void accept(ToDoItem i) {
+                i.setCompleted(todoItemStore.getState(name));
+            }
+        });
     }
 
-    private Optional<ToDoItem> getItemByName(String name) {
-        return toDoList.getItems().stream().filter(i -> i.getText().equals(name)).findAny();
+    private Optional<ToDoItem> getItemByName(final String name) {
+        return toDoList.getItems().stream().filter(new Predicate<ToDoItem>() {
+            @Override
+            public boolean test(ToDoItem i) {
+                return i.getText().equals(name);
+            }
+        }).findAny();
     }
 }

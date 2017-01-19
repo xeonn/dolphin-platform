@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static com.canoo.dolphin.samples.processmonitor.ProcessMonitorConstants.CONTROLLER_NAME;
+import java.util.function.Consumer;
 
 @DolphinController(CONTROLLER_NAME)
 public class ProcessMonitorController {
@@ -70,7 +71,12 @@ public class ProcessMonitorController {
 
     @PreDestroy
     public void onDestroy() {
-        Optional.ofNullable(executor).ifPresent(e -> e.cancel(true));
+        Optional.ofNullable(executor).ifPresent(new Consumer<Future<Void>>() {
+            @Override
+            public void accept(Future<Void> e) {
+                e.cancel(true);
+            }
+        });
     }
 
 
@@ -92,7 +98,12 @@ public class ProcessMonitorController {
         backgroundTaskRunner.setTask(new Runnable() {
             @Override
             public void run() {
-                session.runLater(() -> update());
+                session.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        update();
+                    }
+                });
             }
         });
     }

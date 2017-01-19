@@ -31,6 +31,7 @@ import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
+import org.opendolphin.core.client.comm.UiThreadHandler;
 
 public class AbstractIntegrationTest {
 
@@ -78,7 +79,12 @@ public class AbstractIntegrationTest {
     protected ClientContext createClientContext(String endpoint) {
         try {
             waitUntilServerIsUp(endpoint, 5, TimeUnit.MINUTES);
-            ClientConfiguration configuration = new ClientConfiguration(new URL(endpoint + "/dolphin"), r -> r.run());
+            ClientConfiguration configuration = new ClientConfiguration(new URL(endpoint + "/dolphin"), new UiThreadHandler() {
+                @Override
+                public void executeInsideUiThread(Runnable r) {
+                    r.run();
+                }
+            });
             configuration.setDolphinLogLevel(Level.FINE);
             configuration.setConnectionTimeout(10_000L);
             return ClientContextFactory.connect(configuration).get(configuration.getConnectionTimeout(), TimeUnit.MILLISECONDS);

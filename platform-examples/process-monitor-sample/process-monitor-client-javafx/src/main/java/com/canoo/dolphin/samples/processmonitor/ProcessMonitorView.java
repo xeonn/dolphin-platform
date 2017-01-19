@@ -26,6 +26,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import static com.canoo.dolphin.samples.processmonitor.ProcessMonitorConstants.CONTROLLER_NAME;
+import javafx.beans.value.ObservableValue;
+import javafx.util.Callback;
 
 public class ProcessMonitorView extends AbstractViewBinder<ProcessListBean> {
 
@@ -37,16 +39,36 @@ public class ProcessMonitorView extends AbstractViewBinder<ProcessListBean> {
         table = new TableView<>();
 
         TableColumn<ProcessBean, String> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(e -> FXWrapper.wrapObjectProperty(e.getValue().processIDProperty()));
+        idColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ProcessBean, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ProcessBean, String> e) {
+                return FXWrapper.wrapObjectProperty(e.getValue().processIDProperty());
+            }
+        });
 
         TableColumn<ProcessBean, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setCellValueFactory(e -> FXWrapper.wrapObjectProperty(e.getValue().nameProperty()));
+        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ProcessBean, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ProcessBean, String> e) {
+                return FXWrapper.wrapObjectProperty(e.getValue().nameProperty());
+            }
+        });
 
         TableColumn<ProcessBean, String> cpuColumn = new TableColumn<>("CPU %");
-        cpuColumn.setCellValueFactory(e -> FXWrapper.wrapObjectProperty(e.getValue().cpuPercentageProperty()));
+        cpuColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ProcessBean, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ProcessBean, String> e) {
+                return FXWrapper.wrapObjectProperty(e.getValue().cpuPercentageProperty());
+            }
+        });
 
         TableColumn<ProcessBean, String> memoryColumn = new TableColumn<>("Memory %");
-        memoryColumn.setCellValueFactory(e -> FXWrapper.wrapObjectProperty(e.getValue().memoryPercentageProperty()));
+        memoryColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ProcessBean, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ProcessBean, String> e) {
+                return FXWrapper.wrapObjectProperty(e.getValue().memoryPercentageProperty());
+            }
+        });
 
         table.getColumns().addAll(idColumn, nameColumn, cpuColumn, memoryColumn);
     }

@@ -37,6 +37,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
 
 public class ProcessMonitorClient extends DolphinPlatformApplication {
 
@@ -51,7 +53,12 @@ public class ProcessMonitorClient extends DolphinPlatformApplication {
     protected void start(Stage primaryStage, ClientContext clientContext) throws Exception {
         ProcessMonitorView viewController = new ProcessMonitorView(clientContext);
         primaryStage.setScene(new Scene(viewController.getParent()));
-        primaryStage.setOnCloseRequest(e -> Platform.exit());
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                Platform.exit();
+            }
+        });
         primaryStage.show();
     }
 
